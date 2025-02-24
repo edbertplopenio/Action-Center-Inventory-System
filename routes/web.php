@@ -15,9 +15,7 @@ Route::post('/registration', [AuthManager::class, 'registrationPost'])->name('re
 Route::get('/logout', [AuthManager::class, 'logout'])->name('logout');
 
 // New route for inven.blade.php
-Route::get('/inven', function () {
-    return view('inven');
-})->name('inventory');
+Route::get('/inven', [ItemController::class, 'index'])->name('inventory');
 
 Route::get('/borrow', function () {
     return view('borrow');
@@ -25,3 +23,9 @@ Route::get('/borrow', function () {
 
 Route::get('/item/create', [ItemController::class, 'create'])->name('items.create');
 Route::post('/item/store', [ItemController::class, 'store'])->name('items.store');
+
+Route::get('/add-item', function() {
+    return view('item-form'); // Blade view with the item form
+});
+
+Route::post('/add-item', [ItemController::class, 'store']); // Controller to store the item

@@ -8,12 +8,13 @@ use Illuminate\Support\Facades\Storage;
 
 class ItemController extends Controller
 {
+    // Display the form to create a new item
     public function create()
     {
-        // Return the view with the form
         return view('item-form');
     }
 
+    // Store the newly created item in the database
     public function store(Request $request)
     {
         // Validate the form data
@@ -53,5 +54,15 @@ class ItemController extends Controller
 
         // Redirect back with a success message
         return redirect()->route('items.create')->with('success', 'Item added successfully!');
+    }
+
+    // Display a paginated list of items
+    public function index()
+    {
+        // Retrieve items with pagination (10 items per page)
+        $items = Item::paginate(10);
+
+        // Return the inventory page with the paginated items
+        return view('inven', compact('items'));
     }
 }
