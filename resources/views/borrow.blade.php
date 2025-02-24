@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Hide all tables by default, only show the active tab's table */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Custom tab color styles */
+        .tab-button {
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .tab-button:hover {
+            opacity: 0.8;
+        }
+
+        .tab-button.active {
+            font-weight: bold;
+        }
+
+        /* Flex container for Tabs */
+        .tab-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .tab-button-container {
+            display: flex;
+        }
+
+        .tab-button + .tab-button {
+            margin-left: 0.5rem;
+        }
+
+        /* Custom Tab Colors */
+        .borrowed-records-tab {
+            background-color: #4A90E2; /* Blue */
+        }
+
+        .pending-request-tab {
+            background-color: #FF9F00; /* Orange */
+        }
+
+        .record-of-borrowed-items-tab {
+            background-color: #FF5733; /* Red */
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+
+        table th, table td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #E5E5E5;
+        }
+
+        table th {
+            background-color: #F7FAFC;
+            color: #2D3748;
+        }
+
+        table tr:hover {
+            background-color: #F1F1F1;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            width: 100%;
+            height: 500px;
+            overflow-y: auto; /* Enable vertical scrolling if needed */
+            margin-top: 1rem; /* Add margin top to separate the content */
+        }
+
+        /* Styling for the Action Buttons */
+        .action-btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .edit-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background-color: #45A049;
+        }
+
+        .delete-btn {
+            background-color: #F44336;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background-color: #F41F29;
+        }
+
+        .approve-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .approve-btn:hover {
+            background-color: #45A049;
+        }
+
+        .reject-btn {
+            background-color: #F44336;
+            color: white;
+        }
+
+        .reject-btn:hover {
+            background-color: #F41F29;
+        }
+
+        .return-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .return-btn:hover {
+            background-color: #45A049;
+        }
+
+        .extend-btn {
+            background-color: #FF9F00;
+            color: white;
+        }
+
+        .extend-btn:hover {
+            background-color: #F99C1D;
+        }
+
+        .input {
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            width: 100%;
+            border: 1px solid #E5E5E5;
+        }
+
+        .btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 0.5rem;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn-green {
+            background-color: #38A169;
+        }
+
+        .btn-green:hover {
+            background-color: #2F9C5A;
+        }
+
+    </style>
+</head>
+<body class="bg-gray-100">
+
+<!-- Main Content -->
+<div class="flex-1 p-6 relative">
+    <div class="bg-white shadow-md rounded-lg p-6"> <!-- Reduced padding for better layout -->
+        <!-- Tabs -->
+        <div class="tab-container">
+            <div class="tab-button-container">
+                <button id="borrowed-records-tab" class="tab-button borrowed-records-tab" onclick="switchTab('borrowed-records')">Borrowed Records</button>
+                <button id="pending-request-tab" class="tab-button pending-request-tab ml-2" onclick="switchTab('pending-request')">Pending Request</button>
+                <button id="record-of-borrowed-items-tab" class="tab-button record-of-borrowed-items-tab ml-2" onclick="switchTab('record-of-borrowed-items')">Record Of Borrowed Items</button>
+            </div>
+        </div>
+
+        <!-- Tab Content (Tables for Borrowed Records, Pending Request, and Record Of Borrowed Items) -->
+        <div id="borrowed-records-content" class="tab-content active">
+            <h3 class="text-xl font-semibold">Borrowed Records</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Department/Designation</th>
+                            <th>Email</th>
+                            <th>Person Responsible</th>
+                            <th>Borrow Date</th>
+                            <th>Items/Code</th>
+                            <th>Unit</th>
+                            <th>Quantity</th>
+                            <th>Due Date</th>
+                            <th>Signature over Printed Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Example Data for Borrowed Records -->
+                        <tr>
+                            <td>John Doe</td>
+                            <td>IT Department</td>
+                            <td>johndoe@email.com</td>
+                            <td>Jane Smith</td>
+                            <td>2025-02-15</td>
+                            <td>ABC123</td>
+                            <td>Unit</td>
+                            <td>2</td>
+                            <td>2025-03-01</td>
+                            <td><img src="signature.jpg" alt="Signature" class="w-20 h-10"></td>
+                            <td>
+                                <button class="return-btn action-btn">Return</button>
+                                <button class="extend-btn action-btn">Extend</button>
+                            </td>
+                        </tr>
+                        <!-- Add more rows as needed -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="pending-request-content" class="tab-content">
+            <h3 class="text-xl font-semibold">Pending Request</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Department/Designation</th>
+                            <th>Email</th>
+                            <th>Person Responsible</th>
+                            <th>Request Date</th>
+                            <th>Items/Code</th>
+                            <th>Unit</th>
+                            <th>Quantity</th>
+                            <th>Due Date</th>
+                            <th>Signature over Printed Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Example Data for Pending Request -->
+                        <tr>
+                            <td>Sarah Lee</td>
+                            <td>HR Department</td>
+                            <td>sarahlee@email.com</td>
+                            <td>Michael Brown</td>
+                            <td>2025-02-18</td>
+                            <td>DEF456</td>
+                            <td>Unit</td>
+                            <td>1</td>
+                            <td>2025-02-25</td>
+                            <td><img src="signature.jpg" alt="Signature" class="w-20 h-10"></td>
+                            <td>
+                                <button class="approve-btn action-btn">Approve</button>
+                                <button class="reject-btn action-btn">Reject</button>
+                            </td>
+                        </tr>
+                        <!-- Add more rows as needed -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="record-of-borrowed-items-content" class="tab-content">
+            <h3 class="text-xl font-semibold">Record Of Borrowed Items</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Department/Designation</th>
+                            <th>Email</th>
+                            <th>Person Responsible</th>
+                            <th>Borrow Date</th>
+                            <th>Items/Code</th>
+                            <th>Unit</th>
+                            <th>Quantity</th>
+                            <th>Due Date</th>
+                            <th>Signature over Printed Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Example Data for Record Of Borrowed Items -->
+                        <tr>
+                            <td>John Doe</td>
+                            <td>IT Department</td>
+                            <td>johndoe@email.com</td>
+                            <td>Jane Smith</td>
+                            <td>2025-02-15</td>
+                            <td>ABC123</td>
+                            <td>Unit</td>
+                            <td>2</td>
+                            <td>2025-03-01</td>
+                            <td><img src="signature.jpg" alt="Signature" class="w-20 h-10"></td>
+                            <td>
+                                <button class="edit-btn action-btn">Edit</button>
+                                <button class="delete-btn action-btn">Delete</button>
+                            </td>
+                        </tr>
+                        <!-- Add more rows as needed -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Tab Switching -->
+<script>
+    function switchTab(tab) {
+        // Hide all tab content
+        var tabs = document.querySelectorAll('.tab-content');
+        tabs.forEach(function (tabContent) {
+            tabContent.classList.remove('active');
+        });
+
+        // Show the selected tab's content
+        document.getElementById(tab + '-content').classList.add('active');
+
+        // Change tab button styles
+        document.querySelectorAll('.tab-button').forEach(function (btn) {
+            btn.classList.remove('active');
+        });
+
+        // Set active class and background color for the clicked tab
+        document.getElementById(tab + '-tab').classList.add('active');
+    }
+</script>
+
+</body>
+</html>
