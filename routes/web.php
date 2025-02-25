@@ -23,8 +23,33 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 // Inventory routes
 Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
 
+
+
+use App\Http\Controllers\Admin\RecordsController;
+
+Route::prefix('admin')->middleware(['auth'])->group(function () {
+    Route::get('/records', [RecordsController::class, 'index'])->name('records.index');
+});
+
+
+
+use App\Http\Controllers\Admin\UsersController;
+
+Route::prefix('admin')->middleware(['auth'])->group(function () {
+    // Records route
+    Route::get('/records', [RecordsController::class, 'index'])->name('records.index');
+    
+    // Users route
+    Route::get('/users', [UsersController::class, 'index'])->name('users.index');
+});
+
+
+
+
 // Sample UI route for testing (can be removed or modified as needed)
 Route::get('/sample-ui', function () {
     return view('sample-ui');
 });
+
+
 

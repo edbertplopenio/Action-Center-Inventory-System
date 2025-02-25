@@ -22,8 +22,8 @@
                     <img src="../../frontend/public/images/users/user-placeholder.jpg" alt="User Image" class="w-full object-cover" />
                 </div>
                 <div>
-                    <p class="text-xs font-medium text-gray-500 mb-1">User Name</p>
-                    <p class="text-xs font-medium text-gray-500">user.email@example.com</p>
+                    <p class="text-sm font-medium text-gray-500 mb-1">User Name</p>
+                    <p class="text-sm font-medium text-gray-500">user.email@example.com</p>
                 </div>
             </div>
 
@@ -34,19 +34,19 @@
                         <li class="active">
                             <a href="#" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
                                 <i class="ph-bold ph-house-simple text-xl"></i>
-                                <span class="flex-1 text-xs">Dashboard</span>
+                                <span class="flex-1 text-sm">Dashboard</span>
                             </a>
                         </li>
                         <li>
                             <a href="#" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
                                 <i class="ph-bold ph-archive text-xl"></i>
-                                <span class="flex-1 text-xs">Inventory Management</span>
+                                <span class="flex-1 text-sm">Inventory Management</span>
                             </a>
                         </li>
                         <li>
                             <a href="#" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
                                 <i class="ph-bold ph-file-text text-xl"></i>
-                                <span class="flex-1 text-xs">Records</span>
+                                <span class="flex-1 text-sm">Records</span>
                             </a>
                         </li>
                     </ul>
@@ -56,19 +56,19 @@
             <!-- Account Section -->
             <div class="mt-auto">
                 <div class="space-y-5">
-                    <p class="text-xs font-medium text-gray-500 uppercase mb-3">Account</p>
+                    <p class="text-sm font-medium text-gray-500 uppercase mb-3">Account</p>
                     <ul class="space-y-2">
                         <!-- For Admin only (this will be styled in the same way as the other items) -->
                         <li>
                             <a href="#" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
                                 <i class="ph-bold ph-user text-xl"></i>
-                                <span class="flex-1 text-xs">User Management</span>
+                                <span class="flex-1 text-sm">User Management</span>
                             </a>
                         </li>
                         <li>
                             <a href="../../backend/views/logout.php" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
                                 <i class="ph-bold ph-sign-out text-xl"></i>
-                                <span class="flex-1 text-xs">Logout</span>
+                                <span class="flex-1 text-sm">Logout</span>
                             </a>
                         </li>
                     </ul>
