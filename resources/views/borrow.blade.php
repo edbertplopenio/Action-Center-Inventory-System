@@ -65,10 +65,11 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 2rem;
+            font-size: 0.875rem; /* Smaller font size for better alignment */
         }
 
         table th, table td {
-            padding: 0.8rem;
+            padding: 0.6rem; /* Reduced padding */
             text-align: left;
             border-bottom: 1px solid #E5E5E5;
         }
@@ -76,6 +77,7 @@
         table th {
             background-color: #F7FAFC;
             color: #2D3748;
+            font-size: 0.875rem; /* Match font size with table cells */
         }
 
         table tr:hover {
@@ -85,9 +87,10 @@
         .table-container {
             overflow-x: auto;
             width: 100%;
-            height: 500px;
+            height: 550px;
             overflow-y: auto; /* Enable vertical scrolling if needed */
-            margin-top: 1rem; /* Add margin top to separate the content */
+            margin-top: -1.5rem; /* Set to 0 or a smaller value to move the table up */
+            position: relative;
         }
 
         /* Styling for the Action Buttons */
@@ -176,13 +179,46 @@
             background-color: #2F9C5A;
         }
 
+        /* Pagination container */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            position: absolute;
+            bottom: 1px; /* Adjust distance from the bottom */
+            width: 100%;
+        }
+
+        /* Pagination button styles */
+        .pagination-btn {
+            font-size: 0.75rem; /* Smaller font size */
+            padding: 0.4rem 0.8rem; /* Smaller padding */
+            border-radius: 0.25rem;
+            cursor: pointer;
+            background-color: #f7fafc;
+            border: 1px solid #e5e5e5;
+            color: #2d3748;
+        }
+
+        /* Hover effect for pagination buttons */
+        .pagination-btn:hover {
+            background-color: #e2e8f0;
+        }
+
+        /* Disabled button state */
+        .pagination-btn:disabled {
+            background-color: #edf2f7;
+            cursor: not-allowed;
+        }
+
     </style>
 </head>
 <body class="bg-gray-100">
 
 <!-- Main Content -->
 <div class="flex-1 p-6 relative">
-    <div class="bg-white shadow-md rounded-lg p-6"> <!-- Reduced padding for better layout -->
+    <div class="bg-white shadow-md rounded-lg p-6">
         <!-- Tabs -->
         <div class="tab-container">
             <div class="tab-button-container">
@@ -196,7 +232,7 @@
         <div id="borrowed-records-content" class="tab-content active">
             <h3 class="text-xl font-semibold">Borrowed Records</h3>
             <div class="table-container">
-                <table>
+                <table id="borrowed-records-table">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -233,13 +269,20 @@
                         <!-- Add more rows as needed -->
                     </tbody>
                 </table>
+                <div class="pagination-container mt-4">
+                    <button class="pagination-btn">Previous</button>
+                    <button class="pagination-btn">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn">Next</button>
+                </div>
             </div>
         </div>
 
         <div id="pending-request-content" class="tab-content">
             <h3 class="text-xl font-semibold">Pending Request</h3>
             <div class="table-container">
-                <table>
+                <table id="pending-request-table">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -276,13 +319,20 @@
                         <!-- Add more rows as needed -->
                     </tbody>
                 </table>
+                <div class="pagination-container mt-4">
+                    <button class="pagination-btn">Previous</button>
+                    <button class="pagination-btn">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn">Next</button>
+                </div>
             </div>
         </div>
 
         <div id="record-of-borrowed-items-content" class="tab-content">
             <h3 class="text-xl font-semibold">Record Of Borrowed Items</h3>
             <div class="table-container">
-                <table>
+                <table id="record-of-borrowed-items-table">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -319,31 +369,69 @@
                         <!-- Add more rows as needed -->
                     </tbody>
                 </table>
+                <div class="pagination-container mt-4">
+                    <button class="pagination-btn">Previous</button>
+                    <button class="pagination-btn">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn">Next</button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- JavaScript for Tab Switching -->
+<!-- JavaScript for Tab Switching and Pagination -->
 <script>
+    let currentPage = 1;
+    let rowsPerPage = 5;  // Number of rows per page
+
     function switchTab(tab) {
-        // Hide all tab content
         var tabs = document.querySelectorAll('.tab-content');
         tabs.forEach(function (tabContent) {
             tabContent.classList.remove('active');
         });
 
-        // Show the selected tab's content
         document.getElementById(tab + '-content').classList.add('active');
+        currentPage = 1;
+        paginateTable(tab + '-table');
+    }
 
-        // Change tab button styles
-        document.querySelectorAll('.tab-button').forEach(function (btn) {
-            btn.classList.remove('active');
+    function paginateTable(tableId) {
+        let table = document.getElementById(tableId);
+        let rows = table.querySelectorAll('tbody tr');
+        let totalPages = Math.ceil(rows.length / rowsPerPage);
+        
+        // Hide all rows
+        rows.forEach((row, index) => {
+            row.style.display = 'none';
+            if (index >= (currentPage - 1) * rowsPerPage && index < currentPage * rowsPerPage) {
+                row.style.display = '';
+            }
         });
 
-        // Set active class and background color for the clicked tab
-        document.getElementById(tab + '-tab').classList.add('active');
+        // Update page number and disable/enable buttons
+        document.getElementById('page-num-' + tableId.split('-')[0]).textContent = currentPage;
+        document.getElementById('prev-btn').classList.toggle('disabled', currentPage === 1);
+        document.getElementById('next-btn').classList.toggle('disabled', currentPage === totalPages);
     }
+
+    function changePage(tab, direction) {
+        let totalPages = Math.ceil(document.getElementById(tab + '-table').querySelectorAll('tbody tr').length / rowsPerPage);
+
+        if (direction === 'next' && currentPage < totalPages) {
+            currentPage++;
+        } else if (direction === 'prev' && currentPage > 1) {
+            currentPage--;
+        }
+
+        paginateTable(tab + '-table');
+    }
+
+    // Initialize pagination for all tabs
+    paginateTable('borrowed-records-table');
+    paginateTable('pending-request-table');
+    paginateTable('record-of-borrowed-items-table');
 </script>
 
 </body>

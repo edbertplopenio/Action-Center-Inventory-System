@@ -29,3 +29,8 @@ Route::get('/add-item', function() {
 });
 
 Route::post('/add-item', [ItemController::class, 'store']); // Controller to store the item
+
+
+Route::get('/user_management', function () {
+    return view('user_management');
+});
