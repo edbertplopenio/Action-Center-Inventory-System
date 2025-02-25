@@ -4,12 +4,13 @@
       <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
         <!-- Mobile menu button-->
       </div>
-      <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
+      <div class="flex-1 flex items-center justify-start sm:items-stretch sm:justify-start">
         <a href="{{ route('home') }}" class="text-white text-lg font-semibold">ACTION Center</a>
       </div>
       <div class="flex space-x-4">
         <a href="{{ route('login') }}" class="text-white">Login</a>
         <a href="{{ route('registration') }}" class="text-white">Register</a>
+        <a href="#aboutus" class="text-white">About Us</a> <!-- Added About Us link -->
       </div>
     </div>
   </div>
