@@ -212,6 +212,20 @@
             cursor: not-allowed;
         }
 
+        /* Custom Sorting Arrow */
+        .sortable::after {
+            content: ' ▼';
+            font-size: 0.7rem;
+        }
+
+        .sortable.asc::after {
+            content: ' ▲';
+        }
+
+        .sortable.desc::after {
+            content: ' ▼';
+        }
+
     </style>
 </head>
 <body class="bg-gray-100">
@@ -233,21 +247,22 @@
             <h3 class="text-xl font-semibold">Borrowed Records</h3>
             <div class="table-container">
                 <table id="borrowed-records-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Department/Designation</th>
-                            <th>Email</th>
-                            <th>Person Responsible</th>
-                            <th>Borrow Date</th>
-                            <th>Items/Code</th>
-                            <th>Unit</th>
-                            <th>Quantity</th>
-                            <th>Due Date</th>
-                            <th>Signature over Printed Name</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
+                <thead>
+                    <tr>
+                    <th class="sortable" onclick="sortTable('borrowed-records-table', 0)">Name</th>
+                    <th class="sortable" onclick="sortTable('borrowed-records-table', 1)">Department/Designation</th>
+                    <th class="sortable" onclick="sortTable('borrowed-records-table', 2)">Email</th>
+                    <th class="sortable" onclick="sortTable('borrowed-records-table', 3)">Person Responsible</th>
+                    <th class="sortable" onclick="sortTable('borrowed-records-table', 4)">Borrow Date</th>
+                    <th class="sortable" onclick="sortTable('borrowed-records-table', 5)">Items/Code</th>
+                    <th class="sortable" onclick="sortTable('borrowed-records-table', 6)">Unit</th>
+                    <th class="sortable" onclick="sortTable('borrowed-records-table', 7)">Quantity</th>
+                    <th class="sortable" onclick="sortTable('borrowed-records-table', 8)">Due Date</th>
+
+                        <th>Signature</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
                     <tbody>
                         <!-- Example Data for Borrowed Records -->
                         <tr>
@@ -283,21 +298,21 @@
             <h3 class="text-xl font-semibold">Pending Request</h3>
             <div class="table-container">
                 <table id="pending-request-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Department/Designation</th>
-                            <th>Email</th>
-                            <th>Person Responsible</th>
-                            <th>Request Date</th>
-                            <th>Items/Code</th>
-                            <th>Unit</th>
-                            <th>Quantity</th>
-                            <th>Due Date</th>
-                            <th>Signature over Printed Name</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
+                <thead>
+                    <tr>
+                        <th class="sortable" onclick="sortTable(0)">Name</th>
+                        <th class="sortable" onclick="sortTable(1)">Department/Designation</th>
+                        <th class="sortable" onclick="sortTable(2)">Email</th>
+                        <th class="sortable" onclick="sortTable(3)">Person Responsible</th>
+                        <th class="sortable" onclick="sortTable(4)">Borrow Date</th>
+                        <th class="sortable" onclick="sortTable(5)">Items/Code</th>
+                        <th class="sortable" onclick="sortTable(6)">Unit</th>
+                        <th class="sortable" onclick="sortTable(7)">Quantity</th>
+                        <th class="sortable" onclick="sortTable(8)">Due Date</th>
+                        <th>Signature</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
                     <tbody>
                         <!-- Example Data for Pending Request -->
                         <tr>
@@ -335,16 +350,16 @@
                 <table id="record-of-borrowed-items-table">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Department/Designation</th>
-                            <th>Email</th>
-                            <th>Person Responsible</th>
-                            <th>Borrow Date</th>
-                            <th>Items/Code</th>
-                            <th>Unit</th>
-                            <th>Quantity</th>
-                            <th>Due Date</th>
-                            <th>Signature over Printed Name</th>
+                            <th class="sortable" onclick="sortTable(0)">Name</th>
+                            <th class="sortable" onclick="sortTable(1)">Department/Designation</th>
+                            <th class="sortable" onclick="sortTable(2)">Email</th>
+                            <th class="sortable" onclick="sortTable(3)">Person Responsible</th>
+                            <th class="sortable" onclick="sortTable(4)">Borrow Date</th>
+                            <th class="sortable" onclick="sortTable(5)">Items/Code</th>
+                            <th class="sortable" onclick="sortTable(6)">Unit</th>
+                            <th class="sortable" onclick="sortTable(7)">Quantity</th>
+                            <th class="sortable" onclick="sortTable(8)">Due Date</th>
+                            <th>Signature</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -433,6 +448,44 @@
     paginateTable('pending-request-table');
     paginateTable('record-of-borrowed-items-table');
 </script>
+    <script>
+    let sortDirection = { 0: 'asc', 1: 'asc', 2: 'asc', 3: 'asc', 4: 'asc', 5: 'asc', 6: 'asc', 7: 'asc', 8: 'asc' };
 
+function sortTable(columnIndex) {
+    let table = document.getElementById("borrowed-records-table");
+    let rows = Array.from(table.querySelectorAll("tbody tr"));
+    let sortedRows;
+
+    // Toggle the sort direction
+    sortDirection[columnIndex] = sortDirection[columnIndex] === 'asc' ? 'desc' : 'asc';
+
+    // Sorting rows based on column index and sort direction
+    sortedRows = rows.sort((rowA, rowB) => {
+        let cellA = rowA.cells[columnIndex].textContent.trim();
+        let cellB = rowB.cells[columnIndex].textContent.trim();
+
+        if (columnIndex === 4 || columnIndex === 8) {
+            // For date columns, we need to compare as Date objects
+            cellA = new Date(cellA);
+            cellB = new Date(cellB);
+        }
+
+        // Comparing in ascending or descending order
+        return (sortDirection[columnIndex] === 'asc' ? cellA > cellB : cellA < cellB) ? 1 : -1;
+    });
+
+    // Append sorted rows back to the table body
+    sortedRows.forEach(row => table.querySelector("tbody").appendChild(row));
+
+    // Update the sort arrows
+    let headers = table.querySelectorAll('th');
+    headers.forEach((header, index) => {
+        header.classList.remove('asc', 'desc');
+        if (index === columnIndex) {
+            header.classList.add(sortDirection[columnIndex]);
+        }
+    });
+}
+    </script>
 </body>
 </html>

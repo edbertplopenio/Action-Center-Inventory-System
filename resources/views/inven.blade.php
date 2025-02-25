@@ -399,31 +399,56 @@
 
 <!-- JavaScript for Modal Logic -->
 <script>
-    // Get references to the modal and buttons
-    const addItemBtn = document.getElementById('add-item-btn');
-    const addItemModal = document.getElementById('add-item-modal');
-    const closeModalBtn = document.getElementById('close-modal-btn');
+// Get references to the modal and buttons
+const addItemBtn = document.getElementById('add-item-btn');
+const addItemModal = document.getElementById('add-item-modal');
+const closeModalBtn = document.getElementById('close-modal-btn');
 
-    // Show the modal when the Add Item button is clicked
-    addItemBtn.addEventListener('click', function() {
-        addItemModal.classList.remove('hidden');
-    });
+// Show the modal when the Add Item button is clicked
+addItemBtn.addEventListener('click', function() {
+    addItemModal.classList.remove('hidden'); // Show the modal
+});
 
-    // Hide the modal when the Cancel button is clicked
-    closeModalBtn.addEventListener('click', function() {
-        addItemModal.classList.add('hidden');
-    });
+// Hide the modal when the Close button is clicked
+closeModalBtn.addEventListener('click', function() {
+    addItemModal.classList.add('hidden'); // Hide the modal
+});
 
-    // Optionally, hide the modal if the user clicks anywhere outside of it
-    window.addEventListener('click', function(event) {
-        if (event.target === addItemModal) {
-            addItemModal.classList.add('hidden');
-        }
-    });
+// Optionally, hide the modal if the user clicks anywhere outside of it
+window.addEventListener('click', function(event) {
+    if (event.target === addItemModal) {
+        addItemModal.classList.add('hidden'); // Hide the modal when clicking outside
+    }
+});
+
+
 
 
 </script>
 
+<!-- Modal Structure (Hidden by default) -->
+<div id="add-item-modal" class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 hidden">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
+        <!-- Close button -->
+        <button id="close-modal-btn" class="absolute top-2 right-2 text-lg font-bold">&times;</button>
+
+        <!-- Modal Content (Insert form here) -->
+        <div class="modal-content">
+            <h2 class="text-2xl mb-4">Add New Item</h2>
+            <!-- Form fields for adding a new item -->
+            <form action="{{ route('items.store') }}" method="POST">
+                @csrf
+                <div class="mb-4">
+                    <label for="item_name" class="block text-sm font-semibold">Item Name</label>
+                    <input type="text" id="item_name" name="name" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div class="mb-4">
+                    <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">Save Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 
 </body>
