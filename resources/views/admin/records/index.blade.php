@@ -3,54 +3,204 @@
 @section('title', 'Records')
 
 @section('content')
-<div class="mx-auto p-6" style="width: 1220px; height: 670px;">
-    <!-- Title and Button aligned horizontally -->
-    <div class="flex justify-between items-center mb-4">
+
+<head>
+    <!-- Add Google Fonts link for Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Include DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
+
+    <!-- Include jQuery (required for DataTables) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        /* Apply font size and font family */
+        body,
+        #myTable {
+            font-family: 'Intel', Arial, sans-serif;
+            /* 'Intel' font or fallback fonts */
+            font-size: 9px;
+            /* Set font size to 11px */
+        }
+
+        #myTable {
+            width: 100%;
+            border-collapse: collapse;
+            /* Remove space between table borders */
+        }
+
+        #myTable th,
+        #myTable td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+            /* Add borders */
+        }
+
+        #myTable th {
+            position: sticky;
+    top: 0;
+    z-index: 1; /* Ensure header stays above the table content */
+            background-color: #7E8C7E;
+            color: white;
+        }
+
+        /* Customizing the search input */
+        .dataTables_filter input {
+            border: 1px solid #ddd;
+            padding: 8px;
+            font-size: 11px;
+            /* Adjust font size of the search input */
+            font-family: 'Intel', Arial, sans-serif;
+            /* Use the same font */
+            margin-left: 5px;
+        }
+
+        /* Customizing the pagination buttons */
+        .dataTables_paginate a {
+            background-color: #7E8C7E;
+            color: white;
+            padding: 8px 16px;
+            margin: 0 2px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .dataTables_paginate a:hover {
+            background-color: #7E8C7E;
+        }
+
+        
+    </style>
+</head>
+
+<div class="mx-auto p-2" style="width: 1220px; height: 660px; font-family: 'Inter', sans-serif;">
+    <!-- Title and Button aligned horizontally with reduced margin and padding -->
+    <div class="flex justify-between items-center mb-1 pt-0">
         <h1 class="text-2xl font-semibold text-left">Records Page</h1>
-        <button id="openModalBtn" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+        <button id="openModalBtn" class="px-4 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 mb-2">
             + Add New Record
         </button>
     </div>
 
     <div class="bg-white p-6 shadow-lg rounded-lg h-full">
         <!-- Table for displaying records -->
-        <div class="overflow-x-auto h-[calc(100%-120px)]"> <!-- Adjusting table height -->
-            <table id="recordsTable" class="min-w-full table-auto bg-white border border-gray-300 shadow-sm rounded-lg">
+        <div style="height: 600px; overflow-y: auto;"> <!-- Added overflow-y-auto -->
+            <table id="myTable" class="display" style="width:100%">
                 <thead>
-                    <tr class="bg-gray-100">
-                        <th class="px-4 py-2 text-left text-gray-600">Record ID</th>
-                        <th class="px-4 py-2 text-left text-gray-600">Name</th>
-                        <th class="px-4 py-2 text-left text-gray-600">Email</th>
-                        <th class="px-4 py-2 text-left text-gray-600">Status</th>
+                    <tr>
+                        <th>Records Series Title</th>
+                        <th>Related Documents</th>
+                        <th>Period Covered</th>
+                        <th>Volume</th>
+                        <th>Records Medium</th>
+                        <th>Restrictions</th>
+                        <th>Location of Records</th>
+                        <th>Frequency of Use</th>
+                        <th>Duplication</th>
+                        <th>Time Value</th>
+                        <th>Utility Value</th>
+                        <th>Retention Period</th>
+                        <th>Disposition Provision</th>
+                        <th>GRDS Item #</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Sample record row -->
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-2 text-gray-700">1</td>
-                        <td class="px-4 py-2 text-gray-700">John Doe</td>
-                        <td class="px-4 py-2 text-gray-700">john.doe@example.com</td>
-                        <td class="px-4 py-2 text-gray-700">Active</td>
+                    <tr>
+                        <td>Sample Record Series Title 1</td>
+                        <td>Document A, Document B</td>
+                        <td>2020-01-01 to 2020-12-31</td>
+                        <td>100</td>
+                        <td>Digital</td>
+                        <td>Confidential</td>
+                        <td>Main Office</td>
+                        <td>Monthly</td>
+                        <td>Yes</td>
+                        <td>Permanent</td>
+                        <td>Administrative</td>
+                        <td>Active</td>
+                        <td>Destroy after 5 years</td>
+                        <td>12345</td>
+                        <td><button>Edit</button> <button>Delete</button></td>
                     </tr>
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-2 text-gray-700">2</td>
-                        <td class="px-4 py-2 text-gray-700">Jane Smith</td>
-                        <td class="px-4 py-2 text-gray-700">jane.smith@example.com</td>
-                        <td class="px-4 py-2 text-gray-700">Inactive</td>
+                    <tr>
+                        <td>Sample Record Series Title 2</td>
+                        <td>Document C</td>
+                        <td>2021-01-01 to 2021-12-31</td>
+                        <td>200</td>
+                        <td>Physical</td>
+                        <td>None</td>
+                        <td>Branch Office</td>
+                        <td>Weekly</td>
+                        <td>No</td>
+                        <td>Temporary</td>
+                        <td>Legal</td>
+                        <td>Storage</td>
+                        <td>Transfer to archive after 2 years</td>
+                        <td>67890</td>
+                        <td><button>Edit</button> <button>Delete</button></td>
                     </tr>
+                    <tr>
+                        <td>Sample Record Series Title 1</td>
+                        <td>Document A, Document B</td>
+                        <td>2020-01-01 to 2020-12-31</td>
+                        <td>100</td>
+                        <td>Digital</td>
+                        <td>Confidential</td>
+                        <td>Main Office</td>
+                        <td>Monthly</td>
+                        <td>Yes</td>
+                        <td>Permanent</td>
+                        <td>Administrative</td>
+                        <td>Active</td>
+                        <td>Destroy after 5 years</td>
+                        <td>12345</td>
+                        <td><button>Edit</button> <button>Delete</button></td>
+                    </tr>
+
+                    
+
+                    
+
+                    <!-- Add more rows as needed -->
                 </tbody>
             </table>
         </div>
     </div>
 </div>
 
+<!-- Include DataTables JS -->
+<script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#myTable').DataTable(); // Initialize DataTable
+    });
+</script>
+
+
+
+<!-- GAWIN MONG SROLLABLE YUNG DATA NG TABLE TBODY -->
+
+
+
+
+
+
+
+
+
+<!-- MODAL -->
 <!-- Modal Form HTML -->
 <div class="relative z-10" id="myModal" aria-labelledby="modal-title" role="dialog" aria-modal="true" style="display: none;">
-    <div class="fixed inset-0 bg-gray-500/75 transition-opacity" aria-hidden="true"></div>
+    <!-- Backdrop with stronger blur effect -->
+    <div class="fixed inset-0 bg-gray-500/75 backdrop-blur-lg transition-opacity" aria-hidden="true"></div>
 
     <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
         <div class="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
-            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full" style="max-width: 70%; height: auto;">
+            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full" style="max-width: 70%; height: auto;">
                 <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
                     <h3 class="text-lg font-semibold text-gray-900" id="modal-title">Add New Record</h3>
 
@@ -216,17 +366,11 @@
                             </div>
                         </div>
                     </form>
-
-
-
-
-
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 <!-- JavaScript for opening and closing the modal -->
 <script>
     // Open the modal
@@ -245,4 +389,3 @@
     });
 </script>
 @endsection
-

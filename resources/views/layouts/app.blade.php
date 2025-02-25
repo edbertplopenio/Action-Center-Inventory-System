@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Main System')</title>
 
-    <link rel="icon" href="{{ asset('images/bmsuiticon.png') }}" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
     <!-- External Libraries -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -25,6 +25,25 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+    <!-- jQuery (necessary for DataTables) -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.2.2/css/dataTables.min.css">
+
+<!-- DataTables Tailwind CSS Integration -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.2.2/css/dataTables.tailwindcss.css">
+
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- DataTables JS -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+
+<!-- DataTables Tailwind Integration JS -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/2.2.2/js/dataTables.tailwindcss.min.js"></script>
+
+
 
     <!-- Custom Styles (Ensures Sidebar Does Not Overlap Content) -->
     <style>
@@ -40,7 +59,7 @@
     </style>
 </head>
 
-<body class="font-inter bg-gray-100">
+<body class="font-inter bg-gray-100" style="font-family: 'Inter', sans-serif;"">
     <div class="flex h-screen">
         <!-- Sidebar -->
         <div class="fixed top-0 left-0 h-full bg-white p-6 overflow-y-auto flex flex-col shadow-lg sidebar">
@@ -93,14 +112,15 @@
                     </li>
 
                     <li>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button type="submit" class="w-full flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
-                                <i class="ph-bold ph-sign-out text-xl"></i>
-                                <span class="text-sm">Logout</span>
-                            </button>
-                        </form>
-                    </li>
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+        @csrf
+    </form>
+    <button id="logout-btn" class="w-full flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
+        <i class="ph-bold ph-sign-out text-xl"></i>
+        <span class="text-sm">Logout</span>
+    </button>
+</li>
+
                 </ul>
             </div>
         </div>
@@ -111,6 +131,32 @@
         </div>
     </div>
 </body>
+<script>
+    // Wait until the document is fully loaded
+    $(document).ready(function() {
+        // Attach the click event handler to the logout button
+        $('#logout-btn').click(function(e) {
+            e.preventDefault();  // Prevent the default form submission
+
+            // Show SweetAlert2 confirmation
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you really want to log out?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, log out!',
+                cancelButtonText: 'No, cancel',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If user confirms, submit the logout form
+                    $('#logout-form').submit();
+                }
+            });
+        });
+    });
+</script>
+
 
 
 </html>

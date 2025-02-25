@@ -1,350 +1,502 @@
+@extends('layouts.app')
 
-<!DOCTYPE html>
-<html lang="en">
+@section('title', 'Records')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=1024">
-    <title>Main System</title>
+@section('content')
 
-    <link rel="icon" href="../../frontend/public/images/bmsuiticon.png" type="image/png">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.js"></script> <!-- Include jQuery -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Include DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
+<!-- Include jQuery (required for DataTables) -->
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.2.2/js/dataTables.tailwindcss.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src=""></script>
 
-</head>
+<!-- Your table -->
+<table id="myTable" class="display style=" width:100%">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Position</th>
+            <th>Office</th>
+            <th>Age</th>
+            <th>Start date</th>
+            <th>Salary</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Tiger Nixon</td>
+            <td>System Architect</td>
+            <td>Edinburgh</td>
+            <td>61</td>
+            <td>2011-04-25</td>
+            <td>$320,800</td>
+        </tr>
+        <tr>
+            <td>Garrett Winters</td>
+            <td>Accountant</td>
+            <td>Tokyo</td>
+            <td>63</td>
+            <td>2011-07-25</td>
+            <td>$170,750</td>
+        </tr>
+        <tr>
+            <td>Ashton Cox</td>
+            <td>Junior Technical Author</td>
+            <td>San Francisco</td>
+            <td>66</td>
+            <td>2009-01-12</td>
+            <td>$86,000</td>
+        </tr>
+        <tr>
+            <td>Cedric Kelly</td>
+            <td>Senior Javascript Developer</td>
+            <td>Edinburgh</td>
+            <td>22</td>
+            <td>2012-03-29</td>
+            <td>$433,060</td>
+        </tr>
+        <tr>
+            <td>Airi Satou</td>
+            <td>Accountant</td>
+            <td>Tokyo</td>
+            <td>33</td>
+            <td>2008-11-28</td>
+            <td>$162,700</td>
+        </tr>
+        <tr>
+            <td>Brielle Williamson</td>
+            <td>Integration Specialist</td>
+            <td>New York</td>
+            <td>61</td>
+            <td>2012-12-02</td>
+            <td>$372,000</td>
+        </tr>
+        <tr>
+            <td>Herrod Chandler</td>
+            <td>Sales Assistant</td>
+            <td>San Francisco</td>
+            <td>59</td>
+            <td>2012-08-06</td>
+            <td>$137,500</td>
+        </tr>
+        <tr>
+            <td>Rhona Davidson</td>
+            <td>Integration Specialist</td>
+            <td>Tokyo</td>
+            <td>55</td>
+            <td>2010-10-14</td>
+            <td>$327,900</td>
+        </tr>
+        <tr>
+            <td>Colleen Hurst</td>
+            <td>Javascript Developer</td>
+            <td>San Francisco</td>
+            <td>39</td>
+            <td>2009-09-15</td>
+            <td>$205,500</td>
+        </tr>
+        <tr>
+            <td>Sonya Frost</td>
+            <td>Software Engineer</td>
+            <td>Edinburgh</td>
+            <td>23</td>
+            <td>2008-12-13</td>
+            <td>$103,600</td>
+        </tr>
+        <tr>
+            <td>Jena Gaines</td>
+            <td>Office Manager</td>
+            <td>London</td>
+            <td>30</td>
+            <td>2008-12-19</td>
+            <td>$90,560</td>
+        </tr>
+        <tr>
+            <td>Quinn Flynn</td>
+            <td>Support Lead</td>
+            <td>Edinburgh</td>
+            <td>22</td>
+            <td>2013-03-03</td>
+            <td>$342,000</td>
+        </tr>
+        <tr>
+            <td>Charde Marshall</td>
+            <td>Regional Director</td>
+            <td>San Francisco</td>
+            <td>36</td>
+            <td>2008-10-16</td>
+            <td>$470,600</td>
+        </tr>
+        <tr>
+            <td>Haley Kennedy</td>
+            <td>Senior Marketing Designer</td>
+            <td>London</td>
+            <td>43</td>
+            <td>2012-12-18</td>
+            <td>$313,500</td>
+        </tr>
+        <tr>
+            <td>Tatyana Fitzpatrick</td>
+            <td>Regional Director</td>
+            <td>London</td>
+            <td>19</td>
+            <td>2010-03-17</td>
+            <td>$385,750</td>
+        </tr>
+        <tr>
+            <td>Michael Silva</td>
+            <td>Marketing Designer</td>
+            <td>London</td>
+            <td>66</td>
+            <td>2012-11-27</td>
+            <td>$198,500</td>
+        </tr>
+        <tr>
+            <td>Paul Byrd</td>
+            <td>Chief Financial Officer (CFO)</td>
+            <td>New York</td>
+            <td>64</td>
+            <td>2010-06-09</td>
+            <td>$725,000</td>
+        </tr>
+        <tr>
+            <td>Gloria Little</td>
+            <td>Systems Administrator</td>
+            <td>New York</td>
+            <td>59</td>
+            <td>2009-04-10</td>
+            <td>$237,500</td>
+        </tr>
+        <tr>
+            <td>Bradley Greer</td>
+            <td>Software Engineer</td>
+            <td>London</td>
+            <td>41</td>
+            <td>2012-10-13</td>
+            <td>$132,000</td>
+        </tr>
+        <tr>
+            <td>Dai Rios</td>
+            <td>Personnel Lead</td>
+            <td>Edinburgh</td>
+            <td>35</td>
+            <td>2012-09-26</td>
+            <td>$217,500</td>
+        </tr>
+        <tr>
+            <td>Jenette Caldwell</td>
+            <td>Development Lead</td>
+            <td>New York</td>
+            <td>30</td>
+            <td>2011-09-03</td>
+            <td>$345,000</td>
+        </tr>
+        <tr>
+            <td>Yuri Berry</td>
+            <td>Chief Marketing Officer (CMO)</td>
+            <td>New York</td>
+            <td>40</td>
+            <td>2009-06-25</td>
+            <td>$675,000</td>
+        </tr>
+        <tr>
+            <td>Caesar Vance</td>
+            <td>Pre-Sales Support</td>
+            <td>New York</td>
+            <td>21</td>
+            <td>2011-12-12</td>
+            <td>$106,450</td>
+        </tr>
+        <tr>
+            <td>Doris Wilder</td>
+            <td>Sales Assistant</td>
+            <td>Sydney</td>
+            <td>23</td>
+            <td>2010-09-20</td>
+            <td>$85,600</td>
+        </tr>
+        <tr>
+            <td>Angelica Ramos</td>
+            <td>Chief Executive Officer (CEO)</td>
+            <td>London</td>
+            <td>47</td>
+            <td>2009-10-09</td>
+            <td>$1,200,000</td>
+        </tr>
+        <tr>
+            <td>Gavin Joyce</td>
+            <td>Developer</td>
+            <td>Edinburgh</td>
+            <td>42</td>
+            <td>2010-12-22</td>
+            <td>$92,575</td>
+        </tr>
+        <tr>
+            <td>Jennifer Chang</td>
+            <td>Regional Director</td>
+            <td>Singapore</td>
+            <td>28</td>
+            <td>2010-11-14</td>
+            <td>$357,650</td>
+        </tr>
+        <tr>
+            <td>Brenden Wagner</td>
+            <td>Software Engineer</td>
+            <td>San Francisco</td>
+            <td>28</td>
+            <td>2011-06-07</td>
+            <td>$206,850</td>
+        </tr>
+        <tr>
+            <td>Fiona Green</td>
+            <td>Chief Operating Officer (COO)</td>
+            <td>San Francisco</td>
+            <td>48</td>
+            <td>2010-03-11</td>
+            <td>$850,000</td>
+        </tr>
+        <tr>
+            <td>Shou Itou</td>
+            <td>Regional Marketing</td>
+            <td>Tokyo</td>
+            <td>20</td>
+            <td>2011-08-14</td>
+            <td>$163,000</td>
+        </tr>
+        <tr>
+            <td>Michelle House</td>
+            <td>Integration Specialist</td>
+            <td>Sydney</td>
+            <td>37</td>
+            <td>2011-06-02</td>
+            <td>$95,400</td>
+        </tr>
+        <tr>
+            <td>Suki Burks</td>
+            <td>Developer</td>
+            <td>London</td>
+            <td>53</td>
+            <td>2009-10-22</td>
+            <td>$114,500</td>
+        </tr>
+        <tr>
+            <td>Prescott Bartlett</td>
+            <td>Technical Author</td>
+            <td>London</td>
+            <td>27</td>
+            <td>2011-05-07</td>
+            <td>$145,000</td>
+        </tr>
+        <tr>
+            <td>Gavin Cortez</td>
+            <td>Team Leader</td>
+            <td>San Francisco</td>
+            <td>22</td>
+            <td>2008-10-26</td>
+            <td>$235,500</td>
+        </tr>
+        <tr>
+            <td>Martena Mccray</td>
+            <td>Post-Sales support</td>
+            <td>Edinburgh</td>
+            <td>46</td>
+            <td>2011-03-09</td>
+            <td>$324,050</td>
+        </tr>
+        <tr>
+            <td>Unity Butler</td>
+            <td>Marketing Designer</td>
+            <td>San Francisco</td>
+            <td>47</td>
+            <td>2009-12-09</td>
+            <td>$85,675</td>
+        </tr>
+        <tr>
+            <td>Howard Hatfield</td>
+            <td>Office Manager</td>
+            <td>San Francisco</td>
+            <td>51</td>
+            <td>2008-12-16</td>
+            <td>$164,500</td>
+        </tr>
+        <tr>
+            <td>Hope Fuentes</td>
+            <td>Secretary</td>
+            <td>San Francisco</td>
+            <td>41</td>
+            <td>2010-02-12</td>
+            <td>$109,850</td>
+        </tr>
+        <tr>
+            <td>Vivian Harrell</td>
+            <td>Financial Controller</td>
+            <td>San Francisco</td>
+            <td>62</td>
+            <td>2009-02-14</td>
+            <td>$452,500</td>
+        </tr>
+        <tr>
+            <td>Timothy Mooney</td>
+            <td>Office Manager</td>
+            <td>London</td>
+            <td>37</td>
+            <td>2008-12-11</td>
+            <td>$136,200</td>
+        </tr>
+        <tr>
+            <td>Jackson Bradshaw</td>
+            <td>Director</td>
+            <td>New York</td>
+            <td>65</td>
+            <td>2008-09-26</td>
+            <td>$645,750</td>
+        </tr>
+        <tr>
+            <td>Olivia Liang</td>
+            <td>Support Engineer</td>
+            <td>Singapore</td>
+            <td>64</td>
+            <td>2011-02-03</td>
+            <td>$234,500</td>
+        </tr>
+        <tr>
+            <td>Bruno Nash</td>
+            <td>Software Engineer</td>
+            <td>London</td>
+            <td>38</td>
+            <td>2011-05-03</td>
+            <td>$163,500</td>
+        </tr>
+        <tr>
+            <td>Sakura Yamamoto</td>
+            <td>Support Engineer</td>
+            <td>Tokyo</td>
+            <td>37</td>
+            <td>2009-08-19</td>
+            <td>$139,575</td>
+        </tr>
+        <tr>
+            <td>Thor Walton</td>
+            <td>Developer</td>
+            <td>New York</td>
+            <td>61</td>
+            <td>2013-08-11</td>
+            <td>$98,540</td>
+        </tr>
+        <tr>
+            <td>Finn Camacho</td>
+            <td>Support Engineer</td>
+            <td>San Francisco</td>
+            <td>47</td>
+            <td>2009-07-07</td>
+            <td>$87,500</td>
+        </tr>
+        <tr>
+            <td>Serge Baldwin</td>
+            <td>Data Coordinator</td>
+            <td>Singapore</td>
+            <td>64</td>
+            <td>2012-04-09</td>
+            <td>$138,575</td>
+        </tr>
+        <tr>
+            <td>Zenaida Frank</td>
+            <td>Software Engineer</td>
+            <td>New York</td>
+            <td>63</td>
+            <td>2010-01-04</td>
+            <td>$125,250</td>
+        </tr>
+        <tr>
+            <td>Zorita Serrano</td>
+            <td>Software Engineer</td>
+            <td>San Francisco</td>
+            <td>56</td>
+            <td>2012-06-01</td>
+            <td>$115,000</td>
+        </tr>
+        <tr>
+            <td>Jennifer Acosta</td>
+            <td>Junior Javascript Developer</td>
+            <td>Edinburgh</td>
+            <td>43</td>
+            <td>2013-02-01</td>
+            <td>$75,650</td>
+        </tr>
+        <tr>
+            <td>Cara Stevens</td>
+            <td>Sales Assistant</td>
+            <td>New York</td>
+            <td>46</td>
+            <td>2011-12-06</td>
+            <td>$145,600</td>
+        </tr>
+        <tr>
+            <td>Hermione Butler</td>
+            <td>Regional Director</td>
+            <td>London</td>
+            <td>47</td>
+            <td>2011-03-21</td>
+            <td>$356,250</td>
+        </tr>
+        <tr>
+            <td>Lael Greer</td>
+            <td>Systems Administrator</td>
+            <td>London</td>
+            <td>21</td>
+            <td>2009-02-27</td>
+            <td>$103,500</td>
+        </tr>
+        <tr>
+            <td>Jonas Alexander</td>
+            <td>Developer</td>
+            <td>San Francisco</td>
+            <td>30</td>
+            <td>2010-07-14</td>
+            <td>$86,500</td>
+        </tr>
+        <tr>
+            <td>Shad Decker</td>
+            <td>Regional Director</td>
+            <td>Edinburgh</td>
+            <td>51</td>
+            <td>2008-11-13</td>
+            <td>$183,000</td>
+        </tr>
+        <tr>
+            <td>Michael Bruce</td>
+            <td>Javascript Developer</td>
+            <td>Singapore</td>
+            <td>29</td>
+            <td>2011-06-27</td>
+            <td>$183,000</td>
+        </tr>
+        <tr>
+            <td>Donna Snider</td>
+            <td>Customer Support</td>
+            <td>New York</td>
+            <td>27</td>
+            <td>2011-01-25</td>
+            <td>$112,000</td>
+        </tr>
+    </tbody>
 
-<body>
-    <div class="container">
-        <div class="sidebar">
-            <div class="head">
-                <div class="user-img">
-                    <img src="../../frontend/public/images/users/default-user.jpg" alt="User Image" />
-                </div>
-                <div class="user-details">
-                    <p class="title">User Role</p>
-                    <p class="name">User Name</p>
-                </div>
-            </div>
-            <div class="nav">
-                <div class="menu">
-                    <ul>
-                        <li class="active" id="dashboard-item">
-                            <a href="#" id="dashboard-link">
-                                <i class="icon ph-bold ph-house-simple"></i>
-                                <span class="text">Dashboard</span>
-                            </a>
-                        </li>
-                        <li id="inventory-item">
-                            <a href="#" id="inventory-link">
-                                <i class="icon ph-bold ph-archive"></i>
-                                <span class="text">Inventory</span>
-                            </a>
-                        </li>
-                        <li id="records-item">
-                            <a href="#" id="records-link">
-                                <i class="icon ph-bold ph-file-text"></i>
-                                <span class="text">Records</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            <div class="account-section">
-                <div class="menu">
-                    <p class="title">Account</p>
-                    <ul>
-                        <li id="user-account-item">
-                            <a href="#" id="user-account-link">
-                                <i class="icon ph-bold ph-user"></i>
-                                <span class="text">User Management</span>
-                            </a>
-                        </li>
-                        <li id="logout-item">
-                            <a href="#" id="logout-link">
-                                <i class="icon ph-bold ph-sign-out"></i>
-                                <span class="text">Logout</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+</table>
 
-        <!-- Main Content Area -->
-        <div class="main-content" id="main-content">
-            <!-- Dashboard content will be loaded here by default -->
-        </div>
-    </div>
+<!-- Include DataTables JS -->
+<script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
 
-    <!-- JavaScript to dynamically load content -->
-    <script>
-        $(document).ready(function() {
-            // Load dashboard content by default when the page is loaded
-            $('#main-content').load('dashboard.html');
-
-            // Function to handle active class toggle
-            function setActive(itemId) {
-                // Remove active class from all menu items
-                $('.menu ul li').removeClass('active');
-                // Add active class to the clicked menu item
-                $('#' + itemId).addClass('active');
-            }
-
-            // Use delegated event listeners for dynamically loaded content
-            $('.menu').on('click', 'a', function(e) {
-                const linkId = $(this).attr('id');
-                let contentUrl = '';
-
-                // Only prevent default for in-app links
-                if (linkId !== 'logout-link') {
-                    e.preventDefault();
-                }
-
-                switch (linkId) {
-                    case 'dashboard-link':
-                        contentUrl = 'dashboard.html';
-                        setActive('dashboard-item');
-                        break;
-                    case 'inventory-link':
-                        contentUrl = 'inventory.html';
-                        setActive('inventory-item');
-                        break;
-                    case 'records-link':
-                        contentUrl = 'records.html';
-                        setActive('records-item');
-                        break;
-                    case 'user-account-link':
-                        contentUrl = 'user_management.html';
-                        setActive('user-account-item');
-                        break;
-                    default:
-                        return; // Do nothing if the link ID is not recognized
-                }
-
-                if (contentUrl) {
-                    $('#main-content').load(contentUrl, function(response, status, xhr) {
-                        if (status === "error") {
-                            console.error(`Error loading content: ${xhr.statusText}`);
-                        } else {
-                            console.log(`Loaded content from ${contentUrl}`);
-                            // Re-initialize charts after loading new content
-                            initializeCharts(); // This will ensure charts are reinitialized after each content load
-                            // Re-initialize checkboxes after loading new content
-                            initializeCheckboxes();
-                        }
-                    });
-                }
-            });
-
-            // Account section links (example for logout link)
-            $('#logout-link').on('click', function(e) {
-                e.preventDefault(); // Prevent the default logout behavior
-
-                // Show SweetAlert confirmation dialog
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: "Do you really want to logout?",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, logout!',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Redirect to logout page
-                        window.location.href = 'logout.html';
-                    }
-                });
-            });
-        });
-    </script>
-
-</body>
-
-</html>
+<!-- Initialize DataTable -->
+<script>
+    $(document).ready(function() {
+        $('#myTable').DataTable(); // Initialize DataTable
+    });
+</script>
 
 
 
-
-
-
-
-
-<style>
-    @import url('https://fonts.googleapis.com/css?family=Inter:100,200,300,regular,500,600,700,800,900');
-
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    body {
-        margin: 0;
-        padding: 0;
-        font-family: 'Inter', sans-serif;
-    }
-
-    .container {
-        display: flex;
-        height: 100vh;
-        /* Ensure the container takes full height */
-        flex-direction: row;
-        /* Make sure the flex direction is row */
-    }
-
-    .sidebar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 256px;
-        height: 100%;
-        background-color: white;
-        padding: 24px;
-        overflow-y: auto;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .sidebar .head {
-        display: flex;
-        gap: 20px;
-        padding-bottom: 20px;
-        border-bottom: 1px solid #f6f6f6;
-    }
-
-    .user-img {
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        overflow: hidden;
-    }
-
-    .user-img img {
-        width: 100%;
-        object-fit: cover;
-    }
-
-    .user-details .title {
-        font-size: 12px;
-        font-weight: 500;
-        color: #757575;
-        text-transform: uppercase;
-        margin-bottom: 5px;
-    }
-
-    .user-details .name {
-        font-size: 14px;
-        font-weight: 500;
-    }
-
-    .nav {
-        flex: 1;
-    }
-
-    .menu .title {
-        font-size: 12px;
-        font-weight: 500;
-        color: #757575;
-        text-transform: uppercase;
-        margin-bottom: 10px;
-    }
-
-    .menu ul li {
-        list-style: none;
-        margin-bottom: 10px;
-    }
-
-    .menu ul li a {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 14px;
-        font-weight: 500;
-        color: #757575;
-        text-decoration: none;
-        padding: 12px 8px;
-        transition: all 0.3s;
-    }
-
-    .menu ul li a:hover,
-    .menu ul li.active>a {
-        color: #000;
-        background-color: #f6f6f6;
-    }
-
-    .menu ul li .icon {
-        font-size: 20px;
-    }
-
-    .menu ul li .text {
-        flex: 1;
-    }
-
-    .menu ul li .arrow {
-        font-size: 14px;
-        transition: transform 0.3s ease;
-        /* Ensure the arrow smoothly rotates */
-    }
-
-    .menu ul li.active .arrow {
-        transform: rotate(180deg);
-        /* Rotate the arrow when the menu item is active */
-    }
-
-    .menu .sub-menu {
-        display: none;
-        margin-left: 20px;
-        padding-left: 20px;
-        padding-top: 5px;
-        border-left: 1px solid #f6f6f6;
-    }
-
-    .menu .sub-menu li a {
-        padding: 10px 8px;
-        font-size: 12px;
-    }
-
-    /* Highlight active submenu item */
-    .menu .sub-menu li a.active {
-        background-color: #dcdcdc;
-        /* Highlight color for active submenu item */
-        color: #000;
-        /* Text color for active submenu item */
-    }
-
-    .menu:not(:last-child) {
-        padding-bottom: 10px;
-        margin-bottom: 20px;
-        border-bottom: 2px solid #f6f6f6;
-    }
-
-    /* Account section styling */
-    .account-section {
-        margin-top: auto;
-        /* Pushes the account section to the bottom of the sidebar */
-    }
-
-    .account-section .menu {
-        padding-top: 20px;
-        /* Space above the account section */
-        border-top: 2px solid #f6f6f6;
-    }
-
-    .account-section ul {
-        padding-top: 10px;
-    }
-
-    /* Main content styling */
-    .main-content {
-        margin-left: 256px;
-        /* Ensure the content starts next to the sidebar */
-        padding: 20px;
-        /* Optional padding for some space around the content */
-        width: calc(100% - 256px);
-        /* Adjust width to fill remaining space */
-    }
-</style>
+@endsection
