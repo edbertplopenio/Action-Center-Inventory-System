@@ -19,53 +19,66 @@
         /* Apply font size and font family */
         body,
         #myTable {
-            font-family: 'Intel', Arial, sans-serif;
-            /* 'Intel' font or fallback fonts */
+            font-family: 'Inter', Arial, sans-serif;
             font-size: 12px;
-            /* Set font size to 11px */
         }
 
+        /* Table Styling */
         #myTable {
             width: 100%;
             border-collapse: collapse;
-            /* Remove space between table borders */
         }
 
-        #myTable th,
-        #myTable td {
-            padding: 12px;
-            text-align: center;
-
-            /* Add borders */
-        }
-
+        /* Table Header Styling */
         #myTable th {
+            background-color: #EBF8FD;
+            color: #4a5568;
+            font-weight: 600;
+            text-align: center;
+            padding: 15px;
+            border-bottom: 2px solid #e2e8f0;
             position: sticky;
             top: 0;
             z-index: 1;
-            color: black;
-            background: white;
-            /* Remove any background */
-            text-align: center;
-            /* Center the text */
-            font-weight: bold;
-            /* Make the text bold */
+        }
 
+        /* Table Data Styling */
+        #myTable td {
+            background-color: #ffffff;
+            /* White background for rows */
+            color: #2d3748;
+            /* Dark gray text */
+            text-align: center;
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            /* Light border between rows */
+        }
+
+        /* Add hover effect for rows */
+        #myTable tr:hover {
+            background-color: #b3eaff;
+            /* Lighter hover effect */
         }
     </style>
+
+
 </head>
 
-<div class="mx-auto p-2" style="width: 1220px; height: 660px; font-family: 'Inter', sans-serif;">
-    <!-- Title and Button aligned horizontally with reduced margin and padding -->
-    <div class="flex justify-between items-center mb-1 pt-0">
-        <h1 class="text-3xl text-left">Records Page</h1>
-        <button id="openModalBtn" class="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 mb-2 text-sm">
-    + Add Record
-</button>
+<div class="mx-auto p-2" style="width: 1220px; height: 700px; font-family: 'Inter', sans-serif;">
 
-    </div>
 
     <div class="bg-white p-6 shadow-lg rounded-lg h-full">
+        <!-- Title and Button inside this div -->
+        <div class="flex justify-between items-center mb-1 pt-0">
+            <h1 class="text-3xl text-left">Records and Appraisal</h1>
+            <button id="openModalBtn" class="px-6 py-2 bg-[#4cc9f0] text-white border-2 border-[#4cc9f0] rounded-full hover:bg-[#3fb3d1] mb-2 text-sm">
+                + Add Record
+            </button>
+
+
+
+        </div>
+
         <!-- Table for displaying records -->
         <div style="height: 600px; overflow-y: auto;"> <!-- Added overflow-y-auto -->
             <table id="myTable" class="display" style="width:100%">
@@ -98,14 +111,18 @@
                         <td>12345</td>
                         <td>
                             <!-- Edit Button with custom color -->
-                            <button class="px-2 py-1 m-1 bg-[#84a59d] text-white rounded hover:bg-[#49A7D6] focus:outline-none focus:ring-2 focus:ring-[#84a59d] text-xs w-24">
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
                                 Edit
                             </button>
 
-                            <!-- Delete Button -->
-                            <button class="px-2 py-1 m-1 bg-red-500 text-white rounded hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400 text-xs w-24">
-                                Delete
+
+
+                            <!-- Archive Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
+                                Archive
                             </button>
+
+
                         </td>
                     </tr>
                     <tr>
@@ -121,14 +138,18 @@
                         <td>67890</td>
                         <td>
                             <!-- Edit Button with custom color -->
-                            <button class="px-2 py-1 m-1 bg-[#54B6EB] text-white rounded hover:bg-[#49A7D6] focus:outline-none focus:ring-2 focus:ring-[#54B6EB] text-xs w-24">
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
                                 Edit
                             </button>
 
-                            <!-- Delete Button -->
-                            <button class="px-2 py-1 m-1 bg-red-500 text-white rounded hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400 text-xs w-24">
-                                Delete
+
+
+                            <!-- Archive Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
+                                Archive
                             </button>
+
+
                         </td>
                     </tr>
                     <tr>
@@ -144,14 +165,18 @@
                         <td>12345</td>
                         <td>
                             <!-- Edit Button with custom color -->
-                            <button class="px-2 py-1 m-1 bg-[#54B6EB] text-white rounded hover:bg-[#49A7D6] focus:outline-none focus:ring-2 focus:ring-[#54B6EB] text-xs w-24">
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
                                 Edit
                             </button>
 
-                            <!-- Delete Button -->
-                            <button class="px-2 py-1 m-1 bg-red-500 text-white rounded hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400 text-xs w-24">
-                                Delete
+
+
+                            <!-- Archive Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
+                                Archive
                             </button>
+
+
                         </td>
                     </tr>
 
@@ -168,14 +193,19 @@
                         <td>12345</td>
                         <td>
                             <!-- Edit Button with custom color -->
-                            <button class="px-2 py-1 m-1 bg-[#54B6EB] text-white rounded hover:bg-[#49A7D6] focus:outline-none focus:ring-2 focus:ring-[#54B6EB] text-xs w-24">
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
                                 Edit
                             </button>
 
-                            <!-- Delete Button -->
-                            <button class="px-2 py-1 m-1 bg-red-500 text-white rounded hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400 text-xs w-24">
-                                Delete
+
+
+                            <!-- Archive Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
+                                Archive
                             </button>
+
+
+
                         </td>
                     </tr>
                     <tr>
@@ -191,14 +221,18 @@
                         <td>67890</td>
                         <td>
                             <!-- Edit Button with custom color -->
-                            <button class="px-2 py-1 m-1 bg-[#54B6EB] text-white rounded hover:bg-[#49A7D6] focus:outline-none focus:ring-2 focus:ring-[#54B6EB] text-xs w-24">
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
                                 Edit
                             </button>
 
-                            <!-- Delete Button -->
-                            <button class="px-2 py-1 m-1 bg-red-500 text-white rounded hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400 text-xs w-24">
-                                Delete
+
+
+                            <!-- Archive Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
+                                Archive
                             </button>
+
+
                         </td>
                     </tr>
                     <!-- Add more rows as needed -->

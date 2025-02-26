@@ -36,3 +36,6 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 Route::get('/sample-ui', function () {
     return view('sample-ui');
 });
+
+
+Route::post('/logout', [AuthManager::class, 'logout'])->name('logout');
