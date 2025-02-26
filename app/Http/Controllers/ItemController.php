@@ -4,14 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Item;
-use Illuminate\Support\Facades\Storage;
 
 class ItemController extends Controller
 {
     // Display the form to create a new item
     public function create()
     {
-        return view('item-form');
+        return view('item-form'); // This view will display the item creation form
     }
 
     // Store the newly created item in the database
@@ -19,40 +18,41 @@ class ItemController extends Controller
     {
         // Validate the form data
         $request->validate([
-            'item_name' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'category' => 'required|string|max:255',
             'quantity' => 'required|integer',
             'unit' => 'required|string|max:100',
             'description' => 'required|string',
             'storage_location' => 'required|string|max:255',
             'arrival_date' => 'required|date',
-            'purchase_date' => 'required|date',
+            'date_purchased' => 'required|date',
             'status' => 'required|string|max:100',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Image validation
         ]);
 
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('images', 'public');
+        // Handle image upload if an image is included
+        if ($request->hasFile('image_url')) {
+            // Save the image to the public storage directory
+            $imagePath = $request->file('image_url')->store('images', 'public');
         } else {
-            $imagePath = null;
+            $imagePath = null; // No image uploaded, set image path to null
         }
 
-        // Save the item to the database
+        // Store the item in the database
         Item::create([
-            'item_name' => $request->item_name,
+            'name' => $request->name,
             'category' => $request->category,
             'quantity' => $request->quantity,
             'unit' => $request->unit,
             'description' => $request->description,
             'storage_location' => $request->storage_location,
             'arrival_date' => $request->arrival_date,
-            'purchase_date' => $request->purchase_date,
+            'date_purchased' => $request->date_purchased,
             'status' => $request->status,
-            'image' => $imagePath,
+            'image_url' => $imagePath,
         ]);
 
-        // Redirect back with a success message
+        // Redirect back to the form or a different route with a success message
         return redirect()->route('items.create')->with('success', 'Item added successfully!');
     }
 

@@ -10,7 +10,16 @@
     <div class="w-full max-w-lg p-6 bg-gradient-to-b from-red-700 to-white border-4 border-white rounded-lg shadow-lg">
         <h2 class="text-center italic font-bold text-black text-xl mb-4">Add New Inventory Item</h2>
 
-        <form action="{{ route('equipment.store') }}" method="POST" enctype="multipart/form-data">
+        <!-- Display success message if exists -->
+        @if(session('success'))
+            <div class="bg-green-500 text-white p-4 rounded-md mb-4">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <!-- Item creation form -->
+        <form action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
             <!-- Name -->
             <div class="mb-4">
                 <label for="name" class="block text-sm font-semibold text-black mb-2">Name</label>
@@ -28,48 +37,22 @@
                 </select>
             </div>
 
-            <!-- Product Description -->
+            <!-- Quantity and Unit -->
             <div class="mb-4">
-                <label for="description" class="block text-sm font-semibold text-black mb-2">Product Description</label>
-                <input type="text" id="description" name="description" class="w-full p-2 border border-gray-400 rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
+                <label for="quantity" class="block text-sm font-semibold text-black mb-2">Quantity</label>
+                <input type="number" id="quantity" name="quantity" class="w-full p-2 border border-gray-400 rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
             </div>
 
-            <!-- Date of Purchase & Date Added -->
-            <div class="flex gap-4">
-                <div class="mb-4 w-1/2">
-                    <label for="date_purchase" class="block text-sm font-semibold text-black mb-2">Date of Purchase</label>
-                    <input type="date" id="date_purchase" name="date_purchase" class="w-full p-2 border border-gray-400 rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
-                </div>
-                <div class="mb-4 w-1/2">
-                    <label for="date_added" class="block text-sm font-semibold text-black mb-2">Date Added</label>
-                    <input type="date" id="date_added" name="date_added" class="w-full p-2 border border-gray-400 rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
-                </div>
-            </div>
-
-            <!-- Unit, Status, Quantity -->
-            <div class="flex gap-4">
-                <div class="mb-4 w-1/3">
-                    <label for="unit" class="block text-sm font-semibold text-black mb-2">Unit</label>
-                    <input type="text" id="unit" name="unit" class="w-full p-2 border border-gray-400 rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
-                </div>
-                <div class="mb-4 w-1/3">
-                    <label for="status" class="block text-sm font-semibold text-black mb-2">Status</label>
-                    <select id="status" name="status" class="w-full p-2 border border-gray-400 rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
-                        <option value="">Select Status</option>
-                        <option value="Available">Available</option>
-                        <option value="Unavailable">Unavailable</option>
-                    </select>
-                </div>
-                <div class="mb-4 w-1/3">
-                    <label for="quantity" class="block text-sm font-semibold text-black mb-2">Quantity</label>
-                    <input type="number" id="quantity" name="quantity" class="w-full p-2 border border-gray-400 rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
-                </div>
-            </div>
-
-            <!-- Image -->
+            <!-- Unit -->
             <div class="mb-4">
-                <label for="image" class="block text-sm font-semibold text-black mb-2">Image</label>
-                <input type="file" id="image" name="image" accept="image/*" class="w-full p-2 border border-gray-400 rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
+                <label for="unit" class="block text-sm font-semibold text-black mb-2">Unit</label>
+                <input type="text" id="unit" name="unit" class="w-full p-2 border border-gray-400 rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-4">
+                <label for="description" class="block text-sm font-semibold text-black mb-2">Description</label>
+                <textarea id="description" name="description" class="w-full p-2 border border-gray-400 rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required></textarea>
             </div>
 
             <!-- Storage Location -->
@@ -78,36 +61,39 @@
                 <input type="text" id="storage_location" name="storage_location" class="w-full p-2 border border-gray-400 rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
             </div>
 
-            <!-- Buttons -->
+            <!-- Arrival Date -->
+            <div class="mb-4">
+                <label for="arrival_date" class="block text-sm font-semibold text-black mb-2">Arrival Date</label>
+                <input type="date" id="arrival_date" name="arrival_date" class="w-full p-2 border border-gray-400 rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
+            </div>
+
+            <!-- Date Purchased -->
+            <div class="mb-4">
+                <label for="date_purchased" class="block text-sm font-semibold text-black mb-2">Date Purchased</label>
+                <input type="date" id="date_purchased" name="date_purchased" class="w-full p-2 border border-gray-400 rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
+            </div>
+
+            <!-- Status -->
+            <div class="mb-4">
+                <label for="status" class="block text-sm font-semibold text-black mb-2">Status</label>
+                <select id="status" name="status" class="w-full p-2 border border-gray-400 rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
+                    <option value="Available">Available</option>
+                    <option value="Unavailable">Unavailable</option>
+                </select>
+            </div>
+
+            <!-- Image -->
+            <div class="mb-4">
+                <label for="image_url" class="block text-sm font-semibold text-black mb-2">Image (Optional)</label>
+                <input type="file" id="image_url" name="image_url" class="w-full p-2 border border-gray-400 rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500">
+            </div>
+
+            <!-- Submit Button -->
             <div class="flex justify-between mt-4">
                 <button type="reset" class="px-4 py-2 bg-green-400 text-black rounded-md transition duration-300 hover:bg-green-600 hover:text-white">Cancel</button>
-                <button type="submit" class="px-4 py-2 bg-green-400 text-black rounded-md transition duration-300 hover:bg-green-600 hover:text-white" onclick="showNotification(event)">Save</button>
+                <button type="submit" class="px-4 py-2 bg-green-400 text-black rounded-md transition duration-300 hover:bg-green-600 hover:text-white">Save</button>
             </div>
         </form>
-
-        <!-- Notification -->
-        <div id="notification" class="hidden fixed top-5 right-5 bg-green-500 text-white p-4 rounded-md shadow-md">
-            Item successfully saved!
-        </div>
     </div>
-
-    <script>
-        function showNotification(event) {
-            event.preventDefault(); // Prevent actual form submission
-
-            // Show notification
-            const notification = document.getElementById("notification");
-            notification.classList.remove("hidden");
-
-            // Clear the form fields
-            document.querySelector("form").reset();
-
-            // Hide notification after 3 seconds
-            setTimeout(() => {
-                notification.classList.add("hidden");
-            }, 3000);
-        }
-        
-    </script>
 </body>
 </html>

@@ -106,7 +106,6 @@
             position: relative;
         }
 
-
         /* Pagination styles */
         .pagination-container {
             display: flex;
@@ -172,14 +171,118 @@
         .delete-btn:hover {
             background-color: #D32F2F;
         }
+
+        /* Form row layout (two fields per row) */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2 columns */
+            gap: 1rem; /* Space between columns */
+        }
+
+        .form-row > div {
+            margin-bottom: 1rem; /* Margin for each field */
+        }
+
     </style>
 </head>
 <body class="bg-gray-100">
 
+<!-- Modal Overlay for Adding Item -->
+<div id="item-form-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
+    <div class="bg-white p-6 rounded-lg w-2/3 max-w-4xl">
+        <h3 class="text-xl font-semibold mb-4">Add New Item</h3>
+        <form id="item-form" action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+
+            <!-- Start of form row (2 fields per row) -->
+            <div class="form-row">
+                <!-- Item Name -->
+                <div>
+                    <label for="name" class="block text-sm font-semibold text-black mb-2">Item Name</label>
+                    <input type="text" id="name" name="name" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
+                </div>
+
+                <!-- Category -->
+                <div>
+                    <label for="category" class="block text-sm font-semibold text-black mb-2">Category</label>
+                    <select id="category" name="category" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
+                        <option value="Office Supplies">Office Supplies</option>
+                        <option value="First Aid">First Aid</option>
+                        <option value="DRRM Equipment">DRRM Equipment</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <!-- Quantity -->
+                <div>
+                    <label for="quantity" class="block text-sm font-semibold text-black mb-2">Quantity</label>
+                    <input type="number" id="quantity" name="quantity" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
+                </div>
+
+                <!-- Unit -->
+                <div>
+                    <label for="unit" class="block text-sm font-semibold text-black mb-2">Unit</label>
+                    <input type="text" id="unit" name="unit" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <!-- Description -->
+                <div>
+                    <label for="description" class="block text-sm font-semibold text-black mb-2">Description</label>
+                    <input type="text" id="description" name="description" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
+                </div>
+
+                <!-- Arrival Date -->
+                <div>
+                    <label for="arrival_date" class="block text-sm font-semibold text-black mb-2">Arrival Date</label>
+                    <input type="date" id="arrival_date" name="arrival_date" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <!-- Date Purchased -->
+                <div>
+                    <label for="date_purchased" class="block text-sm font-semibold text-black mb-2">Date Purchased</label>
+                    <input type="date" id="date_purchased" name="date_purchased" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
+                </div>
+
+                <!-- Status -->
+                <div>
+                    <label for="status" class="block text-sm font-semibold text-black mb-2">Status</label>
+                    <select id="status" name="status" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
+                        <option value="Available">Available</option>
+                        <option value="Unavailable">Unavailable</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Image -->
+            <div class="mb-4">
+                <label for="image" class="block text-sm font-semibold text-black mb-2">Image</label>
+                <input type="file" id="image" name="image" accept="image/*" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
+            </div>
+
+            <!-- Storage Location -->
+            <div class="mb-4">
+                <label for="storage_location" class="block text-sm font-semibold text-black mb-2">Storage Location</label>
+                <input type="text" id="storage_location" name="storage_location" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex justify-between mt-4">
+                <button type="reset" id="cancel-btn" class="px-4 py-2 bg-green-400 text-black rounded-md transition duration-300 hover:bg-green-600 hover:text-white">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-green-400 text-black rounded-md transition duration-300 hover:bg-green-600 hover:text-white">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- Main Content -->
 
 <div class="flex-1 p-6 relative">
-    <div class="bg-white shadow-md rounded-lg p-6"> <!-- Reduced padding for better layout -->
+    <div class="bg-white shadow-md rounded-lg p-6">
         <!-- Tabs -->
         <div class="tab-container">
             <div class="tab-button-container">
@@ -188,166 +291,56 @@
                 <button id="emergency-kits-tab" class="tab-button emergency-kits-tab ml-2" onclick="switchTab('emergency-kits')">Emergency Kits</button>
             </div>
             <!-- Add Item Button (Right Aligned) -->
-            <button class="px-4 py-2 rounded-md hover:bg-green-600 focus:outline-none" id="add-item-btn">
+            <button id="add-item-btn" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
                 + Add Item
             </button>
         </div>
 
-       <!-- Equipment Tab -->
-<div id="equipment-content" class="tab-content active">
-    <h3 class="text-xl font-semibold">Equipment</h3>
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th><input type="checkbox" id="select-all-equipment" onclick="selectAllCheckboxes('equipment')"></th> <!-- Select All Checkbox -->
-                    <th>Equipment Name</th>
-                    <th>Category</th>
-                    <th>Quantity</th>
-                    <th>Unit</th>
-                    <th>Description</th>
-                    <th>Storage Location</th>
-                    <th>Arrival Date</th>
-                    <th>Date Purchased</th>
-                    <th>Status</th>
-                    <th>Image</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($items as $item)
-                    <tr>
-                        <td><input type="checkbox" class="select-item" name="item_ids[]" value="{{ $item->id }}"></td> <!-- Individual Checkbox -->
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->category }}</td>
-                        <td>{{ $item->quantity }}</td>
-                        <td>{{ $item->unit }}</td>
-                        <td>{{ $item->description }}</td>
-                        <td>{{ $item->storage_location }}</td>
-                        <td>{{ $item->arrival_date }}</td>
-                        <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
-                        <td class="action-buttons">
-                            <button class="edit-btn">Edit</button>
-                            <button class="delete-btn">Delete</button>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <!-- Equipment Tab -->
+        <div id="equipment-content" class="tab-content active">
+            <h3 class="text-xl font-semibold">Equipment</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="select-all-equipment" onclick="selectAllCheckboxes('equipment')"></th>
+                            <th>Equipment Name</th>
+                            <th>Category</th>
+                            <th>Quantity</th>
+                            <th>Unit</th>
+                            <th>Description</th>
+                            <th>Storage Location</th>
+                            <th>Arrival Date</th>
+                            <th>Date Purchased</th>
+                            <th>Status</th>
+                            <th>Image</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($items as $item)
+                            <tr>
+                                <td><input type="checkbox" class="select-item" name="item_ids[]" value="{{ $item->id }}"></td>
+                                <td>{{ $item->name }}</td>
+                                <td>{{ $item->category }}</td>
+                                <td>{{ $item->quantity }}</td>
+                                <td>{{ $item->unit }}</td>
+                                <td>{{ $item->description }}</td>
+                                <td>{{ $item->storage_location }}</td>
+                                <td>{{ $item->arrival_date }}</td>
+                                <td>{{ $item->date_purchased }}</td>
+                                <td>{{ $item->status }}</td>
+                                <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                                <td class="action-buttons">
+                                    <button class="edit-btn">Edit</button>
+                                    <button class="delete-btn">Delete</button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
 
-        <!-- Pagination for Equipment -->
-        <div class="pagination-container mt-4">
-            <button class="pagination-btn">Previous</button>
-            <button class="pagination-btn">1</button>
-            <button class="pagination-btn">2</button>
-            <button class="pagination-btn">3</button>
-            <button class="pagination-btn">Next</button>
-        </div>
-    </div>
-</div>
-
-<!-- Office Supplies Tab -->
-<div id="office-supplies-content" class="tab-content">
-    <h3 class="text-xl font-semibold">Office Supplies</h3>
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th><input type="checkbox" id="select-all-office-supplies" onclick="selectAllCheckboxes('office-supplies')"></th> <!-- Select All Checkbox -->
-                    <th>Equipment Name</th>
-                    <th>Category</th>
-                    <th>Quantity</th>
-                    <th>Unit</th>
-                    <th>Description</th>
-                    <th>Storage Location</th>
-                    <th>Arrival Date</th>
-                    <th>Date Purchased</th>
-                    <th>Status</th>
-                    <th>Image</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($items as $item)
-                    <tr>
-                        <td><input type="checkbox" class="select-item" name="item_ids[]" value="{{ $item->id }}"></td> <!-- Individual Checkbox -->
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->category }}</td>
-                        <td>{{ $item->quantity }}</td>
-                        <td>{{ $item->unit }}</td>
-                        <td>{{ $item->description }}</td>
-                        <td>{{ $item->storage_location }}</td>
-                        <td>{{ $item->arrival_date }}</td>
-                        <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
-                        <td class="action-buttons">
-                            <button class="edit-btn">Edit</button>
-                            <button class="delete-btn">Delete</button>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-
-        <!-- Pagination for Office Supplies -->
-        <div class="pagination-container mt-4">
-            <button class="pagination-btn">Previous</button>
-            <button class="pagination-btn">1</button>
-            <button class="pagination-btn">2</button>
-            <button class="pagination-btn">3</button>
-            <button class="pagination-btn">Next</button>
-        </div>
-    </div>
-</div>
-
-<!-- Emergency Kits Tab -->
-<div id="emergency-kits-content" class="tab-content">
-    <h3 class="text-xl font-semibold">Emergency Kits</h3>
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th><input type="checkbox" id="select-all-emergency-kits" onclick="selectAllCheckboxes('emergency-kits')"></th> <!-- Select All Checkbox -->
-                    <th>Equipment Name</th>
-                    <th>Category</th>
-                    <th>Quantity</th>
-                    <th>Unit</th>
-                    <th>Description</th>
-                    <th>Storage Location</th>
-                    <th>Arrival Date</th>
-                    <th>Date Purchased</th>
-                    <th>Status</th>
-                    <th>Image</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($items as $item)
-                    <tr>
-                        <td><input type="checkbox" class="select-item" name="item_ids[]" value="{{ $item->id }}"></td> <!-- Individual Checkbox -->
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->category }}</td>
-                        <td>{{ $item->quantity }}</td>
-                        <td>{{ $item->unit }}</td>
-                        <td>{{ $item->description }}</td>
-                        <td>{{ $item->storage_location }}</td>
-                        <td>{{ $item->arrival_date }}</td>
-                        <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
-                        <td class="action-buttons">
-                            <button class="edit-btn">Edit</button>
-                            <button class="delete-btn">Delete</button>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-
-                <!-- Pagination for Emergency Kits -->
+                <!-- Pagination for Equipment -->
                 <div class="pagination-container mt-4">
                     <button class="pagination-btn">Previous</button>
                     <button class="pagination-btn">1</button>
@@ -363,93 +356,46 @@
 <!-- JavaScript for Tab Switching -->
 <script>
     function switchTab(tab) {
-        // Hide all tab content
         var tabs = document.querySelectorAll('.tab-content');
         tabs.forEach(function (tabContent) {
             tabContent.classList.remove('active');
         });
 
-        // Show the selected tab's content
         document.getElementById(tab + '-content').classList.add('active');
 
-        // Change tab button styles
         document.querySelectorAll('.tab-button').forEach(function (btn) {
             btn.classList.remove('active');
         });
 
-        // Set active class and background color for the clicked tab
         document.getElementById(tab + '-tab').classList.add('active');
     }
-
-    function selectAllCheckboxes(tab) {
-    // Get the 'Select All' checkbox for the specific tab
-    const selectAllCheckbox = document.getElementById(`select-all-${tab}`);
-    
-    // Get all the individual checkboxes within the specific tab content
-    const checkboxes = document.querySelectorAll(`#${tab}-content .select-item`);
-    
-    // Loop through each checkbox and set the checked state based on the 'Select All' checkbox
-    checkboxes.forEach(function (checkbox) {
-        checkbox.checked = selectAllCheckbox.checked;
-    });
-}
-
-
 </script>
 
 <!-- JavaScript for Modal Logic -->
 <script>
-// Get references to the modal and buttons
-const addItemBtn = document.getElementById('add-item-btn');
-const addItemModal = document.getElementById('add-item-modal');
-const closeModalBtn = document.getElementById('close-modal-btn');
+    const addItemBtn = document.getElementById('add-item-btn');
+    const itemFormOverlay = document.getElementById('item-form-overlay');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const cancelBtn = document.getElementById('cancel-btn');
+    const form = document.getElementById('item-form');
 
-// Show the modal when the Add Item button is clicked
-addItemBtn.addEventListener('click', function() {
-    addItemModal.classList.remove('hidden'); // Show the modal
-});
+    addItemBtn.addEventListener('click', function() {
+        itemFormOverlay.classList.remove('hidden');
+    });
 
-// Hide the modal when the Close button is clicked
-closeModalBtn.addEventListener('click', function() {
-    addItemModal.classList.add('hidden'); // Hide the modal
-});
+    // Cancel Button logic - resets the form and hides the overlay
+    cancelBtn.addEventListener('click', function() {
+        form.reset(); // Reset the form fields
+        itemFormOverlay.classList.add('hidden'); // Hide the overlay
+    });
 
-// Optionally, hide the modal if the user clicks anywhere outside of it
-window.addEventListener('click', function(event) {
-    if (event.target === addItemModal) {
-        addItemModal.classList.add('hidden'); // Hide the modal when clicking outside
-    }
-});
-
-
-
-
+    // Close the modal when clicking outside the form
+    window.addEventListener('click', function(event) {
+        if (event.target === itemFormOverlay) {
+            itemFormOverlay.classList.add('hidden');
+        }
+    });
 </script>
-
-<!-- Modal Structure (Hidden by default) -->
-<div id="add-item-modal" class="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75 hidden">
-    <div class="bg-white p-6 rounded-lg shadow-lg w-1/2">
-        <!-- Close button -->
-        <button id="close-modal-btn" class="absolute top-2 right-2 text-lg font-bold">&times;</button>
-
-        <!-- Modal Content (Insert form here) -->
-        <div class="modal-content">
-            <h2 class="text-2xl mb-4">Add New Item</h2>
-            <!-- Form fields for adding a new item -->
-            <form action="{{ route('items.store') }}" method="POST">
-                @csrf
-                <div class="mb-4">
-                    <label for="item_name" class="block text-sm font-semibold">Item Name</label>
-                    <input type="text" id="item_name" name="name" class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400" required>
-                </div>
-                <div class="mb-4">
-                    <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">Save Item</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 
 </body>
 </html>
