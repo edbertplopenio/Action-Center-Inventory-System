@@ -8,8 +8,19 @@
       <!-- Logo and Heading inside the card -->
       <div class="text-center">
       <img class="mx-auto h-16 w-16" src="{{ asset('images/actioncenter.png') }}" alt="ACTION Center">
-        <h2 class="mt-6 text-lg font-semibold text-red-600">Create a new account</h2> <!-- Reduced font size -->
+        <h2 class="mt-6 text-lg font-semibold text-red-600">Create a new account</h2>
       </div>
+
+      <!-- Display validation errors -->
+      @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+      @endif
 
       <form class="space-y-3" action="{{ route('registration.post') }}" method="POST">
         @csrf
@@ -50,6 +61,14 @@
           <label for="password" class="block text-xs font-medium text-gray-900">Password</label>
           <div class="mt-1">
             <input type="password" name="password" id="password" autocomplete="new-password" required class="block w-full rounded-md border border-gray-300 px-2 py-1 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-red-600">
+          </div>
+        </div>
+
+        <!-- Password Confirmation Field -->
+        <div>
+          <label for="password_confirmation" class="block text-xs font-medium text-gray-900">Confirm Password</label>
+          <div class="mt-1">
+            <input type="password" name="password_confirmation" id="password_confirmation" autocomplete="new-password" required class="block w-full rounded-md border border-gray-300 px-2 py-1 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-red-600">
           </div>
         </div>
 

@@ -11,6 +11,7 @@
     <!-- Include DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
 
+
     <!-- Include jQuery (required for DataTables) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -20,7 +21,7 @@
         #myTable {
             font-family: 'Intel', Arial, sans-serif;
             /* 'Intel' font or fallback fonts */
-            font-size: 9px;
+            font-size: 12px;
             /* Set font size to 11px */
         }
 
@@ -33,55 +34,35 @@
         #myTable th,
         #myTable td {
             padding: 12px;
-            text-align: left;
-            border: 1px solid #ddd;
+            text-align: center;
+
             /* Add borders */
         }
 
         #myTable th {
             position: sticky;
-    top: 0;
-    z-index: 1; /* Ensure header stays above the table content */
-            background-color: #7E8C7E;
-            color: white;
-        }
+            top: 0;
+            z-index: 1;
+            color: black;
+            background: white;
+            /* Remove any background */
+            text-align: center;
+            /* Center the text */
+            font-weight: bold;
+            /* Make the text bold */
 
-        /* Customizing the search input */
-        .dataTables_filter input {
-            border: 1px solid #ddd;
-            padding: 8px;
-            font-size: 11px;
-            /* Adjust font size of the search input */
-            font-family: 'Intel', Arial, sans-serif;
-            /* Use the same font */
-            margin-left: 5px;
         }
-
-        /* Customizing the pagination buttons */
-        .dataTables_paginate a {
-            background-color: #7E8C7E;
-            color: white;
-            padding: 8px 16px;
-            margin: 0 2px;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-
-        .dataTables_paginate a:hover {
-            background-color: #7E8C7E;
-        }
-
-        
     </style>
 </head>
 
 <div class="mx-auto p-2" style="width: 1220px; height: 660px; font-family: 'Inter', sans-serif;">
     <!-- Title and Button aligned horizontally with reduced margin and padding -->
     <div class="flex justify-between items-center mb-1 pt-0">
-        <h1 class="text-2xl font-semibold text-left">Records Page</h1>
-        <button id="openModalBtn" class="px-4 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 mb-2">
-            + Add New Record
-        </button>
+        <h1 class="text-3xl text-left">Records Page</h1>
+        <button id="openModalBtn" class="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 mb-2 text-sm">
+    + Add Record
+</button>
+
     </div>
 
     <div class="bg-white p-6 shadow-lg rounded-lg h-full">
@@ -95,12 +76,8 @@
                         <th>Period Covered</th>
                         <th>Volume</th>
                         <th>Records Medium</th>
-                        <th>Restrictions</th>
                         <th>Location of Records</th>
-                        <th>Frequency of Use</th>
-                        <th>Duplication</th>
                         <th>Time Value</th>
-                        <th>Utility Value</th>
                         <th>Retention Period</th>
                         <th>Disposition Provision</th>
                         <th>GRDS Item #</th>
@@ -114,16 +91,22 @@
                         <td>2020-01-01 to 2020-12-31</td>
                         <td>100</td>
                         <td>Digital</td>
-                        <td>Confidential</td>
                         <td>Main Office</td>
-                        <td>Monthly</td>
-                        <td>Yes</td>
                         <td>Permanent</td>
-                        <td>Administrative</td>
                         <td>Active</td>
                         <td>Destroy after 5 years</td>
                         <td>12345</td>
-                        <td><button>Edit</button> <button>Delete</button></td>
+                        <td>
+                            <!-- Edit Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#84a59d] text-white rounded hover:bg-[#49A7D6] focus:outline-none focus:ring-2 focus:ring-[#84a59d] text-xs w-24">
+                                Edit
+                            </button>
+
+                            <!-- Delete Button -->
+                            <button class="px-2 py-1 m-1 bg-red-500 text-white rounded hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400 text-xs w-24">
+                                Delete
+                            </button>
+                        </td>
                     </tr>
                     <tr>
                         <td>Sample Record Series Title 2</td>
@@ -131,16 +114,22 @@
                         <td>2021-01-01 to 2021-12-31</td>
                         <td>200</td>
                         <td>Physical</td>
-                        <td>None</td>
                         <td>Branch Office</td>
-                        <td>Weekly</td>
-                        <td>No</td>
                         <td>Temporary</td>
-                        <td>Legal</td>
                         <td>Storage</td>
                         <td>Transfer to archive after 2 years</td>
                         <td>67890</td>
-                        <td><button>Edit</button> <button>Delete</button></td>
+                        <td>
+                            <!-- Edit Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#54B6EB] text-white rounded hover:bg-[#49A7D6] focus:outline-none focus:ring-2 focus:ring-[#54B6EB] text-xs w-24">
+                                Edit
+                            </button>
+
+                            <!-- Delete Button -->
+                            <button class="px-2 py-1 m-1 bg-red-500 text-white rounded hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400 text-xs w-24">
+                                Delete
+                            </button>
+                        </td>
                     </tr>
                     <tr>
                         <td>Sample Record Series Title 1</td>
@@ -148,26 +137,75 @@
                         <td>2020-01-01 to 2020-12-31</td>
                         <td>100</td>
                         <td>Digital</td>
-                        <td>Confidential</td>
                         <td>Main Office</td>
-                        <td>Monthly</td>
-                        <td>Yes</td>
                         <td>Permanent</td>
-                        <td>Administrative</td>
                         <td>Active</td>
                         <td>Destroy after 5 years</td>
                         <td>12345</td>
-                        <td><button>Edit</button> <button>Delete</button></td>
+                        <td>
+                            <!-- Edit Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#54B6EB] text-white rounded hover:bg-[#49A7D6] focus:outline-none focus:ring-2 focus:ring-[#54B6EB] text-xs w-24">
+                                Edit
+                            </button>
+
+                            <!-- Delete Button -->
+                            <button class="px-2 py-1 m-1 bg-red-500 text-white rounded hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400 text-xs w-24">
+                                Delete
+                            </button>
+                        </td>
                     </tr>
 
-                    
+                    <tr>
+                        <td>Sample Record Series Title 1</td>
+                        <td>Document A, Document B</td>
+                        <td>2020-01-01 to 2020-12-31</td>
+                        <td>100</td>
+                        <td>Digital</td>
+                        <td>Main Office</td>
+                        <td>Permanent</td>
+                        <td>Active</td>
+                        <td>Destroy after 5 years</td>
+                        <td>12345</td>
+                        <td>
+                            <!-- Edit Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#54B6EB] text-white rounded hover:bg-[#49A7D6] focus:outline-none focus:ring-2 focus:ring-[#54B6EB] text-xs w-24">
+                                Edit
+                            </button>
 
-                    
+                            <!-- Delete Button -->
+                            <button class="px-2 py-1 m-1 bg-red-500 text-white rounded hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400 text-xs w-24">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Sample Record Series Title 2</td>
+                        <td>Document C</td>
+                        <td>2021-01-01 to 2021-12-31</td>
+                        <td>200</td>
+                        <td>Physical</td>
+                        <td>Branch Office</td>
+                        <td>Temporary</td>
+                        <td>Storage</td>
+                        <td>Transfer to archive after 2 years</td>
+                        <td>67890</td>
+                        <td>
+                            <!-- Edit Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#54B6EB] text-white rounded hover:bg-[#49A7D6] focus:outline-none focus:ring-2 focus:ring-[#54B6EB] text-xs w-24">
+                                Edit
+                            </button>
 
+                            <!-- Delete Button -->
+                            <button class="px-2 py-1 m-1 bg-red-500 text-white rounded hover:bg-red-400 focus:outline-none focus:ring-2 focus:ring-red-400 text-xs w-24">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
                     <!-- Add more rows as needed -->
                 </tbody>
             </table>
         </div>
+
     </div>
 </div>
 
@@ -224,6 +262,7 @@
                                             <option value="as_needed">As Needed</option>
                                             <option value="weekly">Weekly</option>
                                             <option value="monthly">Monthly</option>
+                                            <option value="yearly">Yearly</option>
                                         </select>
                                     </div>
 
@@ -241,7 +280,7 @@
 
                                     <!-- PERIOD COVERED / INCLUSIVE DATES (Split into two date fields) -->
                                     <div class="sm:col-span-1">
-                                        <label class="block text-xs font-medium text-gray-900">Period Covered / Inclusive Dates</label>
+                                        <label class="block text-xs font-medium text-gray-900">Period Covered</label>
                                         <div class="flex space-x-4">
                                             <input type="date" name="start_date" id="start_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
                                             <input type="date" name="end_date" id="end_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
@@ -250,12 +289,13 @@
 
                                     <!-- TIME VALUE (T/P) -->
                                     <div class="sm:col-span-1">
-                                        <label for="time_value" class="block text-xs font-medium text-gray-900">Time Value (T/P)</label>
+                                        <label for="time_value" class="block text-xs font-medium text-gray-900">Time Value</label>
                                         <select name="time_value" id="time_value" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
-                                            <option value="T">T</option>
-                                            <option value="P">P</option>
+                                            <option value="T">Temporary</option>
+                                            <option value="P">Permanent</option>
                                         </select>
                                     </div>
+
 
                                     <!-- VOLUME -->
                                     <div class="sm:col-span-1">
@@ -263,29 +303,29 @@
                                         <input type="number" name="volume" id="volume" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter volume">
                                     </div>
 
-                                    <!-- UTILITY VALUE (Adm/F/L/A, Multiple Selections, Horizontal Alignment with Bigger Checkboxes) -->
                                     <!-- UTILITY VALUE (Adm/F/L/A, Multiple Selections, 4 Columns for Checkboxes) -->
                                     <div class="sm:col-span-1">
-                                        <label class="block text-xs font-medium text-gray-900">Utility Value (Adm/F/L/A)</label>
+                                        <label for="utility_value" class="block text-xs font-medium text-gray-900">Utility Value</label>
                                         <div class="grid grid-cols-4 gap-4 mt-2">
                                             <div class="flex items-center">
-                                                <input type="checkbox" id="adm" name="utility_value" value="Adm" class="w-4 h-4 mr-2">
-                                                <label for="adm" class="text-xs">Adm</label>
+                                                <input type="checkbox" id="adm" name="utility_value[]" value="Adm" class="w-4 h-4 mr-2">
+                                                <label for="adm" class="text-xs">Administrative</label>
                                             </div>
                                             <div class="flex items-center">
-                                                <input type="checkbox" id="f" name="utility_value" value="F" class="w-4 h-4 mr-2">
-                                                <label for="f" class="text-xs">F</label>
+                                                <input type="checkbox" id="fiscal" name="utility_value[]" value="F" class="w-4 h-4 mr-2">
+                                                <label for="fiscal" class="text-xs">Fiscal</label>
                                             </div>
                                             <div class="flex items-center">
-                                                <input type="checkbox" id="l" name="utility_value" value="L" class="w-4 h-4 mr-2">
-                                                <label for="l" class="text-xs">L</label>
+                                                <input type="checkbox" id="legal" name="utility_value[]" value="L" class="w-4 h-4 mr-2">
+                                                <label for="legal" class="text-xs">Legal</label>
                                             </div>
                                             <div class="flex items-center">
-                                                <input type="checkbox" id="a" name="utility_value" value="A" class="w-4 h-4 mr-2">
-                                                <label for="a" class="text-xs">A</label>
+                                                <input type="checkbox" id="archival" name="utility_value[]" value="A" class="w-4 h-4 mr-2">
+                                                <label for="archival" class="text-xs">Archival</label>
                                             </div>
                                         </div>
                                     </div>
+
 
 
                                     <!-- RECORDS MEDIUM -->
@@ -299,7 +339,7 @@
 
                                     <!-- RETENTION PERIOD (Active, Storage, Total) -->
                                     <div class="sm:col-span-1">
-                                        <label for="retention" class="block text-xs font-medium text-gray-900">Retention Period (Active, Storage, Total)</label>
+                                        <label for="retention" class="block text-xs font-medium text-gray-900">Retention Period</label>
                                         <div class="grid grid-cols-3 gap-4 mt-2">
                                             <!-- Active Input -->
                                             <div class="flex flex-col items-center">
@@ -336,8 +376,12 @@
                                     <!-- RESTRICTION/S -->
                                     <div class="sm:col-span-1">
                                         <label for="restriction" class="block text-xs font-medium text-gray-900">Restriction/S</label>
-                                        <input type="text" name="restriction" id="restriction" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter restrictions">
+                                        <select name="restriction" id="restriction" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                            <option value="open-access">Open Access</option>
+                                            <option value="confidential">Confidential</option>
+                                        </select>
                                     </div>
+
 
                                     <!-- DISPOSITION PROVISION -->
                                     <div class="sm:col-span-1">
