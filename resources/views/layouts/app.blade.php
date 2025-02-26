@@ -17,59 +17,45 @@
     <!-- Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
+    <!-- DataTables JS -->
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
     <!-- Custom Styles (Ensures Sidebar Does Not Overlap Content) -->
     <style>
-        /* Ensures no scroll and full height for the page */
-        html, body {
-            height: 100%;
-            overflow: hidden;
-            margin: 0; /* Remove default margins */
-        }
-
-        .flex {
-            display: flex;
-            height: 100%; /* Ensure the main container takes full height */
-        }
-
         .sidebar {
-            width: 16rem; /* Sidebar width */
-            height: 100%; /* Sidebar takes full height */
-            position: fixed; /* Fix sidebar to the left */
+            width: 16rem;
+            /* 64 Tailwind units */
         }
 
         .main-content {
-            margin-left: 16rem; /* Make space for the sidebar */
-            width: 100%;
-            height: 100%; /* Full height */
-            overflow: hidden; /* Ensure no scrolling inside main content */
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* If content exceeds the available space, we ensure it doesn't scroll */
-        .content-wrapper {
-            flex: 1; /* This takes up the remaining space */
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            margin-left: 16rem;
+            /* Ensures no overlap */
         }
     </style>
 </head>
 
 <body class="font-inter bg-gray-100">
-    <div class="flex">
+    <div class="flex h-screen">
         <!-- Sidebar -->
-        <div class="sidebar bg-white p-6 overflow-y-auto shadow-lg">
+        <div class="fixed top-0 left-0 h-full bg-white p-6 overflow-y-auto flex flex-col shadow-lg sidebar">
             <!-- User Info -->
             <div class="flex gap-5 pb-5 border-b border-gray-200">
                 <div class="w-11 h-11 rounded-full overflow-hidden">
                     <img src="{{ asset('images/users/user-placeholder.jpg') }}" alt="User Image" class="w-full object-cover" />
                 </div>
                 <div>
+                    <!-- Adjusted font size for username and email -->
                     <p class="text-xs font-medium text-gray-500 mb-1">{{ auth()->user()->name ?? 'User Name' }}</p>
                     <p class="text-xs font-medium text-gray-500">{{ auth()->user()->email ?? 'user.email@example.com' }}</p>
                 </div>
             </div>
+
 
             <!-- Navigation Menu -->
             <div class="flex-1 mt-5">
@@ -77,19 +63,19 @@
                     <li>
                         <a href="{{ route('home') }}" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
                             <i class="ph-bold ph-house-simple text-xl"></i>
-                            <span class="text-xs">Dashboard</span>
+                            <span class="text-sm">Dashboard</span>
                         </a>
                     </li>
                     <li>
                         <a href="{{ route('inventory.index') }}" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
                             <i class="ph-bold ph-archive text-xl"></i>
-                            <span class="text-xs">Inventory Management</span>
+                            <span class="text-sm">Inventory Management</span>
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
+                        <a href="{{ route('records.index') }}" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
                             <i class="ph-bold ph-file-text text-xl"></i>
-                            <span class="text-xs">Records</span>
+                            <span class="text-sm">Records</span>
                         </a>
                     </li>
                 </ul>
@@ -97,20 +83,21 @@
 
             <!-- Account Management -->
             <div class="mt-auto">
-                <p class="text-xs font-medium text-gray-500 uppercase mb-3">Account</p>
+                <p class="text-sm font-medium text-gray-500 uppercase mb-3">Account</p>
                 <ul class="space-y-2">
                     <li>
-                        <a href="#" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
-                            <i class="ph-bold ph-user text-xl"></i>
-                            <span class="text-xs">User Management</span>
+                        <a href="{{ route('users.index') }}" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
+                            <i class="ph-bold ph-users text-xl"></i>
+                            <span class="text-sm">Users Management</span>
                         </a>
                     </li>
+
                     <li>
                         <form action="{{ route('logout') }}" method="POST">
                             @csrf
                             <button type="submit" class="w-full flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
                                 <i class="ph-bold ph-sign-out text-xl"></i>
-                                <span class="text-xs">Logout</span>
+                                <span class="text-sm">Logout</span>
                             </button>
                         </form>
                     </li>
@@ -118,13 +105,12 @@
             </div>
         </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <div class="content-wrapper">
-                @yield('content')
-            </div>
+        <!-- Main Content (Ensures Sidebar Does Not Overlap) -->
+        <div class="flex-1 p-6 main-content">
+            @yield('content')
         </div>
     </div>
 </body>
+
 
 </html>
