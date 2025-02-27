@@ -3,19 +3,9 @@
 @section('title', 'Home Page')
 
 @section('content')
-    <!-- Header -->
-    <header class="w-full flex justify-end p-6 bg-white shadow-md">
-    <nav class="flex space-x-4">
-        @if (Route::has('register'))
-            <a href="{{ route('register') }}" class="px-6 py-3 bg-green-500 text-white text-lg font-semibold rounded-lg shadow-lg hover:bg-green-600">
-                Register
-            </a>
-        @endif
-    </nav>
-</header>
-    <!-- Hero Section --> 
+<!-- Hero Section --> 
     <div class="relative min-h-screen flex flex-col items-center justify-center bg-cover bg-center font-sans"
-        style="background-image: url('/images/home.jpg'); background-size: cover; background-position: center; max-height: 60vh;">
+        style="background-image: url('/images/home.jpg'); background-size: cover; background-position: center; max-height: 60vh; font-family: 'Inter', sans-serif;">
 
         <!-- Overlay -->
         <div class="absolute inset-0 bg-black opacity-20"></div>
@@ -31,24 +21,24 @@
         </div>
     </div>
 
-    <!-- About Us Section -->
-    <div id="aboutus" class="py-20 bg-gray-100 text-center" style="font-family: 'Times New Roman', serif; font-size: 18px;">
-        <h2 class="text-3xl sm:text-4xl font-bold">About Us</h2>
-        <p class="mt-4 max-w-2xl mx-auto">
-            The BatStateU ACTION Center is the home for community folks, barangay leaders, local executives, disaster managers, researchers, partner civil society organizations, and other stakeholders needing assistance and support to enhance their knowledge and skills on disaster preparedness and response.
-        </p>
-        <p class="mt-6 max-w-2xl mx-auto">
-            BatStateU ACTION Center operates under the Office of the University President in collaboration with partner Local Government Units (LGUs), Regional Line Agencies (RLAs), and private organizations at the local, national, and international levels.
-        </p>
+<!-- About Us Section -->
+<div id="aboutus" class="py-20 bg-gray-500 text-white text-center font-sans" style="font-family: 'Inter', sans-serif; font-size: 18px;">
+    <h2 class="text-3xl sm:text-4xl font-bold">About Us</h2>
+    <p class="mt-4 max-w-7xl mx-auto">
+        The BatStateU ACTION Center is the home for community folks, barangay leaders, local executives, disaster managers, researchers, partner civil society organizations, and other stakeholders needing assistance and support to enhance their knowledge and skills on disaster preparedness and response.
+    </p>
+    <p class="mt-8 max-w-7xl mx-auto">
+        BatStateU ACTION Center operates under the Office of the University President in collaboration with partner Local Government Units (LGUs), Regional Line Agencies (RLAs), and private organizations at the local, national, and international levels.
+    </p>
 
-        <h3 class="text-2xl sm:text-3xl font-semibold mt-8">The ACTION Center aims to:</h3>
-        <ul class="list-disc list-inside mt-4 max-w-2xl mx-auto text-left">
-            <li>Protect whatever economic gains people and communities have garnered through formal education and research using science and technology.</li>
-            <li>Take a proactive role in making people and communities safer and more resilient to save their lives and properties in times of natural calamities through professional education, skills training, and innovative research.</li>
-            <li>Make local leaders and communities more aware of the dangers of natural hazards and be prepared when such disasters occur.</li>
-            <li>Inform people and communities about all possible natural hazards in their areas, the warning information, and the suggested actions to take during these events.</li>
-        </ul>
-    </div>
+    <h3 class="text-2xl sm:text-3xl font-semibold mt-6">The ACTION Center aims to:</h3>
+    <ul class="list-disc list-inside mt-7 max-w-7xl mx-auto text-left">
+        <li>Protect whatever economic gains people and communities have garnered through formal education and research using science and technology.</li>
+        <li>Take a proactive role in making people and communities safer and more resilient to save their lives and properties in times of natural calamities through professional education, skills training, and innovative research.</li>
+        <li>Make local leaders and communities more aware of the dangers of natural hazards and be prepared when such disasters occur.</li>
+        <li>Inform people and communities about all possible natural hazards in their areas, the warning information, and the suggested actions to take during these events.</li>
+    </ul>
+</div>
 
     <!-- JavaScript for Smooth Scroll -->
     <script>
