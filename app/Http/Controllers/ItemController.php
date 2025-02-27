@@ -53,16 +53,18 @@ class ItemController extends Controller
         ]);
 
         // Redirect back to the form or a different route with a success message
-        return redirect()->route('items.create')->with('success', 'Item added successfully!');
+        return redirect()->route('inventory')->with('success', 'Item added successfully!');
     }
 
     // Display a paginated list of items
     public function index()
     {
-        // Retrieve items with pagination (10 items per page)
-        $items = Item::paginate(10);
+        // Retrieve items by category and paginate them
+        $items = Item::where('category', 'DRRM Equipment')->paginate(10);
+        $officeSupplies = Item::where('category', 'Office Supplies')->paginate(10);
+        $emergencyKits = Item::where('category', 'Emergency Kits')->paginate(10);
 
-        // Return the inventory page with the paginated items
-        return view('inven', compact('items'));
+        // Return the inventory page with the paginated items for each category
+        return view('inven', compact('items', 'officeSupplies', 'emergencyKits'));
     }
 }
