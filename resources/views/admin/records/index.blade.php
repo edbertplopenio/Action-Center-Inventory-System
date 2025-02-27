@@ -7,59 +7,213 @@
 <head>
     <!-- Add Google Fonts link for Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-
     <!-- Include DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
-
-
     <!-- Include jQuery (required for DataTables) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
+
     <style>
-        /* Apply font size and font family */
-        body,
-        #myTable {
-            font-family: 'Inter', Arial, sans-serif;
+    /* Apply font size and font family */
+    body,
+    #myTable {
+        font-family: 'Inter', Arial, sans-serif;
+        font-size: 12px;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Table Container Styling */
+    .table-container {
+        width: 100%;
+        max-height: none; /* Remove height limit */
+        overflow: visible; /* Ensure no forced scrolling */
+    }
+
+    /* Table Styling */
+    #myTable {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    /* Table Header Styling */
+    #myTable th {
+        background-color: #EBF8FD;
+        color: #4a5568;
+        font-weight: 600;
+        text-align: center;
+        padding: 15px;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    /* Table Data Styling */
+    #myTable td {
+        background-color: #ffffff;
+        color: #2d3748;
+        text-align: center;
+        padding: 12px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    /* Add hover effect for rows */
+    #myTable tr:hover {
+        background-color: #b3eaff;
+    }
+</style>
+
+
+
+
+    <!-- <script>
+    $(document).ready(function() {
+        $('#myTable').DataTable({
+            "scrollY": false,  // Disable vertical scrolling
+            "scrollX": false,  // Disable horizontal scrolling
+            "paging": true,    // Enable pagination (optional)
+            "searching": true, // Enable search (optional)
+            "ordering": true   // Enable sorting (optional)
+        });
+    });
+</script> -->
+
+
+
+    <!-- CSS for Pagination -->
+    <style>
+        /* Style the container */
+        .dt-length {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            color: #5ad4f5;
+            /* Lighter shade of #4cc9f0 */
+            margin-bottom: 6px;
+            padding: 4px 8px;
+            background-color: #e6f7ff;
+            /* Light blue background */
+            border-radius: 6px;
+            border: 1px solid #b3eaff;
+            /* Soft blue border */
+        }
+
+        /* Style the dropdown select */
+        .dt-length select {
+            padding: 4px 8px;
+            border: 1px solid #b3eaff;
+            /* Soft blue border */
+            border-radius: 4px;
+            background-color: #ffffff;
+            /* White dropdown background */
+            color: #4aaed4;
+            /* Slightly darker text */
+            font-size: 12px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease-in-out;
+        }
+
+        /* Hover and Focus Effects */
+        .dt-length select:hover {
+            border-color: #87dff7;
+            /* Brighter blue */
+            background-color: #def3ff;
+            /* Slightly darker background */
+        }
+
+        .dt-length select:focus {
+            border-color: #4cc9f0;
+            box-shadow: 0 0 3px rgba(76, 201, 240, 0.4);
+            background-color: #c9efff;
+        }
+
+        /* Style the label */
+        .dt-length label {
+            font-weight: 500;
+            color: rgb(0, 0, 0);
+            /* Primary blue shade */
+        }
+    </style>
+
+
+    <!-- CSS for Search Bar -->
+    <style>
+        /* Style the search container */
+        .dt-search {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Inter', sans-serif;
             font-size: 12px;
         }
 
-        /* Table Styling */
-        #myTable {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        /* Table Header Styling */
-        #myTable th {
-            background-color: #EBF8FD;
-            color: #4a5568;
-            font-weight: 600;
-            text-align: center;
-            padding: 15px;
-            border-bottom: 2px solid #e2e8f0;
-            position: sticky;
-            top: 0;
-            z-index: 1;
-        }
-
-        /* Table Data Styling */
-        #myTable td {
+        /* Style the search input */
+        .dt-search input[type="search"] {
+            padding: 4px 8px;
+            border: 1px solid #b3eaff;
+            /* Soft blue border */
+            border-radius: 4px;
             background-color: #ffffff;
-            /* White background for rows */
-            color: #2d3748;
-            /* Dark gray text */
-            text-align: center;
-            padding: 12px;
-            border-bottom: 1px solid #e2e8f0;
-            /* Light border between rows */
+            /* White input background */
+            color: #4aaed4;
+            /* Slightly darker text */
+            font-size: 12px;
+            cursor: text;
+            outline: none;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
 
-        /* Add hover effect for rows */
-        #myTable tr:hover {
-            background-color: #b3eaff;
-            /* Lighter hover effect */
+        /* Keep only focus effect */
+        .dt-search input[type="search"]:focus {
+            border-color: #4cc9f0;
+            box-shadow: 0 0 3px rgba(76, 201, 240, 0.4);
+            background-color: #c9efff;
+        }
+
+        /* Style the label */
+        .dt-search label {
+            font-weight: 500;
+            color: rgb(0, 0, 0);
+            /* Primary blue shade */
         }
     </style>
+
+
+<!-- CSS for the highlight of table when clicked -->
+    <style>
+        /* Styling for highlighting */
+        .highlighted {
+            background-color: #EBF8FD !important;
+            /* Light yellow highlight */
+        }
+    </style>
+
+    <script>
+        $(document).ready(function() {
+            var table = $('#myTable').DataTable(); // Initialize DataTables
+
+            $('#myTable thead th').on('click', function() {
+                var columnIndex = $(this).index(); // Get clicked column index
+
+                // Remove previous highlights
+                $('#myTable thead th, #myTable tbody td').removeClass('highlighted');
+
+                // Highlight the clicked header
+                $(this).addClass('highlighted');
+
+                // Highlight all cells in the same column
+                $('#myTable tbody tr').each(function() {
+                    $(this).find('td').eq(columnIndex).addClass('highlighted');
+                });
+            });
+        });
+    </script>
+
 
 
 </head>
@@ -71,13 +225,16 @@
         <!-- Title and Button inside this div -->
         <div class="flex justify-between items-center mb-1 pt-0">
             <h1 class="text-3xl text-left">Records and Appraisal</h1>
-            <button id="openModalBtn" class="px-6 py-2 bg-[#4cc9f0] text-white border-2 border-[#4cc9f0] rounded-full hover:bg-[#3fb3d1] mb-2 text-sm">
-                + Add Record
-            </button>
-
-
-
+            <div class="flex space-x-2 w-auto">
+                <button id="openModalBtn" class="px-6 py-2 min-w-[140px] max-w-[160px] bg-[#4cc9f0] text-white border-2 border-[#4cc9f0] rounded-full hover:bg-[#3fb3d1] mb-2 text-sm">
+                    Add Record
+                </button>
+                <button id="archiveBtn" class="px-6 py-2 min-w-[140px] max-w-[160px] bg-[#f0b84c] text-white border-2 border-[#f0b84c] rounded-full hover:bg-[#d19b3f] mb-2 text-sm">
+                    Archive
+                </button>
+            </div>
         </div>
+
 
         <!-- Table for displaying records -->
         <div style="height: 600px; overflow-y: auto;"> <!-- Added overflow-y-auto -->
@@ -264,7 +421,7 @@
 
 
 
-<!-- MODAL -->
+
 <!-- Modal Form HTML -->
 <div class="relative z-10" id="myModal" aria-labelledby="modal-title" role="dialog" aria-modal="true" style="display: none;">
     <!-- Backdrop with stronger blur effect -->
