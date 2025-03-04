@@ -2,13 +2,22 @@
 <html lang="en">
 <head>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
     <style>
+
+        html, body {
+            overflow: hidden; /* Prevent scrolling on the entire page */
+            height: 100%; /* Ensure full height without extra spacing */
+            margin: 0;
+            padding: 0;
+        }
+
+
         /* Hide all tables by default, only show the active tab's table */
         .tab-content {
             display: none;
@@ -38,7 +47,7 @@
         .tab-container {
             display: flex;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: -0.2rem;
         }
 
         .tab-button-container {
@@ -100,42 +109,38 @@
         }
 
         .table-container {
-            overflow-x: auto;
+            width: 100%;           /* Ensure it fills the width of the parent */
+            height: 550px;  
+            max-height; 650px;       /* Adjust the height as needed */
+            overflow-y: scroll;    /* Enable vertical scrolling */
+            overflow-x: hidden;    /* Disable horizontal scrolling */
+        }
+
+        table {
+            width: 100%;           /* Ensure the table takes the full width of the container */
+            table-layout: fixed;   /* Prevent table from expanding beyond its container */
+        }
+
+        .table-container table {
             width: 100%;
-            height: 550px;
-            overflow-y: auto; /* Enable vertical scrolling if needed */
-            margin-top: -1.5rem; /* Set to 0 or a smaller value to move the table up */
-            position: relative;
+            border-collapse: collapse;
+            table-layout: fixed; /* Ensures column alignment */
         }
 
-        /* Pagination styles */
-        .pagination-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.5rem;
-            position: absolute; /* Positioning it at the bottom */
-            bottom: -0.5px; /* Adjust distance from the bottom */
+        .table-container thead {
+            position: sticky;
+            top: 0;
+            background-color: white; /* Keeps the header visible */
+            z-index: 5;
+            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-footer {
             width: 100%;
-        }
-
-        .pagination-btn {
-            font-size: 0.75rem; /* Smaller font size */
-            padding: 0.4rem 0.8rem; /* Smaller padding */
-            border-radius: 0.25rem;
-            cursor: pointer;
-            background-color: #f7fafc;
-            border: 1px solid #e5e5e5;
-            color: #2d3748;
-        }
-
-        .pagination-btn:hover {
-            background-color: #e2e8f0;
-        }
-
-        .pagination-btn:disabled {
-            background-color: #edf2f7;
-            cursor: not-allowed;
+            background-color: white; /* Ensure footer has a solid background */
+            position: sticky;
+            bottom: 0;
+            z-index: 10;  /* Ensure it stays on top of other content */
         }
 
         /* Styling for the Action Buttons */
@@ -154,6 +159,8 @@
             text-align: center;
             cursor: pointer;
             width: 60px; /* Fixed width para pareho ang laki */
+            margin-bottom: 5px;
+            margin-top: 2px;
         }
 
         .edit-btn {
@@ -198,6 +205,26 @@
         .archives-tab {
             background-color: rgb(0, 123, 255); /* Blue color for the Archives tab */
         }
+
+        /* Make the table scrollable while keeping the pagination at the bottom */
+    table.dataTable {
+        width: 100%; /* Ensure the table takes up the full width of the container */
+    }
+
+    /* Optional: Ensure the table container has a maximum height */
+    .table-container {
+        max-height: 500px;  /* Adjust based on your layout */
+        overflow-y: auto;   /* Enable vertical scrolling */
+    }
+
+    /* Style pagination and entries at the bottom */
+    .dataTables_wrapper .dataTables_info, 
+    .dataTables_wrapper .dataTables_paginate {
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
+        background-color: white;
+    }
 
 
     </style>
@@ -314,169 +341,143 @@
         </div>
 
         <!-- Equipment Tab -->
-        <div id="equipment-content" class="tab-content active">
-            <h3 class="text-xl font-semibold">DRRM Equipment</h3>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th><input type="checkbox" id="select-all-equipment" onclick="selectAllCheckboxes('equipment')"></th>
-                            <th>Equipment Name</th>
-                            <th>Category</th>
-                            <th>Quantity</th>
-                            <th>Unit</th>
-                            <th>Description</th>
-                            <th>Storage Location</th>
-                            <th>Arrival Date</th>
-                            <th>Date Purchased</th>
-                            <th>Status</th>
-                            <th>Image</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($items as $item)
-                            <tr>
-                                <td><input type="checkbox" class="select-item" name="item_ids[]" value="{{ $item->id }}"></td>
-                                <td>{{ $item->name }}</td>
-                                <td>{{ $item->category }}</td>
-                                <td>{{ $item->quantity }}</td>
-                                <td>{{ $item->unit }}</td>
-                                <td>{{ $item->description }}</td>
-                                <td>{{ $item->storage_location }}</td>
-                                <td>{{ $item->arrival_date }}</td>
-                                <td>{{ $item->date_purchased }}</td>
-                                <td>{{ $item->status }}</td>
-                                <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
-                                <td class="action-buttons">
-                                    <button class="edit-btn">Edit</button>
-                                    <button class="archive-btn">Archive</button>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+        <!-- Equipment Tab -->
+<div id="equipment-content" class="tab-content active">
+    <h3 class="text-xl font-semibold" style="margin-bottom: 7px;">DRRM Equipment</h3>
+    <div class="table-container">
+        <table id="equipmentTable" class="display">
+            <thead>
+                <tr>
+                    <th>Equipment Name</th>
+                    <th>Quantity</th>
+                    <th>Unit</th>
+                    <th>Description</th>
+                    <th>Storage Location</th>
+                    <th>Arrival Date</th>
+                    <th>Date Purchased</th>
+                    <th>Status</th>
+                    <th>Image</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($items as $item)
+                    <tr>
+                        <td>{{ $item->name }}</td>
+                        <td>{{ $item->quantity }}</td>
+                        <td>{{ $item->unit }}</td>
+                        <td>{{ $item->description }}</td>
+                        <td>{{ $item->storage_location }}</td>
+                        <td>{{ $item->arrival_date }}</td>
+                        <td>{{ $item->date_purchased }}</td>
+                        <td>{{ $item->status }}</td>
+                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                        <td class="action-buttons">
+                            <button class="edit-btn">Edit</button>
+                            <button class="archive-btn">Archive</button>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
 
-                <!-- Pagination for Equipment -->
-                <div class="pagination-container mt-4">
-                    {{ $items->links() }} <!-- Pagination links for Equipment -->
-                </div>
-            </div>
-        </div>
 
         <!-- Office Supplies Tab -->
-        <div id="office-supplies-content" class="tab-content">
-            <h3 class="text-xl font-semibold">Office Supplies</h3>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th><input type="checkbox" id="select-all-office-supplies" onclick="selectAllCheckboxes('office-supplies')"></th>
-                            <th>Item Name</th>
-                            <th>Category</th>
-                            <th>Quantity</th>
-                            <th>Unit</th>
-                            <th>Description</th>
-                            <th>Storage Location</th>
-                            <th>Arrival Date</th>
-                            <th>Date Purchased</th>
-                            <th>Status</th>
-                            <th>Image</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($officeSupplies as $item)
-                            <tr>
-                                <td><input type="checkbox" class="select-item" name="item_ids[]" value="{{ $item->id }}"></td>
-                                <td>{{ $item->name }}</td>
-                                <td>{{ $item->category }}</td>
-                                <td>{{ $item->quantity }}</td>
-                                <td>{{ $item->unit }}</td>
-                                <td>{{ $item->description }}</td>
-                                <td>{{ $item->storage_location }}</td>
-                                <td>{{ $item->arrival_date }}</td>
-                                <td>{{ $item->date_purchased }}</td>
-                                <td>{{ $item->status }}</td>
-                                <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
-                                <td class="action-buttons">
-                                    <button class="edit-btn">Edit</button>
-                                    <button class="archive-btn">Archive</button>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-
-                <!-- Pagination for Office Supplies -->
-                <div class="pagination-container mt-4">
-                    {{ $officeSupplies->links() }} <!-- Pagination links for Office Supplies -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Emergency Kits Tab -->
-        <div id="emergency-kits-content" class="tab-content">
-            <h3 class="text-xl font-semibold">Emergency Kits</h3>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th><input type="checkbox" id="select-all-emergency-kits" onclick="selectAllCheckboxes('emergency-kits')"></th>
-                            <th>Item Name</th>
-                            <th>Category</th>
-                            <th>Quantity</th>
-                            <th>Unit</th>
-                            <th>Description</th>
-                            <th>Storage Location</th>
-                            <th>Arrival Date</th>
-                            <th>Date Purchased</th>
-                            <th>Status</th>
-                            <th>Image</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($emergencyKits as $item)
-                            <tr>
-                                <td><input type="checkbox" class="select-item" name="item_ids[]" value="{{ $item->id }}"></td>
-                                <td>{{ $item->name }}</td>
-                                <td>{{ $item->category }}</td>
-                                <td>{{ $item->quantity }}</td>
-                                <td>{{ $item->unit }}</td>
-                                <td>{{ $item->description }}</td>
-                                <td>{{ $item->storage_location }}</td>
-                                <td>{{ $item->arrival_date }}</td>
-                                <td>{{ $item->date_purchased }}</td>
-                                <td>{{ $item->status }}</td>
-                                <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
-                                <td class="action-buttons">
-                                    <button class="edit-btn">Edit</button>
-                                    <button class="archive-btn">Archive</button>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-
-                <!-- Pagination for Emergency Kits -->
-                <div class="pagination-container mt-4">
-                    {{ $emergencyKits->links() }} <!-- Pagination links for Emergency Kits -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Archives Tab -->
-<div id="archives-content" class="tab-content">
-    <h3 class="text-xl font-semibold">Archives</h3>
+<div id="office-supplies-content" class="tab-content">
+    <h3 class="text-xl font-semibold" style="margin-bottom: 7px;">Office Supplies</h3>
     <div class="table-container">
-        <table>
+        <table id="officeSuppliesTable" class="display">
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Quantity</th>
+                    <th>Unit</th>
+                    <th>Description</th>
+                    <th>Storage Location</th>
+                    <th>Arrival Date</th>
+                    <th>Date Purchased</th>
+                    <th>Status</th>
+                    <th>Image</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($officeSupplies as $item)
+                    <tr>
+                        <td><input type="checkbox" class="select-item" name="item_ids[]" value="{{ $item->id }}"></td>
+                        <td>{{ $item->name }}</td>
+                        <td>{{ $item->quantity }}</td>
+                        <td>{{ $item->unit }}</td>
+                        <td>{{ $item->description }}</td>
+                        <td>{{ $item->storage_location }}</td>
+                        <td>{{ $item->arrival_date }}</td>
+                        <td>{{ $item->date_purchased }}</td>
+                        <td>{{ $item->status }}</td>
+                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                        <td class="action-buttons">
+                            <button class="edit-btn">Edit</button>
+                            <button class="archive-btn">Archive</button>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Emergency Kits Tab -->
+<div id="emergency-kits-content" class="tab-content">
+    <h3 class="text-xl font-semibold" style="margin-bottom: 7px;">Emergency Kits</h3>
+    <div class="table-container">
+        <table id="emergencyKitsTable" class="display">
+            <thead>
+                <tr>
+                    <th>Item Name</th>
+                    <th>Quantity</th>
+                    <th>Unit</th>
+                    <th>Description</th>
+                    <th>Storage Location</th>
+                    <th>Arrival Date</th>
+                    <th>Date Purchased</th>
+                    <th>Status</th>
+                    <th>Image</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($emergencyKits as $item)
+                    <tr>
+                        <td>{{ $item->name }}</td>
+                        <td>{{ $item->quantity }}</td>
+                        <td>{{ $item->unit }}</td>
+                        <td>{{ $item->description }}</td>
+                        <td>{{ $item->storage_location }}</td>
+                        <td>{{ $item->arrival_date }}</td>
+                        <td>{{ $item->date_purchased }}</td>
+                        <td>{{ $item->status }}</td>
+                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                        <td class="action-buttons">
+                            <button class="edit-btn">Edit</button>
+                            <button class="archive-btn">Archive</button>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Archives Tab -->
+<div id="archives-content" class="tab-content">
+    <h3 class="text-xl font-semibold" style="margin-bottom: 7px;">Archives</h3>
+    <div class="table-container">
+        <table id="archivesTable" class="display">
             <thead>
                 <tr>
                     <th><input type="checkbox" id="select-all-archives" onclick="selectAllCheckboxes('archives')"></th>
                     <th>Item Name</th>
-                    <th>Category</th>
-                    <th>Quantity</th>
                     <th>Unit</th>
                     <th>Description</th>
                     <th>Storage Location</th>
@@ -492,7 +493,6 @@
                 <tr>
                     <td><input type="checkbox" class="select-item" name="item_ids[]" value="1"></td>
                     <td>Archived Item 1</td>
-                    <td>Category 1</td>
                     <td>5</td>
                     <td>pcs</td>
                     <td>Item description</td>
@@ -509,47 +509,59 @@
                 <!-- Add more archived items here -->
             </tbody>
         </table>
-
-        <!-- Pagination for Archives (if needed) -->
-        <div class="pagination-container mt-4">
-            <!-- Pagination links for Archives -->
-        </div>
     </div>
 </div>
 
     </div>
 </div>
 
-<!-- JavaScript for Tab Switching -->
 <script>
     function switchTab(tab) {
-    console.log("Switching to tab: ", tab);  // For debugging purposes
+        console.log("Switching to tab: ", tab);  // For debugging purposes
 
-    // Hide all tabs by default and remove the 'active' class
-    var tabs = document.querySelectorAll('.tab-content');
-    tabs.forEach(function (tabContent) {
-        tabContent.classList.remove('active'); // Remove active class
-        tabContent.style.display = 'none'; // Hide all tab contents
+        // Hide all tabs by default and remove the 'active' class
+        var tabs = document.querySelectorAll('.tab-content');
+        tabs.forEach(function (tabContent) {
+            tabContent.classList.remove('active'); // Remove active class
+            tabContent.style.display = 'none'; // Hide all tab contents
+        });
+
+        // Show the selected tab and add the 'active' class
+        var activeTabContent = document.getElementById(tab + '-content');
+        activeTabContent.classList.add('active');  // Add active class to the selected tab
+        activeTabContent.style.display = 'block'; // Show the selected tab content
+
+        // Remove the 'active' class from all tab buttons
+        document.querySelectorAll('.tab-button').forEach(function (btn) {
+            btn.classList.remove('active');
+        });
+
+        // Add the 'active' class to the clicked tab button
+        document.getElementById(tab + '-tab').classList.add('active');
+
+        // Reinitialize DataTables after switching tabs
+        initializeDataTables();
+    }
+
+    // Function to initialize DataTables
+    function initializeDataTables() {
+        $('table').each(function () {
+            if (!$.fn.DataTable.isDataTable(this)) {
+                $(this).DataTable();
+            }
+        });
+    }
+
+    // Ensure DataTables is initialized when the page loads
+    $(document).ready(function () {
+        $('#equipmentTable').DataTable({
+        "scrollY": "400px",         // Set a fixed height for the table body
+        "scrollCollapse": true,     // Allow the table to shrink in height when fewer rows are present
+        "paging": true,             // Enable pagination
+        "pagingType": "simple",     // Optional: You can set the paging type (simple, full numbers, etc.)
+        "dom": '<"top"i>rt<"bottom"flp>',  // Custom layout for table controls, "top" is for entries, "bottom" is for pagination
     });
-
-    // Show the selected tab and add the 'active' class
-    var activeTabContent = document.getElementById(tab + '-content');
-    activeTabContent.classList.add('active');  // Add active class to the selected tab
-    activeTabContent.style.display = 'block'; // Show the selected tab content
-
-    // Remove the 'active' class from all tab buttons
-    document.querySelectorAll('.tab-button').forEach(function (btn) {
-        btn.classList.remove('active');
-    });
-
-    // Add the 'active' class to the clicked tab button
-    document.getElementById(tab + '-tab').classList.add('active');
-    
-    // Force reflow (this forces the browser to recalculate layout and refresh content if necessary)
-    activeTabContent.offsetHeight; // Accessing offsetHeight forces a reflow
-}
-
-
+});
 </script>
 
 <!-- JavaScript for Modal Logic -->
@@ -585,7 +597,6 @@
         event.preventDefault(); // Prevent the default form submission
 
         var formData = new FormData(this); // Collect form data
-
         $.ajax({
             url: "{{ route('items.store') }}", // The route for saving the item
             method: "POST", // POST method
@@ -604,6 +615,7 @@
         });
     });
 </script>
-
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
 </body>
 </html>

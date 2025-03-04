@@ -56,15 +56,15 @@ class ItemController extends Controller
         return redirect()->route('inventory')->with('success', 'Item added successfully!');
     }
 
-    // Display a paginated list of items
+    // Display a list of items without pagination
     public function index()
     {
-        // Retrieve items by category and paginate them
-        $items = Item::where('category', 'DRRM Equipment')->paginate(10);
-        $officeSupplies = Item::where('category', 'Office Supplies')->paginate(10);
-        $emergencyKits = Item::where('category', 'Emergency Kits')->paginate(10);
+        // Retrieve all items by category without pagination
+        $items = Item::where('category', 'DRRM Equipment')->get();
+        $officeSupplies = Item::where('category', 'Office Supplies')->get();
+        $emergencyKits = Item::where('category', 'Emergency Kits')->get();
 
-        // Return the inventory page with the paginated items for each category
+        // Return the inventory page with all items for each category
         return view('inven', compact('items', 'officeSupplies', 'emergencyKits'));
     }
 }
