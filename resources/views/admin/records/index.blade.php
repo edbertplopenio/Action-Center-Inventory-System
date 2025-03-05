@@ -789,7 +789,41 @@
 
 
 
+<!-- Customed modal -->
 
+<script>
+    // Select the success/error modal elements
+    const resultModal = document.getElementById("resultModal");
+    const resultModalTitle = document.getElementById("resultModal-title");
+    const resultModalMessage = document.getElementById("resultModal-message");
+    const resultModalIcon = document.getElementById("resultModalIcon");
+    const resultModalIconPath = document.getElementById("resultModalIconPath");
+    const resultModalCloseBtn = document.getElementById("resultModalCloseBtn");
+
+    // Function to show the result modal
+    function showResultModal(title, message, isSuccess = true) {
+        resultModalTitle.textContent = title;
+        resultModalMessage.textContent = message;
+
+        // Change the icon based on success/error
+        if (isSuccess) {
+            resultModalIcon.classList.remove("text-red-600", "bg-red-100");
+            resultModalIcon.classList.add("text-green-600", "bg-green-100");
+            resultModalIconPath.setAttribute("d", "M9 12l2 2l4 -4m-5 0a7 7 0 1 1 7 7a7 7 0 0 1 -7 -7Z"); // Success icon
+        } else {
+            resultModalIcon.classList.remove("text-green-600", "bg-green-100");
+            resultModalIcon.classList.add("text-red-600", "bg-red-100");
+            resultModalIconPath.setAttribute("d", "M6 18L18 6M6 6l12 12"); // Error icon
+        }
+
+        resultModal.style.display = "block";
+    }
+
+    // Close the modal when the close button is clicked
+    resultModalCloseBtn.addEventListener("click", function() {
+        resultModal.style.display = "none";
+    });
+</script>
 
 
 <!-- Modal Form HTML -->
@@ -1158,8 +1192,24 @@
 
         // Open modal
         document.getElementById('openModalBtn').addEventListener('click', function() {
+            // Open the modal
             modal.style.display = 'block';
+
+            // Reset form fields
+            form.reset();
+
+            // Re-enable Retention Period fields
+            document.getElementById('active').disabled = false;
+            document.getElementById('active_unit').disabled = false;
+            document.getElementById('storage').disabled = false;
+            document.getElementById('storage_unit').disabled = false;
+
+            // Uncheck Permanent checkbox
+            document.getElementById('permanent').checked = false;
+
+            console.log("Modal opened: Retention fields reset.");
         });
+
 
         // Close modal
         document.getElementById('closeModalBtn').addEventListener('click', function() {
@@ -1229,12 +1279,8 @@
             }
 
             if (!isValid) {
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "Please fill in all required fields and select at least one utility value!",
-                    confirmButtonColor: "#d33"
-                });
+                showResultModal("Error!", "Please fill in all required fields and select at least one utility value!", false);
+
                 console.error("Form validation failed.");
                 return;
             }
@@ -1251,16 +1297,11 @@
                 console.log("Database Response:", result);
 
                 if (response.ok) {
-                    Swal.fire({
-                        icon: "success",
-                        title: "Success!",
-                        text: "Record added successfully!",
-                        showConfirmButton: false,
-                        timer: 2000
-                    });
+                    showResultModal("Success!", "Record added successfully!", true);
 
-                    modal.style.display = "none";
+                    modal.style.display = "none"; // Close the main form modal
                     form.reset();
+
 
                     let r = result.record;
 
@@ -1348,24 +1389,15 @@
             } catch (error) {
                 if (!result || !result.record) {
                     console.error("Database Error: No record returned.");
-                    Swal.fire({
-                        icon: "error",
-                        title: "Database Error",
-                        text: "Failed to add record. Check console for details.",
-                        confirmButtonColor: "#d33"
-                    });
+                    showResultModal("Error!", "Failed to add record. Check console for details.", false);
+
                 } else {
                     console.log("Record added successfully:", result.record);
-                    Swal.fire({
-                        icon: "success",
-                        title: "Success!",
-                        text: "Record added successfully!",
-                        showConfirmButton: false,
-                        timer: 2000
-                    });
+                    showResultModal("Success!", "Record added successfully!", true);
 
-                    modal.style.display = "none";
+                    modal.style.display = "none"; // Close the main form modal
                     form.reset();
+
 
                     let r = result.record;
 
