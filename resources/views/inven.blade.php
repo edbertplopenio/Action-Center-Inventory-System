@@ -291,7 +291,6 @@
                 <table>
                     <thead>
                         <tr>
-                            <th><input type="checkbox" id="select-all-equipment" onclick="selectAllCheckboxes('equipment')"></th>
                             <th>Equipment Name</th>
                             <th>Quantity</th>
                             <th>Unit</th>
@@ -307,7 +306,6 @@
                     <tbody>
                         @foreach($items as $item)
                             <tr>
-                                <td><input type="checkbox" class="select-item" name="item_ids[]" value="{{ $item->id }}"></td>
                                 <td>{{ $item->name }}</td>
                                 <td>{{ $item->quantity }}</td>
                                 <td>{{ $item->unit }}</td>
@@ -336,7 +334,6 @@
                 <table>
                     <thead>
                         <tr>
-                            <th><input type="checkbox" id="select-all-office-supplies" onclick="selectAllCheckboxes('office-supplies')"></th>
                             <th>Item Name</th>
                             <th>Quantity</th>
                             <th>Unit</th>
@@ -352,7 +349,6 @@
                     <tbody>
                         @foreach($officeSupplies as $item)
                             <tr>
-                                <td><input type="checkbox" class="select-item" name="item_ids[]" value="{{ $item->id }}"></td>
                                 <td>{{ $item->name }}</td>
                                 <td>{{ $item->quantity }}</td>
                                 <td>{{ $item->unit }}</td>
@@ -381,7 +377,6 @@
                 <table>
                     <thead>
                         <tr>
-                            <th><input type="checkbox" id="select-all-emergency-kits" onclick="selectAllCheckboxes('emergency-kits')"></th>
                             <th>Item Name</th>
                             <th>Quantity</th>
                             <th>Unit</th>
@@ -397,7 +392,6 @@
                     <tbody>
                         @foreach($emergencyKits as $item)
                             <tr>
-                                <td><input type="checkbox" class="select-item" name="item_ids[]" value="{{ $item->id }}"></td>
                                 <td>{{ $item->name }}</td>
                                 <td>{{ $item->quantity }}</td>
                                 <td>{{ $item->unit }}</td>
