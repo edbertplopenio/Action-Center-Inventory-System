@@ -9,15 +9,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
     <style>
-
-        html, body {
-            overflow: hidden; /* Prevent scrolling on the entire page */
-            height: 100%; /* Ensure full height without extra spacing */
-            margin: 0;
-            padding: 0;
-        }
-
-
         /* Hide all tables by default, only show the active tab's table */
         .tab-content {
             display: none;
@@ -109,40 +100,13 @@
         }
 
         .table-container {
-            width: 100%;           /* Ensure it fills the width of the parent */
-            height: 550px;  
-            max-height; 650px;       /* Adjust the height as needed */
-            overflow-y: scroll;    /* Enable vertical scrolling */
-            overflow-x: hidden;    /* Disable horizontal scrolling */
-        }
-
-        table {
-            width: 100%;           /* Ensure the table takes the full width of the container */
-            table-layout: fixed;   /* Prevent table from expanding beyond its container */
-        }
-
-        .table-container table {
+            overflow-x: auto;
             width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed; /* Ensures column alignment */
+            height: 550px;
+            overflow-y: auto; /* Enable vertical scrolling if needed */
+            margin-top: -1.5rem; /* Set to 0 or a smaller value to move the table up */
+            position: relative;
         }
-
-        .table-container thead {
-            position: sticky;
-            top: 0;
-            background-color: white; /* Keeps the header visible */
-            z-index: 5;
-            box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
-        }
-
-        .table-footer {
-            width: 100%;
-            background-color: white; /* Ensure footer has a solid background */
-            position: sticky;
-            bottom: 0;
-            z-index: 10;  /* Ensure it stays on top of other content */
-        }
-
         /* Styling for the Action Buttons */
         .action-buttons {
             display: flex;
@@ -205,26 +169,6 @@
         .archives-tab {
             background-color: rgb(0, 123, 255); /* Blue color for the Archives tab */
         }
-
-        /* Make the table scrollable while keeping the pagination at the bottom */
-    table.dataTable {
-        width: 100%; /* Ensure the table takes up the full width of the container */
-    }
-
-    /* Optional: Ensure the table container has a maximum height */
-    .table-container {
-        max-height: 500px;  /* Adjust based on your layout */
-        overflow-y: auto;   /* Enable vertical scrolling */
-    }
-
-    /* Style pagination and entries at the bottom */
-    .dataTables_wrapper .dataTables_info, 
-    .dataTables_wrapper .dataTables_paginate {
-        position: sticky;
-        bottom: 0;
-        z-index: 10;
-        background-color: white;
-    }
 
 
     </style>
@@ -341,176 +285,183 @@
         </div>
 
         <!-- Equipment Tab -->
-        <!-- Equipment Tab -->
-<div id="equipment-content" class="tab-content active">
-    <h3 class="text-xl font-semibold" style="margin-bottom: 7px;">DRRM Equipment</h3>
-    <div class="table-container">
-        <table id="equipmentTable" class="display">
-            <thead>
-                <tr>
-                    <th>Equipment Name</th>
-                    <th>Quantity</th>
-                    <th>Unit</th>
-                    <th>Description</th>
-                    <th>Storage Location</th>
-                    <th>Arrival Date</th>
-                    <th>Date Purchased</th>
-                    <th>Status</th>
-                    <th>Image</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($items as $item)
-                    <tr>
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->quantity }}</td>
-                        <td>{{ $item->unit }}</td>
-                        <td>{{ $item->description }}</td>
-                        <td>{{ $item->storage_location }}</td>
-                        <td>{{ $item->arrival_date }}</td>
-                        <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
-                        <td class="action-buttons">
-                            <button class="edit-btn">Edit</button>
-                            <button class="archive-btn">Archive</button>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</div>
+        <div id="equipment-content" class="tab-content active">
+        <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">DRRM Equipment</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="select-all-equipment" onclick="selectAllCheckboxes('equipment')"></th>
+                            <th>Equipment Name</th>
+                            <th>Quantity</th>
+                            <th>Unit</th>
+                            <th>Description</th>
+                            <th>Storage Location</th>
+                            <th>Arrival Date</th>
+                            <th>Date Purchased</th>
+                            <th>Status</th>
+                            <th>Image</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($items as $item)
+                            <tr>
+                                <td><input type="checkbox" class="select-item" name="item_ids[]" value="{{ $item->id }}"></td>
+                                <td>{{ $item->name }}</td>
+                                <td>{{ $item->quantity }}</td>
+                                <td>{{ $item->unit }}</td>
+                                <td>{{ $item->description }}</td>
+                                <td>{{ $item->storage_location }}</td>
+                                <td>{{ $item->arrival_date }}</td>
+                                <td>{{ $item->date_purchased }}</td>
+                                <td>{{ $item->status }}</td>
+                                <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                                <td class="action-buttons">
+                                    <button class="edit-btn">Edit</button>
+                                    <button class="archive-btn">Archive</button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
 
+            </div>
+        </div>
 
         <!-- Office Supplies Tab -->
-<div id="office-supplies-content" class="tab-content">
-    <h3 class="text-xl font-semibold" style="margin-bottom: 7px;">Office Supplies</h3>
-    <div class="table-container">
-        <table id="officeSuppliesTable" class="display">
-            <thead>
-                <tr>
-                    <th>Item Name</th>
-                    <th>Quantity</th>
-                    <th>Unit</th>
-                    <th>Description</th>
-                    <th>Storage Location</th>
-                    <th>Arrival Date</th>
-                    <th>Date Purchased</th>
-                    <th>Status</th>
-                    <th>Image</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($officeSupplies as $item)
-                    <tr>
-                        <td><input type="checkbox" class="select-item" name="item_ids[]" value="{{ $item->id }}"></td>
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->quantity }}</td>
-                        <td>{{ $item->unit }}</td>
-                        <td>{{ $item->description }}</td>
-                        <td>{{ $item->storage_location }}</td>
-                        <td>{{ $item->arrival_date }}</td>
-                        <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
-                        <td class="action-buttons">
-                            <button class="edit-btn">Edit</button>
-                            <button class="archive-btn">Archive</button>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</div>
+        <div id="office-supplies-content" class="tab-content">
+        <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">Office Supplies</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="select-all-office-supplies" onclick="selectAllCheckboxes('office-supplies')"></th>
+                            <th>Item Name</th>
+                            <th>Quantity</th>
+                            <th>Unit</th>
+                            <th>Description</th>
+                            <th>Storage Location</th>
+                            <th>Arrival Date</th>
+                            <th>Date Purchased</th>
+                            <th>Status</th>
+                            <th>Image</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($officeSupplies as $item)
+                            <tr>
+                                <td><input type="checkbox" class="select-item" name="item_ids[]" value="{{ $item->id }}"></td>
+                                <td>{{ $item->name }}</td>
+                                <td>{{ $item->quantity }}</td>
+                                <td>{{ $item->unit }}</td>
+                                <td>{{ $item->description }}</td>
+                                <td>{{ $item->storage_location }}</td>
+                                <td>{{ $item->arrival_date }}</td>
+                                <td>{{ $item->date_purchased }}</td>
+                                <td>{{ $item->status }}</td>
+                                <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                                <td class="action-buttons">
+                                    <button class="edit-btn">Edit</button>
+                                    <button class="archive-btn">Archive</button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
 
-<!-- Emergency Kits Tab -->
-<div id="emergency-kits-content" class="tab-content">
-    <h3 class="text-xl font-semibold" style="margin-bottom: 7px;">Emergency Kits</h3>
-    <div class="table-container">
-        <table id="emergencyKitsTable" class="display">
-            <thead>
-                <tr>
-                    <th>Item Name</th>
-                    <th>Quantity</th>
-                    <th>Unit</th>
-                    <th>Description</th>
-                    <th>Storage Location</th>
-                    <th>Arrival Date</th>
-                    <th>Date Purchased</th>
-                    <th>Status</th>
-                    <th>Image</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($emergencyKits as $item)
-                    <tr>
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->quantity }}</td>
-                        <td>{{ $item->unit }}</td>
-                        <td>{{ $item->description }}</td>
-                        <td>{{ $item->storage_location }}</td>
-                        <td>{{ $item->arrival_date }}</td>
-                        <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
-                        <td class="action-buttons">
-                            <button class="edit-btn">Edit</button>
-                            <button class="archive-btn">Archive</button>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</div>
+            </div>
+        </div>
 
-<!-- Archives Tab -->
-<div id="archives-content" class="tab-content">
-    <h3 class="text-xl font-semibold" style="margin-bottom: 7px;">Archives</h3>
-    <div class="table-container">
-        <table id="archivesTable" class="display">
-            <thead>
-                <tr>
-                    <th><input type="checkbox" id="select-all-archives" onclick="selectAllCheckboxes('archives')"></th>
-                    <th>Item Name</th>
-                    <th>Unit</th>
-                    <th>Description</th>
-                    <th>Storage Location</th>
-                    <th>Arrival Date</th>
-                    <th>Date Purchased</th>
-                    <th>Status</th>
-                    <th>Image</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Example archived item -->
-                <tr>
-                    <td><input type="checkbox" class="select-item" name="item_ids[]" value="1"></td>
-                    <td>Archived Item 1</td>
-                    <td>5</td>
-                    <td>pcs</td>
-                    <td>Item description</td>
-                    <td>Location A</td>
-                    <td>2025-01-01</td>
-                    <td>2024-12-01</td>
-                    <td>Archived</td>
-                    <td><img src="image_url" alt="Archived Item 1" class="w-10 h-10"></td>
-                    <td class="action-buttons">
-                        <button class="edit-btn">Edit</button>
-                        <button class="archive-btn">Restore</button>
-                    </td>
-                </tr>
-                <!-- Add more archived items here -->
-            </tbody>
-        </table>
-    </div>
-</div>
+        <!-- Emergency Kits Tab -->
+        <div id="emergency-kits-content" class="tab-content">
+            <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">Emergency Kits</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="select-all-emergency-kits" onclick="selectAllCheckboxes('emergency-kits')"></th>
+                            <th>Item Name</th>
+                            <th>Quantity</th>
+                            <th>Unit</th>
+                            <th>Description</th>
+                            <th>Storage Location</th>
+                            <th>Arrival Date</th>
+                            <th>Date Purchased</th>
+                            <th>Status</th>
+                            <th>Image</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($emergencyKits as $item)
+                            <tr>
+                                <td><input type="checkbox" class="select-item" name="item_ids[]" value="{{ $item->id }}"></td>
+                                <td>{{ $item->name }}</td>
+                                <td>{{ $item->quantity }}</td>
+                                <td>{{ $item->unit }}</td>
+                                <td>{{ $item->description }}</td>
+                                <td>{{ $item->storage_location }}</td>
+                                <td>{{ $item->arrival_date }}</td>
+                                <td>{{ $item->date_purchased }}</td>
+                                <td>{{ $item->status }}</td>
+                                <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                                <td class="action-buttons">
+                                    <button class="edit-btn">Edit</button>
+                                    <button class="archive-btn">Archive</button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+        <!-- Archives Tab -->
+        <div id="archives-content" class="tab-content">
+            <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">Archives</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="select-all-archives" onclick="selectAllCheckboxes('archives')"></th>
+                            <th>Item Name</th>
+                            <th>Unit</th>
+                            <th>Description</th>
+                            <th>Storage Location</th>
+                            <th>Arrival Date</th>
+                            <th>Date Purchased</th>
+                            <th>Status</th>
+                            <th>Image</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Example archived item -->
+                        <tr>
+                            <td><input type="checkbox" class="select-item" name="item_ids[]" value="1"></td>
+                            <td>Archived Item 1</td>
+                            <td>5</td>
+                            <td>pcs</td>
+                            <td>Item description</td>
+                            <td>Location A</td>
+                            <td>2025-01-01</td>
+                            <td>2024-12-01</td>
+                            <td>Archived</td>
+                            <td><img src="image_url" alt="Archived Item 1" class="w-10 h-10"></td>
+                            <td class="action-buttons">
+                                <button class="edit-btn">Edit</button>
+                                <button class="archive-btn">Restore</button>
+                            </td>
+                        </tr>
+                        <!-- Add more archived items here -->
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
 
     </div>
 </div>
@@ -554,14 +505,8 @@
 
     // Ensure DataTables is initialized when the page loads
     $(document).ready(function () {
-        $('#equipmentTable').DataTable({
-        "scrollY": "400px",         // Set a fixed height for the table body
-        "scrollCollapse": true,     // Allow the table to shrink in height when fewer rows are present
-        "paging": true,             // Enable pagination
-        "pagingType": "simple",     // Optional: You can set the paging type (simple, full numbers, etc.)
-        "dom": '<"top"i>rt<"bottom"flp>',  // Custom layout for table controls, "top" is for entries, "bottom" is for pagination
+        initializeDataTables();
     });
-});
 </script>
 
 <!-- JavaScript for Modal Logic -->
