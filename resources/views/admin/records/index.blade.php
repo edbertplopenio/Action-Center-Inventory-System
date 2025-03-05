@@ -14,6 +14,8 @@
     <!-- Include jQuery (required for DataTables) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
 
 
@@ -75,24 +77,18 @@
     </style>
 
 
-    <script>
-        $(document).ready(function() {
-            $('#myTable').DataTable({
-                "scrollY": '425px', // Disable vertical scrolling
-                "scrollCollapse": true,
-                "scrollX": false, // Disable horizontal scrolling
-                "paging": true, // Enable pagination (optional)
-                "searching": true, // Enable search (optional)
-                "ordering": true, // Enable sorting (optional)
-                "columnDefs": [{
-                        "orderable": false,
-                        "targets": -1
-                    } // Disables sorting for the last column (Action)
-                ]
-            });
-        });
-    </script>
 
+    <!-- <script>
+    $(document).ready(function() {
+        $('#myTable').DataTable({
+            "scrollY": false,  // Disable vertical scrolling
+            "scrollX": false,  // Disable horizontal scrolling
+            "paging": true,    // Enable pagination (optional)
+            "searching": true, // Enable search (optional)
+            "ordering": true   // Enable sorting (optional)
+        });
+    });
+</script> -->
 
 
 
@@ -199,6 +195,10 @@
 
 
 
+
+
+
+
 </head>
 
 <div class="mx-auto p-2" style="width: 1220px; height: 700px; font-family: 'Inter', sans-serif;">
@@ -258,9 +258,13 @@
                         data-medium="{{ ucfirst(strtolower($record->medium)) }}"
                         data-location="{{ $record->location }}"
                         data-time-value="{{ $record->time_value === 'P' ? 'Permanent' : 'Temporary' }}"
-                        data-retention-active="{{ $record->active ?? 0 }} {{ $record->active_unit && $record->active_unit !== 'Permanent' ? $record->active_unit : '' }}"
-                        data-retention-storage="{{ $record->storage ?? 0 }} {{ $record->storage_unit && $record->storage_unit !== 'Permanent' ? $record->storage_unit : '' }}"
-                        data-retention-total="{{ $record->permanent ? 'Permanent' : (($record->active ?? 0) + ($record->storage ?? 0)) }}"
+
+                        {{-- Store active and storage separately for JavaScript --}}
+                        data-retention-active="{{ $record->active ?? 0 }}"
+                        data-retention-active-unit="{{ $record->active_unit ?? '' }}"
+                        data-retention-storage="{{ $record->storage ?? 0 }}"
+                        data-retention-storage-unit="{{ $record->storage_unit ?? '' }}"
+
                         data-disposition="{{ $record->disposition }}"
                         data-grds-item="{{ $record->grds_item }}"
                         data-restriction="{{ $record->restriction ?? 'N/A' }}"
@@ -277,7 +281,7 @@
                         <!-- Period Covered -->
                         <td>{{ $record->start_year ?? 'N/A' }} to {{ $record->end_year ?? 'N/A' }}</td>
 
-                        <!-- Volume (Now supports numbers & text) -->
+                        <!-- Volume -->
                         <td>{{ $record->volume ?? 'N/A' }}</td>
 
                         <!-- Records Medium -->
@@ -296,7 +300,7 @@
                                 <span>
                                     {{ $record->active ?? 0 }}
                                     @if($record->active_unit && $record->active_unit !== 'Permanent')
-                                    {{ $record->active_unit }}
+                                    {{ $record->active_unit === 'years' ? ($record->active > 1 ? 'yrs' : 'yr') : ($record->active > 1 ? 'mos' : 'mo') }}
                                     @endif
                                 </span>
 
@@ -304,16 +308,48 @@
                                 <span>
                                     {{ $record->storage ?? 0 }}
                                     @if($record->storage_unit && $record->storage_unit !== 'Permanent')
-                                    {{ $record->storage_unit }}
+                                    {{ $record->storage_unit === 'years' ? ($record->storage > 1 ? 'yrs' : 'yr') : ($record->storage > 1 ? 'mos' : 'mo') }}
                                     @endif
                                 </span>
 
                                 <!-- Total -->
                                 <span>
-                                    @if($record->permanent)
+                                    @if($record->active_unit === 'Permanent' || $record->storage_unit === 'Permanent')
                                     Permanent
                                     @else
-                                    {{ ($record->active ?? 0) + ($record->storage ?? 0) }}
+                                    @php
+                                    $totalYears = 0;
+                                    $totalMonths = 0;
+
+                                    // Convert active period to years and months
+                                    if ($record->active_unit === "years") {
+                                    $totalYears += $record->active ?? 0;
+                                    } elseif ($record->active_unit === "months") {
+                                    $totalMonths += $record->active ?? 0;
+                                    }
+
+                                    // Convert storage period to years and months
+                                    if ($record->storage_unit === "years") {
+                                    $totalYears += $record->storage ?? 0;
+                                    } elseif ($record->storage_unit === "months") {
+                                    $totalMonths += $record->storage ?? 0;
+                                    }
+
+                                    // Convert months into years if applicable
+                                    $totalYears += intdiv($totalMonths, 12);
+                                    $totalMonths = $totalMonths % 12;
+
+                                    // Format total display
+                                    $totalDisplay = $totalYears > 0 ? ($totalYears > 1 ? "{$totalYears} yrs" : "{$totalYears} yr") : "";
+                                    if ($totalMonths > 0) {
+                                    $totalDisplay .= $totalYears > 0 ? ", " : "";
+                                    $totalDisplay .= ($totalMonths > 1 ? "{$totalMonths} mos" : "{$totalMonths} mo");
+                                    }
+                                    if (empty($totalDisplay)) {
+                                    $totalDisplay = "0";
+                                    }
+                                    @endphp
+                                    {{ $totalDisplay }}
                                     @endif
                                 </span>
                             </div>
@@ -338,11 +374,10 @@
                             </button>
                         </td>
                     </tr>
+
                     @empty
-                    <tr>
-                        <td colspan="11" class="text-center">
-                            No records found.
-                        </td>
+                    <tr id="noRecordsRow">
+                        <td colspan="11" class="text-center">No records found.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -419,7 +454,7 @@
     </div>
 </div>
 
-<!-- JS for Archive -->
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Add event listener for the "Confirm Archive" button only once
@@ -645,44 +680,110 @@
 
 
 
-<!-- JS for format of text -->
+<!-- JS for modal tbody Capitalize the modal -->
 <script>
-    function capitalizeFirstLetter(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1).replace(/_/g, ' ');
-    }
+    document.addEventListener("DOMContentLoaded", function() {
 
-    document.querySelectorAll('.record-row').forEach(row => {
-        row.addEventListener('click', function(event) {
-            // Prevent clicking inside buttons from opening the modal
-            if (event.target.closest('button')) {
-                return;
+        console.log("Script Loaded: Event listeners added");
+
+        // Function to capitalize first letter of each word and replace underscores
+        function capitalizeFirstLetter(string) {
+            return string.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+        }
+
+        // Function to calculate and format the retention period
+        function formatRetentionPeriod(active, activeUnit, storage, storageUnit) {
+            let totalYears = 0;
+            let totalMonths = 0;
+            let totalDisplay = "";
+
+            console.log(`Calculating retention for: Active(${active} ${activeUnit}), Storage(${storage} ${storageUnit})`);
+
+            // Handle "Permanent" Case
+            if (activeUnit === "Permanent" || storageUnit === "Permanent") {
+                return "Permanent";
             }
 
-            // Capitalize the first letter and clean up the string (remove underscores)
-            document.querySelector('.record-title').textContent = capitalizeFirstLetter(this.dataset.title);
-            document.querySelector('.record-related-documents').textContent = capitalizeFirstLetter(this.dataset.relatedDocuments);
-            document.querySelector('.record-period').textContent = capitalizeFirstLetter(this.dataset.period);
-            document.querySelector('.record-volume').textContent = capitalizeFirstLetter(this.dataset.volume);
-            document.querySelector('.record-medium').textContent = capitalizeFirstLetter(this.dataset.medium);
-            document.querySelector('.record-location').textContent = capitalizeFirstLetter(this.dataset.location);
-            document.querySelector('.record-time-value').textContent = capitalizeFirstLetter(this.dataset.timeValue);
-            document.querySelector('.record-retention-active').textContent = capitalizeFirstLetter(this.dataset.retentionActive);
-            document.querySelector('.record-retention-storage').textContent = capitalizeFirstLetter(this.dataset.retentionStorage);
-            document.querySelector('.record-retention-total').textContent = capitalizeFirstLetter(this.dataset.retentionTotal);
-            document.querySelector('.record-disposition').textContent = capitalizeFirstLetter(this.dataset.disposition);
-            document.querySelector('.record-grds-item').textContent = capitalizeFirstLetter(this.dataset.grdsItem);
-            document.querySelector('.record-restriction').textContent = capitalizeFirstLetter(this.dataset.restriction);
-            document.querySelector('.record-utility').textContent = capitalizeFirstLetter(this.dataset.utility);
-            document.querySelector('.record-duplication').textContent = capitalizeFirstLetter(this.dataset.duplication);
-            document.querySelector('.record-frequency').textContent = capitalizeFirstLetter(this.dataset.frequency);
+            // Convert active period to years and months
+            if (activeUnit === "years") {
+                totalYears += active;
+            } else if (activeUnit === "months") {
+                totalMonths += active;
+            }
 
-            document.getElementById('showRecord').style.display = 'block';
+            // Convert storage period to years and months
+            if (storageUnit === "years") {
+                totalYears += storage;
+            } else if (storageUnit === "months") {
+                totalMonths += storage;
+            }
+
+            // Convert months into years if applicable
+            totalYears += Math.floor(totalMonths / 12);
+            totalMonths = totalMonths % 12;
+
+            // Format total retention display with abbreviations & pluralization
+            if (totalYears > 0) totalDisplay += `${totalYears} ${totalYears > 1 ? 'yrs' : 'yr'}`;
+            if (totalMonths > 0) {
+                totalDisplay += totalYears > 0 ? `, ${totalMonths} ${totalMonths > 1 ? 'mos' : 'mo'}` :
+                    `${totalMonths} ${totalMonths > 1 ? 'mos' : 'mo'}`;
+            }
+            if (!totalDisplay) totalDisplay = "0";
+
+            console.log(`Final Retention Total: ${totalDisplay}`);
+            return totalDisplay;
+        }
+
+        // Event listener for record rows
+        document.querySelectorAll('.record-row').forEach(row => {
+            row.addEventListener('click', function(event) {
+                console.log("Row Clicked:", this.dataset);
+
+                // Prevent clicking inside buttons from opening the modal
+                if (event.target.closest('button')) {
+                    return;
+                }
+
+                // Get values from dataset
+                let active = parseInt(this.dataset.retentionActive) || 0;
+                let activeUnit = this.dataset.retentionActiveUnit || "";
+                let storage = parseInt(this.dataset.retentionStorage) || 0;
+                let storageUnit = this.dataset.retentionStorageUnit || "";
+
+                console.log(`Extracted values: Active(${active} ${activeUnit}), Storage(${storage} ${storageUnit})`);
+
+                let retentionTotal = formatRetentionPeriod(active, activeUnit, storage, storageUnit);
+
+                // Populate modal fields with capitalized and formatted values
+                document.querySelector('.record-title').textContent = capitalizeFirstLetter(this.dataset.title);
+                document.querySelector('.record-related-documents').textContent = capitalizeFirstLetter(this.dataset.relatedDocuments);
+                document.querySelector('.record-period').textContent = capitalizeFirstLetter(this.dataset.period);
+                document.querySelector('.record-volume').textContent = capitalizeFirstLetter(this.dataset.volume);
+                document.querySelector('.record-medium').textContent = capitalizeFirstLetter(this.dataset.medium);
+                document.querySelector('.record-location').textContent = capitalizeFirstLetter(this.dataset.location);
+                document.querySelector('.record-time-value').textContent = capitalizeFirstLetter(this.dataset.timeValue);
+                document.querySelector('.record-retention-active').textContent = `${active} ${activeUnit === 'years' ? (active > 1 ? 'yrs' : 'yr') : activeUnit === 'months' ? (active > 1 ? 'mos' : 'mo') : ''}`;
+                document.querySelector('.record-retention-storage').textContent = `${storage} ${storageUnit === 'years' ? (storage > 1 ? 'yrs' : 'yr') : storageUnit === 'months' ? (storage > 1 ? 'mos' : 'mo') : ''}`;
+                document.querySelector('.record-retention-total').textContent = retentionTotal;
+                document.querySelector('.record-disposition').textContent = capitalizeFirstLetter(this.dataset.disposition);
+                document.querySelector('.record-grds-item').textContent = capitalizeFirstLetter(this.dataset.grdsItem);
+                document.querySelector('.record-restriction').textContent = capitalizeFirstLetter(this.dataset.restriction);
+                document.querySelector('.record-utility').textContent = capitalizeFirstLetter(this.dataset.utility);
+                document.querySelector('.record-duplication').textContent = capitalizeFirstLetter(this.dataset.duplication);
+                document.querySelector('.record-frequency').textContent = capitalizeFirstLetter(this.dataset.frequency);
+
+                // Show the modal
+                document.getElementById('showRecord').style.display = 'block';
+                console.log("Modal Displayed with Data");
+            });
         });
-    });
 
-    // Close button functionality
-    document.getElementById('closeShowRecordBtn').addEventListener('click', function() {
-        document.getElementById('showRecord').style.display = 'none';
+        // Close modal functionality
+        document.getElementById('closeShowRecordBtn').addEventListener('click', function() {
+            document.getElementById('showRecord').style.display = 'none';
+            console.log("Modal Closed");
+        });
+
     });
 </script>
 
@@ -1033,7 +1134,27 @@
             "restriction", "disposition", "location", "grds_item"
         ];
 
+        // Initialize DataTables with additional settings
+        $(document).ready(function() {
+            let table = $('#myTable');
 
+            if (table.find("tbody tr").length === 1 && table.find("#noRecordsRow").length === 1) {
+                table.find("#noRecordsRow").remove(); // Remove "No records found" row
+            }
+
+            table.DataTable({
+                scrollY: '425px',
+                scrollCollapse: true,
+                scrollX: false,
+                paging: true,
+                searching: true,
+                ordering: true,
+                columnDefs: [{
+                    orderable: false,
+                    targets: -1
+                }]
+            });
+        });
 
         // Open modal
         document.getElementById('openModalBtn').addEventListener('click', function() {
@@ -1147,57 +1268,137 @@
                     let timeValue = (r.time_value === 'P') ? "Permanent" : "Temporary";
 
                     let active = r.active ?? 0;
-                    let activeUnit = (r.active_unit && r.active_unit !== 'Permanent') ? r.active_unit : "";
+                    let activeUnit = r.active_unit && r.active_unit !== 'Permanent' ? r.active_unit : "";
                     let storage = r.storage ?? 0;
-                    let storageUnit = (r.storage_unit && r.storage_unit !== 'Permanent') ? r.storage_unit : "";
+                    let storageUnit = r.storage_unit && r.storage_unit !== 'Permanent' ? r.storage_unit : "";
 
-                    let total;
-                    if (r.active_unit === 'Permanent' && r.storage_unit === 'Permanent') {
-                        total = "Permanent";
+                    let totalYears = 0;
+                    let totalMonths = 0;
+                    let totalDisplay = "";
+
+                    // Handle "Permanent" Case
+                    if (r.active_unit === "Permanent" || r.storage_unit === "Permanent") {
+                        totalDisplay = "Permanent";
                     } else {
-                        total = (active + storage).toString();
+                        // Convert active period to years and months
+                        if (activeUnit === "years") {
+                            totalYears += active;
+                        } else if (activeUnit === "months") {
+                            totalMonths += active;
+                        }
+
+                        // Convert storage period to years and months
+                        if (storageUnit === "years") {
+                            totalYears += storage;
+                        } else if (storageUnit === "months") {
+                            totalMonths += storage;
+                        }
+
+                        // Convert months to years if applicable
+                        totalYears += Math.floor(totalMonths / 12);
+                        totalMonths = totalMonths % 12;
+
+                        // Helper function for pluralization
+                        function formatUnit(value, singular, plural) {
+                            return value > 1 ? `${value} ${plural}` : `${value} ${singular}`;
+                        }
+
+                        // Format total retention display (abbreviated & pluralized)
+                        if (totalYears > 0) totalDisplay += formatUnit(totalYears, "yr", "yrs");
+                        if (totalMonths > 0) totalDisplay += totalYears > 0 ? `, ${formatUnit(totalMonths, "mo", "mos")}` : formatUnit(totalMonths, "mo", "mos");
+                        if (!totalDisplay) totalDisplay = "0";
                     }
 
                     let retentionPeriodHTML = `
-                <div style="display: flex; justify-content: space-between;">
-                    <span>${active} ${activeUnit}</span>
-                    <span>${storage} ${storageUnit}</span>
-                    <span>${total}</span>
-                </div>`;
+        <div style="display: flex; justify-content: space-between;">
+            <span>${active} ${activeUnit === 'years' ? (active > 1 ? 'yrs' : 'yr') : activeUnit === 'months' ? (active > 1 ? 'mos' : 'mo') : ''}</span>
+            <span>${storage} ${storageUnit === 'years' ? (storage > 1 ? 'yrs' : 'yr') : storageUnit === 'months' ? (storage > 1 ? 'mos' : 'mo') : ''}</span>
+            <span>${totalDisplay}</span>
+        </div>`;
 
-                    table.row.add([
-                        r.title,
-                        r.related_documents,
-                        periodCovered,
-                        r.volume ? r.volume : "N/A",
-                        r.medium,
-                        r.location,
-                        timeValue,
+                    // Function to capitalize the first letter of each word
+                    function capitalizeWords(str) {
+                        return str.replace(/\b\w/g, char => char.toUpperCase());
+                    }
+
+                    $('#myTable').DataTable().row.add([
+                        capitalizeWords(r.title),
+                        capitalizeWords(r.related_documents),
+                        capitalizeWords(periodCovered),
+                        r.volume ? capitalizeWords(r.volume) : "N/A",
+                        capitalizeWords(r.medium),
+                        capitalizeWords(r.location),
+                        capitalizeWords(timeValue),
                         retentionPeriodHTML,
-                        r.disposition,
-                        r.grds_item,
+                        capitalizeWords(r.disposition),
+                        capitalizeWords(r.grds_item),
                         `
-                    <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
-                        Edit
-                    </button>
-                    <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
-                        Archive
-                    </button>
-                    `
+            <button class="edit-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24">
+                Edit
+            </button>
+            <button class="archive-btn px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] text-xs w-24">
+                Archive
+            </button>
+            `
                     ]).draw(false);
 
                 } else {
                     throw new Error(result.message || "Failed to add record.");
                 }
             } catch (error) {
-                console.error("Database Error:", error.message);
-                Swal.fire({
-                    icon: "error",
-                    title: "Database Error",
-                    text: "Failed to add record. Check console for details.",
-                    confirmButtonColor: "#d33"
-                });
+                if (!result || !result.record) {
+                    console.error("Database Error: No record returned.");
+                    Swal.fire({
+                        icon: "error",
+                        title: "Database Error",
+                        text: "Failed to add record. Check console for details.",
+                        confirmButtonColor: "#d33"
+                    });
+                } else {
+                    console.log("Record added successfully:", result.record);
+                    Swal.fire({
+                        icon: "success",
+                        title: "Success!",
+                        text: "Record added successfully!",
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+
+                    modal.style.display = "none";
+                    form.reset();
+
+                    let r = result.record;
+
+                    let retentionPeriodHTML = `
+        <div style="display: flex; justify-content: space-between;">
+            <span>${r.active || 0} ${r.active_unit === 'years' ? (r.active > 1 ? 'yrs' : 'yr') : r.active_unit === 'months' ? (r.active > 1 ? 'mos' : 'mo') : ''}</span>
+            <span>${r.storage || 0} ${r.storage_unit === 'years' ? (r.storage > 1 ? 'yrs' : 'yr') : r.storage_unit === 'months' ? (r.storage > 1 ? 'mos' : 'mo') : ''}</span>
+            <span>${r.permanent ? "Permanent" : totalDisplay}</span>
+        </div>`;
+
+                    // Ensure table exists before using .row.add()
+                    if (table) {
+                        table.row.add([
+                            r.title,
+                            r.related_documents,
+                            `${r.start_year} to ${r.end_year}`,
+                            r.volume || "N/A",
+                            r.medium,
+                            r.location,
+                            r.time_value === 'P' ? "Permanent" : "Temporary",
+                            retentionPeriodHTML,
+                            r.disposition,
+                            r.grds_item,
+                            `<button class="edit-btn">Edit</button>
+                <button class="archive-btn">Archive</button>`
+                        ]).draw(false);
+                    } else {
+                        console.error("⚠️ DataTable is not initialized! Cannot add row.");
+                    }
+                }
             }
+
+
         });
 
         // Remove red border on input
