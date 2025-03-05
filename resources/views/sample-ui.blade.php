@@ -4,496 +4,974 @@
 
 @section('content')
 
-<!-- Include DataTables CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
-<!-- Include jQuery (required for DataTables) -->
-<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
-<script src="https://cdn.datatables.net/2.2.2/js/dataTables.tailwindcss.js"></script>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src=""></script>
+<head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-<!-- Your table -->
-<table id="myTable" class="display style=" width:100%">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Position</th>
-            <th>Office</th>
-            <th>Age</th>
-            <th>Start date</th>
-            <th>Salary</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>Tiger Nixon</td>
-            <td>System Architect</td>
-            <td>Edinburgh</td>
-            <td>61</td>
-            <td>2011-04-25</td>
-            <td>$320,800</td>
-        </tr>
-        <tr>
-            <td>Garrett Winters</td>
-            <td>Accountant</td>
-            <td>Tokyo</td>
-            <td>63</td>
-            <td>2011-07-25</td>
-            <td>$170,750</td>
-        </tr>
-        <tr>
-            <td>Ashton Cox</td>
-            <td>Junior Technical Author</td>
-            <td>San Francisco</td>
-            <td>66</td>
-            <td>2009-01-12</td>
-            <td>$86,000</td>
-        </tr>
-        <tr>
-            <td>Cedric Kelly</td>
-            <td>Senior Javascript Developer</td>
-            <td>Edinburgh</td>
-            <td>22</td>
-            <td>2012-03-29</td>
-            <td>$433,060</td>
-        </tr>
-        <tr>
-            <td>Airi Satou</td>
-            <td>Accountant</td>
-            <td>Tokyo</td>
-            <td>33</td>
-            <td>2008-11-28</td>
-            <td>$162,700</td>
-        </tr>
-        <tr>
-            <td>Brielle Williamson</td>
-            <td>Integration Specialist</td>
-            <td>New York</td>
-            <td>61</td>
-            <td>2012-12-02</td>
-            <td>$372,000</td>
-        </tr>
-        <tr>
-            <td>Herrod Chandler</td>
-            <td>Sales Assistant</td>
-            <td>San Francisco</td>
-            <td>59</td>
-            <td>2012-08-06</td>
-            <td>$137,500</td>
-        </tr>
-        <tr>
-            <td>Rhona Davidson</td>
-            <td>Integration Specialist</td>
-            <td>Tokyo</td>
-            <td>55</td>
-            <td>2010-10-14</td>
-            <td>$327,900</td>
-        </tr>
-        <tr>
-            <td>Colleen Hurst</td>
-            <td>Javascript Developer</td>
-            <td>San Francisco</td>
-            <td>39</td>
-            <td>2009-09-15</td>
-            <td>$205,500</td>
-        </tr>
-        <tr>
-            <td>Sonya Frost</td>
-            <td>Software Engineer</td>
-            <td>Edinburgh</td>
-            <td>23</td>
-            <td>2008-12-13</td>
-            <td>$103,600</td>
-        </tr>
-        <tr>
-            <td>Jena Gaines</td>
-            <td>Office Manager</td>
-            <td>London</td>
-            <td>30</td>
-            <td>2008-12-19</td>
-            <td>$90,560</td>
-        </tr>
-        <tr>
-            <td>Quinn Flynn</td>
-            <td>Support Lead</td>
-            <td>Edinburgh</td>
-            <td>22</td>
-            <td>2013-03-03</td>
-            <td>$342,000</td>
-        </tr>
-        <tr>
-            <td>Charde Marshall</td>
-            <td>Regional Director</td>
-            <td>San Francisco</td>
-            <td>36</td>
-            <td>2008-10-16</td>
-            <td>$470,600</td>
-        </tr>
-        <tr>
-            <td>Haley Kennedy</td>
-            <td>Senior Marketing Designer</td>
-            <td>London</td>
-            <td>43</td>
-            <td>2012-12-18</td>
-            <td>$313,500</td>
-        </tr>
-        <tr>
-            <td>Tatyana Fitzpatrick</td>
-            <td>Regional Director</td>
-            <td>London</td>
-            <td>19</td>
-            <td>2010-03-17</td>
-            <td>$385,750</td>
-        </tr>
-        <tr>
-            <td>Michael Silva</td>
-            <td>Marketing Designer</td>
-            <td>London</td>
-            <td>66</td>
-            <td>2012-11-27</td>
-            <td>$198,500</td>
-        </tr>
-        <tr>
-            <td>Paul Byrd</td>
-            <td>Chief Financial Officer (CFO)</td>
-            <td>New York</td>
-            <td>64</td>
-            <td>2010-06-09</td>
-            <td>$725,000</td>
-        </tr>
-        <tr>
-            <td>Gloria Little</td>
-            <td>Systems Administrator</td>
-            <td>New York</td>
-            <td>59</td>
-            <td>2009-04-10</td>
-            <td>$237,500</td>
-        </tr>
-        <tr>
-            <td>Bradley Greer</td>
-            <td>Software Engineer</td>
-            <td>London</td>
-            <td>41</td>
-            <td>2012-10-13</td>
-            <td>$132,000</td>
-        </tr>
-        <tr>
-            <td>Dai Rios</td>
-            <td>Personnel Lead</td>
-            <td>Edinburgh</td>
-            <td>35</td>
-            <td>2012-09-26</td>
-            <td>$217,500</td>
-        </tr>
-        <tr>
-            <td>Jenette Caldwell</td>
-            <td>Development Lead</td>
-            <td>New York</td>
-            <td>30</td>
-            <td>2011-09-03</td>
-            <td>$345,000</td>
-        </tr>
-        <tr>
-            <td>Yuri Berry</td>
-            <td>Chief Marketing Officer (CMO)</td>
-            <td>New York</td>
-            <td>40</td>
-            <td>2009-06-25</td>
-            <td>$675,000</td>
-        </tr>
-        <tr>
-            <td>Caesar Vance</td>
-            <td>Pre-Sales Support</td>
-            <td>New York</td>
-            <td>21</td>
-            <td>2011-12-12</td>
-            <td>$106,450</td>
-        </tr>
-        <tr>
-            <td>Doris Wilder</td>
-            <td>Sales Assistant</td>
-            <td>Sydney</td>
-            <td>23</td>
-            <td>2010-09-20</td>
-            <td>$85,600</td>
-        </tr>
-        <tr>
-            <td>Angelica Ramos</td>
-            <td>Chief Executive Officer (CEO)</td>
-            <td>London</td>
-            <td>47</td>
-            <td>2009-10-09</td>
-            <td>$1,200,000</td>
-        </tr>
-        <tr>
-            <td>Gavin Joyce</td>
-            <td>Developer</td>
-            <td>Edinburgh</td>
-            <td>42</td>
-            <td>2010-12-22</td>
-            <td>$92,575</td>
-        </tr>
-        <tr>
-            <td>Jennifer Chang</td>
-            <td>Regional Director</td>
-            <td>Singapore</td>
-            <td>28</td>
-            <td>2010-11-14</td>
-            <td>$357,650</td>
-        </tr>
-        <tr>
-            <td>Brenden Wagner</td>
-            <td>Software Engineer</td>
-            <td>San Francisco</td>
-            <td>28</td>
-            <td>2011-06-07</td>
-            <td>$206,850</td>
-        </tr>
-        <tr>
-            <td>Fiona Green</td>
-            <td>Chief Operating Officer (COO)</td>
-            <td>San Francisco</td>
-            <td>48</td>
-            <td>2010-03-11</td>
-            <td>$850,000</td>
-        </tr>
-        <tr>
-            <td>Shou Itou</td>
-            <td>Regional Marketing</td>
-            <td>Tokyo</td>
-            <td>20</td>
-            <td>2011-08-14</td>
-            <td>$163,000</td>
-        </tr>
-        <tr>
-            <td>Michelle House</td>
-            <td>Integration Specialist</td>
-            <td>Sydney</td>
-            <td>37</td>
-            <td>2011-06-02</td>
-            <td>$95,400</td>
-        </tr>
-        <tr>
-            <td>Suki Burks</td>
-            <td>Developer</td>
-            <td>London</td>
-            <td>53</td>
-            <td>2009-10-22</td>
-            <td>$114,500</td>
-        </tr>
-        <tr>
-            <td>Prescott Bartlett</td>
-            <td>Technical Author</td>
-            <td>London</td>
-            <td>27</td>
-            <td>2011-05-07</td>
-            <td>$145,000</td>
-        </tr>
-        <tr>
-            <td>Gavin Cortez</td>
-            <td>Team Leader</td>
-            <td>San Francisco</td>
-            <td>22</td>
-            <td>2008-10-26</td>
-            <td>$235,500</td>
-        </tr>
-        <tr>
-            <td>Martena Mccray</td>
-            <td>Post-Sales support</td>
-            <td>Edinburgh</td>
-            <td>46</td>
-            <td>2011-03-09</td>
-            <td>$324,050</td>
-        </tr>
-        <tr>
-            <td>Unity Butler</td>
-            <td>Marketing Designer</td>
-            <td>San Francisco</td>
-            <td>47</td>
-            <td>2009-12-09</td>
-            <td>$85,675</td>
-        </tr>
-        <tr>
-            <td>Howard Hatfield</td>
-            <td>Office Manager</td>
-            <td>San Francisco</td>
-            <td>51</td>
-            <td>2008-12-16</td>
-            <td>$164,500</td>
-        </tr>
-        <tr>
-            <td>Hope Fuentes</td>
-            <td>Secretary</td>
-            <td>San Francisco</td>
-            <td>41</td>
-            <td>2010-02-12</td>
-            <td>$109,850</td>
-        </tr>
-        <tr>
-            <td>Vivian Harrell</td>
-            <td>Financial Controller</td>
-            <td>San Francisco</td>
-            <td>62</td>
-            <td>2009-02-14</td>
-            <td>$452,500</td>
-        </tr>
-        <tr>
-            <td>Timothy Mooney</td>
-            <td>Office Manager</td>
-            <td>London</td>
-            <td>37</td>
-            <td>2008-12-11</td>
-            <td>$136,200</td>
-        </tr>
-        <tr>
-            <td>Jackson Bradshaw</td>
-            <td>Director</td>
-            <td>New York</td>
-            <td>65</td>
-            <td>2008-09-26</td>
-            <td>$645,750</td>
-        </tr>
-        <tr>
-            <td>Olivia Liang</td>
-            <td>Support Engineer</td>
-            <td>Singapore</td>
-            <td>64</td>
-            <td>2011-02-03</td>
-            <td>$234,500</td>
-        </tr>
-        <tr>
-            <td>Bruno Nash</td>
-            <td>Software Engineer</td>
-            <td>London</td>
-            <td>38</td>
-            <td>2011-05-03</td>
-            <td>$163,500</td>
-        </tr>
-        <tr>
-            <td>Sakura Yamamoto</td>
-            <td>Support Engineer</td>
-            <td>Tokyo</td>
-            <td>37</td>
-            <td>2009-08-19</td>
-            <td>$139,575</td>
-        </tr>
-        <tr>
-            <td>Thor Walton</td>
-            <td>Developer</td>
-            <td>New York</td>
-            <td>61</td>
-            <td>2013-08-11</td>
-            <td>$98,540</td>
-        </tr>
-        <tr>
-            <td>Finn Camacho</td>
-            <td>Support Engineer</td>
-            <td>San Francisco</td>
-            <td>47</td>
-            <td>2009-07-07</td>
-            <td>$87,500</td>
-        </tr>
-        <tr>
-            <td>Serge Baldwin</td>
-            <td>Data Coordinator</td>
-            <td>Singapore</td>
-            <td>64</td>
-            <td>2012-04-09</td>
-            <td>$138,575</td>
-        </tr>
-        <tr>
-            <td>Zenaida Frank</td>
-            <td>Software Engineer</td>
-            <td>New York</td>
-            <td>63</td>
-            <td>2010-01-04</td>
-            <td>$125,250</td>
-        </tr>
-        <tr>
-            <td>Zorita Serrano</td>
-            <td>Software Engineer</td>
-            <td>San Francisco</td>
-            <td>56</td>
-            <td>2012-06-01</td>
-            <td>$115,000</td>
-        </tr>
-        <tr>
-            <td>Jennifer Acosta</td>
-            <td>Junior Javascript Developer</td>
-            <td>Edinburgh</td>
-            <td>43</td>
-            <td>2013-02-01</td>
-            <td>$75,650</td>
-        </tr>
-        <tr>
-            <td>Cara Stevens</td>
-            <td>Sales Assistant</td>
-            <td>New York</td>
-            <td>46</td>
-            <td>2011-12-06</td>
-            <td>$145,600</td>
-        </tr>
-        <tr>
-            <td>Hermione Butler</td>
-            <td>Regional Director</td>
-            <td>London</td>
-            <td>47</td>
-            <td>2011-03-21</td>
-            <td>$356,250</td>
-        </tr>
-        <tr>
-            <td>Lael Greer</td>
-            <td>Systems Administrator</td>
-            <td>London</td>
-            <td>21</td>
-            <td>2009-02-27</td>
-            <td>$103,500</td>
-        </tr>
-        <tr>
-            <td>Jonas Alexander</td>
-            <td>Developer</td>
-            <td>San Francisco</td>
-            <td>30</td>
-            <td>2010-07-14</td>
-            <td>$86,500</td>
-        </tr>
-        <tr>
-            <td>Shad Decker</td>
-            <td>Regional Director</td>
-            <td>Edinburgh</td>
-            <td>51</td>
-            <td>2008-11-13</td>
-            <td>$183,000</td>
-        </tr>
-        <tr>
-            <td>Michael Bruce</td>
-            <td>Javascript Developer</td>
-            <td>Singapore</td>
-            <td>29</td>
-            <td>2011-06-27</td>
-            <td>$183,000</td>
-        </tr>
-        <tr>
-            <td>Donna Snider</td>
-            <td>Customer Support</td>
-            <td>New York</td>
-            <td>27</td>
-            <td>2011-01-25</td>
-            <td>$112,000</td>
-        </tr>
-    </tbody>
+    <!-- Add Google Fonts link for Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Include DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
+    <!-- Include jQuery (required for DataTables) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-</table>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- Include DataTables JS -->
-<script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
 
-<!-- Initialize DataTable -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+
+    <!-- Include SweetAlert Library -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+    <!-- Added scrollbar in the tbody -->
+    <style>
+        /* Apply font size and font family */
+        body,
+        #myTable {
+            font-family: 'Inter', Arial, sans-serif;
+            font-size: 12px;
+            margin: 0;
+            padding: 0;
+        }
+
+        table.dataTable thead th {
+            text-align: center;
+        }
+
+
+
+        /* Table Header Styling */
+        #myTable th {
+            background-color: #EBF8FD;
+            color: #4a5568;
+            font-weight: 600;
+            text-align: center;
+            padding: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        /* Table Data Styling */
+        #myTable td {
+            background-color: #ffffff;
+            color: #2d3748;
+            text-align: center;
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        /* Add hover effect for rows */
+        #myTable tr:hover {
+            background-color: #b3eaff;
+        }
+
+        /* Scrollable tbody */
+        .dataTables_scrollBody {
+            max-height: 400px;
+            /* Adjust height as needed */
+            overflow-y: auto;
+        }
+    </style>
+    <script>
+        $(document).ready(function() {
+            $('#myTable').DataTable({
+                scrollY: '400px', // Enable vertical scrolling
+                scrollCollapse: true,
+            });
+        });
+    </script>
+
+
+    <!-- <script>
+    $(document).ready(function() {
+        $('#myTable').DataTable({
+            "scrollY": false,  // Disable vertical scrolling
+            "scrollX": false,  // Disable horizontal scrolling
+            "paging": true,    // Enable pagination (optional)
+            "searching": true, // Enable search (optional)
+            "ordering": true   // Enable sorting (optional)
+        });
+    });
+</script> -->
+
+
+
+    <!-- CSS for Pagination -->
+    <style>
+        /* Style the container */
+        .dataTables_length {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            color: #5ad4f5;
+            /* Lighter shade of #4cc9f0 */
+            margin-bottom: 6px;
+            padding: 4px 8px;
+            background-color: #e6f7ff;
+            /* Light blue background */
+            border-radius: 6px;
+            border: 1px solid #b3eaff;
+            /* Soft blue border */
+        }
+
+        /* Style the dropdown select */
+        .dt-length select {
+            padding: 4px 8px;
+            border: 1px solid #b3eaff;
+            /* Soft blue border */
+            border-radius: 4px;
+            background-color: #ffffff;
+            /* White dropdown background */
+            color: #4aaed4;
+            /* Slightly darker text */
+            font-size: 12px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease-in-out;
+        }
+
+        /* Hover and Focus Effects */
+        .dt-length select:hover {
+            border-color: #87dff7;
+            /* Brighter blue */
+            background-color: #def3ff;
+            /* Slightly darker background */
+        }
+
+        .dt-length select:focus {
+            border-color: #4cc9f0;
+            box-shadow: 0 0 3px rgba(76, 201, 240, 0.4);
+            background-color: #c9efff;
+        }
+
+        /* Style the label */
+        .dt-length label {
+            font-weight: 500;
+            color: rgb(0, 0, 0);
+            /* Primary blue shade */
+        }
+    </style>
+
+
+    <!-- CSS for Search Bar -->
+    <style>
+        /* Style the search container */
+        .dt-search {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+        }
+
+        /* Style the search input */
+        .dt-search input[type="search"] {
+            padding: 4px 8px;
+            border: 1px solid #b3eaff;
+            /* Soft blue border */
+            border-radius: 4px;
+            background-color: #ffffff;
+            /* White input background */
+            color: #4aaed4;
+            /* Slightly darker text */
+            font-size: 12px;
+            cursor: text;
+            outline: none;
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+
+        /* Keep only focus effect */
+        .dt-search input[type="search"]:focus {
+            border-color: #4cc9f0;
+            box-shadow: 0 0 3px rgba(76, 201, 240, 0.4);
+            background-color: #c9efff;
+        }
+
+        /* Style the label */
+        .dt-search label {
+            font-weight: 500;
+            color: rgb(0, 0, 0);
+            /* Primary blue shade */
+        }
+    </style>
+
+
+    <!-- CSS for the highlight of table when clicked -->
+    <style>
+        /* Styling for highlighting */
+        .highlighted {
+            background-color: #EBF8FD !important;
+            /* Light yellow highlight */
+        }
+    </style>
+
+    <script>
+        $(document).ready(function() {
+            var table = $('#myTable').DataTable(); // Initialize DataTables
+
+            $('#myTable thead th').on('click', function() {
+                var columnIndex = $(this).index(); // Get clicked column index
+
+                // Remove previous highlights
+                $('#myTable thead th, #myTable tbody td').removeClass('highlighted');
+
+                // Highlight the clicked header
+                $(this).addClass('highlighted');
+
+                // Highlight all cells in the same column
+                $('#myTable tbody tr').each(function() {
+                    $(this).find('td').eq(columnIndex).addClass('highlighted');
+                });
+            });
+        });
+    </script>
+
+
+
+</head>
+
+<div class="mx-auto p-2" style="width: 1220px; height: 700px; font-family: 'Inter', sans-serif;">
+
+
+    <div class="bg-white p-6 shadow-lg rounded-lg h-full">
+        <!-- Title and Button inside this div -->
+        <div class="flex justify-between items-center mb-1 pt-0">
+            <h1 class="text-3xl text-left">Records and Appraisal</h1>
+            <div class="flex space-x-2 w-auto">
+                <button id="openModalBtn" class="px-6 py-2 min-w-[140px] max-w-[160px] bg-[#4cc9f0] text-white border-2 border-[#4cc9f0] rounded-full hover:bg-[#3fb3d1] mb-2 text-sm">
+                    Add Record
+                </button>
+                <a href="{{ route('records.archive') }}">
+                    <button class="px-6 py-2 min-w-[140px] max-w-[160px] bg-[#f0b84c] text-white border-2 border-[#f0b84c] rounded-full hover:bg-[#d19b3f] mb-2 text-sm">
+                        Archive
+                    </button>
+                </a>
+
+            </div>
+        </div>
+
+
+        <!-- Table for displaying records -->
+        <div style="height: 600px; overflow-y: auto;"> <!-- Added overflow-y-auto -->
+            <table id="myTable" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Records Series Title</th>
+                        <th>Related Documents</th>
+                        <th>Period Covered</th>
+                        <th>Volume</th>
+                        <th>Records Medium</th>
+                        <th>Location of Records</th>
+                        <th>Time Value</th>
+                        <th style="min-width: 150px;">
+                            Retention Period <br>
+                            <span style="display: flex; justify-content: space-between; font-weight: normal;">
+                                <span>Active</span>
+                                <span>Storage</span>
+                                <span>Total</span>
+                            </span>
+                        </th>
+                        <th>Disposition Provision</th>
+                        <th>GRDS Item #</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Sample Record Series Title 1</td>
+                        <td>Document A, Document B</td>
+                        <td>2020-01-01 to 2020-12-31</td>
+                        <td>100</td>
+                        <td>Digital</td>
+                        <td>Main Office</td>
+                        <td>Permanent</td>
+                        <td>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>1</span> <!-- Active -->
+                                <span>0</span> <!-- Storage -->
+                                <span>1</span> <!-- Total -->
+                            </div>
+                        </td>
+                        <td>Destroy after 5 years</td>
+                        <td>12345</td>
+                        <td>
+                            <!-- Edit Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
+                                Edit
+                            </button>
+
+
+
+                            <!-- Archive Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
+                                Archive
+                            </button>
+
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Sample Record Series Title 2</td>
+                        <td>Document C</td>
+                        <td>2021-01-01 to 2021-12-31</td>
+                        <td>200</td>
+                        <td>Physical</td>
+                        <td>Branch Office</td>
+                        <td>Temporary</td>
+                        <td>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>1</span> <!-- Active -->
+                                <span>0</span> <!-- Storage -->
+                                <span>1</span> <!-- Total -->
+                            </div>
+                        </td>
+                        <td>Transfer to archive after 2 years</td>
+                        <td>67890</td>
+                        <td>
+                            <!-- Edit Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
+                                Edit
+                            </button>
+
+
+
+                            <!-- Archive Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
+                                Archive
+                            </button>
+
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Sample Record Series Title 1</td>
+                        <td>Document A, Document B</td>
+                        <td>2020-01-01 to 2020-12-31</td>
+                        <td>100</td>
+                        <td>Digital</td>
+                        <td>Main Office</td>
+                        <td>Permanent</td>
+                        <td>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>1</span> <!-- Active -->
+                                <span>0</span> <!-- Storage -->
+                                <span>1</span> <!-- Total -->
+                            </div>
+                        </td>
+                        <td>Destroy after 5 years</td>
+                        <td>12345</td>
+                        <td>
+                            <!-- Edit Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
+                                Edit
+                            </button>
+
+
+
+                            <!-- Archive Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
+                                Archive
+                            </button>
+
+
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Sample Record Series Title 1</td>
+                        <td>Document A, Document B</td>
+                        <td>2020-01-01 to 2020-12-31</td>
+                        <td>100</td>
+                        <td>Digital</td>
+                        <td>Main Office</td>
+                        <td>Permanent</td>
+                        <td>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>1</span> <!-- Active -->
+                                <span>0</span> <!-- Storage -->
+                                <span>1</span> <!-- Total -->
+                            </div>
+                        </td>
+                        <td>Destroy after 5 years</td>
+                        <td>12345</td>
+                        <td>
+                            <!-- Edit Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
+                                Edit
+                            </button>
+
+
+
+                            <!-- Archive Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
+                                Archive
+                            </button>
+
+
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Sample Record Series Title 2</td>
+                        <td>Document C</td>
+                        <td>2021-01-01 to 2021-12-31</td>
+                        <td>200</td>
+                        <td>Physical</td>
+                        <td>Branch Office</td>
+                        <td>Temporary</td>
+                        <td>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>1</span> <!-- Active -->
+                                <span>0</span> <!-- Storage -->
+                                <span>1</span> <!-- Total -->
+                            </div>
+                        </td>
+                        <td>Transfer to archive after 2 years</td>
+                        <td>67890</td>
+                        <td>
+                            <!-- Edit Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
+                                Edit
+                            </button>
+
+
+
+                            <!-- Archive Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
+                                Archive
+                            </button>
+
+
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Sample Record Series Title 2</td>
+                        <td>Document C</td>
+                        <td>2021-01-01 to 2021-12-31</td>
+                        <td>200</td>
+                        <td>Physical</td>
+                        <td>Branch Office</td>
+                        <td>Temporary</td>
+                        <td>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>1</span> <!-- Active -->
+                                <span>0</span> <!-- Storage -->
+                                <span>1</span> <!-- Total -->
+                            </div>
+                        </td>
+                        <td>Transfer to archive after 2 years</td>
+                        <td>67890</td>
+                        <td>
+                            <!-- Edit Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
+                                Edit
+                            </button>
+
+
+
+                            <!-- Archive Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
+                                Archive
+                            </button>
+
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Sample Record Series Title 1</td>
+                        <td>Document A, Document B</td>
+                        <td>2020-01-01 to 2020-12-31</td>
+                        <td>100</td>
+                        <td>Digital</td>
+                        <td>Main Office</td>
+                        <td>Permanent</td>
+                        <td>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>1</span> <!-- Active -->
+                                <span>0</span> <!-- Storage -->
+                                <span>1</span> <!-- Total -->
+                            </div>
+                        </td>
+                        <td>Destroy after 5 years</td>
+                        <td>12345</td>
+                        <td>
+                            <!-- Edit Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
+                                Edit
+                            </button>
+
+
+
+                            <!-- Archive Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
+                                Archive
+                            </button>
+
+
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Sample Record Series Title 1</td>
+                        <td>Document A, Document B</td>
+                        <td>2020-01-01 to 2020-12-31</td>
+                        <td>100</td>
+                        <td>Digital</td>
+                        <td>Main Office</td>
+                        <td>Permanent</td>
+                        <td>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>1</span> <!-- Active -->
+                                <span>0</span> <!-- Storage -->
+                                <span>1</span> <!-- Total -->
+                            </div>
+                        </td>
+                        <td>Destroy after 5 years</td>
+                        <td>12345</td>
+                        <td>
+                            <!-- Edit Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
+                                Edit
+                            </button>
+
+
+
+                            <!-- Archive Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
+                                Archive
+                            </button>
+
+
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Sample Record Series Title 2</td>
+                        <td>Document C</td>
+                        <td>2021-01-01 to 2021-12-31</td>
+                        <td>200</td>
+                        <td>Physical</td>
+                        <td>Branch Office</td>
+                        <td>Temporary</td>
+                        <td>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>1</span> <!-- Active -->
+                                <span>0</span> <!-- Storage -->
+                                <span>1</span> <!-- Total -->
+                            </div>
+                        </td>
+                        <td>Transfer to archive after 2 years</td>
+                        <td>67890</td>
+                        <td>
+                            <!-- Edit Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
+                                Edit
+                            </button>
+
+
+
+                            <!-- Archive Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
+                                Archive
+                            </button>
+
+
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Sample Record Series Title 2</td>
+                        <td>Document C</td>
+                        <td>2021-01-01 to 2021-12-31</td>
+                        <td>200</td>
+                        <td>Physical</td>
+                        <td>Branch Office</td>
+                        <td>Temporary</td>
+                        <td>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>1</span> <!-- Active -->
+                                <span>0</span> <!-- Storage -->
+                                <span>1</span> <!-- Total -->
+                            </div>
+                        </td>
+                        <td>Transfer to archive after 2 years</td>
+                        <td>67890</td>
+                        <td>
+                            <!-- Edit Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
+                                Edit
+                            </button>
+
+
+
+                            <!-- Archive Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
+                                Archive
+                            </button>
+
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Sample Record Series Title 1</td>
+                        <td>Document A, Document B</td>
+                        <td>2020-01-01 to 2020-12-31</td>
+                        <td>100</td>
+                        <td>Digital</td>
+                        <td>Main Office</td>
+                        <td>Permanent</td>
+                        <td>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>1</span> <!-- Active -->
+                                <span>0</span> <!-- Storage -->
+                                <span>1</span> <!-- Total -->
+                            </div>
+                        </td>
+                        <td>Destroy after 5 years</td>
+                        <td>12345</td>
+                        <td>
+                            <!-- Edit Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
+                                Edit
+                            </button>
+
+
+
+                            <!-- Archive Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
+                                Archive
+                            </button>
+
+
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Sample Record Series Title 1</td>
+                        <td>Document A, Document B</td>
+                        <td>2020-01-01 to 2020-12-31</td>
+                        <td>100</td>
+                        <td>Digital</td>
+                        <td>Main Office</td>
+                        <td>Permanent</td>
+                        <td>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>1</span> <!-- Active -->
+                                <span>0</span> <!-- Storage -->
+                                <span>1</span> <!-- Total -->
+                            </div>
+                        </td>
+                        <td>Destroy after 5 years</td>
+                        <td>12345</td>
+                        <td>
+                            <!-- Edit Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
+                                Edit
+                            </button>
+
+
+
+                            <!-- Archive Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
+                                Archive
+                            </button>
+
+
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>edbert</td>
+                        <td>cat</td>
+                        <td>2021-01-01 to 2021-12-31</td>
+                        <td>200</td>
+                        <td>Physical</td>
+                        <td>Branch Office</td>
+                        <td>Temporary</td>
+                        <td>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span>1</span> <!-- Active -->
+                                <span>0</span> <!-- Storage -->
+                                <span>1</span> <!-- Total -->
+                            </div>
+                        </td>
+                        <td>Transfer to archive after 2 years</td>
+                        <td>67890</td>
+                        <td>
+                            <!-- Edit Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
+                                Edit
+                            </button>
+
+
+
+                            <!-- Archive Button with custom color -->
+                            <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
+                                Archive
+                            </button>
+
+
+                        </td>
+                    </tr>
+                    <!-- Add more rows as needed -->
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
 <script>
     $(document).ready(function() {
         $('#myTable').DataTable(); // Initialize DataTable
+    });
+</script>
+
+
+
+
+
+
+<!-- Modal Display HTML -->
+<div class="relative z-10" id="showRecord" aria-labelledby="showRecord-title" role="dialog" aria-modal="true" style="display: none;">
+    <!-- Backdrop with stronger blur effect -->
+    <div class="fixed inset-0 bg-black/50 transition-opacity" aria-hidden="true"></div>
+    <div class="fixed inset-0 z-10 flex items-center justify-center">
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
+            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full" style="max-width: 90%; height: auto;">
+                <div class="bg-white px-5 py-4 sm:p-5 sm:pb-3">
+                    <h3 class="text-sm font-bold text-gray-900" id="showRecord-title">Record Details</h3>
+
+                    <!-- Display Record Details -->
+                    <div class="space-y-4">
+                        <div class="border-b border-gray-300 pb-4">
+                            <p class="mt-1 text-xs text-gray-500">Below are the details of the selected record.</p>
+
+                            <div class="mt-4 grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 text-xs">
+                                <div class="sm:col-span-1">
+                                    <p class="block font-semibold text-gray-800">Records Series Title:</p>
+                                    <p class="text-gray-600">Example Title and Description</p>
+                                </div>
+
+                                <div class="sm:col-span-1">
+                                    <p class="block font-semibold text-gray-800">Frequency of Use:</p>
+                                    <p class="text-gray-600">Weekly</p>
+                                </div>
+
+                                <div class="sm:col-span-1">
+                                    <p class="block font-semibold text-gray-800">Related Documents:</p>
+                                    <p class="text-gray-600">Document 1, Document 2</p>
+                                </div>
+
+                                <div class="sm:col-span-1">
+                                    <p class="block font-semibold text-gray-800">Duplication:</p>
+                                    <p class="text-gray-600">Some duplication details</p>
+                                </div>
+
+                                <div class="sm:col-span-1">
+                                    <p class="block font-semibold text-gray-800">Period Covered:</p>
+                                    <p class="text-gray-600">Jan 1, 2020 - Dec 31, 2023</p>
+                                </div>
+
+                                <div class="sm:col-span-1">
+                                    <p class="block font-semibold text-gray-800">Time Value:</p>
+                                    <p class="text-gray-600">Temporary</p>
+                                </div>
+
+                                <div class="sm:col-span-1">
+                                    <p class="block font-semibold text-gray-800">Volume:</p>
+                                    <p class="text-gray-600">50</p>
+                                </div>
+
+                                <div class="sm:col-span-1">
+                                    <p class="block font-semibold text-gray-800">Utility Value:</p>
+                                    <p class="text-gray-600">Admin, Fiscal</p>
+                                </div>
+
+                                <div class="sm:col-span-1">
+                                    <p class="block font-semibold text-gray-800">Records Medium:</p>
+                                    <p class="text-gray-600">Electronic</p>
+                                </div>
+
+                                <div class="sm:col-span-1">
+                                    <p class="block font-semibold text-gray-800">Retention Period:</p>
+                                    <p class="text-gray-600">Active: 2 Years, Storage: 5 Years</p>
+                                </div>
+
+                                <div class="sm:col-span-1">
+                                    <p class="block font-semibold text-gray-800">Restriction:</p>
+                                    <p class="text-gray-600">Confidential</p>
+                                </div>
+
+                                <div class="sm:col-span-1">
+                                    <p class="block font-semibold text-gray-800">Disposition Provision:</p>
+                                    <p class="text-gray-600">Retain for review</p>
+                                </div>
+
+                                <div class="sm:col-span-1">
+                                    <p class="block font-semibold text-gray-800">Location of Records:</p>
+                                    <p class="text-gray-600">Main Archive Room</p>
+                                </div>
+
+                                <div class="sm:col-span-1">
+                                    <p class="block font-semibold text-gray-800">GRDS Item #:</p>
+                                    <p class="text-gray-600">12345</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="mt-4 flex items-center justify-end gap-x-4">
+                        <button type="button" class="text-xs font-semibold text-gray-700" id="closeShowRecordBtn">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- JavaScript for opening and closing the modal and submitting the form -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const modal = document.getElementById('showRecord');
+        const form = modal.querySelector("form");
+        const requiredFields = [
+            "title", "frequency", "related_documents", "duplication",
+            "start_date", "end_date", "time_value", "volume", "medium",
+            "restriction", "disposition", "location", "grds_item"
+        ];
+
+        // Open the modal
+        document.getElementById('openModalBtn').addEventListener('click', function() {
+            modal.style.display = 'block';
+        });
+
+        // Close the modal
+        document.getElementById('closeModalBtn').addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+
+        // Close modal when clicking outside
+        document.querySelector('.fixed.inset-0').addEventListener('click', function(event) {
+            if (event.target.closest('.relative.transform') === null) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Toggle retention period fields if "Permanent" is checked
+        document.getElementById('permanent').addEventListener('change', function() {
+            let activeField = document.getElementById('active_value');
+            let storageField = document.getElementById('storage_value');
+
+            if (this.checked) {
+                activeField.value = 0;
+                storageField.value = 0;
+                activeField.disabled = true;
+                storageField.disabled = true;
+            } else {
+                activeField.disabled = false;
+                storageField.disabled = false;
+            }
+        });
+
+        // Validate and submit form
+        form.addEventListener("submit", async function(event) {
+            event.preventDefault(); // Prevent actual form submission
+            let isValid = true;
+            let formData = new FormData(form); // Use FormData to handle arrays properly
+
+            // CSRF Token (Required for Laravel)
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            formData.append('_token', token);
+
+            // Loop through required fields and check if they're filled
+            requiredFields.forEach(field => {
+                const input = document.getElementById(field);
+                if (input) {
+                    if (input.value.trim() === "") {
+                        isValid = false;
+                        input.classList.add("border-red-500"); // Add red border if empty
+                        console.error(`Validation Error: ${field} is empty.`);
+                    } else {
+                        input.classList.remove("border-red-500"); // Remove red border if filled
+                    }
+                }
+            });
+
+            // Check if at least one utility value is selected
+            let utilityCheckboxes = document.querySelectorAll("input[name='utility_value[]']:checked");
+            if (utilityCheckboxes.length === 0) {
+                isValid = false;
+                console.error("Validation Error: At least one utility value must be selected.");
+            }
+
+            if (!isValid) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Please fill in all required fields and select at least one utility value!",
+                    confirmButtonColor: "#d33"
+                });
+                console.error("Form validation failed.");
+                return; // Stop submission
+            }
+
+            console.log("Form Data Ready for Submission:", Object.fromEntries(formData.entries()));
+
+            try {
+                let response = await fetch("{{ route('records.store') }}", {
+                    method: "POST",
+                    body: formData
+                });
+
+                let result = await response.json();
+                console.log("Database Response:", result);
+
+                if (response.ok) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Success!",
+                        text: "Record added successfully!",
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+
+                    setTimeout(() => {
+                        modal.style.display = "none";
+                        form.reset();
+                        location.reload();
+                    }, 1500);
+                } else {
+                    throw new Error(result.message || "Failed to add record.");
+                }
+            } catch (error) {
+                console.error("Database Error:", error.message);
+                Swal.fire({
+                    icon: "error",
+                    title: "Database Error",
+                    text: "Failed to add record. Check console for details.",
+                    confirmButtonColor: "#d33"
+                });
+            }
+        });
+
+        // Remove red border when user types in a field
+        requiredFields.forEach(field => {
+            const input = document.getElementById(field);
+            if (input) {
+                input.addEventListener("input", function() {
+                    if (input.value.trim() !== "") {
+                        input.classList.remove("border-red-500");
+                    }
+                });
+            }
+        });
     });
 </script>
 

@@ -14,15 +14,15 @@
     <!-- Include jQuery (required for DataTables) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
 
-
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
 
     <!-- Include SweetAlert Library -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
 
 
     <!-- Added scrollbar in the tbody -->
@@ -75,24 +75,18 @@
     </style>
 
 
-    <script>
-        $(document).ready(function() {
-            $('#myTable').DataTable({
-                "scrollY": '425px', // Disable vertical scrolling
-                "scrollCollapse": true,
-                "scrollX": false, // Disable horizontal scrolling
-                "paging": true, // Enable pagination (optional)
-                "searching": true, // Enable search (optional)
-                "ordering": true, // Enable sorting (optional)
-                "columnDefs": [{
-                        "orderable": false,
-                        "targets": -1
-                    } // Disables sorting for the last column (Action)
-                ]
-            });
-        });
-    </script>
 
+    <!-- <script>
+    $(document).ready(function() {
+        $('#myTable').DataTable({
+            "scrollY": false,  // Disable vertical scrolling
+            "scrollX": false,  // Disable horizontal scrolling
+            "paging": true,    // Enable pagination (optional)
+            "searching": true, // Enable search (optional)
+            "ordering": true   // Enable sorting (optional)
+        });
+    });
+</script> -->
 
 
 
@@ -199,6 +193,10 @@
 
 
 
+
+
+
+
 </head>
 
 <div class="mx-auto p-2" style="width: 1220px; height: 700px; font-family: 'Inter', sans-serif;">
@@ -209,21 +207,19 @@
         <div class="flex justify-between items-center mb-1 pt-0">
             <h1 class="text-3xl text-left">Records and Appraisal</h1>
             <div class="flex space-x-2 w-auto">
-                <button id="openModalBtn" class="px-6 py-2 min-w-[140px] max-w-[160px] bg-[#4cc9f0] text-white border-2 border-[#4cc9f0] rounded-full hover:bg-[#3fb3d1] mb-2 text-sm">
-                    Add Record
-                </button>
-                <a href="{{ route('records.archive') }}">
-                    <button class="px-6 py-2 min-w-[140px] max-w-[160px] bg-[#f0b84c] text-white border-2 border-[#f0b84c] rounded-full hover:bg-[#d19b3f] mb-2 text-sm">
-                        Archive
+                <a href="{{ url()->previous() }}" class="inline-block">
+                    <button class="flex items-center gap-2 px-6 py-2 min-w-[140px] max-w-[160px] bg-[#27D29C] text-white border-2 border-[#27D29C] rounded-full hover:bg-[#1A8C68] mb-2 text-sm">
+                        <i class="ph-bold ph-arrow-left text-lg"></i>
+                        <span>Go Back</span>
                     </button>
                 </a>
-
             </div>
         </div>
 
 
         <!-- Table for displaying records -->
-        <div style="height: 625px; overflow-y: auto;"> <!-- Added overflow-y-auto -->
+        <div style="height: 500px; overflow-y: auto;"> <!-- Added overflow-y-auto -->
+            <!-- In archive.blade.php -->
             <table id="myTable" class="display" style="width:100%">
                 <thead>
                     <tr>
@@ -248,7 +244,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($records as $record)
+                    @forelse($archivedRecords as $record) <!-- Updated variable name -->
                     <tr class="record-row cursor-pointer"
                         data-id="{{ $record->id }}"
                         data-title="{{ $record->title }}"
@@ -277,7 +273,7 @@
                         <!-- Period Covered -->
                         <td>{{ $record->start_year ?? 'N/A' }} to {{ $record->end_year ?? 'N/A' }}</td>
 
-                        <!-- Volume (Now supports numbers & text) -->
+                        <!-- Volume -->
                         <td>{{ $record->volume ?? 'N/A' }}</td>
 
                         <!-- Records Medium -->
@@ -292,7 +288,6 @@
                         <!-- Retention Period -->
                         <td>
                             <div style="display: flex; justify-content: space-between;">
-                                <!-- Active -->
                                 <span>
                                     {{ $record->active ?? 0 }}
                                     @if($record->active_unit && $record->active_unit !== 'Permanent')
@@ -300,7 +295,6 @@
                                     @endif
                                 </span>
 
-                                <!-- Storage -->
                                 <span>
                                     {{ $record->storage ?? 0 }}
                                     @if($record->storage_unit && $record->storage_unit !== 'Permanent')
@@ -308,7 +302,6 @@
                                     @endif
                                 </span>
 
-                                <!-- Total -->
                                 <span>
                                     @if($record->permanent)
                                     Permanent
@@ -327,15 +320,11 @@
 
                         <!-- Action Buttons -->
                         <td>
-                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
-                                Edit
+                            <button class="px-2 py-1 m-1 bg-[#b79ced] text-white rounded hover:bg-[#7A689E] focus:outline-none focus:ring-2 focus:ring-[#b79ced] text-xs w-24" id="unarchiveBtn{{ $record->id }}" data-id="{{ $record->id }}">
+                                Unarchive
                             </button>
-                            <button
-                                class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24"
-                                data-id="{{ $record->id }}"
-                                id="archiveBtn{{ $record->id }}">
-                                Archive
-                            </button>
+                        </td>
+
                         </td>
                     </tr>
                     @empty
@@ -346,16 +335,16 @@
                     </tr>
                     @endforelse
                 </tbody>
-
             </table>
+
         </div>
     </div>
 </div>
 
 
 
-<!-- Archive Modal -->
-<div class="relative z-10" id="archiveModal" aria-labelledby="archiveModal-title" role="dialog" aria-modal="true" style="display: none;">
+<!-- Unarchive Modal -->
+<div class="relative z-10" id="unarchiveModal" aria-labelledby="unarchiveModal-title" role="dialog" aria-modal="true" style="display: none;">
     <!-- Backdrop -->
     <div class="fixed inset-0 bg-gray-500/75 transition-opacity" aria-hidden="true"></div>
 
@@ -365,30 +354,31 @@
             <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
-                        <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10">
-                            <!-- Icon for error or success -->
-                            <svg class="size-6 text-red-600" id="archiveModalIcon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" id="archiveModalIconPath" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                        <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:size-10">
+                            <!-- Icon for unarchive or success -->
+                            <svg class="size-6 text-blue-600" id="unarchiveModalIcon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" id="unarchiveModalIconPath" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                             </svg>
                         </div>
                         <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                            <h3 class="text-base font-semibold text-gray-900" id="archiveModal-title">Confirm Archive</h3>
+                            <h3 class="text-base font-semibold text-gray-900" id="unarchiveModal-title">Confirm Unarchive</h3>
                             <div class="mt-2">
-                                <p class="text-sm text-gray-500" id="archiveModal-message">Are you sure you want to archive this record? This action can be undone later.</p>
+                                <p class="text-sm text-gray-500" id="unarchiveModal-message">Are you sure you want to unarchive this record? This action can be undone later.</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                    <button type="button" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:ml-3 sm:w-auto" id="confirmArchiveBtn">Confirm Archive</button>
-                    <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto" id="cancelArchiveBtn">Cancel</button>
+                    <button type="button" class="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-blue-500 sm:ml-3 sm:w-auto" id="confirmUnarchiveBtn">Confirm Unarchive</button>
+                    <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto" id="cancelUnarchiveBtn">Cancel</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Success/Error Modal -->
+
+<!-- Unarchive Success/Error Modal -->
 <div class="relative z-10" id="resultModal" aria-labelledby="resultModal-title" role="dialog" aria-modal="true" style="display: none;">
     <div class="fixed inset-0 bg-gray-500/75 transition-opacity" aria-hidden="true"></div>
     <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
@@ -397,77 +387,78 @@
             <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                 <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
-                        <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:size-10">
-                            <!-- Success Icon -->
-                            <svg class="size-6 text-green-600" id="resultModalIcon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:size-10">
+                            <!-- Success Icon for Unarchive -->
+                            <svg class="size-6 text-blue-600" id="resultModalIcon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" id="resultModalIconPath" d="M9 12l2 2l4 -4m-5 0a7 7 0 1 1 7 7a7 7 0 0 1 -7 -7Z" />
                             </svg>
                         </div>
                         <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                             <h3 class="text-base font-semibold text-gray-900" id="resultModal-title">Action Successful</h3>
                             <div class="mt-2">
-                                <p class="text-sm text-gray-500" id="resultModal-message">The record has been successfully archived!</p>
+                                <p class="text-sm text-gray-500" id="resultModal-message">The record has been successfully unarchived!</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                    <button type="button" class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-500 sm:ml-3 sm:w-auto" id="resultModalCloseBtn">Close</button>
+                    <button type="button" class="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-blue-500 sm:ml-3 sm:w-auto" id="resultModalCloseBtn">Close</button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- JS for Archive -->
+
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Add event listener for the "Confirm Archive" button only once
-        document.getElementById('confirmArchiveBtn').addEventListener('click', function() {
+        // Add event listener for the "Confirm Unarchive" button only once
+        document.getElementById('confirmUnarchiveBtn').addEventListener('click', function() {
             const recordId = this.getAttribute('data-id');
-            console.log('Confirm archive clicked for record ID:', recordId);
+            console.log('Confirm unarchive clicked for record ID:', recordId);
 
             // Show success modal immediately after confirm
-            showResultModal('success', 'The record is being archived...');
+            showResultModal('success', 'The record is being unarchived...');
 
-            // Perform the archive action (AJAX call or form submission)
-            archiveRecord(recordId);
+            // Perform the unarchive action (AJAX call or form submission)
+            unarchiveRecord(recordId);
 
             // Close the modal after the action
-            document.getElementById('archiveModal').style.display = 'none';
-            console.log('Modal closed after archiving');
+            document.getElementById('unarchiveModal').style.display = 'none';
+            console.log('Modal closed after unarchiving');
         });
 
-        // Loop through all Archive buttons and add event listeners
-        document.querySelectorAll('[id^="archiveBtn"]').forEach(button => {
+        // Loop through all Unarchive buttons and add event listeners
+        document.querySelectorAll('[id^="unarchiveBtn"]').forEach(button => {
             button.addEventListener('click', function() {
                 // Get the record ID from the data-id attribute
                 const recordId = this.getAttribute('data-id');
                 console.log('Record ID:', recordId); // Log the record ID
 
-                // Show the archive modal
-                document.getElementById('archiveModal').style.display = 'block';
+                // Show the unarchive modal
+                document.getElementById('unarchiveModal').style.display = 'block';
                 console.log('Modal should now be displayed');
 
-                // Set the data-id of the Confirm Archive button to the current recordId
-                document.getElementById('confirmArchiveBtn').setAttribute('data-id', recordId);
+                // Set the data-id of the Confirm Unarchive button to the current recordId
+                document.getElementById('confirmUnarchiveBtn').setAttribute('data-id', recordId);
             });
         });
 
         // Close the modal if the cancel button is clicked
-        document.getElementById('cancelArchiveBtn').addEventListener('click', function() {
-            document.getElementById('archiveModal').style.display = 'none';
-            console.log('Modal closed without archiving');
+        document.getElementById('cancelUnarchiveBtn').addEventListener('click', function() {
+            document.getElementById('unarchiveModal').style.display = 'none';
+            console.log('Modal closed without unarchiving');
         });
     });
 
-    // Function to archive the record
-    function archiveRecord(recordId) {
+    // Function to unarchive the record
+    function unarchiveRecord(recordId) {
         // Log to check if the function is being called
-        console.log('Archiving record with ID:', recordId);
+        console.log('Unarchiving record with ID:', recordId);
 
-        // Example of an AJAX request to archive the record
-        fetch(`/admin/records/archive/${recordId}`, {
+        // Example of an AJAX request to unarchive the record
+        fetch(`/admin/records/unarchive/${recordId}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -479,26 +470,26 @@
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Archive response:', data); // Log the response from the server
+                console.log('Unarchive response:', data); // Log the response from the server
                 // Show success modal
-                showResultModal('success', 'The record has been successfully archived!');
+                showResultModal('success', 'The record has been successfully unarchived!');
 
-                // Remove the row from the table after successful archiving
-                removeArchivedRow(recordId);
+                // Remove the row from the table after successful unarchiving
+                removeUnarchivedRow(recordId);
             })
             .catch(error => {
-                console.error('Error archiving record:', error); // Log any errors
+                console.error('Error unarchiving record:', error); // Log any errors
                 // Show error modal
-                showResultModal('error', 'Failed to archive the record. Please try again.');
+                showResultModal('error', 'Failed to unarchive the record. Please try again.');
             });
     }
 
-    // Function to remove the row from the table after archiving
-    function removeArchivedRow(recordId) {
+    // Function to remove the row from the table after unarchiving
+    function removeUnarchivedRow(recordId) {
         // Find the row in the table based on the record ID
         const row = document.querySelector(`.record-row[data-id="${recordId}"]`);
 
-        // If the row exists, remove it
+        // If the row exists, remove it (you may want to move it to an active section instead)
         if (row) {
             row.remove();
             console.log(`Record with ID ${recordId} has been removed from the table.`);
@@ -507,8 +498,8 @@
 
     // Function to show the result modal (success or error)
     function showResultModal(status, message) {
-        // Hide the archive modal if visible
-        document.getElementById('archiveModal').style.display = 'none';
+        // Hide the unarchive modal if visible
+        document.getElementById('unarchiveModal').style.display = 'none';
 
         // Set content for the result modal
         const resultModal = document.getElementById('resultModal');
@@ -529,7 +520,7 @@
             resultMessage.textContent = message;
         }
 
-        // Show the result modal immediately
+        // Show the result modal
         resultModal.style.display = 'block';
 
         // Close the result modal when clicking the close button
@@ -538,6 +529,7 @@
         });
     }
 </script>
+
 
 <!-- Modal Display HTML -->
 <div class="relative z-10" id="showRecord" aria-labelledby="showRecord-title" role="dialog" aria-modal="true" style="display: none;">
@@ -645,7 +637,7 @@
 
 
 
-<!-- JS for format of text -->
+
 <script>
     function capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1).replace(/_/g, ' ');
@@ -1033,7 +1025,11 @@
             "restriction", "disposition", "location", "grds_item"
         ];
 
-
+        // Initialize DataTables at the top so we can access "table" variable later
+        let table = $('#myTable').DataTable({
+            scrollY: '600px',
+            scrollCollapse: true,
+        });
 
         // Open modal
         document.getElementById('openModalBtn').addEventListener('click', function() {
@@ -1214,8 +1210,3 @@
     });
 </script>
 @endsection
-
-
-
-
-<!-- AYusin mo yung tbody scrollbar -->

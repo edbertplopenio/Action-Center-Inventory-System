@@ -30,11 +30,14 @@ C:.
 ¦   ¦               CategoryController.php
 ¦   ¦               EquipmentController.php
 ¦   ¦               LocationController.php
+¦   ¦               RecordsController.php
+¦   ¦               UsersController.php
 ¦   ¦               
 ¦   +---Models
 ¦   ¦       Category.php
 ¦   ¦       Equipment.php
 ¦   ¦       Location.php
+¦   ¦       Record.php
 ¦   ¦       User.php
 ¦   ¦       
 ¦   +---Providers
@@ -73,7 +76,7 @@ C:.
 ¦   ¦       0001_01_01_000000_create_users_table.php
 ¦   ¦       0001_01_01_000001_create_cache_table.php
 ¦   ¦       0001_01_01_000002_create_jobs_table.php
-¦   ¦       2025_01_01_000001_create_equipment_table.php php Copy Edit
+¦   ¦       2025_01_01_000001_create_equipment_table.php
 ¦   ¦       2025_01_01_000002_create_category_table.php
 ¦   ¦       2025_01_01_000003_create_location_table.php
 ¦   ¦       2025_02_19_033739_add_fields_to_users_table.php
@@ -154,7 +157,11 @@ C:.
 ¦   ¦   +---deps
 ¦   ¦           axios.js
 ¦   ¦           axios.js.map
+¦   ¦           chunk-PZ5AY32C.js
+¦   ¦           chunk-PZ5AY32C.js.map
 ¦   ¦           package.json
+¦   ¦           sweetalert2.js
+¦   ¦           sweetalert2.js.map
 ¦   ¦           _metadata.json
 ¦   ¦           
 ¦   +---.vite-temp
@@ -390,6 +397,310 @@ C:.
 ¦   ¦               util.js
 ¦   ¦               validators.js
 ¦   ¦               
+¦   +---@popperjs
+¦   ¦   +---core
+¦   ¦       ¦   index.d.ts
+¦   ¦       ¦   LICENSE.md
+¦   ¦       ¦   package.json
+¦   ¦       ¦   README.md
+¦   ¦       ¦   
+¦   ¦       +---dist
+¦   ¦       ¦   +---cjs
+¦   ¦       ¦   ¦       enums.js
+¦   ¦       ¦   ¦       enums.js.flow
+¦   ¦       ¦   ¦       enums.js.map
+¦   ¦       ¦   ¦       popper-base.js
+¦   ¦       ¦   ¦       popper-base.js.flow
+¦   ¦       ¦   ¦       popper-base.js.map
+¦   ¦       ¦   ¦       popper-lite.js
+¦   ¦       ¦   ¦       popper-lite.js.flow
+¦   ¦       ¦   ¦       popper-lite.js.map
+¦   ¦       ¦   ¦       popper.js
+¦   ¦       ¦   ¦       popper.js.flow
+¦   ¦       ¦   ¦       popper.js.map
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---esm
+¦   ¦       ¦   ¦   ¦   createPopper.js
+¦   ¦       ¦   ¦   ¦   enums.js
+¦   ¦       ¦   ¦   ¦   index.js
+¦   ¦       ¦   ¦   ¦   popper-base.js
+¦   ¦       ¦   ¦   ¦   popper-lite.js
+¦   ¦       ¦   ¦   ¦   popper.js
+¦   ¦       ¦   ¦   ¦   types.js
+¦   ¦       ¦   ¦   ¦   
+¦   ¦       ¦   ¦   +---dom-utils
+¦   ¦       ¦   ¦   ¦       contains.js
+¦   ¦       ¦   ¦   ¦       getBoundingClientRect.js
+¦   ¦       ¦   ¦   ¦       getClippingRect.js
+¦   ¦       ¦   ¦   ¦       getCompositeRect.js
+¦   ¦       ¦   ¦   ¦       getComputedStyle.js
+¦   ¦       ¦   ¦   ¦       getDocumentElement.js
+¦   ¦       ¦   ¦   ¦       getDocumentRect.js
+¦   ¦       ¦   ¦   ¦       getHTMLElementScroll.js
+¦   ¦       ¦   ¦   ¦       getLayoutRect.js
+¦   ¦       ¦   ¦   ¦       getNodeName.js
+¦   ¦       ¦   ¦   ¦       getNodeScroll.js
+¦   ¦       ¦   ¦   ¦       getOffsetParent.js
+¦   ¦       ¦   ¦   ¦       getParentNode.js
+¦   ¦       ¦   ¦   ¦       getScrollParent.js
+¦   ¦       ¦   ¦   ¦       getViewportRect.js
+¦   ¦       ¦   ¦   ¦       getWindow.js
+¦   ¦       ¦   ¦   ¦       getWindowScroll.js
+¦   ¦       ¦   ¦   ¦       getWindowScrollBarX.js
+¦   ¦       ¦   ¦   ¦       instanceOf.js
+¦   ¦       ¦   ¦   ¦       isLayoutViewport.js
+¦   ¦       ¦   ¦   ¦       isScrollParent.js
+¦   ¦       ¦   ¦   ¦       isTableElement.js
+¦   ¦       ¦   ¦   ¦       listScrollParents.js
+¦   ¦       ¦   ¦   ¦       
+¦   ¦       ¦   ¦   +---modifiers
+¦   ¦       ¦   ¦   ¦       applyStyles.js
+¦   ¦       ¦   ¦   ¦       arrow.js
+¦   ¦       ¦   ¦   ¦       computeStyles.js
+¦   ¦       ¦   ¦   ¦       eventListeners.js
+¦   ¦       ¦   ¦   ¦       flip.js
+¦   ¦       ¦   ¦   ¦       hide.js
+¦   ¦       ¦   ¦   ¦       index.js
+¦   ¦       ¦   ¦   ¦       offset.js
+¦   ¦       ¦   ¦   ¦       popperOffsets.js
+¦   ¦       ¦   ¦   ¦       preventOverflow.js
+¦   ¦       ¦   ¦   ¦       
+¦   ¦       ¦   ¦   +---utils
+¦   ¦       ¦   ¦           computeAutoPlacement.js
+¦   ¦       ¦   ¦           computeOffsets.js
+¦   ¦       ¦   ¦           debounce.js
+¦   ¦       ¦   ¦           detectOverflow.js
+¦   ¦       ¦   ¦           expandToHashMap.js
+¦   ¦       ¦   ¦           getAltAxis.js
+¦   ¦       ¦   ¦           getAltLen.js
+¦   ¦       ¦   ¦           getBasePlacement.js
+¦   ¦       ¦   ¦           getFreshSideObject.js
+¦   ¦       ¦   ¦           getMainAxisFromPlacement.js
+¦   ¦       ¦   ¦           getOppositePlacement.js
+¦   ¦       ¦   ¦           getOppositeVariationPlacement.js
+¦   ¦       ¦   ¦           getVariation.js
+¦   ¦       ¦   ¦           math.js
+¦   ¦       ¦   ¦           mergeByName.js
+¦   ¦       ¦   ¦           mergePaddingObject.js
+¦   ¦       ¦   ¦           orderModifiers.js
+¦   ¦       ¦   ¦           rectToClientRect.js
+¦   ¦       ¦   ¦           uniqueBy.js
+¦   ¦       ¦   ¦           userAgent.js
+¦   ¦       ¦   ¦           within.js
+¦   ¦       ¦   ¦           
+¦   ¦       ¦   +---umd
+¦   ¦       ¦           enums.js
+¦   ¦       ¦           enums.js.map
+¦   ¦       ¦           enums.min.js
+¦   ¦       ¦           enums.min.js.flow
+¦   ¦       ¦           enums.min.js.map
+¦   ¦       ¦           popper-base.js
+¦   ¦       ¦           popper-base.js.map
+¦   ¦       ¦           popper-base.min.js
+¦   ¦       ¦           popper-base.min.js.flow
+¦   ¦       ¦           popper-base.min.js.map
+¦   ¦       ¦           popper-lite.js
+¦   ¦       ¦           popper-lite.js.map
+¦   ¦       ¦           popper-lite.min.js
+¦   ¦       ¦           popper-lite.min.js.flow
+¦   ¦       ¦           popper-lite.min.js.map
+¦   ¦       ¦           popper.js
+¦   ¦       ¦           popper.js.map
+¦   ¦       ¦           popper.min.js
+¦   ¦       ¦           popper.min.js.flow
+¦   ¦       ¦           popper.min.js.map
+¦   ¦       ¦           
+¦   ¦       +---lib
+¦   ¦           ¦   createPopper.d.ts
+¦   ¦           ¦   createPopper.js
+¦   ¦           ¦   createPopper.js.flow
+¦   ¦           ¦   enums.d.ts
+¦   ¦           ¦   enums.js
+¦   ¦           ¦   enums.js.flow
+¦   ¦           ¦   index.d.ts
+¦   ¦           ¦   index.js
+¦   ¦           ¦   index.js.flow
+¦   ¦           ¦   popper-base.d.ts
+¦   ¦           ¦   popper-base.js
+¦   ¦           ¦   popper-base.js.flow
+¦   ¦           ¦   popper-lite.d.ts
+¦   ¦           ¦   popper-lite.js
+¦   ¦           ¦   popper-lite.js.flow
+¦   ¦           ¦   popper.d.ts
+¦   ¦           ¦   popper.js
+¦   ¦           ¦   popper.js.flow
+¦   ¦           ¦   types.d.ts
+¦   ¦           ¦   types.js
+¦   ¦           ¦   types.js.flow
+¦   ¦           ¦   
+¦   ¦           +---dom-utils
+¦   ¦           ¦       contains.d.ts
+¦   ¦           ¦       contains.js
+¦   ¦           ¦       contains.js.flow
+¦   ¦           ¦       getBoundingClientRect.d.ts
+¦   ¦           ¦       getBoundingClientRect.js
+¦   ¦           ¦       getBoundingClientRect.js.flow
+¦   ¦           ¦       getClippingRect.d.ts
+¦   ¦           ¦       getClippingRect.js
+¦   ¦           ¦       getClippingRect.js.flow
+¦   ¦           ¦       getCompositeRect.d.ts
+¦   ¦           ¦       getCompositeRect.js
+¦   ¦           ¦       getCompositeRect.js.flow
+¦   ¦           ¦       getComputedStyle.d.ts
+¦   ¦           ¦       getComputedStyle.js
+¦   ¦           ¦       getComputedStyle.js.flow
+¦   ¦           ¦       getDocumentElement.d.ts
+¦   ¦           ¦       getDocumentElement.js
+¦   ¦           ¦       getDocumentElement.js.flow
+¦   ¦           ¦       getDocumentRect.d.ts
+¦   ¦           ¦       getDocumentRect.js
+¦   ¦           ¦       getDocumentRect.js.flow
+¦   ¦           ¦       getHTMLElementScroll.d.ts
+¦   ¦           ¦       getHTMLElementScroll.js
+¦   ¦           ¦       getHTMLElementScroll.js.flow
+¦   ¦           ¦       getLayoutRect.d.ts
+¦   ¦           ¦       getLayoutRect.js
+¦   ¦           ¦       getLayoutRect.js.flow
+¦   ¦           ¦       getNodeName.d.ts
+¦   ¦           ¦       getNodeName.js
+¦   ¦           ¦       getNodeName.js.flow
+¦   ¦           ¦       getNodeScroll.d.ts
+¦   ¦           ¦       getNodeScroll.js
+¦   ¦           ¦       getNodeScroll.js.flow
+¦   ¦           ¦       getOffsetParent.d.ts
+¦   ¦           ¦       getOffsetParent.js
+¦   ¦           ¦       getOffsetParent.js.flow
+¦   ¦           ¦       getParentNode.d.ts
+¦   ¦           ¦       getParentNode.js
+¦   ¦           ¦       getParentNode.js.flow
+¦   ¦           ¦       getScrollParent.d.ts
+¦   ¦           ¦       getScrollParent.js
+¦   ¦           ¦       getScrollParent.js.flow
+¦   ¦           ¦       getViewportRect.d.ts
+¦   ¦           ¦       getViewportRect.js
+¦   ¦           ¦       getViewportRect.js.flow
+¦   ¦           ¦       getWindow.d.ts
+¦   ¦           ¦       getWindow.js
+¦   ¦           ¦       getWindow.js.flow
+¦   ¦           ¦       getWindowScroll.d.ts
+¦   ¦           ¦       getWindowScroll.js
+¦   ¦           ¦       getWindowScroll.js.flow
+¦   ¦           ¦       getWindowScrollBarX.d.ts
+¦   ¦           ¦       getWindowScrollBarX.js
+¦   ¦           ¦       getWindowScrollBarX.js.flow
+¦   ¦           ¦       instanceOf.d.ts
+¦   ¦           ¦       instanceOf.js
+¦   ¦           ¦       instanceOf.js.flow
+¦   ¦           ¦       isLayoutViewport.d.ts
+¦   ¦           ¦       isLayoutViewport.js
+¦   ¦           ¦       isLayoutViewport.js.flow
+¦   ¦           ¦       isScrollParent.d.ts
+¦   ¦           ¦       isScrollParent.js
+¦   ¦           ¦       isScrollParent.js.flow
+¦   ¦           ¦       isTableElement.d.ts
+¦   ¦           ¦       isTableElement.js
+¦   ¦           ¦       isTableElement.js.flow
+¦   ¦           ¦       listScrollParents.d.ts
+¦   ¦           ¦       listScrollParents.js
+¦   ¦           ¦       listScrollParents.js.flow
+¦   ¦           ¦       
+¦   ¦           +---modifiers
+¦   ¦           ¦       applyStyles.d.ts
+¦   ¦           ¦       applyStyles.js
+¦   ¦           ¦       applyStyles.js.flow
+¦   ¦           ¦       arrow.d.ts
+¦   ¦           ¦       arrow.js
+¦   ¦           ¦       arrow.js.flow
+¦   ¦           ¦       computeStyles.d.ts
+¦   ¦           ¦       computeStyles.js
+¦   ¦           ¦       computeStyles.js.flow
+¦   ¦           ¦       eventListeners.d.ts
+¦   ¦           ¦       eventListeners.js
+¦   ¦           ¦       eventListeners.js.flow
+¦   ¦           ¦       flip.d.ts
+¦   ¦           ¦       flip.js
+¦   ¦           ¦       flip.js.flow
+¦   ¦           ¦       hide.d.ts
+¦   ¦           ¦       hide.js
+¦   ¦           ¦       hide.js.flow
+¦   ¦           ¦       index.d.ts
+¦   ¦           ¦       index.js
+¦   ¦           ¦       index.js.flow
+¦   ¦           ¦       offset.d.ts
+¦   ¦           ¦       offset.js
+¦   ¦           ¦       offset.js.flow
+¦   ¦           ¦       popperOffsets.d.ts
+¦   ¦           ¦       popperOffsets.js
+¦   ¦           ¦       popperOffsets.js.flow
+¦   ¦           ¦       preventOverflow.d.ts
+¦   ¦           ¦       preventOverflow.js
+¦   ¦           ¦       preventOverflow.js.flow
+¦   ¦           ¦       
+¦   ¦           +---utils
+¦   ¦                   computeAutoPlacement.d.ts
+¦   ¦                   computeAutoPlacement.js
+¦   ¦                   computeAutoPlacement.js.flow
+¦   ¦                   computeOffsets.d.ts
+¦   ¦                   computeOffsets.js
+¦   ¦                   computeOffsets.js.flow
+¦   ¦                   debounce.d.ts
+¦   ¦                   debounce.js
+¦   ¦                   debounce.js.flow
+¦   ¦                   detectOverflow.d.ts
+¦   ¦                   detectOverflow.js
+¦   ¦                   detectOverflow.js.flow
+¦   ¦                   expandToHashMap.d.ts
+¦   ¦                   expandToHashMap.js
+¦   ¦                   expandToHashMap.js.flow
+¦   ¦                   getAltAxis.d.ts
+¦   ¦                   getAltAxis.js
+¦   ¦                   getAltAxis.js.flow
+¦   ¦                   getAltLen.d.ts
+¦   ¦                   getAltLen.js
+¦   ¦                   getAltLen.js.flow
+¦   ¦                   getBasePlacement.d.ts
+¦   ¦                   getBasePlacement.js
+¦   ¦                   getBasePlacement.js.flow
+¦   ¦                   getFreshSideObject.d.ts
+¦   ¦                   getFreshSideObject.js
+¦   ¦                   getFreshSideObject.js.flow
+¦   ¦                   getMainAxisFromPlacement.d.ts
+¦   ¦                   getMainAxisFromPlacement.js
+¦   ¦                   getMainAxisFromPlacement.js.flow
+¦   ¦                   getOppositePlacement.d.ts
+¦   ¦                   getOppositePlacement.js
+¦   ¦                   getOppositePlacement.js.flow
+¦   ¦                   getOppositeVariationPlacement.d.ts
+¦   ¦                   getOppositeVariationPlacement.js
+¦   ¦                   getOppositeVariationPlacement.js.flow
+¦   ¦                   getVariation.d.ts
+¦   ¦                   getVariation.js
+¦   ¦                   getVariation.js.flow
+¦   ¦                   math.d.ts
+¦   ¦                   math.js
+¦   ¦                   math.js.flow
+¦   ¦                   mergeByName.d.ts
+¦   ¦                   mergeByName.js
+¦   ¦                   mergeByName.js.flow
+¦   ¦                   mergePaddingObject.d.ts
+¦   ¦                   mergePaddingObject.js
+¦   ¦                   mergePaddingObject.js.flow
+¦   ¦                   orderModifiers.d.ts
+¦   ¦                   orderModifiers.js
+¦   ¦                   orderModifiers.js.flow
+¦   ¦                   rectToClientRect.d.ts
+¦   ¦                   rectToClientRect.js
+¦   ¦                   rectToClientRect.js.flow
+¦   ¦                   uniqueBy.d.ts
+¦   ¦                   uniqueBy.js
+¦   ¦                   uniqueBy.js.flow
+¦   ¦                   userAgent.d.ts
+¦   ¦                   userAgent.js
+¦   ¦                   userAgent.js.flow
+¦   ¦                   within.d.ts
+¦   ¦                   within.js
+¦   ¦                   within.js.flow
+¦   ¦                   
 ¦   +---@rollup
 ¦   ¦   +---rollup-win32-x64-msvc
 ¦   ¦           package.json
@@ -1893,6 +2204,38 @@ C:.
 ¦   ¦   +---man
 ¦   ¦           cssesc.1
 ¦   ¦           
+¦   +---datatables.net
+¦   ¦   ¦   License.txt
+¦   ¦   ¦   package.json
+¦   ¦   ¦   Readme.md
+¦   ¦   ¦   
+¦   ¦   +---js
+¦   ¦   ¦       dataTables.js
+¦   ¦   ¦       dataTables.min.js
+¦   ¦   ¦       dataTables.min.mjs
+¦   ¦   ¦       dataTables.mjs
+¦   ¦   ¦       
+¦   ¦   +---types
+¦   ¦           types.d.ts
+¦   ¦           
+¦   +---datatables.net-dt
+¦   ¦   ¦   License.txt
+¦   ¦   ¦   package.json
+¦   ¦   ¦   Readme.md
+¦   ¦   ¦   
+¦   ¦   +---css
+¦   ¦   ¦       dataTables.dataTables.css
+¦   ¦   ¦       dataTables.dataTables.min.css
+¦   ¦   ¦       
+¦   ¦   +---js
+¦   ¦   ¦       dataTables.dataTables.js
+¦   ¦   ¦       dataTables.dataTables.min.js
+¦   ¦   ¦       dataTables.dataTables.min.mjs
+¦   ¦   ¦       dataTables.dataTables.mjs
+¦   ¦   ¦       
+¦   ¦   +---types
+¦   ¦           dataTables.dataTables.d.ts
+¦   ¦           
 ¦   +---delayed-stream
 ¦   ¦   ¦   .npmignore
 ¦   ¦   ¦   License
@@ -2615,6 +2958,179 @@ C:.
 ¦   ¦   +---lib
 ¦   ¦           index.js
 ¦   ¦           
+¦   +---jquery
+¦   ¦   ¦   AUTHORS.txt
+¦   ¦   ¦   bower.json
+¦   ¦   ¦   LICENSE.txt
+¦   ¦   ¦   package.json
+¦   ¦   ¦   README.md
+¦   ¦   ¦   
+¦   ¦   +---dist
+¦   ¦   ¦       jquery.js
+¦   ¦   ¦       jquery.min.js
+¦   ¦   ¦       jquery.min.map
+¦   ¦   ¦       jquery.slim.js
+¦   ¦   ¦       jquery.slim.min.js
+¦   ¦   ¦       jquery.slim.min.map
+¦   ¦   ¦       
+¦   ¦   +---src
+¦   ¦       ¦   ajax.js
+¦   ¦       ¦   attributes.js
+¦   ¦       ¦   callbacks.js
+¦   ¦       ¦   core.js
+¦   ¦       ¦   css.js
+¦   ¦       ¦   data.js
+¦   ¦       ¦   deferred.js
+¦   ¦       ¦   deprecated.js
+¦   ¦       ¦   dimensions.js
+¦   ¦       ¦   effects.js
+¦   ¦       ¦   event.js
+¦   ¦       ¦   jquery.js
+¦   ¦       ¦   manipulation.js
+¦   ¦       ¦   offset.js
+¦   ¦       ¦   queue.js
+¦   ¦       ¦   selector-native.js
+¦   ¦       ¦   selector.js
+¦   ¦       ¦   serialize.js
+¦   ¦       ¦   traversing.js
+¦   ¦       ¦   wrap.js
+¦   ¦       ¦   
+¦   ¦       +---ajax
+¦   ¦       ¦   ¦   jsonp.js
+¦   ¦       ¦   ¦   load.js
+¦   ¦       ¦   ¦   script.js
+¦   ¦       ¦   ¦   xhr.js
+¦   ¦       ¦   ¦   
+¦   ¦       ¦   +---var
+¦   ¦       ¦           location.js
+¦   ¦       ¦           nonce.js
+¦   ¦       ¦           rquery.js
+¦   ¦       ¦           
+¦   ¦       +---attributes
+¦   ¦       ¦       attr.js
+¦   ¦       ¦       classes.js
+¦   ¦       ¦       prop.js
+¦   ¦       ¦       support.js
+¦   ¦       ¦       val.js
+¦   ¦       ¦       
+¦   ¦       +---core
+¦   ¦       ¦   ¦   access.js
+¦   ¦       ¦   ¦   camelCase.js
+¦   ¦       ¦   ¦   DOMEval.js
+¦   ¦       ¦   ¦   init.js
+¦   ¦       ¦   ¦   isAttached.js
+¦   ¦       ¦   ¦   nodeName.js
+¦   ¦       ¦   ¦   parseHTML.js
+¦   ¦       ¦   ¦   parseXML.js
+¦   ¦       ¦   ¦   ready-no-deferred.js
+¦   ¦       ¦   ¦   ready.js
+¦   ¦       ¦   ¦   readyException.js
+¦   ¦       ¦   ¦   stripAndCollapse.js
+¦   ¦       ¦   ¦   support.js
+¦   ¦       ¦   ¦   toType.js
+¦   ¦       ¦   ¦   
+¦   ¦       ¦   +---var
+¦   ¦       ¦           rhtml.js
+¦   ¦       ¦           rsingleTag.js
+¦   ¦       ¦           
+¦   ¦       +---css
+¦   ¦       ¦   ¦   addGetHookIf.js
+¦   ¦       ¦   ¦   adjustCSS.js
+¦   ¦       ¦   ¦   curCSS.js
+¦   ¦       ¦   ¦   finalPropName.js
+¦   ¦       ¦   ¦   hiddenVisibleSelectors.js
+¦   ¦       ¦   ¦   showHide.js
+¦   ¦       ¦   ¦   support.js
+¦   ¦       ¦   ¦   
+¦   ¦       ¦   +---var
+¦   ¦       ¦           cssExpand.js
+¦   ¦       ¦           getStyles.js
+¦   ¦       ¦           isHiddenWithinTree.js
+¦   ¦       ¦           rboxStyle.js
+¦   ¦       ¦           rcustomProp.js
+¦   ¦       ¦           rnumnonpx.js
+¦   ¦       ¦           swap.js
+¦   ¦       ¦           
+¦   ¦       +---data
+¦   ¦       ¦   ¦   Data.js
+¦   ¦       ¦   ¦   
+¦   ¦       ¦   +---var
+¦   ¦       ¦           acceptData.js
+¦   ¦       ¦           dataPriv.js
+¦   ¦       ¦           dataUser.js
+¦   ¦       ¦           
+¦   ¦       +---deferred
+¦   ¦       ¦       exceptionHook.js
+¦   ¦       ¦       
+¦   ¦       +---deprecated
+¦   ¦       ¦       ajax-event-alias.js
+¦   ¦       ¦       event.js
+¦   ¦       ¦       
+¦   ¦       +---effects
+¦   ¦       ¦       animatedSelector.js
+¦   ¦       ¦       Tween.js
+¦   ¦       ¦       
+¦   ¦       +---event
+¦   ¦       ¦       trigger.js
+¦   ¦       ¦       
+¦   ¦       +---exports
+¦   ¦       ¦       amd.js
+¦   ¦       ¦       global.js
+¦   ¦       ¦       
+¦   ¦       +---manipulation
+¦   ¦       ¦   ¦   buildFragment.js
+¦   ¦       ¦   ¦   getAll.js
+¦   ¦       ¦   ¦   setGlobalEval.js
+¦   ¦       ¦   ¦   support.js
+¦   ¦       ¦   ¦   wrapMap.js
+¦   ¦       ¦   ¦   _evalUrl.js
+¦   ¦       ¦   ¦   
+¦   ¦       ¦   +---var
+¦   ¦       ¦           rscriptType.js
+¦   ¦       ¦           rtagName.js
+¦   ¦       ¦           
+¦   ¦       +---queue
+¦   ¦       ¦       delay.js
+¦   ¦       ¦       
+¦   ¦       +---selector
+¦   ¦       ¦       contains.js
+¦   ¦       ¦       escapeSelector.js
+¦   ¦       ¦       
+¦   ¦       +---traversing
+¦   ¦       ¦   ¦   findFilter.js
+¦   ¦       ¦   ¦   
+¦   ¦       ¦   +---var
+¦   ¦       ¦           dir.js
+¦   ¦       ¦           rneedsContext.js
+¦   ¦       ¦           siblings.js
+¦   ¦       ¦           
+¦   ¦       +---var
+¦   ¦               arr.js
+¦   ¦               class2type.js
+¦   ¦               document.js
+¦   ¦               documentElement.js
+¦   ¦               flat.js
+¦   ¦               fnToString.js
+¦   ¦               getProto.js
+¦   ¦               hasOwn.js
+¦   ¦               indexOf.js
+¦   ¦               isFunction.js
+¦   ¦               isWindow.js
+¦   ¦               ObjectFunctionString.js
+¦   ¦               pnum.js
+¦   ¦               pop.js
+¦   ¦               push.js
+¦   ¦               rcheckableType.js
+¦   ¦               rcssNum.js
+¦   ¦               rnothtmlwhite.js
+¦   ¦               rtrimCSS.js
+¦   ¦               slice.js
+¦   ¦               sort.js
+¦   ¦               splice.js
+¦   ¦               support.js
+¦   ¦               toString.js
+¦   ¦               whitespace.js
+¦   ¦               
 ¦   +---laravel-vite-plugin
 ¦   ¦   ¦   LICENSE.md
 ¦   ¦   ¦   package.json
@@ -4227,6 +4743,274 @@ C:.
 ¦   ¦           unit.js
 ¦   ¦           walk.js
 ¦   ¦           
+¦   +---preline
+¦   ¦   ¦   dts-config.js
+¦   ¦   ¦   global.d.ts
+¦   ¦   ¦   index.d.ts
+¦   ¦   ¦   index.js
+¦   ¦   ¦   LICENSE
+¦   ¦   ¦   package.json
+¦   ¦   ¦   plugin.js
+¦   ¦   ¦   plugin.ts
+¦   ¦   ¦   preline.d.ts
+¦   ¦   ¦   preline.js
+¦   ¦   ¦   prettier.config.js
+¦   ¦   ¦   README.md
+¦   ¦   ¦   tsconfig.json
+¦   ¦   ¦   tsconfig.mjs.json
+¦   ¦   ¦   webpack.config.js
+¦   ¦   ¦   webpack.config.mjs.js
+¦   ¦   ¦   
+¦   ¦   +---dist
+¦   ¦   ¦       accordion.d.ts
+¦   ¦   ¦       accordion.js
+¦   ¦   ¦       accordion.mjs
+¦   ¦   ¦       carousel.d.ts
+¦   ¦   ¦       carousel.js
+¦   ¦   ¦       carousel.mjs
+¦   ¦   ¦       collapse.d.ts
+¦   ¦   ¦       collapse.js
+¦   ¦   ¦       collapse.mjs
+¦   ¦   ¦       combobox.d.ts
+¦   ¦   ¦       combobox.js
+¦   ¦   ¦       combobox.mjs
+¦   ¦   ¦       copy-markup.d.ts
+¦   ¦   ¦       copy-markup.js
+¦   ¦   ¦       copy-markup.mjs
+¦   ¦   ¦       datatable.d.ts
+¦   ¦   ¦       datatable.js
+¦   ¦   ¦       datatable.mjs
+¦   ¦   ¦       dropdown.d.ts
+¦   ¦   ¦       dropdown.js
+¦   ¦   ¦       dropdown.mjs
+¦   ¦   ¦       file-upload.d.ts
+¦   ¦   ¦       file-upload.js
+¦   ¦   ¦       file-upload.mjs
+¦   ¦   ¦       helper-apexcharts.d.ts
+¦   ¦   ¦       helper-apexcharts.js
+¦   ¦   ¦       helper-apexcharts.mjs
+¦   ¦   ¦       helper-clipboard.d.ts
+¦   ¦   ¦       helper-clipboard.js
+¦   ¦   ¦       helper-clipboard.mjs
+¦   ¦   ¦       index.d.ts
+¦   ¦   ¦       index.js
+¦   ¦   ¦       index.mjs
+¦   ¦   ¦       input-number.d.ts
+¦   ¦   ¦       input-number.js
+¦   ¦   ¦       input-number.mjs
+¦   ¦   ¦       layout-splitter.d.ts
+¦   ¦   ¦       layout-splitter.js
+¦   ¦   ¦       layout-splitter.mjs
+¦   ¦   ¦       overlay.d.ts
+¦   ¦   ¦       overlay.js
+¦   ¦   ¦       overlay.mjs
+¦   ¦   ¦       pin-input.d.ts
+¦   ¦   ¦       pin-input.js
+¦   ¦   ¦       pin-input.mjs
+¦   ¦   ¦       preline.d.ts
+¦   ¦   ¦       preline.js
+¦   ¦   ¦       range-slider.d.ts
+¦   ¦   ¦       range-slider.js
+¦   ¦   ¦       range-slider.mjs
+¦   ¦   ¦       remove-element.d.ts
+¦   ¦   ¦       remove-element.js
+¦   ¦   ¦       remove-element.mjs
+¦   ¦   ¦       scrollspy.d.ts
+¦   ¦   ¦       scrollspy.js
+¦   ¦   ¦       scrollspy.mjs
+¦   ¦   ¦       select.d.ts
+¦   ¦   ¦       select.js
+¦   ¦   ¦       select.mjs
+¦   ¦   ¦       stepper.d.ts
+¦   ¦   ¦       stepper.js
+¦   ¦   ¦       stepper.mjs
+¦   ¦   ¦       strong-password.d.ts
+¦   ¦   ¦       strong-password.js
+¦   ¦   ¦       strong-password.mjs
+¦   ¦   ¦       tabs.d.ts
+¦   ¦   ¦       tabs.js
+¦   ¦   ¦       tabs.mjs
+¦   ¦   ¦       textarea-auto-height.d.ts
+¦   ¦   ¦       textarea-auto-height.js
+¦   ¦   ¦       textarea-auto-height.mjs
+¦   ¦   ¦       theme-switch.d.ts
+¦   ¦   ¦       theme-switch.js
+¦   ¦   ¦       theme-switch.mjs
+¦   ¦   ¦       toggle-count.d.ts
+¦   ¦   ¦       toggle-count.js
+¦   ¦   ¦       toggle-count.mjs
+¦   ¦   ¦       toggle-password.d.ts
+¦   ¦   ¦       toggle-password.js
+¦   ¦   ¦       toggle-password.mjs
+¦   ¦   ¦       tooltip.d.ts
+¦   ¦   ¦       tooltip.js
+¦   ¦   ¦       tooltip.mjs
+¦   ¦   ¦       tree-view.d.ts
+¦   ¦   ¦       tree-view.js
+¦   ¦   ¦       tree-view.mjs
+¦   ¦   ¦       
+¦   ¦   +---src
+¦   ¦       ¦   constants.ts
+¦   ¦       ¦   index.ts
+¦   ¦       ¦   interfaces.ts
+¦   ¦       ¦   types.ts
+¦   ¦       ¦   
+¦   ¦       +---helpers
+¦   ¦       ¦   ¦   types.ts
+¦   ¦       ¦   ¦   
+¦   ¦       ¦   +---apexcharts
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---clipboard
+¦   ¦       ¦           index.ts
+¦   ¦       ¦           
+¦   ¦       +---plugins
+¦   ¦       ¦   +---accordion
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---base-plugin
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---carousel
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---collapse
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---combobox
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---copy-markup
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---datatable
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---dropdown
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---file-upload
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---input-number
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---layout-splitter
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---overlay
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---pin-input
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---range-slider
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---remove-element
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---scrollspy
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---select
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---stepper
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---strong-password
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---tabs
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---textarea-auto-height
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---theme-switch
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---toggle-count
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---toggle-password
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---tooltip
+¦   ¦       ¦   ¦       index.ts
+¦   ¦       ¦   ¦       interfaces.ts
+¦   ¦       ¦   ¦       types.ts
+¦   ¦       ¦   ¦       
+¦   ¦       ¦   +---tree-view
+¦   ¦       ¦           index.ts
+¦   ¦       ¦           interfaces.ts
+¦   ¦       ¦           types.ts
+¦   ¦       ¦           
+¦   ¦       +---spa
+¦   ¦       ¦       index.ts
+¦   ¦       ¦       interfaces.ts
+¦   ¦       ¦       types.ts
+¦   ¦       ¦       
+¦   ¦       +---static
+¦   ¦       ¦       index.ts
+¦   ¦       ¦       interfaces.ts
+¦   ¦       ¦       types.ts
+¦   ¦       ¦       
+¦   ¦       +---utils
+¦   ¦               index.ts
+¦   ¦               interfaces.ts
+¦   ¦               types.ts
+¦   ¦               
 ¦   +---proxy-from-env
 ¦   ¦       .eslintrc
 ¦   ¦       .travis.yml
@@ -7402,6 +8186,100 @@ C:.
 ¦   ¦   +---test
 ¦   ¦           index.js
 ¦   ¦           
+¦   +---sweetalert2
+¦   ¦   ¦   LICENSE
+¦   ¦   ¦   package.json
+¦   ¦   ¦   README.md
+¦   ¦   ¦   sweetalert2.d.ts
+¦   ¦   ¦   
+¦   ¦   +---dist
+¦   ¦   ¦       sweetalert2.all.js
+¦   ¦   ¦       sweetalert2.all.min.js
+¦   ¦   ¦       sweetalert2.css
+¦   ¦   ¦       sweetalert2.esm.all.js
+¦   ¦   ¦       sweetalert2.esm.all.min.js
+¦   ¦   ¦       sweetalert2.esm.js
+¦   ¦   ¦       sweetalert2.esm.min.js
+¦   ¦   ¦       sweetalert2.js
+¦   ¦   ¦       sweetalert2.min.css
+¦   ¦   ¦       sweetalert2.min.js
+¦   ¦   ¦       
+¦   ¦   +---src
+¦   ¦   ¦   ¦   buttons-handlers.js
+¦   ¦   ¦   ¦   constants.js
+¦   ¦   ¦   ¦   globalState.js
+¦   ¦   ¦   ¦   instanceMethods.js
+¦   ¦   ¦   ¦   keydown-handler.js
+¦   ¦   ¦   ¦   popup-click-handler.js
+¦   ¦   ¦   ¦   privateMethods.js
+¦   ¦   ¦   ¦   privateProps.js
+¦   ¦   ¦   ¦   staticMethods.js
+¦   ¦   ¦   ¦   SweetAlert.js
+¦   ¦   ¦   ¦   sweetalert2.js
+¦   ¦   ¦   ¦   sweetalert2.scss
+¦   ¦   ¦   ¦   types.js
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---instanceMethods
+¦   ¦   ¦   ¦       close.js
+¦   ¦   ¦   ¦       enable-disable-elements.js
+¦   ¦   ¦   ¦       getInput.js
+¦   ¦   ¦   ¦       hideLoading.js
+¦   ¦   ¦   ¦       update.js
+¦   ¦   ¦   ¦       validation-message.js
+¦   ¦   ¦   ¦       _destroy.js
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---staticMethods
+¦   ¦   ¦   ¦       argsToParams.js
+¦   ¦   ¦   ¦       bindClickHandler.js
+¦   ¦   ¦   ¦       dom.js
+¦   ¦   ¦   ¦       eventHandlers.js
+¦   ¦   ¦   ¦       fire.js
+¦   ¦   ¦   ¦       mixin.js
+¦   ¦   ¦   ¦       showLoading.js
+¦   ¦   ¦   ¦       timer.js
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---utils
+¦   ¦   ¦       ¦   aria.js
+¦   ¦   ¦       ¦   classes.js
+¦   ¦   ¦       ¦   defaultInputValidators.js
+¦   ¦   ¦       ¦   DismissReason.js
+¦   ¦   ¦       ¦   draggable.js
+¦   ¦   ¦       ¦   EventEmitter.js
+¦   ¦   ¦       ¦   getTemplateParams.js
+¦   ¦   ¦       ¦   iosFix.js
+¦   ¦   ¦       ¦   isNodeEnv.js
+¦   ¦   ¦       ¦   openPopup.js
+¦   ¦   ¦       ¦   params.js
+¦   ¦   ¦       ¦   scrollbar.js
+¦   ¦   ¦       ¦   setParameters.js
+¦   ¦   ¦       ¦   Timer.js
+¦   ¦   ¦       ¦   utils.js
+¦   ¦   ¦       ¦   
+¦   ¦   ¦       +---dom
+¦   ¦   ¦           ¦   domUtils.js
+¦   ¦   ¦           ¦   getters.js
+¦   ¦   ¦           ¦   index.js
+¦   ¦   ¦           ¦   init.js
+¦   ¦   ¦           ¦   inputUtils.js
+¦   ¦   ¦           ¦   parseHtmlToContainer.js
+¦   ¦   ¦           ¦   
+¦   ¦   ¦           +---renderers
+¦   ¦   ¦                   render.js
+¦   ¦   ¦                   renderActions.js
+¦   ¦   ¦                   renderCloseButton.js
+¦   ¦   ¦                   renderContainer.js
+¦   ¦   ¦                   renderContent.js
+¦   ¦   ¦                   renderFooter.js
+¦   ¦   ¦                   renderIcon.js
+¦   ¦   ¦                   renderImage.js
+¦   ¦   ¦                   renderInput.js
+¦   ¦   ¦                   renderPopup.js
+¦   ¦   ¦                   renderProgressSteps.js
+¦   ¦   ¦                   renderTitle.js
+¦   ¦   ¦                   
+¦   ¦   +---themes
+¦   ¦           borderless.css
+¦   ¦           
 ¦   +---tailwindcss
 ¦   ¦   ¦   base.css
 ¦   ¦   ¦   CHANGELOG.md
@@ -8364,12 +9242,14 @@ C:.
 +---resources
 ¦   +---css
 ¦   ¦       app.css
+¦   ¦       records.css
 ¦   ¦       
 ¦   +---js
 ¦   ¦       app.js
 ¦   ¦       bootstrap.js
 ¦   ¦       
 ¦   +---views
+¦       ¦   dashboard.blade.php
 ¦       ¦   home.blade.php
 ¦       ¦   layout.blade.php
 ¦       ¦   login.blade.php
@@ -8382,7 +9262,14 @@ C:.
 ¦       ¦   ¦       index.blade.php
 ¦       ¦   ¦       
 ¦       ¦   +---equipment
-¦       ¦           create.blade.php
+¦       ¦   ¦       create.blade.php
+¦       ¦   ¦       index.blade.php
+¦       ¦   ¦       
+¦       ¦   +---records
+¦       ¦   ¦       create.blade.php
+¦       ¦   ¦       index.blade.php
+¦       ¦   ¦       
+¦       ¦   +---users
 ¦       ¦           index.blade.php
 ¦       ¦           
 ¦       +---include
@@ -8433,6 +9320,7 @@ C:.
 ¦   ¦           18eec67c8965aa1eed7711fe5844cf48.php
 ¦   ¦           1d5b71fd7ce0c92660497c99a2935d51.php
 ¦   ¦           1f99ee4081242444c155dab7cec75b98.php
+¦   ¦           21d70e712d03d63788d1902d78d1b4bc.php
 ¦   ¦           25bd018d4801ca9e8bb8988ed91c6478.php
 ¦   ¦           2cc0347565d28bd9295f3399f36218e7.php
 ¦   ¦           44f503fdf5075ae931865f0dbf3fb3fa.php
@@ -8447,6 +9335,7 @@ C:.
 ¦   ¦           696a13a0bdc555f5224bc47bfe447696.php
 ¦   ¦           69b0ce8af9a526a3ab98465ea75041cc.php
 ¦   ¦           6adbf6f83e273603e873933a4bb9a819.php
+¦   ¦           6c3be3424fdc17ed30317d7e044fbdb3.php
 ¦   ¦           6c894c418bf1d7eff15e64f4a744edd7.php
 ¦   ¦           729b7ddaeb25849eef3a5c0ba16e7aea.php
 ¦   ¦           84adaf082af754593b911d7984d7d1b2.php
@@ -8458,6 +9347,7 @@ C:.
 ¦   ¦           ab47eb50123d77ef44904ed502ad2bcf.php
 ¦   ¦           aeb888945edea8cd84c3e355b2d9dc0f.php
 ¦   ¦           b04e68afa7a01eff2650dda69ba23e74.php
+¦   ¦           b1372671ed359af4311ca541e9ffca86.php
 ¦   ¦           c0d7bb1a0235ce44d6f853b2f0dd919f.blade.php
 ¦   ¦           d54f581af62629512efeca12d7f0e7e4.blade.php
 ¦   ¦           e1cd7614fe3d64b9d209a303c8e70560.php
