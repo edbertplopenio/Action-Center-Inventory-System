@@ -39,6 +39,7 @@
             display: flex;
             align-items: center;
             margin-bottom: -0.2rem;
+            margin-top: -1rem;
         }
 
         .tab-button-container {
@@ -82,8 +83,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 2rem;
-            position: sticky;
-            height;
+            margin-bottom: -2rem;
         }
 
         table th, table td {
@@ -103,10 +103,11 @@
 
         .table-container {
             width: 100%; /* Ensure it takes full width */
-            height: 550px; /* Fixed height for vertical scrolling */
+            height: auto; /* Fixed height for vertical scrolling */
             overflow-x: auto; /* Enable horizontal scrolling only */
             overflow-y: hidden; /* Prevent vertical scrollbar in outer container */
-            margin-top: -1.5rem; /* Adjust margin for spacing */    
+            margin-top: -1.5rem; /* Adjust margin for spacing */  
+            margin-bottom: -1.7rem;  
             
         }
         /* Styling for the Action Buttons */
@@ -558,20 +559,10 @@ function restoreItem(itemId) {
         // Add the 'active' class to the clicked tab button
         document.getElementById(tab + '-tab').classList.add('active');
 
-        // Reinitialize DataTables after switching tabs
-        initializeDataTables();
     }
 
 
 
-    // Function to initialize DataTables
-    function initializeDataTables() {
-        $('table').each(function () {
-            if (!$.fn.DataTable.isDataTable(this)) {
-                $(this).DataTable();
-            }
-        });
-    }
 
     // Ensure DataTables is initialized when the page loads
     $(document).ready(function () {
