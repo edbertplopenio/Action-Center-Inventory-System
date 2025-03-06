@@ -82,6 +82,8 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 2rem;
+            position: sticky;
+            height;
         }
 
         table th, table td {
@@ -100,12 +102,12 @@
         }
 
         .table-container {
-            overflow-x: auto;
-            width: 100%;
-            height: 550px;
-            overflow-y: auto; /* Enable vertical scrolling if needed */
-            margin-top: -1.5rem; /* Set to 0 or a smaller value to move the table up */
-            position: relative;
+            width: 100%; /* Ensure it takes full width */
+            height: 550px; /* Fixed height for vertical scrolling */
+            overflow-x: auto; /* Enable horizontal scrolling only */
+            overflow-y: hidden; /* Prevent vertical scrollbar in outer container */
+            margin-top: -1.5rem; /* Adjust margin for spacing */    
+            
         }
         /* Styling for the Action Buttons */
         .action-buttons {
@@ -188,6 +190,11 @@
         transform: scale(1.05);  /* Slight scaling effect on hover for better interactivity */
     }
 
+    #myTable {
+        width: 100%;
+        overflow-x: auto;  /* Enable horizontal scrolling */
+        overflow-y: auto;  /* Enable vertical scrolling */
+    }
 
     </style>
 </head>
@@ -306,7 +313,7 @@
         <div id="equipment-content" class="tab-content active">
             <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">DRRM Equipment</h3>
             <div class="table-container">
-                <table>
+                <table id="equipmentTable" class="display">
                     <thead>
                         <tr>
                             <th>Equipment Name</th>
@@ -348,7 +355,7 @@
         <div id="office-supplies-content" class="tab-content">
             <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">Office Supplies</h3>
             <div class="table-container">
-                <table>
+                <table id="officeSuppliesTable" class="display">
                     <thead>
                         <tr>
                             <th>Item Name</th>
@@ -390,7 +397,7 @@
         <div id="emergency-kits-content" class="tab-content">
             <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">Emergency Kits</h3>
             <div class="table-container">
-                <table>
+                <table id="emergencyKitsTable" class="display">
                     <thead>
                         <tr>
                             <th>Item Name</th>
@@ -432,10 +439,11 @@
         <div id="archives-content" class="tab-content">
             <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">Archives</h3>
             <div class="table-container">
-                <table>
+                <table id="archivesTable" class="display">
                     <thead>
                         <tr>
                             <th>Item Name</th>
+                            <th>Quantity</th>
                             <th>Unit</th>
                             <th>Description</th>
                             <th>Storage Location</th>
@@ -450,6 +458,7 @@
                         @foreach($archivedItems as $item)
                             <tr id="archived-{{ $item->id }}">
                                 <td>{{ $item->name }}</td>
+                                <td>{{ $item->quantity }}</td>
                                 <td>{{ $item->unit }}</td>
                                 <td>{{ $item->description }}</td>
                                 <td>{{ $item->storage_location }}</td>
@@ -527,31 +536,32 @@ function restoreItem(itemId) {
 
 
     function switchTab(tab) {
-    console.log("Switching to tab: ", tab);  // For debugging purposes
+        console.log("Switching to tab: ", tab);  // For debugging purposes
 
-    // Hide all tabs by default and remove the 'active' class
-    var tabs = document.querySelectorAll('.tab-content');
-    tabs.forEach(function (tabContent) {
-        tabContent.classList.remove('active'); // Remove active class
-        tabContent.style.display = 'none'; // Hide all tab contents
-    });
+        // Hide all tabs by default and remove the 'active' class
+        var tabs = document.querySelectorAll('.tab-content');
+        tabs.forEach(function (tabContent) {
+            tabContent.classList.remove('active'); // Remove active class
+            tabContent.style.display = 'none'; // Hide all tab contents
+        });
 
-    // Show the selected tab and add the 'active' class
-    var activeTabContent = document.getElementById(tab + '-content');
-    activeTabContent.classList.add('active');  // Add active class to the selected tab
-    activeTabContent.style.display = 'block'; // Show the selected tab content
+        // Show the selected tab and add the 'active' class
+        var activeTabContent = document.getElementById(tab + '-content');
+        activeTabContent.classList.add('active');  // Add active class to the selected tab
+        activeTabContent.style.display = 'block'; // Show the selected tab content
 
-    // Remove the 'active' class from all tab buttons
-    document.querySelectorAll('.tab-button').forEach(function (btn) {
-        btn.classList.remove('active');
-    });
+        // Remove the 'active' class from all tab buttons
+        document.querySelectorAll('.tab-button').forEach(function (btn) {
+            btn.classList.remove('active');
+        });
 
-    // Add the 'active' class to the clicked tab button
-    document.getElementById(tab + '-tab').classList.add('active');
+        // Add the 'active' class to the clicked tab button
+        document.getElementById(tab + '-tab').classList.add('active');
 
-    // Reinitialize DataTables after switching tabs
-    initializeDataTables();
-}
+        // Reinitialize DataTables after switching tabs
+        initializeDataTables();
+    }
+
 
 
     // Function to initialize DataTables
@@ -634,18 +644,43 @@ function restoreItem(itemId) {
     });
 </script>
 
+
 <script>
-        $(document).ready(function() {
-            $('#myTable').DataTable({
-                "scrollY": '425px', // Disable vertical scrolling
-                "scrollCollapse": true,
-                "scrollX": false, // Disable horizontal scrolling
-                "paging": true, // Enable pagination (optional)
-                "searching": true, // Enable search (optional)
-                "ordering": true, // Enable sorting (optional)
+        function initializeDataTables() {
+        $('#equipmentTable').DataTable({
+            "scrollY": '425px', // Set vertical scroll inside the table
+            "scrollCollapse": true, // Enable collapsing the table when data is small
+            "paging": true, // Enable pagination
+            "searching": true, // Enable search
+            "ordering": true, // Enable sorting
         });
-    });
-    </script>
+
+        $('#officeSuppliesTable').DataTable({
+            "scrollY": '425px', // Set vertical scroll inside the table
+            "scrollCollapse": true, // Enable collapsing the table when data is small
+            "paging": true, // Enable pagination
+            "searching": true, // Enable search
+            "ordering": true, // Enable sorting
+        });
+
+        $('#emergencyKitsTable').DataTable({
+            "scrollY": '425px', // Set vertical scroll inside the table
+            "scrollCollapse": true, // Enable collapsing the table when data is small
+            "paging": true, // Enable pagination
+            "searching": true, // Enable search
+            "ordering": true, // Enable sorting
+        });
+
+        $('#archivesTable').DataTable({
+            "scrollY": '425px', // Set vertical scroll inside the table
+            "scrollCollapse": true, // Enable collapsing the table when data is small
+            "paging": true, // Enable pagination
+            "searching": true, // Enable search
+            "ordering": true, // Enable sorting
+        });
+    }
+    
+</script>
 
 </body>
 </html>
