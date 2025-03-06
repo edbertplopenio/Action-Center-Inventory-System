@@ -50,6 +50,7 @@ class ItemController extends Controller
             'date_purchased' => $request->date_purchased,
             'status' => $request->status,
             'image_url' => $imagePath,
+            'is_archived' => false, // Set default as not archived
         ]);
 
         // Redirect back to the form or a different route with a success message
@@ -57,14 +58,43 @@ class ItemController extends Controller
     }
 
     // Display a list of items without pagination
-    public function index()
-    {
-        // Retrieve all items by category without pagination
-        $items = Item::where('category', 'DRRM Equipment')->get();
-        $officeSupplies = Item::where('category', 'Office Supplies')->get();
-        $emergencyKits = Item::where('category', 'Emergency Kits')->get();
+// ItemController.php
 
-        // Return the inventory page with all items for each category
-        return view('inven', compact('items', 'officeSupplies', 'emergencyKits'));
+public function index()
+{
+    $items = Item::where('category', 'DRRM Equipment')->where('is_archived', false)->get();
+    $officeSupplies = Item::where('category', 'Office Supplies')->where('is_archived', false)->get();
+    $emergencyKits = Item::where('category', 'Emergency Kits')->where('is_archived', false)->get();
+
+    // Fetch archived items
+    $archivedItems = Item::where('is_archived', true)->get();
+
+    return view('inven', compact('items', 'officeSupplies', 'emergencyKits', 'archivedItems'));
+}
+
+
+
+    // Archive an item
+    public function archiveItem($id)
+    {
+        $item = Item::find($id);
+        if ($item) {
+            $item->is_archived = true; // Mark as archived
+            $item->save();
+        }
+
+        return redirect()->route('inventory'); // Redirect to the inventory page
+    }
+
+    // Restore an item from the archive
+    public function restoreItem($id)
+    {
+        $item = Item::find($id);
+        if ($item) {
+            $item->is_archived = false; // Mark as not archived
+            $item->save();
+        }
+
+        return redirect()->route('inventory'); // Redirect to the inventory page
     }
 }

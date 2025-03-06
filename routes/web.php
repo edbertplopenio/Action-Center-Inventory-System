@@ -17,13 +17,16 @@ Route::get('/logout', [AuthManager::class, 'logout'])->name('logout');
 // New route for inven.blade.php
 Route::get('/inven', [ItemController::class, 'index'])->name('inventory');
 
-
 // Item Routes
 Route::get('/item/create', [ItemController::class, 'create'])->name('items.create'); // Show the create form
 Route::post('/item/store', [ItemController::class, 'store'])->name('items.store'); // Store the new item
 
 // Route to view items in the inventory
 Route::get('/inven', [ItemController::class, 'index'])->name('inventory');
+
+// Archive and Restore Routes
+Route::post('/archive-item/{id}', [ItemController::class, 'archiveItem'])->name('archive-item');
+Route::post('/restore-item/{id}', [ItemController::class, 'restoreItem'])->name('restore-item');
 
 // Borrow page
 Route::get('/borrow', function () {
@@ -33,8 +36,3 @@ Route::get('/borrow', function () {
 Route::get('/user_management', function () {
     return view('user_management');
 });
-
-// Remove the redundant /add-item route
-// Route::get('/add-item', function() {
-//     return view('item-form'); // Blade view with the item form
-// });

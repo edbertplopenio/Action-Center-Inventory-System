@@ -116,7 +116,7 @@
             min-width: 120px; /* Fixed width para di gagalaw */
         }
 
-        .edit-btn, .archive-btn {
+        .edit-btn, .archive-btn, .restore-btn {
             padding: 6px 12px;
             border-radius: 4px;
             font-size: 14px;
@@ -154,7 +154,6 @@
             background-color: #D32F2F;  /* Hover effect */
         }
 
-
         /* Form row layout (two fields per row) */
         .form-row {
             display: grid;
@@ -169,6 +168,25 @@
         .archives-tab {
             background-color: rgb(0, 123, 255); /* Blue color for the Archives tab */
         }
+
+        .restore-btn {
+        background-color: rgb(135, 60, 255);  /* Purple */
+        color: white;
+        border-radius: 4px;
+        font-size: 14px;
+        padding: 6px 12px;  /* Same padding as the other buttons */
+        width: auto;
+        cursor: pointer;
+        text-align: center;
+        margin-bottom: 5px;
+        margin-top: 2px;
+        transition: background-color 0.3s, transform 0.2s; /* Added transition for smooth hover effect */
+    }
+
+    .restore-btn:hover {
+        background-color: rgb(100, 45, 200);  /* Darker shade of purple for hover effect */
+        transform: scale(1.05);  /* Slight scaling effect on hover for better interactivity */
+    }
 
 
     </style>
@@ -273,10 +291,10 @@
         <!-- Tabs -->
         <div class="tab-container">
             <div class="tab-button-container">
-            <button id="equipment-tab" class="tab-button equipment-tab" onclick="switchTab('equipment')">DRRM Equipment</button>
-            <button id="office-supplies-tab" class="tab-button office-supplies-tab ml-2" onclick="switchTab('office-supplies')">Office Supplies</button>
-            <button id="emergency-kits-tab" class="tab-button emergency-kits-tab ml-2" onclick="switchTab('emergency-kits')">Emergency Kits</button>
-            <button id="archives-tab" class="tab-button archives-tab ml-2" onclick="switchTab('archives')">Archives</button>
+                <button id="equipment-tab" class="tab-button equipment-tab" onclick="switchTab('equipment')">DRRM Equipment</button>
+                <button id="office-supplies-tab" class="tab-button office-supplies-tab ml-2" onclick="switchTab('office-supplies')">Office Supplies</button>
+                <button id="emergency-kits-tab" class="tab-button emergency-kits-tab ml-2" onclick="switchTab('emergency-kits')">Emergency Kits</button>
+                <button id="archives-tab" class="tab-button archives-tab ml-2" onclick="switchTab('archives')">Archives</button>
             </div>
             <!-- Add Item Button (Right Aligned) -->
             <button id="add-item-btn" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
@@ -286,7 +304,7 @@
 
         <!-- Equipment Tab -->
         <div id="equipment-content" class="tab-content active">
-        <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">DRRM Equipment</h3>
+            <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">DRRM Equipment</h3>
             <div class="table-container">
                 <table>
                     <thead>
@@ -305,7 +323,7 @@
                     </thead>
                     <tbody>
                         @foreach($items as $item)
-                            <tr>
+                            <tr id="item-{{ $item->id }}">
                                 <td>{{ $item->name }}</td>
                                 <td>{{ $item->quantity }}</td>
                                 <td>{{ $item->unit }}</td>
@@ -317,19 +335,18 @@
                                 <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
                                 <td class="action-buttons">
                                     <button class="edit-btn">Edit</button>
-                                    <button class="archive-btn">Archive</button>
+                                    <button class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
-
             </div>
         </div>
 
         <!-- Office Supplies Tab -->
         <div id="office-supplies-content" class="tab-content">
-        <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">Office Supplies</h3>
+            <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">Office Supplies</h3>
             <div class="table-container">
                 <table>
                     <thead>
@@ -348,7 +365,7 @@
                     </thead>
                     <tbody>
                         @foreach($officeSupplies as $item)
-                            <tr>
+                            <tr id="item-{{ $item->id }}">
                                 <td>{{ $item->name }}</td>
                                 <td>{{ $item->quantity }}</td>
                                 <td>{{ $item->unit }}</td>
@@ -360,13 +377,12 @@
                                 <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
                                 <td class="action-buttons">
                                     <button class="edit-btn">Edit</button>
-                                    <button class="archive-btn">Archive</button>
+                                    <button class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
-
             </div>
         </div>
 
@@ -391,7 +407,7 @@
                     </thead>
                     <tbody>
                         @foreach($emergencyKits as $item)
-                            <tr>
+                            <tr id="item-{{ $item->id }}">
                                 <td>{{ $item->name }}</td>
                                 <td>{{ $item->quantity }}</td>
                                 <td>{{ $item->unit }}</td>
@@ -403,13 +419,12 @@
                                 <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
                                 <td class="action-buttons">
                                     <button class="edit-btn">Edit</button>
-                                    <button class="archive-btn">Archive</button>
+                                    <button class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
-
             </div>
         </div>
 
@@ -420,7 +435,6 @@
                 <table>
                     <thead>
                         <tr>
-                            <th><input type="checkbox" id="select-all-archives" onclick="selectAllCheckboxes('archives')"></th>
                             <th>Item Name</th>
                             <th>Unit</th>
                             <th>Description</th>
@@ -433,60 +447,112 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Example archived item -->
-                        <tr>
-                            <td><input type="checkbox" class="select-item" name="item_ids[]" value="1"></td>
-                            <td>Archived Item 1</td>
-                            <td>5</td>
-                            <td>pcs</td>
-                            <td>Item description</td>
-                            <td>Location A</td>
-                            <td>2025-01-01</td>
-                            <td>2024-12-01</td>
-                            <td>Archived</td>
-                            <td><img src="image_url" alt="Archived Item 1" class="w-10 h-10"></td>
-                            <td class="action-buttons">
-                                <button class="edit-btn">Edit</button>
-                                <button class="archive-btn">Restore</button>
-                            </td>
-                        </tr>
-                        <!-- Add more archived items here -->
+                        @foreach($archivedItems as $item)
+                            <tr id="archived-{{ $item->id }}">
+                                <td>{{ $item->name }}</td>
+                                <td>{{ $item->unit }}</td>
+                                <td>{{ $item->description }}</td>
+                                <td>{{ $item->storage_location }}</td>
+                                <td>{{ $item->arrival_date }}</td>
+                                <td>{{ $item->date_purchased }}</td>
+                                <td>{{ $item->status }}</td>
+                                <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                                <td class="action-buttons">
+                                    <button class="edit-btn">Edit</button>
+                                    <button class="restore-btn" onclick="restoreItem({{ $item->id }})">Restore</button>
+                                </td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
-
             </div>
         </div>
 
     </div>
 </div>
-
 <script>
+// Archive an item
+function archiveItem(itemId) {
+    $.ajax({
+        url: '/archive-item/' + itemId,  // Your route to archive an item
+        method: 'POST',
+        data: {
+            _token: '{{ csrf_token() }}',
+        },
+        success: function(response) {
+            // Remove the item from the current inventory list
+            const itemRow = document.getElementById('item-' + itemId);
+            itemRow.remove();
+
+            // Add the item to the archived table
+            const archiveTable = document.getElementById('archivesContent').getElementsByTagName('tbody')[0];
+            const newRow = archiveTable.insertRow();
+            newRow.id = 'archived-' + itemId;
+            newRow.innerHTML = `
+                <td>${itemRow.querySelector('.item-name').textContent}</td>
+                <td>
+                    <button class="restore-btn" onclick="restoreItem('${itemId}')">Restore</button>
+                </td>
+            `;
+        }
+    });
+}
+
+// Restore an item
+function restoreItem(itemId) {
+    $.ajax({
+        url: '/restore-item/' + itemId,  // Your route to restore an item
+        method: 'POST',
+        data: {
+            _token: '{{ csrf_token() }}',
+        },
+        success: function(response) {
+            // Remove the item from the archived list
+            const archivedRow = document.getElementById('archived-' + itemId);
+            archivedRow.remove();
+
+            // Add the item back to the main inventory list
+            const inventoryTable = document.getElementById('equipment-content').getElementsByTagName('tbody')[0];
+            const newRow = inventoryTable.insertRow();
+            newRow.id = 'item-' + itemId;
+            newRow.innerHTML = `
+                <td>${archivedRow.querySelector('.item-name').textContent}</td>
+                <td>
+                    <button class="archive-btn" onclick="archiveItem('${itemId}')">Archive</button>
+                </td>
+            `;
+        }
+    });
+}
+
+
     function switchTab(tab) {
-        console.log("Switching to tab: ", tab);  // For debugging purposes
+    console.log("Switching to tab: ", tab);  // For debugging purposes
 
-        // Hide all tabs by default and remove the 'active' class
-        var tabs = document.querySelectorAll('.tab-content');
-        tabs.forEach(function (tabContent) {
-            tabContent.classList.remove('active'); // Remove active class
-            tabContent.style.display = 'none'; // Hide all tab contents
-        });
+    // Hide all tabs by default and remove the 'active' class
+    var tabs = document.querySelectorAll('.tab-content');
+    tabs.forEach(function (tabContent) {
+        tabContent.classList.remove('active'); // Remove active class
+        tabContent.style.display = 'none'; // Hide all tab contents
+    });
 
-        // Show the selected tab and add the 'active' class
-        var activeTabContent = document.getElementById(tab + '-content');
-        activeTabContent.classList.add('active');  // Add active class to the selected tab
-        activeTabContent.style.display = 'block'; // Show the selected tab content
+    // Show the selected tab and add the 'active' class
+    var activeTabContent = document.getElementById(tab + '-content');
+    activeTabContent.classList.add('active');  // Add active class to the selected tab
+    activeTabContent.style.display = 'block'; // Show the selected tab content
 
-        // Remove the 'active' class from all tab buttons
-        document.querySelectorAll('.tab-button').forEach(function (btn) {
-            btn.classList.remove('active');
-        });
+    // Remove the 'active' class from all tab buttons
+    document.querySelectorAll('.tab-button').forEach(function (btn) {
+        btn.classList.remove('active');
+    });
 
-        // Add the 'active' class to the clicked tab button
-        document.getElementById(tab + '-tab').classList.add('active');
+    // Add the 'active' class to the clicked tab button
+    document.getElementById(tab + '-tab').classList.add('active');
 
-        // Reinitialize DataTables after switching tabs
-        initializeDataTables();
-    }
+    // Reinitialize DataTables after switching tabs
+    initializeDataTables();
+}
+
 
     // Function to initialize DataTables
     function initializeDataTables() {
@@ -554,7 +620,32 @@
         });
     });
 </script>
+
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('.tab-button').click(function() {
+            var targetTab = $(this).data('target');  // data-target is an attribute set to target tab
+            $('.tab-content').removeClass('active');
+            $('#' + targetTab).addClass('active');
+        });
+    });
+</script>
+
+<script>
+        $(document).ready(function() {
+            $('#myTable').DataTable({
+                "scrollY": '425px', // Disable vertical scrolling
+                "scrollCollapse": true,
+                "scrollX": false, // Disable horizontal scrolling
+                "paging": true, // Enable pagination (optional)
+                "searching": true, // Enable search (optional)
+                "ordering": true, // Enable sorting (optional)
+        });
+    });
+    </script>
+
 </body>
 </html>
