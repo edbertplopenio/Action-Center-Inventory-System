@@ -62,14 +62,17 @@ class ItemController extends Controller
 
 public function index()
 {
-    $items = Item::where('category', 'DRRM Equipment')->where('is_archived', false)->get();
-    $officeSupplies = Item::where('category', 'Office Supplies')->where('is_archived', false)->get();
-    $emergencyKits = Item::where('category', 'Emergency Kits')->where('is_archived', false)->get();
+    $items = Item::all(); // Fetch all items
+    $officeSupplies = Item::where('category', 'Office Supplies')->get();
+    $emergencyKits = Item::where('category', 'Emergency Kits')->get();
+    $archivedItems = Item::onlyTrashed()->get(); // Assuming you're using soft deletes
+    $allItems = Item::all(); // Fetch all items for the "All Items" tab
+    $otherItems = Item::where('category', 'Other Item')->get(); // Fetch only other items
 
     // Fetch archived items
     $archivedItems = Item::where('is_archived', true)->get();
 
-    return view('inven', compact('items', 'officeSupplies', 'emergencyKits', 'archivedItems'));
+    return view('inven', compact('items', 'officeSupplies', 'emergencyKits', 'archivedItems', 'allItems', 'otherItems'));
 }
 
 
@@ -97,4 +100,5 @@ public function index()
 
         return redirect()->route('inventory'); // Redirect to the inventory page
     }
+
 }

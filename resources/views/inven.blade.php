@@ -299,9 +299,11 @@
         <!-- Tabs -->
         <div class="tab-container">
             <div class="tab-button-container">
+                <button id="all-items-tab" class="tab-button ml-2" onclick="switchTab('all-items')">All Items</button>
                 <button id="equipment-tab" class="tab-button equipment-tab" onclick="switchTab('equipment')">DRRM Equipment</button>
                 <button id="office-supplies-tab" class="tab-button office-supplies-tab ml-2" onclick="switchTab('office-supplies')">Office Supplies</button>
                 <button id="emergency-kits-tab" class="tab-button emergency-kits-tab ml-2" onclick="switchTab('emergency-kits')">Emergency Kits</button>
+                <button id="other-items-tab" class="tab-button ml-2" onclick="switchTab('other-items')">Other Items</button>
                 <button id="archives-tab" class="tab-button archives-tab ml-2" onclick="switchTab('archives')">Archives</button>
             </div>
             <!-- Add Item Button (Right Aligned) -->
@@ -309,6 +311,49 @@
                 + Add Item
             </button>
         </div>
+
+                <!-- All Items Tab -->
+        <div id="all-items-content" class="tab-content">
+            <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">All Items</h3>
+            <div class="table-container">
+                <table id="allItemsTable" class="display">
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Quantity</th>
+                            <th>Unit</th>
+                            <th>Description</th>
+                            <th>Storage Location</th>
+                            <th>Arrival Date</th>
+                            <th>Date Purchased</th>
+                            <th>Status</th>
+                            <th>Image</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($allItems as $item)
+                            <tr id="item-{{ $item->id }}">
+                                <td>{{ $item->name }}</td>
+                                <td>{{ $item->quantity }}</td>
+                                <td>{{ $item->unit }}</td>
+                                <td>{{ $item->description }}</td>
+                                <td>{{ $item->storage_location }}</td>
+                                <td>{{ $item->arrival_date }}</td>
+                                <td>{{ $item->date_purchased }}</td>
+                                <td>{{ $item->status }}</td>
+                                <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                                <td class="action-buttons">
+                                    <button class="edit-btn">Edit</button>
+                                    <button class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
 
         <!-- Equipment Tab -->
         <div id="equipment-content" class="tab-content active">
@@ -415,6 +460,48 @@
                     </thead>
                     <tbody>
                         @foreach($emergencyKits as $item)
+                            <tr id="item-{{ $item->id }}">
+                                <td>{{ $item->name }}</td>
+                                <td>{{ $item->quantity }}</td>
+                                <td>{{ $item->unit }}</td>
+                                <td>{{ $item->description }}</td>
+                                <td>{{ $item->storage_location }}</td>
+                                <td>{{ $item->arrival_date }}</td>
+                                <td>{{ $item->date_purchased }}</td>
+                                <td>{{ $item->status }}</td>
+                                <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                                <td class="action-buttons">
+                                    <button class="edit-btn">Edit</button>
+                                    <button class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+                <!-- Other Items Tab -->
+        <div id="other-items-content" class="tab-content">
+            <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">Other Items</h3>
+            <div class="table-container">
+                <table id="otherItemsTable" class="display">
+                    <thead>
+                        <tr>
+                            <th>Item Name</th>
+                            <th>Quantity</th>
+                            <th>Unit</th>
+                            <th>Description</th>
+                            <th>Storage Location</th>
+                            <th>Arrival Date</th>
+                            <th>Date Purchased</th>
+                            <th>Status</th>
+                            <th>Image</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($otherItems as $item)
                             <tr id="item-{{ $item->id }}">
                                 <td>{{ $item->name }}</td>
                                 <td>{{ $item->quantity }}</td>
@@ -560,9 +647,6 @@ function restoreItem(itemId) {
         document.getElementById(tab + '-tab').classList.add('active');
 
     }
-
-
-
 
     // Ensure DataTables is initialized when the page loads
     $(document).ready(function () {
