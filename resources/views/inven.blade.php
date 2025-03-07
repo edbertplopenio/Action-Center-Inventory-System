@@ -9,6 +9,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
     <style>
+
+        html, body {
+            overflow: hidden; /* Prevent scrolling on the entire page */
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
         /* Hide all tables by default, only show the active tab's table */
         .tab-content {
             display: none;
