@@ -68,4 +68,5 @@ Route::get('/admin/records/archive', [RecordsController::class, 'archiveIndex'])
 
 
 Route::post('/admin/records/unarchive/{id}', [RecordsController::class, 'unarchive'])->name('records.unarchive');
+Route::put('/admin/records/{id}', [RecordsController::class, 'update'])->name('records.update');
 

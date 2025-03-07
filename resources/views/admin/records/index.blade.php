@@ -253,7 +253,8 @@
                         data-id="{{ $record->id }}"
                         data-title="{{ $record->title }}"
                         data-related-documents="{{ $record->related_documents }}"
-                        data-period="{{ $record->start_year ?? 'N/A' }} to {{ $record->end_year ?? 'N/A' }}"
+                        data-start-year="{{ $record->start_year ?? '' }}"
+                        data-end-year="{{ $record->end_year ?? '' }}"
                         data-volume="{{ $record->volume ?? 'N/A' }}"
                         data-medium="{{ ucfirst(strtolower($record->medium)) }}"
                         data-location="{{ $record->location }}"
@@ -363,9 +364,13 @@
 
                         <!-- Action Buttons -->
                         <td>
-                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
+                            <!-- Inside your loop, add a distinct class "edit-record-btn" -->
+                            <button
+                                class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] 
+         focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
                                 Edit
                             </button>
+
                             <button
                                 class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24"
                                 data-id="{{ $record->id }}"
@@ -386,6 +391,634 @@
         </div>
     </div>
 </div>
+
+
+
+
+<!-- Edit Record Modal -->
+<div class="relative z-10" id="editRecordModal" aria-labelledby="editRecordModalTitle" role="dialog" aria-modal="true" style="display: none;">
+    <!-- Backdrop with stronger blur effect -->
+    <div class="fixed inset-0 bg-black/50 transition-opacity" aria-hidden="true"></div>
+
+    <div class="fixed inset-0 z-10 flex items-center justify-center">
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
+            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full" style="max-width: 90%; height: auto;">
+                <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
+                    <h3 class="text-lg font-semibold text-gray-900" id="editRecordModalTitle">Edit Record</h3>
+
+                    <!-- Modal Form HTML -->
+                    <form id="editRecordForm" method="POST">
+                        @csrf
+                        @method('PUT')
+                        <div class="space-y-6">
+                            <div class="border-b border-gray-900/10 pb-6">
+                                <p class="mt-1 text-xs text-gray-600">Please fill in the information about the record.</p>
+
+                                <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
+                                    <!-- RECORDS SERIES TITLE AND DESCRIPTION -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editTitle" class="block text-xs font-medium text-gray-900">Records Series Title</label>
+                                        <input
+                                            type="text"
+                                            name="title"
+                                            id="editTitle"
+                                            class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs"
+                                            placeholder="Enter Title and Description">
+                                    </div>
+
+                                    <!-- FREQUENCY OF USE -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editFrequency" class="block text-xs font-medium text-gray-900">Frequency of Use</label>
+                                        <select
+                                            name="frequency"
+                                            id="editFrequency"
+                                            class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                            <option value="as_needed">As Needed</option>
+                                            <option value="weekly">Weekly</option>
+                                            <option value="monthly">Monthly</option>
+                                            <option value="yearly">Yearly</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- RELATED DOCUMENTS -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editRelatedDocuments" class="block text-xs font-medium text-gray-900">Related Documents</label>
+                                        <input
+                                            type="text"
+                                            name="related_documents"
+                                            id="editRelatedDocuments"
+                                            class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs"
+                                            placeholder="Enter Related Documents">
+                                    </div>
+
+                                    <!-- DUPLICATION -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editDuplication" class="block text-xs font-medium text-gray-900">Duplication</label>
+                                        <input
+                                            type="text"
+                                            name="duplication"
+                                            id="editDuplication"
+                                            class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs"
+                                            placeholder="Enter duplication details">
+                                    </div>
+
+                                    <!-- PERIOD COVERED / INCLUSIVE DATES -->
+                                    <div class="sm:col-span-1">
+                                        <label class="block text-xs font-medium text-gray-900" for="editStartYear">Period Covered</label>
+                                        <div class="flex space-x-4">
+                                            <!-- START YEAR DROPDOWN -->
+                                            <select
+                                                name="start_year"
+                                                id="editStartYear"
+                                                class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                                <option value="">-- Select Start Year --</option>
+                                                <option value="2025">2025</option>
+                                                <option value="2024">2024</option>
+                                                <option value="2023">2023</option>
+                                                <option value="2022">2022</option>
+                                                <option value="2021">2021</option>
+                                                <option value="2020">2020</option>
+                                                <option value="2000">2000</option>
+                                                <!-- etc. -->
+                                            </select>
+
+                                            <!-- END YEAR DROPDOWN -->
+                                            <select
+                                                name="end_year"
+                                                id="editEndYear"
+                                                class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                                <option value="">-- Select End Year --</option>
+                                                <option value="2025">2025</option>
+                                                <option value="2024">2024</option>
+                                                <option value="2023">2023</option>
+                                                <option value="2022">2022</option>
+                                                <option value="2021">2021</option>
+                                                <option value="2020">2020</option>
+                                                <option value="2000">2000</option>
+                                                <!-- etc. -->
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- TIME VALUE (T/P) -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editTimeValue" class="block text-xs font-medium text-gray-900">Time Value</label>
+                                        <select
+                                            name="time_value"
+                                            id="editTimeValue"
+                                            class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                            <option value="T">Temporary</option>
+                                            <option value="P">Permanent</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- VOLUME -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editVolume" class="block text-xs font-medium text-gray-900">Volume</label>
+                                        <input
+                                            type="text"
+                                            name="volume"
+                                            id="editVolume"
+                                            class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs"
+                                            placeholder="Enter volume">
+                                    </div>
+
+                                    <!-- UTILITY VALUE (Adm/F/L/A) -->
+                                    <div class="sm:col-span-1">
+                                        <label class="block text-xs font-medium text-gray-900">Utility Value</label>
+                                        <div class="grid grid-cols-4 gap-4 mt-2">
+                                            <div class="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    id="editAdm"
+                                                    name="utility_value[]"
+                                                    value="Adm"
+                                                    class="w-4 h-4 mr-2">
+                                                <label for="editAdm" class="text-xs">Admin</label>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    id="editFiscal"
+                                                    name="utility_value[]"
+                                                    value="F"
+                                                    class="w-4 h-4 mr-2">
+                                                <label for="editFiscal" class="text-xs">Fiscal</label>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    id="editLegal"
+                                                    name="utility_value[]"
+                                                    value="L"
+                                                    class="w-4 h-4 mr-2">
+                                                <label for="editLegal" class="text-xs">Legal</label>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <input
+                                                    type="checkbox"
+                                                    id="editArchival"
+                                                    name="utility_value[]"
+                                                    value="A"
+                                                    class="w-4 h-4 mr-2">
+                                                <label for="editArchival" class="text-xs">Archival</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- RECORDS MEDIUM -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editMedium" class="block text-xs font-medium text-gray-900">Records Medium</label>
+                                        <select
+                                            name="medium"
+                                            id="editMedium"
+                                            class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                            <option value="paper">Paper</option>
+                                            <option value="electronic">Electronic</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- RETENTION PERIOD (Active, Storage, Permanent) -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editActive" class="block text-xs font-medium text-gray-900">
+                                            Retention Period
+                                        </label>
+                                        <div class="grid grid-cols-3 gap-6 mt-2 items-center">
+                                            <!-- Active Retention Period -->
+                                            <div class="flex flex-col items-center">
+                                                <label class="text-xs mb-1">Active</label>
+                                                <div class="flex space-x-2">
+                                                    <input
+                                                        type="number"
+                                                        id="editActive"
+                                                        name="active"
+                                                        class="w-14 py-1 px-2 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs text-center"
+                                                        min="0">
+                                                    <select
+                                                        id="editActiveUnit"
+                                                        name="active_unit"
+                                                        class="py-1 px-2 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                                        <option value="years">Years</option>
+                                                        <option value="months">Months</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <!-- Storage Retention Period -->
+                                            <div class="flex flex-col items-center">
+                                                <label class="text-xs mb-1">Storage</label>
+                                                <div class="flex space-x-2">
+                                                    <input
+                                                        type="number"
+                                                        id="editStorage"
+                                                        name="storage"
+                                                        class="w-14 py-1 px-2 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs text-center"
+                                                        min="0">
+                                                    <select
+                                                        id="editStorageUnit"
+                                                        name="storage_unit"
+                                                        class="py-1 px-2 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                                        <option value="years">Years</option>
+                                                        <option value="months">Months</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <!-- Permanent Checkbox -->
+                                            <div class="flex flex-col items-center">
+                                                <label class="text-xs mb-1">Permanent</label>
+                                                <div class="flex justify-center">
+                                                    <input
+                                                        type="checkbox"
+                                                        id="editPermanent"
+                                                        name="permanent"
+                                                        value="1"
+                                                        class="w-6 h-6 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs text-center"
+                                                        onchange="toggleEditPermanent()">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <script>
+                                        // Update retention units based on user input
+                                        document.addEventListener("DOMContentLoaded", function() {
+                                            function updateRetentionUnits() {
+                                                let activeField = document.getElementById("editActive");
+                                                let storageField = document.getElementById("editStorage");
+                                                let activeUnit = document.getElementById("editActiveUnit");
+                                                let storageUnit = document.getElementById("editStorageUnit");
+
+                                                activeUnit.disabled = (activeField.value === "0" || activeField.value === "");
+                                                storageUnit.disabled = (storageField.value === "0" || storageField.value === "");
+                                            }
+
+                                            document.getElementById("editActive").addEventListener("input", updateRetentionUnits);
+                                            document.getElementById("editStorage").addEventListener("input", updateRetentionUnits);
+
+                                            // Disable units if fields are empty on load
+                                            updateRetentionUnits();
+                                        });
+
+                                        // Toggle permanent logic
+                                        function toggleEditPermanent() {
+                                            var activeField = document.getElementById('editActive');
+                                            var storageField = document.getElementById('editStorage');
+                                            var activeUnit = document.getElementById('editActiveUnit');
+                                            var storageUnit = document.getElementById('editStorageUnit');
+                                            var permanentCheckbox = document.getElementById('editPermanent');
+
+                                            if (permanentCheckbox.checked) {
+                                                console.log("✅ Permanent selected. Disabling active/storage inputs.");
+
+                                                // Disable and clear active/storage fields
+                                                activeField.value = "";
+                                                storageField.value = "";
+                                                activeUnit.value = "";
+                                                storageUnit.value = "";
+                                                activeField.disabled = true;
+                                                storageField.disabled = true;
+                                                activeUnit.disabled = true;
+                                                storageUnit.disabled = true;
+
+                                                // Optionally add hidden inputs
+                                                addHiddenInput('permanent_hidden', '1');
+                                                addHiddenInput('active_unit_hidden', 'Permanent');
+                                                addHiddenInput('storage_unit_hidden', 'Permanent');
+                                            } else {
+                                                console.log("🛑 Permanent unselected. Enabling active/storage inputs.");
+
+                                                // Re-enable active/storage fields
+                                                activeField.disabled = false;
+                                                storageField.disabled = false;
+                                                activeUnit.disabled = false;
+                                                storageUnit.disabled = false;
+
+                                                // Remove the hidden inputs we added
+                                                removeHiddenInput('permanent_hidden');
+                                                removeHiddenInput('active_unit_hidden');
+                                                removeHiddenInput('storage_unit_hidden');
+                                            }
+                                        }
+
+                                        function addHiddenInput(name, value) {
+                                            let existing = document.querySelector(`input[name="${name}"]`);
+                                            if (!existing) {
+                                                let hiddenInput = document.createElement("input");
+                                                hiddenInput.type = "hidden";
+                                                hiddenInput.name = name;
+                                                hiddenInput.value = value;
+                                                document.querySelector("form").appendChild(hiddenInput);
+                                                console.log(`➕ Added hidden input: ${name} = ${value}`);
+                                            }
+                                        }
+
+                                        function removeHiddenInput(name) {
+                                            let existing = document.querySelector(`input[name="${name}"]`);
+                                            if (existing) {
+                                                existing.remove();
+                                                console.log(`❌ Removed hidden input: ${name}`);
+                                            }
+                                        }
+                                    </script>
+
+                                    <!-- RESTRICTION/S -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editRestriction" class="block text-xs font-medium text-gray-900">Restriction</label>
+                                        <select
+                                            name="restriction"
+                                            id="editRestriction"
+                                            class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                            <option value="open-access">Open Access</option>
+                                            <option value="confidential">Confidential</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- DISPOSITION PROVISION -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editDisposition" class="block text-xs font-medium text-gray-900">Disposition Provision</label>
+                                        <input
+                                            type="text"
+                                            name="disposition"
+                                            id="editDisposition"
+                                            class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs"
+                                            placeholder="Enter disposition provision">
+                                    </div>
+
+                                    <!-- LOCATION OF RECORDS -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editLocation" class="block text-xs font-medium text-gray-900">Location of Records</label>
+                                        <input
+                                            type="text"
+                                            name="location"
+                                            id="editLocation"
+                                            class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs"
+                                            placeholder="Enter location">
+                                    </div>
+
+                                    <!-- GRDS ITEM # -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editGrdsItem" class="block text-xs font-medium text-gray-900">GRDS Item #</label>
+                                        <input
+                                            type="text"
+                                            name="grds_item"
+                                            id="editGrdsItem"
+                                            class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs"
+                                            placeholder="Enter GRDS item number">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="mt-6 flex items-center justify-end gap-x-6">
+                                <button type="button" class="text-xs font-semibold text-gray-900" id="closeEditRecordModalBtn">Cancel</button>
+                                <button type="submit" class="rounded-md bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-500">
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Function to update the form fields dynamically
+        function populateForm(recordData) {
+            console.log("Populating Form with Data:", recordData); // Debugging
+
+            document.getElementById("editRecordForm").action = `/admin/records/${recordData.id}`;
+
+            document.getElementById("editTitle").value = recordData.title ?? "";
+            document.getElementById("editFrequency").value = recordData.frequency ?? "";
+            document.getElementById("editRelatedDocuments").value = recordData.relatedDocuments ?? "";
+            document.getElementById("editDuplication").value = recordData.duplication ?? "";
+            document.getElementById("editStartYear").value = recordData.startYear || "";
+            document.getElementById("editEndYear").value = recordData.endYear || "";
+            document.getElementById("editTimeValue").value = recordData.timeValue === "P" ? "P" : "T";
+            document.getElementById("editVolume").value = recordData.volume ?? "";
+
+            // ✅ Correcting "Records Medium" Dropdown Value
+            let mediumDropdown = document.getElementById("editMedium");
+            let mediumValue = recordData.medium ? recordData.medium.toLowerCase() : "paper"; // Default to "paper" if empty
+
+            console.log("Medium Before Setting:", mediumValue); // Debugging
+
+            if (mediumValue === "paper" || mediumValue === "electronic") {
+                mediumDropdown.value = mediumValue;
+            } else {
+                mediumDropdown.value = "paper"; // Fallback to paper if value is incorrect
+            }
+
+            // Handle utility checkboxes
+            const utilities = (recordData.utility || "").split(",").map(u => u.trim().toLowerCase());
+            document.getElementById("editAdm").checked = utilities.includes("adm");
+            document.getElementById("editFiscal").checked = utilities.includes("f");
+            document.getElementById("editLegal").checked = utilities.includes("l");
+            document.getElementById("editArchival").checked = utilities.includes("a");
+
+            // Handle retention periods
+            document.getElementById("editActive").value = recordData.retentionActive || "";
+            document.getElementById("editActiveUnit").value = recordData.retentionActiveUnit || "";
+            document.getElementById("editStorage").value = recordData.retentionStorage || "";
+            document.getElementById("editStorageUnit").value = recordData.retentionStorageUnit || "";
+
+            // Handle permanent selection
+            if (recordData.retentionActiveUnit === "Permanent" || recordData.retentionStorageUnit === "Permanent") {
+                document.getElementById("editPermanent").checked = true;
+                toggleEditPermanent();
+            } else {
+                document.getElementById("editPermanent").checked = false;
+                toggleEditPermanent();
+            }
+
+            document.getElementById("editRestriction").value = recordData.restriction ?? "open-access";
+            document.getElementById("editDisposition").value = recordData.disposition ?? "";
+            document.getElementById("editLocation").value = recordData.location ?? "";
+            document.getElementById("editGrdsItem").value = recordData.grdsItem ?? "";
+        }
+
+        // Open edit modal and populate form
+        document.querySelectorAll(".edit-record-btn").forEach(button => {
+            button.addEventListener("click", function (event) {
+                event.stopPropagation();
+                const row = this.closest(".record-row");
+                const recordData = row.dataset;
+
+                console.log("Clicked Edit, Record Data:", recordData); // Debugging
+
+                populateForm(recordData);
+                document.getElementById("editRecordModal").style.display = "block";
+            });
+        });
+
+        // Close edit modal
+        document.getElementById("closeEditRecordModalBtn").addEventListener("click", function () {
+            document.getElementById("editRecordModal").style.display = "none";
+        });
+
+        // Handle form submission with AJAX
+        $("#editRecordForm").on("submit", function (event) {
+            event.preventDefault();
+
+            let form = $(this);
+            let formData = form.serialize();
+            let recordId = form.attr("action").split("/").pop();
+
+            $.ajax({
+                url: form.attr("action"),
+                type: "POST",
+                data: formData,
+                success: function (response) {
+                    console.log("AJAX Success, Updated Record:", response.updatedRecord); // Debugging
+
+                    if (response.success) {
+                        let updatedRecord = response.updatedRecord;
+                        let row = $(`tr[data-id='${recordId}']`);
+
+                        row.find("td:eq(0)").text(updatedRecord.title);
+                        row.find("td:eq(1)").text(updatedRecord.related_documents);
+                        row.find("td:eq(2)").text(updatedRecord.start_year + " to " + updatedRecord.end_year);
+                        row.find("td:eq(3)").text(updatedRecord.volume);
+                        row.find("td:eq(4)").text(updatedRecord.medium);
+                        row.find("td:eq(5)").text(updatedRecord.location);
+                        row.find("td:eq(6)").text(updatedRecord.time_value === 'P' ? 'Permanent' : 'Temporary');
+
+                        let retentionHTML = `
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>${updatedRecord.active} ${updatedRecord.active_unit}</span>
+                            <span>${updatedRecord.storage} ${updatedRecord.storage_unit}</span>
+                            <span>${updatedRecord.total_retention}</span>
+                        </div>`;
+                        row.find("td:eq(7)").html(retentionHTML);
+
+                        row.find("td:eq(8)").text(updatedRecord.disposition);
+                        row.find("td:eq(9)").text(updatedRecord.grds_item);
+
+                        $("#editRecordModal").hide();
+                        showSuccessModal();
+                    } else {
+                        showErrorModal("Update failed.");
+                    }
+                },
+                error: function (xhr) {
+                    console.log("AJAX Error:", xhr.responseText);
+                    let errorMessage = "An error occurred while updating the record.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+                    showErrorModal(errorMessage);
+                }
+            });
+        });
+
+        // Function to show success modal
+        function showSuccessModal() {
+            $("#successModal").removeClass("hidden");
+
+            // Close modal on button click
+            $("#closeSuccessModalBtn").on("click", function () {
+                $("#successModal").addClass("hidden");
+            });
+        }
+
+        // Function to show error modal with message
+        function showErrorModal(message) {
+            $("#errorMessage").text(message);
+            $("#errorModal").removeClass("hidden");
+
+            // Close modal on button click
+            $("#closeErrorModalBtn").on("click", function () {
+                $("#errorModal").addClass("hidden");
+            });
+        }
+    });
+</script>
+
+
+
+
+
+
+
+
+<!-- Success Modal -->
+<div id="successModal" class="relative z-10 hidden" aria-labelledby="success-modal-title" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-gray-500/75 transition-opacity" aria-hidden="true"></div>
+
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:size-10">
+                            <svg class="size-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-base font-semibold text-gray-900" id="success-modal-title">Success</h3>
+                            <p class="text-sm text-gray-500">Record has been successfully updated.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button type="button" id="closeSuccessModalBtn" class="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-green-500 sm:w-auto">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div id="errorModal" class="relative z-10 hidden" aria-labelledby="error-modal-title" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-gray-500/75 transition-opacity" aria-hidden="true"></div>
+
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:size-10">
+                            <svg class="size-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-base font-semibold text-gray-900" id="error-modal-title">Error</h3>
+                            <p class="text-sm text-gray-500" id="errorMessage">Something went wrong while updating the record.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button type="button" id="closeErrorModalBtn" class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-red-500 sm:w-auto">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -683,46 +1316,44 @@
 <!-- JS for modal tbody Capitalize the modal -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
+        console.log("✅ Script Loaded: Event listeners added");
 
-        console.log("Script Loaded: Event listeners added");
-
-        // Function to capitalize first letter of each word and replace underscores
+        // -----------------------------------
+        // Function to Capitalize First Letter
+        // -----------------------------------
         function capitalizeFirstLetter(string) {
             return string.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
         }
 
-        // Function to calculate and format the retention period
+        // -----------------------------------
+        // Function to Calculate Retention Period
+        // -----------------------------------
         function formatRetentionPeriod(active, activeUnit, storage, storageUnit) {
-            let totalYears = 0;
-            let totalMonths = 0;
+            let totalYears = 0,
+                totalMonths = 0;
             let totalDisplay = "";
 
-            console.log(`Calculating retention for: Active(${active} ${activeUnit}), Storage(${storage} ${storageUnit})`);
+            console.log(`🔹 Calculating Retention: Active(${active} ${activeUnit}), Storage(${storage} ${storageUnit})`);
 
-            // Handle "Permanent" Case
             if (activeUnit === "Permanent" || storageUnit === "Permanent") {
                 return "Permanent";
             }
 
-            // Convert active period to years and months
             if (activeUnit === "years") {
                 totalYears += active;
             } else if (activeUnit === "months") {
                 totalMonths += active;
             }
 
-            // Convert storage period to years and months
             if (storageUnit === "years") {
                 totalYears += storage;
             } else if (storageUnit === "months") {
                 totalMonths += storage;
             }
 
-            // Convert months into years if applicable
             totalYears += Math.floor(totalMonths / 12);
             totalMonths = totalMonths % 12;
 
-            // Format total retention display with abbreviations & pluralization
             if (totalYears > 0) totalDisplay += `${totalYears} ${totalYears > 1 ? 'yrs' : 'yr'}`;
             if (totalMonths > 0) {
                 totalDisplay += totalYears > 0 ? `, ${totalMonths} ${totalMonths > 1 ? 'mos' : 'mo'}` :
@@ -730,62 +1361,128 @@
             }
             if (!totalDisplay) totalDisplay = "0";
 
-            console.log(`Final Retention Total: ${totalDisplay}`);
+            console.log(`✔️ Final Retention Total: ${totalDisplay}`);
             return totalDisplay;
         }
 
-        // Event listener for record rows
+        // -----------------------------------
+        // DISPLAY MODAL (SHOW RECORD)
+        // -----------------------------------
+        function updateDisplayModal(recordData) {
+            console.log("🔹 Displaying Record:", recordData);
+
+            let active = parseInt(recordData.retentionActive) || 0;
+            let activeUnit = recordData.retentionActiveUnit || "";
+            let storage = parseInt(recordData.retentionStorage) || 0;
+            let storageUnit = recordData.retentionStorageUnit || "";
+
+            let retentionTotal = formatRetentionPeriod(active, activeUnit, storage, storageUnit);
+
+            document.querySelector('.record-title').textContent = capitalizeFirstLetter(recordData.title);
+            document.querySelector('.record-related-documents').textContent = capitalizeFirstLetter(recordData.relatedDocuments);
+            document.querySelector('.record-period').textContent = `${recordData.startYear ?? 'N/A'} to ${recordData.endYear ?? 'N/A'}`;
+            document.querySelector('.record-volume').textContent = capitalizeFirstLetter(recordData.volume);
+            document.querySelector('.record-medium').textContent = capitalizeFirstLetter(recordData.medium);
+            document.querySelector('.record-location').textContent = capitalizeFirstLetter(recordData.location);
+            document.querySelector('.record-time-value').textContent = capitalizeFirstLetter(recordData.timeValue);
+            document.querySelector('.record-retention-active').textContent = `${active} ${activeUnit}`;
+            document.querySelector('.record-retention-storage').textContent = `${storage} ${storageUnit}`;
+            document.querySelector('.record-retention-total').textContent = retentionTotal;
+            document.querySelector('.record-disposition').textContent = capitalizeFirstLetter(recordData.disposition);
+            document.querySelector('.record-grds-item').textContent = capitalizeFirstLetter(recordData.grdsItem);
+            document.querySelector('.record-restriction').textContent = capitalizeFirstLetter(recordData.restriction);
+            document.querySelector('.record-utility').textContent = capitalizeFirstLetter(recordData.utility);
+            document.querySelector('.record-duplication').textContent = capitalizeFirstLetter(recordData.duplication);
+            document.querySelector('.record-frequency').textContent = capitalizeFirstLetter(recordData.frequency);
+
+            document.getElementById('showRecord').style.display = 'block';
+            console.log("✔️ Display Modal Opened");
+        }
+
         document.querySelectorAll('.record-row').forEach(row => {
             row.addEventListener('click', function(event) {
-                console.log("Row Clicked:", this.dataset);
-
-                // Prevent clicking inside buttons from opening the modal
-                if (event.target.closest('button')) {
-                    return;
-                }
-
-                // Get values from dataset
-                let active = parseInt(this.dataset.retentionActive) || 0;
-                let activeUnit = this.dataset.retentionActiveUnit || "";
-                let storage = parseInt(this.dataset.retentionStorage) || 0;
-                let storageUnit = this.dataset.retentionStorageUnit || "";
-
-                console.log(`Extracted values: Active(${active} ${activeUnit}), Storage(${storage} ${storageUnit})`);
-
-                let retentionTotal = formatRetentionPeriod(active, activeUnit, storage, storageUnit);
-
-                // Populate modal fields with capitalized and formatted values
-                document.querySelector('.record-title').textContent = capitalizeFirstLetter(this.dataset.title);
-                document.querySelector('.record-related-documents').textContent = capitalizeFirstLetter(this.dataset.relatedDocuments);
-                document.querySelector('.record-period').textContent = capitalizeFirstLetter(this.dataset.period);
-                document.querySelector('.record-volume').textContent = capitalizeFirstLetter(this.dataset.volume);
-                document.querySelector('.record-medium').textContent = capitalizeFirstLetter(this.dataset.medium);
-                document.querySelector('.record-location').textContent = capitalizeFirstLetter(this.dataset.location);
-                document.querySelector('.record-time-value').textContent = capitalizeFirstLetter(this.dataset.timeValue);
-                document.querySelector('.record-retention-active').textContent = `${active} ${activeUnit === 'years' ? (active > 1 ? 'yrs' : 'yr') : activeUnit === 'months' ? (active > 1 ? 'mos' : 'mo') : ''}`;
-                document.querySelector('.record-retention-storage').textContent = `${storage} ${storageUnit === 'years' ? (storage > 1 ? 'yrs' : 'yr') : storageUnit === 'months' ? (storage > 1 ? 'mos' : 'mo') : ''}`;
-                document.querySelector('.record-retention-total').textContent = retentionTotal;
-                document.querySelector('.record-disposition').textContent = capitalizeFirstLetter(this.dataset.disposition);
-                document.querySelector('.record-grds-item').textContent = capitalizeFirstLetter(this.dataset.grdsItem);
-                document.querySelector('.record-restriction').textContent = capitalizeFirstLetter(this.dataset.restriction);
-                document.querySelector('.record-utility').textContent = capitalizeFirstLetter(this.dataset.utility);
-                document.querySelector('.record-duplication').textContent = capitalizeFirstLetter(this.dataset.duplication);
-                document.querySelector('.record-frequency').textContent = capitalizeFirstLetter(this.dataset.frequency);
-
-                // Show the modal
-                document.getElementById('showRecord').style.display = 'block';
-                console.log("Modal Displayed with Data");
+                if (event.target.closest('button')) return;
+                updateDisplayModal(this.dataset);
             });
         });
 
-        // Close modal functionality
         document.getElementById('closeShowRecordBtn').addEventListener('click', function() {
             document.getElementById('showRecord').style.display = 'none';
-            console.log("Modal Closed");
+            console.log("✔️ Display Modal Closed");
         });
 
+        // -----------------------------------
+        // EDIT MODAL (EDIT RECORD)
+        // -----------------------------------
+        function updateEditModal(recordData) {
+            console.log("🔹 Edit Button Clicked. Record data:", recordData);
+
+            document.getElementById("editTitle").value = recordData.title ?? "";
+            document.getElementById("editFrequency").value = recordData.frequency ?? "";
+            document.getElementById("editRelatedDocuments").value = recordData.relatedDocuments ?? "";
+            document.getElementById("editDuplication").value = recordData.duplication ?? "";
+            document.getElementById("editStartYear").value = recordData.startYear || "";
+            document.getElementById("editEndYear").value = recordData.endYear || "";
+            document.getElementById("editTimeValue").value = recordData.timeValue === "Permanent" ? "P" : "T";
+            document.getElementById("editVolume").value = recordData.volume ?? "";
+
+            ["Adm", "F", "L", "A"].forEach(value => {
+                document.getElementById(`edit${value}`).checked = recordData.utility?.toLowerCase().includes(value.toLowerCase());
+            });
+
+            document.getElementById("editMedium").value = recordData.medium.toLowerCase();
+            document.getElementById("editActive").value = parseInt(recordData.retentionActive) || 0;
+            document.getElementById("editStorage").value = parseInt(recordData.retentionStorage) || 0;
+            document.getElementById("editActiveUnit").value = recordData.retentionActiveUnit ?? "";
+            document.getElementById("editStorageUnit").value = recordData.retentionStorageUnit ?? "";
+
+            document.getElementById("editPermanent").checked =
+                recordData.retentionActiveUnit === "Permanent" || recordData.retentionStorageUnit === "Permanent";
+
+            toggleEditPermanent();
+
+            document.getElementById("editRestriction").value = recordData.restriction ?? "";
+            document.getElementById("editDisposition").value = recordData.disposition ?? "";
+            document.getElementById("editLocation").value = recordData.location ?? "";
+            document.getElementById("editGrdsItem").value = recordData.grdsItem ?? "";
+
+            document.getElementById("editRecordModal").style.display = "block";
+            console.log("✔️ Edit Modal Opened");
+        }
+
+        document.querySelectorAll(".edit-record-btn").forEach(button => {
+            button.addEventListener("click", function(event) {
+                event.stopPropagation();
+                updateEditModal(this.closest(".record-row").dataset);
+            });
+        });
+
+        document.getElementById("closeEditRecordModalBtn").addEventListener("click", function() {
+            document.getElementById("editRecordModal").style.display = "none";
+            console.log("✔️ Edit Modal Closed");
+        });
+
+        // -----------------------------------
+        // SUCCESS & ERROR MODALS
+        // -----------------------------------
+        function showSuccessModal() {
+            $("#successModal").removeClass("hidden");
+            $("#closeSuccessModalBtn").on("click", function() {
+                $("#successModal").addClass("hidden");
+            });
+        }
+
+        function showErrorModal(message) {
+            $("#errorMessage").text(message);
+            $("#errorModal").removeClass("hidden");
+            $("#closeErrorModalBtn").on("click", function() {
+                $("#errorModal").addClass("hidden");
+            });
+        }
     });
 </script>
+
+
 
 
 
@@ -804,6 +1501,11 @@
     function showResultModal(title, message, isSuccess = true) {
         resultModalTitle.textContent = title;
         resultModalMessage.textContent = message;
+
+        resultModal.style.display = "block";
+        resultModal.style.zIndex = "50"; // Set higher z-index than myModal
+
+
 
         // Change the icon based on success/error
         if (isSuccess) {
