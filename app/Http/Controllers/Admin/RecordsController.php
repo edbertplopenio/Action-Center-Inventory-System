@@ -161,13 +161,13 @@ public function update(Request $request, $id)
         return response()->json(['success' => false, 'message' => 'Record not found'], 404);
     }
 
-    // Validate the incoming data
+    // Validate request data
     $validatedData = $request->validate([
         'title' => 'required|string|max:255',
         'related_documents' => 'nullable|string|max:255',
         'start_year' => 'required|integer|min:1900|max:2100',
         'end_year' => 'nullable|integer|min:1900|max:2100',
-        'volume' => 'nullable|numeric|min:0',
+        'volume' => 'nullable|string|min:0',
         'medium' => 'required|string|max:50',
         'restriction' => 'required|in:open-access,confidential',
         'location' => 'required|string|max:255',
@@ -195,6 +195,12 @@ public function update(Request $request, $id)
         $validatedData['storage'] = null;
         $validatedData['active_unit'] = 'Permanent';
         $validatedData['storage_unit'] = 'Permanent';
+    } else {
+        // If fields are missing, set them to defaults to prevent errors
+        $validatedData['active'] = $validatedData['active'] ?? 0;
+        $validatedData['active_unit'] = $validatedData['active_unit'] ?? 'years';
+        $validatedData['storage'] = $validatedData['storage'] ?? 0;
+        $validatedData['storage_unit'] = $validatedData['storage_unit'] ?? 'years';
     }
 
     // Update the record
@@ -252,6 +258,7 @@ public function update(Request $request, $id)
         ]
     ]);
 }
+
 
 
     
