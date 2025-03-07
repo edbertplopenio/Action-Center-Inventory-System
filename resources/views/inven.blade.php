@@ -25,6 +25,8 @@
             color: white;
             cursor: pointer;
             transition: background-color 0.3s;
+            border: none; /* Remove default button border */
+            border-radius: 0.375rem; /* Consistent border radius */
         }
         .tab-button:hover {
             opacity: 0.8;
@@ -32,6 +34,7 @@
 
         .tab-button.active {
             font-weight: bold;
+            background-color: #4A90E2; /* Consistent background color for active tab */
         }
 
         /* Flex container for Tabs and Add Item Button */
@@ -67,15 +70,15 @@
 
         /* Custom Tab Colors */
         .equipment-tab {
-            background-color: #4A90E2; /* Blue */
+            background-color: rgb(255 102 102); /* Blue */
         }
 
         .office-supplies-tab {
-            background-color:rgb(118, 82, 236); /* Orange */
+            background-color: #ff4242; /* Orange */
         }
 
         .emergency-kits-tab {
-            background-color:rgb(244, 56, 232); /* Red */
+            background-color: #ff1e1e; /* Red */
         }
 
         /* Table Styles */
@@ -169,7 +172,7 @@
         }
 
         .archives-tab {
-            background-color: rgb(0, 123, 255); /* Blue color for the Archives tab */
+            background-color: #d60000; /* Blue color for the Archives tab */
         }
 
         .restore-btn {
@@ -197,6 +200,15 @@
         overflow-y: auto;  /* Enable vertical scrolling */
     }
 
+    .all-items-tab {
+        background-color: #ff8989; /* Gray */
+    }
+
+    .other-items-tab {
+        background-color: #F90000; /* Yellow */
+    }
+
+
     </style>
 </head>
 <body class="bg-gray-100">
@@ -223,6 +235,7 @@
                     <option value="DRRM Equipment">DRRM Equipment</option>    
                     <option value="Office Supplies">Office Supplies</option>
                     <option value="Emergency Kits">Emergency Kits</option>
+                    <option value="Emergency Kits">Other Item</option>
                     </select>
                 </div>
             </div>
@@ -299,11 +312,11 @@
         <!-- Tabs -->
         <div class="tab-container">
             <div class="tab-button-container">
-                <button id="all-items-tab" class="tab-button ml-2" onclick="switchTab('all-items')">All Items</button>
+                <button id="all-items-tab" class="tab-button all-items-tab ml-2" onclick="switchTab('all-items')">All Items</button>
                 <button id="equipment-tab" class="tab-button equipment-tab" onclick="switchTab('equipment')">DRRM Equipment</button>
                 <button id="office-supplies-tab" class="tab-button office-supplies-tab ml-2" onclick="switchTab('office-supplies')">Office Supplies</button>
                 <button id="emergency-kits-tab" class="tab-button emergency-kits-tab ml-2" onclick="switchTab('emergency-kits')">Emergency Kits</button>
-                <button id="other-items-tab" class="tab-button ml-2" onclick="switchTab('other-items')">Other Items</button>
+                <button id="other-items-tab" class="tab-button other-items-tab ml-2" onclick="switchTab('other-items')">Other Items</button>
                 <button id="archives-tab" class="tab-button archives-tab ml-2" onclick="switchTab('archives')">Archives</button>
             </div>
             <!-- Add Item Button (Right Aligned) -->
@@ -313,8 +326,8 @@
         </div>
 
                 <!-- All Items Tab -->
-        <div id="all-items-content" class="tab-content">
-            <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">All Items</h3>
+        <div id="all-items-content" class="tab-content active">
+            <h3 class="text-xl font-semibold mb-4">All Items</h3>
             <div class="table-container">
                 <table id="allItemsTable" class="display">
                     <thead>
@@ -322,6 +335,7 @@
                             <th>Item Name</th>
                             <th>Quantity</th>
                             <th>Unit</th>
+                            <th>Category</th>
                             <th>Description</th>
                             <th>Storage Location</th>
                             <th>Arrival Date</th>
@@ -337,6 +351,7 @@
                                 <td>{{ $item->name }}</td>
                                 <td>{{ $item->quantity }}</td>
                                 <td>{{ $item->unit }}</td>
+                                <td>{{ $item->category }}</td> <!-- Corrected category retrieval -->
                                 <td>{{ $item->description }}</td>
                                 <td>{{ $item->storage_location }}</td>
                                 <td>{{ $item->arrival_date }}</td>
@@ -354,10 +369,9 @@
             </div>
         </div>
 
-
         <!-- Equipment Tab -->
-        <div id="equipment-content" class="tab-content active">
-            <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">DRRM Equipment</h3>
+        <div id="equipment-content" class="tab-content">
+            <h3 class="text-xl font-semibold mb-4">DRRM Equipment</h3>
             <div class="table-container">
                 <table id="equipmentTable" class="display">
                     <thead>
@@ -396,7 +410,6 @@
                 </table>
             </div>
         </div>
-
         <!-- Office Supplies Tab -->
         <div id="office-supplies-content" class="tab-content">
             <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">Office Supplies</h3>
@@ -483,7 +496,7 @@
 
                 <!-- Other Items Tab -->
         <div id="other-items-content" class="tab-content">
-            <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">Other Items</h3>
+            <h3 class="text-xl font-semibold mb-4">Other Items</h3>
             <div class="table-container">
                 <table id="otherItemsTable" class="display">
                     <thead>
@@ -522,6 +535,7 @@
                 </table>
             </div>
         </div>
+
 
         <!-- Archives Tab -->
         <div id="archives-content" class="tab-content">
@@ -624,29 +638,32 @@ function restoreItem(itemId) {
 
 
     function switchTab(tab) {
-        console.log("Switching to tab: ", tab);  // For debugging purposes
+        console.log("Switching to tab: ", tab);  // For debugging
 
-        // Hide all tabs by default and remove the 'active' class
+        // Hide all tabs and remove 'active' class
         var tabs = document.querySelectorAll('.tab-content');
-        tabs.forEach(function (tabContent) {
-            tabContent.classList.remove('active'); // Remove active class
-            tabContent.style.display = 'none'; // Hide all tab contents
+        tabs.forEach(tabContent => {
+            tabContent.classList.remove('active');
+            tabContent.style.display = 'none';
         });
 
-        // Show the selected tab and add the 'active' class
+        // Show the selected tab and add 'active' class
         var activeTabContent = document.getElementById(tab + '-content');
-        activeTabContent.classList.add('active');  // Add active class to the selected tab
-        activeTabContent.style.display = 'block'; // Show the selected tab content
+        if (activeTabContent) {
+            activeTabContent.classList.add('active');
+            activeTabContent.style.display = 'block';
+        }
 
-        // Remove the 'active' class from all tab buttons
-        document.querySelectorAll('.tab-button').forEach(function (btn) {
-            btn.classList.remove('active');
-        });
+        // Remove 'active' class from all tab buttons
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
 
-        // Add the 'active' class to the clicked tab button
-        document.getElementById(tab + '-tab').classList.add('active');
-
+        // Add 'active' class to the clicked tab button
+        var activeTabButton = document.getElementById(tab + '-tab');
+        if (activeTabButton) {
+            activeTabButton.classList.add('active');
+        }
     }
+
 
     // Ensure DataTables is initialized when the page loads
     $(document).ready(function () {
@@ -722,6 +739,15 @@ function restoreItem(itemId) {
 
 <script>
         function initializeDataTables() {
+
+        $('#allItemsTable').DataTable({
+            "scrollY": '425px',
+            "scrollCollapse": true,
+            "paging": true,
+            "searching": true,
+            "ordering": true,
+        });
+        
         $('#equipmentTable').DataTable({
             "scrollY": '425px', // Set vertical scroll inside the table
             "scrollCollapse": true, // Enable collapsing the table when data is small
@@ -744,6 +770,14 @@ function restoreItem(itemId) {
             "paging": true, // Enable pagination
             "searching": true, // Enable search
             "ordering": true, // Enable sorting
+        });
+
+        $('#otherItemsTable').DataTable({
+            "scrollY": '425px',
+            "scrollCollapse": true,
+            "paging": true,
+            "searching": true,
+            "ordering": true,
         });
 
         $('#archivesTable').DataTable({

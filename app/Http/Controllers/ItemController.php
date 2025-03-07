@@ -62,17 +62,17 @@ class ItemController extends Controller
 
 public function index()
 {
-    $items = Item::all(); // Fetch all items
+    $allItems = Item::all(); // Fetch all items
+    $items = Item::where('category', 'DRRM Equipment')->get(); // Fetch only DRRM Equipment items
     $officeSupplies = Item::where('category', 'Office Supplies')->get();
     $emergencyKits = Item::where('category', 'Emergency Kits')->get();
+    $otherItems = Item::where('category', 'Other Item')->get();
     $archivedItems = Item::onlyTrashed()->get(); // Assuming you're using soft deletes
-    $allItems = Item::all(); // Fetch all items for the "All Items" tab
-    $otherItems = Item::where('category', 'Other Item')->get(); // Fetch only other items
-
+    
     // Fetch archived items
     $archivedItems = Item::where('is_archived', true)->get();
 
-    return view('inven', compact('items', 'officeSupplies', 'emergencyKits', 'archivedItems', 'allItems', 'otherItems'));
+    return view('inven', compact('allItems', 'items', 'officeSupplies', 'emergencyKits', 'otherItems', 'archivedItems'));
 }
 
 
