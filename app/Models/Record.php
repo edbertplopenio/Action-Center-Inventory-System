@@ -46,7 +46,7 @@ class Record extends Model
     protected $casts = [
         'start_year' => 'integer',  // Changed from date to integer
         'end_year'   => 'integer',  // Changed from date to integer
-        'volume'     => 'decimal:6',
+        'volume'     => 'string',
         'active'     => 'integer',  
         'storage'    => 'integer',
         'permanent'  => 'boolean', // Ensure correct handling of permanent status

@@ -33,7 +33,7 @@ class RecordsController extends Controller
             'related_documents' => 'nullable|string|max:255',
             'start_year' => 'required|integer|min:1900|max:2100',
             'end_year' => 'nullable|integer|min:1900|max:2100',
-            'volume' => 'nullable|numeric|min:0',
+            'volume' => 'nullable|string|max:255',
             'medium' => 'required|string|max:50',
             'restriction' => 'required|in:open-access,confidential',
             'location' => 'required|string|max:255',

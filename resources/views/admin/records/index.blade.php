@@ -1381,7 +1381,7 @@
             document.querySelector('.record-title').textContent = capitalizeFirstLetter(recordData.title);
             document.querySelector('.record-related-documents').textContent = capitalizeFirstLetter(recordData.relatedDocuments);
             document.querySelector('.record-period').textContent = `${recordData.startYear ?? 'N/A'} to ${recordData.endYear ?? 'N/A'}`;
-            document.querySelector('.record-volume').textContent = capitalizeFirstLetter(recordData.volume);
+            document.querySelector('.record-volume').textContent = recordData.volume ?? "N/A";
             document.querySelector('.record-medium').textContent = capitalizeFirstLetter(recordData.medium);
             document.querySelector('.record-location').textContent = capitalizeFirstLetter(recordData.location);
             document.querySelector('.record-time-value').textContent = capitalizeFirstLetter(recordData.timeValue);
@@ -2068,7 +2068,7 @@
                         capitalizeWords(r.title),
                         capitalizeWords(r.related_documents),
                         capitalizeWords(periodCovered),
-                        r.volume ? capitalizeWords(r.volume) : "N/A",
+                        r.volume ? r.volume : "N/A",
                         capitalizeWords(r.medium),
                         capitalizeWords(r.location),
                         capitalizeWords(timeValue),
