@@ -11,7 +11,7 @@
         <div class="absolute inset-0 bg-black opacity-20"></div>
 
         <!-- Content at the top -->
-        <div class="relative z-10 flex flex-col items-center text-center text-white px-6 pt-20">
+        <div class="relative z-10 flex flex-col items-center text-center text-white px-6 pt-10">
             <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold">
                 Welcome to the BatStateU <br> ACTION Center
             </h1>
