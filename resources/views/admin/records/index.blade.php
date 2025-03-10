@@ -11,7 +11,6 @@
     <!-- Include DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
 
-
     <!-- Include jQuery (required for DataTables) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -45,28 +44,20 @@
         /* Table Data Styling */
         #myTable td {
             background-color: #ffffff;
-            /* White background for rows */
             color: #2d3748;
-            /* Dark gray text */
             text-align: center;
             padding: 12px;
             border-bottom: 1px solid #e2e8f0;
-            /* Light border between rows */
         }
 
         /* Add hover effect for rows */
         #myTable tr:hover {
             background-color: #b3eaff;
-            /* Lighter hover effect */
         }
     </style>
-
-
 </head>
 
 <div class="mx-auto p-2" style="width: 1220px; height: 700px; font-family: 'Inter', sans-serif;">
-
-
     <div class="bg-white p-6 shadow-lg rounded-lg h-full">
         <!-- Title and Button inside this div -->
         <div class="flex justify-between items-center mb-1 pt-0">
@@ -74,13 +65,10 @@
             <button id="openModalBtn" class="px-6 py-2 bg-[#4cc9f0] text-white border-2 border-[#4cc9f0] rounded-full hover:bg-[#3fb3d1] mb-2 text-sm">
                 + Add Record
             </button>
-
-
-
         </div>
 
         <!-- Table for displaying records -->
-        <div style="height: 600px; overflow-y: auto;"> <!-- Added overflow-y-auto -->
+        <div style="height: 600px; overflow-y: auto;">
             <table id="myTable" class="display" style="width:100%">
                 <thead>
                     <tr>
@@ -111,19 +99,16 @@
                         <td>12345</td>
                         <td>
                             <!-- Edit Button with custom color -->
-                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24 editModalBtn">
                                 Edit
                             </button>
-
-
-
                             <!-- Archive Button with custom color -->
                             <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
                                 Archive
                             </button>
-
-
                         </td>
+                    </tr>
+                    </td>
                     </tr>
                     <tr>
                         <td>Sample Record Series Title 2</td>
@@ -138,7 +123,7 @@
                         <td>67890</td>
                         <td>
                             <!-- Edit Button with custom color -->
-                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24 editModalBtn">
                                 Edit
                             </button>
 
@@ -165,7 +150,7 @@
                         <td>12345</td>
                         <td>
                             <!-- Edit Button with custom color -->
-                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24 editModalBtn">
                                 Edit
                             </button>
 
@@ -193,11 +178,9 @@
                         <td>12345</td>
                         <td>
                             <!-- Edit Button with custom color -->
-                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24 editModalBtn">
                                 Edit
                             </button>
-
-
 
                             <!-- Archive Button with custom color -->
                             <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
@@ -221,7 +204,7 @@
                         <td>67890</td>
                         <td>
                             <!-- Edit Button with custom color -->
-                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24">
+                            <button class="px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24 editModalBtn">
                                 Edit
                             </button>
 
@@ -231,15 +214,11 @@
                             <button class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-xs w-24">
                                 Archive
                             </button>
-
-
                         </td>
                     </tr>
-                    <!-- Add more rows as needed -->
                 </tbody>
             </table>
         </div>
-
     </div>
 </div>
 
@@ -253,34 +232,23 @@
 </script>
 
 
-
-<!-- GAWIN MONG SROLLABLE YUNG DATA NG TABLE TBODY -->
-<!-- MODAL -->
-<!-- Modal Form HTML -->
-<div class="relative z-10" id="myModal" aria-labelledby="modal-title" role="dialog" aria-modal="true" style="display: none;">
-    <!-- Backdrop with stronger blur effect -->
+<!-- Modal for Add Record -->
+<div class="relative z-10" id="addRecordModal" aria-labelledby="modal-title" role="dialog" aria-modal="true" style="display: none;">
     <div class="fixed inset-0 bg-gray-500/75 backdrop-blur-lg transition-opacity" aria-hidden="true"></div>
-
     <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
         <div class="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
             <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full" style="max-width: 70%; height: auto;">
                 <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
                     <h3 class="text-lg font-semibold text-gray-900" id="modal-title">Add New Record</h3>
-
-                    <!-- Modal Form HTML -->
                     <form>
                         <div class="space-y-6">
                             <div class="border-b border-gray-900/10 pb-6">
                                 <p class="mt-1 text-xs text-gray-600">Please fill in the information about the record.</p>
-
                                 <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
-                                    <!-- RECORDS SERIES TITLE AND DESCRIPTION -->
                                     <div class="sm:col-span-1">
                                         <label for="title" class="block text-xs font-medium text-gray-900">Records Series Title</label>
                                         <input type="text" name="title" id="title" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter Title and Description">
                                     </div>
-
-                                    <!-- FREQUENCY OF USE -->
                                     <div class="sm:col-span-1">
                                         <label for="frequency" class="block text-xs font-medium text-gray-900">Frequency of Use</label>
                                         <select name="frequency" id="frequency" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
@@ -314,8 +282,8 @@
 
                                     <!-- TIME VALUE (T/P) -->
                                     <div class="sm:col-span-1">
-                                        <label for="time_value" class="block text-xs font-medium text-gray-900">Time Value</label>
-                                        <select name="time_value" id="time_value" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                        <label for="edittime_value" class="block text-xs font-medium text-gray-900">Time Value</label>
+                                        <select name="time_value" id="edittime_value" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
                                             <option value="T">Temporary</option>
                                             <option value="P">Permanent</option>
                                         </select>
@@ -357,8 +325,8 @@
                                     <div class="sm:col-span-1">
                                         <label for="medium" class="block text-xs font-medium text-gray-900">Records Medium</label>
                                         <select name="medium" id="medium" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
-                                            <option value="paper">Paper</option>
-                                            <option value="electronic">Electronic</option>
+                                            <option value="Digital">Digital</option>
+                                            <option value="Physical">Physical</option>
                                         </select>
                                     </div>
 
@@ -428,9 +396,12 @@
                                 </div>
                             </div>
 
+                                </div>
+                            </div>
+
                             <!-- Action Buttons -->
                             <div class="mt-6 flex items-center justify-end gap-x-6">
-                                <button type="button" class="text-xs font-semibold text-gray-900" id="closeModalBtn">Cancel</button>
+                                <button type="button" class="text-xs font-semibold text-gray-900" id="closeAddModalBtn">Cancel</button>
                                 <button type="submit" class="rounded-md bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-500">Submit</button>
                             </div>
                         </div>
@@ -440,21 +411,250 @@
         </div>
     </div>
 </div>
-<!-- JavaScript for opening and closing the modal -->
+
+
+<!-- Modal for Edit Record -->
+<div class="relative z-10" id="editRecordModal" aria-labelledby="modal-title" role="dialog" aria-modal="true" style="display: none;">
+    <div class="fixed inset-0 bg-gray-500/75 backdrop-blur-lg transition-opacity" aria-hidden="true"></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
+            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full" style="max-width: 70%; height: auto;">
+                <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
+                    <h3 class="text-lg font-semibold text-gray-900" id="modal-title">Edit Record</h3>
+                    <form>
+                        <div class="space-y-6">
+                            <div class="border-b border-gray-900/10 pb-6">
+                                <p class="mt-1 text-xs text-gray-600">Please fill in the information about the record.</p>
+                                <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
+
+                                
+                                    <!-- Fields for Edit Record Modal -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editTitle" class="block text-xs font-medium text-gray-900">Records Series Title</label>
+                                        <input type="text" name="title" id="editTitle" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter Title and Description">
+                                    </div>
+
+
+                                    <div class="sm:col-span-1">
+                                        <label for="editFrequency" class="block text-xs font-medium text-gray-900">Frequency of Use</label>
+                                        <select name="frequency" id="editFrequency" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                            <option value="as_needed">As Needed</option>
+                                            <option value="weekly">Weekly</option>
+                                            <option value="monthly">Monthly</option>
+                                            <option value="yearly">Yearly</option>
+                                        </select>
+                                    </div>
+
+
+                                    <!-- Related Documents -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editDocuments" class="block text-xs font-medium text-gray-900">Related Documents</label>
+                                        <input type="text" name="documents" id="editDocuments" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter Title">
+                                    </div>
+
+
+                                    <!-- Duplication -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editDuplication" class="block text-xs font-medium text-gray-900">Duplication</label>
+                                        <input type="text" name="duplication" id="editDuplication" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter duplication details">
+                                    </div>
+
+
+                                    <!-- Period Covered / Inclusive Dates -->
+                                    <div class="sm:col-span-1">
+                                        <label class="block text-xs font-medium text-gray-900">Period Covered</label>
+                                        <div class="flex space-x-4">
+                                            <input type="date" name="start_date" id="editStartDate" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                            <input type="date" name="end_date" id="editEndDate" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                        </div>
+                                    </div>
+
+                                    <!-- TIME VALUE -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editTimeValue" class="block text-xs font-medium text-gray-900">Time Value</label>
+                                        <select name="time_value" id="editTimeValue" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                            <option value="Temporary">Temporary</option>
+                                            <option value="Permanent">Permanent</option>
+                                        </select>
+                                    </div>
+
+
+
+                                    <!-- Volume -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editVolume" class="block text-xs font-medium text-gray-900">Volume</label>
+                                        <input type="number" name="volume" id="editVolume" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter volume">
+                                    </div>
+
+
+                                    <!-- UTILITY VALUE (Adm/F/L/A, Multiple Selections, 4 Columns for Checkboxes) -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editUtilityValue" class="block text-xs font-medium text-gray-900">Utility Value</label>
+                                        <div class="grid grid-cols-4 gap-4 mt-2">
+                                            <div class="flex items-center">
+                                                <input type="checkbox" id="editAdm" name="utility_value[]" value="Adm" class="w-4 h-4 mr-2">
+                                                <label for="editAdm" class="text-xs">Administrative</label>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <input type="checkbox" id="editFiscal" name="utility_value[]" value="F" class="w-4 h-4 mr-2">
+                                                <label for="editFiscal" class="text-xs">Fiscal</label>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <input type="checkbox" id="editLegal" name="utility_value[]" value="L" class="w-4 h-4 mr-2">
+                                                <label for="editLegal" class="text-xs">Legal</label>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <input type="checkbox" id="editArchival" name="utility_value[]" value="A" class="w-4 h-4 mr-2">
+                                                <label for="editArchival" class="text-xs">Archival</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- RECORDS MEDIUM -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editmedium" class="block text-xs font-medium text-gray-900">Records Medium</label>
+                                        <select name="medium" id="editmedium" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                            <option value="Digital">Digital</option>
+                                            <option value="Physical">Physical</option>
+                                        </select>
+                                    </div>
+
+
+                                    <!-- Retention Period -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editRetention" class="block text-xs font-medium text-gray-900">Retention Period</label>
+                                        <div class="grid grid-cols-3 gap-4 mt-2">
+                                            <div class="flex flex-col items-center">
+                                                <label for="editActive" class="text-xs mb-1">Active</label>
+                                                <input type="number" name="active" id="editActive" class="w-16 py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="0 or 1" min="0" max="1" onchange="calculateTotal()">
+                                            </div>
+                                            <div class="flex flex-col items-center">
+                                                <label for="editStorage" class="text-xs mb-1">Storage</label>
+                                                <input type="number" name="storage" id="editStorage" class="w-16 py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="0 or 1" min="0" max="1" onchange="calculateTotal()">
+                                            </div>
+                                            <div class="flex flex-col items-center">
+                                                <label for="editTotal" class="text-xs mb-1">Total</label>
+                                                <input type="text" name="total" id="editTotal" class="w-16 py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Total" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <!-- Restriction -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editRestriction" class="block text-xs font-medium text-gray-900">Restriction/S</label>
+                                        <select name="restriction" id="editRestriction" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                            <option value="open-access">Open Access</option>
+                                            <option value="confidential">Confidential</option>
+                                        </select>
+                                    </div>
+
+
+                                    <!-- Disposition Provision -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editDisposition" class="block text-xs font-medium text-gray-900">Disposition Provision</label>
+                                        <input type="text" name="disposition" id="editDisposition" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter disposition provision">
+                                    </div>
+
+
+                                    <!-- Location of Records -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editLocation" class="block text-xs font-medium text-gray-900">Location of Records</label>
+                                        <input type="text" name="location" id="editLocation" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter location">
+                                    </div>
+
+
+                                    <!-- GRDS Item # -->
+                                    <div class="sm:col-span-1">
+                                        <label for="editGrdsItem" class="block text-xs font-medium text-gray-900">GRDS Item #</label>
+                                        <input type="text" name="grds_item" id="editGrdsItem" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter GRDS item number">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Action Buttons -->
+                            <div class="mt-6 flex items-center justify-end gap-x-6">
+                                <button type="button" class="text-xs font-semibold text-gray-900" id="closeEditModalBtn">Cancel</button>
+                                <button type="submit" class="rounded-md bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-500">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-    // Open the modal
-    document.getElementById('openModalBtn').addEventListener('click', function() {
-        document.getElementById('myModal').style.display = 'block';
+
+$(document).ready(function() {
+
+// Open Edit Record modal with proper event delegation
+$(document).on('click', '.editModalBtn', function() {
+
+    // Populate modal inputs from table row
+    $('#editTitle').val(row.find('td').eq(0).text());
+    $('#editDocuments').val(row.find('td').eq(1).text());
+
+    var period = row.find('td').eq(2).text().split(' to ');
+    $('#editStartDate').val(period[0]);
+    $('#editEndDate').val(period[1]);
+
+    $('#editVolume').val(row.find('td').eq(3).text());
+    $('#editmedium').val(row.find('td').eq(4).text());
+    $('#editLocation').val(row.find('td').eq(5).text());
+    $('#editTimeValue').val(row.find('td').eq(6).text());
+    $('#editUtilityValue').val(row.find('td').eq(7).text());
+    $('#editDisposition').val(row.find('td').eq(8).text());
+    $('#editGrdsItem').val(row.find('td').eq(9).text());
+    $('#editDuplication').val(row.find('td').eq(10).text());
+
+    // Reset and populate retention checkboxes
+    $('input[name="retention"]').prop('checked', false);
+    var retentionValues = row.find('td').eq(7).text().split(',');
+    retentionValues.forEach(function(value) {
+        $('#edit' + value.trim()).prop('checked', true);
     });
 
-    // Close the modal
-    document.getElementById('closeModalBtn').addEventListener('click', function() {
-        document.getElementById('myModal').style.display = 'none';
-    });
+    $('#editRecordModal').show();
+});
 
-    // Close modal when clicking outside the modal
-    document.querySelector('.fixed.inset-0').addEventListener('click', function() {
-        document.getElementById('myModal').style.display = 'none';
-    });
+// Save edits and update table row correctly
+$('#saveEditBtn').on('click', function() {
+    var row = $('tr.editing');
+
+    row.find('td').eq(0).text($('#editTitle').val());
+    row.find('td').eq(1).text($('#editDocuments').val());
+    row.find('td').eq(2).text($('#editStartDate').val() + ' to ' + $('#editEndDate').val());
+    row.find('td').eq(3).text($('#editVolume').val());
+    row.find('td').eq(4).text($('#editmedium').val());
+    row.find('td').eq(5).text($('#editLocation').val());
+    row.find('td').eq(6).text($('#editTimeValue').val());
+    row.find('td').eq(7).text($('#editUtilityValue').val());
+    row.find('td').eq(8).text($('#editDisposition').val());
+    row.find('td').eq(9).text($('#editGrdsItem').val());
+    row.find('td').eq(10).text($('#editDuplication').val());
+
+    row.removeClass('editing');
+    $('#editRecordModal').hide();
+});
+
+// Close the Edit Record modal
+$('#closeEditModalBtn').on('click', function() {
+    $('tr.editing').removeClass('editing');
+    $('#editRecordModal').hide();
+});
+
+// Open Add Record modal
+$('#openModalBtn').on('click', function() {
+    $('#addRecordModal').show();
+});
+
+// Close Add Record modal
+$('#closeAddModalBtn').on('click', function() {
+    $('#addRecordModal').hide();
+});
+
+});
 </script>
+
 @endsection
