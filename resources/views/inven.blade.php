@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
     <meta charset="UTF-8">
@@ -64,7 +65,7 @@
         /* Position the Add Item button to the right side of the tabs */
         #add-item-btn {
             margin-left: auto; /* Push the button to the far right */
-            background-color: #38A169; /* Green */
+            background-color:rgb(21, 183, 75); /* Green */
             color: white;
             padding: 0.5rem 1rem;
             border-radius: 0.5rem;
@@ -139,15 +140,17 @@
             width: 60px; /* Fixed width para pareho ang laki */
             margin-bottom: 5px;
             margin-top: 2px;
+            
         }
 
         .edit-btn {
-            background-color: #4CAF50;
+            background-color: #4cc9f0;
             color: white;
+            transition: background-color 0.3s, transform 0.2s
         }
 
         .edit-btn:hover {
-            background-color: #45A049;
+            background-color:rgb(65, 175, 209);
         }
 
         .archive-btn {
@@ -157,15 +160,16 @@
             padding: 6px 12px;  /* Adjust padding to control the button size */
             border-radius: 4px;
             font-size: 14px;
-            background-color: rgb(255, 145, 48);
+            background-color: rgb(255, 176, 48);
             color: white;
             text-align: center;  /* Ensure the text is centered */
             cursor: pointer;
             width: auto;  /* Optional: Adjust the button's width */
+            transition: background-color 0.3s, transform 0.2s
         }
 
         .archive-btn:hover {
-            background-color: #D32F2F;  /* Hover effect */
+            background-color:rgb(234, 71, 71);  /* Hover effect */
         }
 
         /* Form row layout (two fields per row) */
@@ -184,7 +188,7 @@
         }
 
         .restore-btn {
-        background-color: rgb(135, 60, 255);  /* Purple */
+        background-color: rgb(21, 183, 75);  /* Purple */
         color: white;
         border-radius: 4px;
         font-size: 14px;
@@ -198,7 +202,7 @@
     }
 
     .restore-btn:hover {
-        background-color: rgb(100, 45, 200);  /* Darker shade of purple for hover effect */
+        background-color: rgb(81, 166, 109);  /* Darker shade of purple for hover effect */
         transform: scale(1.05);  /* Slight scaling effect on hover for better interactivity */
     }
 
@@ -243,7 +247,7 @@
                     <option value="DRRM Equipment">DRRM Equipment</option>    
                     <option value="Office Supplies">Office Supplies</option>
                     <option value="Emergency Kits">Emergency Kits</option>
-                    <option value="Emergency Kits">Other Item</option>
+                    <option value="Other Item">Other Item</option>
                     </select>
                 </div>
             </div>
@@ -313,6 +317,86 @@
         </form>
     </div>
 </div>
+
+<!-- Modal Overlay for Editing Item -->
+<div id="edit-item-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
+    <div class="bg-white p-6 rounded-lg w-2/3 max-w-4xl">
+        <h3 class="text-xl font-semibold mb-4">Edit Item</h3>
+        <form id="edit-item-form" method="POST" enctype="multipart/form-data">
+            @csrf
+            <input type="hidden" id="edit-item-id" name="id">
+
+            <div class="form-row">
+                <div>
+                    <label for="edit-name" class="block text-sm font-semibold text-black mb-2">Item Name</label>
+                    <input type="text" id="edit-name" name="name" class="w-full p-2 border rounded-md bg-transparent text-black" required disabled>
+                </div>
+                <div>
+                    <label for="edit-category" class="block text-sm font-semibold text-black mb-2">Category</label>
+                    <select id="edit-category" name="category" class="w-full p-2 border rounded-md bg-transparent text-black" required disabled>
+                        <option value="DRRM Equipment">DRRM Equipment</option>
+                        <option value="Office Supplies">Office Supplies</option>
+                        <option value="Emergency Kits">Emergency Kits</option>
+                        <option value="Other Item">Other Item</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div>
+                    <label for="edit-quantity" class="block text-sm font-semibold text-black mb-2">Quantity</label>
+                    <input type="number" id="edit-quantity" name="quantity" class="w-full p-2 border rounded-md bg-transparent text-black" required>
+                </div>
+                <div>
+                    <label for="edit-unit" class="block text-sm font-semibold text-black mb-2">Unit</label>
+                    <input type="text" id="edit-unit" name="unit" class="w-full p-2 border rounded-md bg-transparent text-black" required disabled>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div>
+                    <label for="edit-description" class="block text-sm font-semibold text-black mb-2">Description</label>
+                    <input type="text" id="edit-description" name="description" class="w-full p-2 border rounded-md bg-transparent text-black" required>
+                </div>
+                <div>
+                    <label for="edit-storage_location" class="block text-sm font-semibold text-black mb-2">Storage Location</label>
+                    <input type="text" id="edit-storage_location" name="storage_location" class="w-full p-2 border rounded-md bg-transparent text-black" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div>
+                    <label for="edit-arrival_date" class="block text-sm font-semibold text-black mb-2">Arrival Date</label>
+                    <input type="date" id="edit-arrival_date" name="arrival_date" class="w-full p-2 border rounded-md bg-transparent text-black" required disabled>
+                </div>
+                <div>
+                    <label for="edit-date_purchased" class="block text-sm font-semibold text-black mb-2">Date Purchased</label>
+                    <input type="date" id="edit-date_purchased" name="date_purchased" class="w-full p-2 border rounded-md bg-transparent text-black" required disabled>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div>
+                    <label for="edit-status" class="block text-sm font-semibold text-black mb-2">Status</label>
+                    <select id="edit-status" name="status" class="w-full p-2 border rounded-md bg-transparent text-black" required>
+                        <option value="Available">Available</option>
+                        <option value="Unavailable">Unavailable</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="edit-image" class="block text-sm font-semibold text-black mb-2">Image</label>
+                    <input type="file" id="edit-image" name="image" accept="image/*" class="w-full p-2 border rounded-md bg-transparent text-black">
+                </div>
+            </div>
+
+            <div class="flex justify-between mt-4">
+                <button type="button" id="edit-cancel-btn" class="px-4 py-2 bg-red-400 text-white rounded-md">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-md">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 
 <!-- Main Content -->
 <div class="flex-1 p-6 relative">
@@ -553,6 +637,7 @@
                     <thead>
                         <tr>
                             <th>Item Name</th>
+                            <th>Category</th>
                             <th>Quantity</th>
                             <th>Unit</th>
                             <th>Description</th>
@@ -568,6 +653,7 @@
                         @foreach($archivedItems as $item)
                             <tr id="archived-{{ $item->id }}">
                                 <td>{{ $item->name }}</td>
+                                <td>{{ $item->category }}</td>
                                 <td>{{ $item->quantity }}</td>
                                 <td>{{ $item->unit }}</td>
                                 <td>{{ $item->description }}</td>
@@ -799,5 +885,115 @@ function restoreItem(itemId) {
     
 </script>
 
+<script>
+        // Open edit modal and populate fields
+        function openEditModal(item) {
+        // Populate the form fields with the item's data
+        document.getElementById('edit-item-id').value = item.id;
+        document.getElementById('edit-name').value = item.name;
+        document.getElementById('edit-quantity').value = item.quantity;
+        document.getElementById('edit-unit').value = item.unit;
+        document.getElementById('edit-category').value = item.category;
+        document.getElementById('edit-description').value = item.description;
+        document.getElementById('edit-storage_location').value = item.storage_location;
+        document.getElementById('edit-arrival_date').value = item.arrival_date;
+        document.getElementById('edit-date_purchased').value = item.date_purchased;
+        document.getElementById('edit-status').value = item.status;
+
+        // Disable non-editable fields
+        document.getElementById('edit-name').disabled = true;  // Disable Item Name
+        document.getElementById('edit-unit').disabled = true;   // Disable Unit
+        document.getElementById('edit-category').disabled = true; // Disable Category
+        document.getElementById('edit-arrival_date').disabled = true;  // Disable Arrival Date
+        document.getElementById('edit-date_purchased').disabled = true;  // Disable Date Purchased
+
+        // Show the modal
+        document.getElementById('edit-item-overlay').classList.remove('hidden');
+
+    }
+
+    // Event delegation for edit buttons
+    document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('edit-btn')) {
+        const itemRow = e.target.closest('tr'); // Get the closest <tr> to the clicked button
+        const item = {
+            id: itemRow.id.split('-')[1], // Extract the item ID from the row's ID (e.g., item-1)
+            name: itemRow.cells[0].innerText,
+            quantity: itemRow.cells[1].innerText,
+            unit: itemRow.cells[2].innerText,
+            category: itemRow.cells[3].innerText,
+            description: itemRow.cells[4].innerText,
+            storage_location: itemRow.cells[5].innerText,
+            arrival_date: itemRow.cells[6].innerText,
+            date_purchased: itemRow.cells[7].innerText,
+            status: itemRow.cells[8].innerText,
+        };
+        openEditModal(item); // Call the function to open the modal and populate the form
+    }
+});
+
+    // Handle edit form submission
+    document.getElementById('edit-item-form').addEventListener('submit', function (event) {
+        event.preventDefault(); // Prevent default form submission
+
+        const formData = new FormData(this);
+        const itemId = document.getElementById('edit-item-id').value;
+
+        $.ajax({
+            url: '/edit-item/' + itemId,
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                alert('Item updated successfully!');
+                document.getElementById('edit-item-overlay').classList.add('hidden');
+                location.reload(); // Reload the page to see updated data
+            },
+            error: function (xhr) {
+                console.error(xhr.responseText); // Log the error response for debugging
+                alert('An error occurred while updating the item: ' + xhr.responseText);
+            }
+        });
+    });
+
+    const editCancelBtn = document.getElementById('edit-cancel-btn');
+    editCancelBtn.addEventListener('click', function () {
+        document.getElementById('edit-item-overlay').classList.add('hidden'); // Hide the modal
+    });
+
+
+
+    $('#edit-item-form').on('submit', function (event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    var formData = new FormData(this); // Collect form data from the form
+    const itemId = document.getElementById('edit-item-id').value; // Get the item ID from the hidden input field
+
+    $.ajax({
+        url: '/edit-item/' + itemId, // Send to the correct URL (make sure this matches the route in web.php)
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Add CSRF token
+        },
+        success: function (response) {
+            alert('Item updated successfully!');
+            document.getElementById('edit-item-overlay').classList.add('hidden'); // Hide the modal
+            location.reload(); // Reload the page to show the updated item
+        },
+        error: function (xhr) {
+            console.error(xhr.responseText); // Log the error for debugging
+            alert('An error occurred while updating the item: ' + xhr.responseText);
+        }
+    });
+});
+
+
+
+
+</script>
 </body>
 </html>
