@@ -130,11 +130,12 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ route('records.index') }}" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
-                        <i class="ph-bold ph-file-text text-xl"></i>
-                        <span class="text-sm">Records</span>
-                    </a>
-                </li>
+                <a href="{{ route('borrowing-slip.index') }}" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
+                    <i class="ph-bold ph-file-text text-xl"></i>
+                    <span class="text-sm">Borrowing Slip</span>
+                </a>
+            </li>
+
             </ul>
         </div>
 

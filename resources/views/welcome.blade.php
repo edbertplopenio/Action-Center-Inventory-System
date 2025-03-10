@@ -5,7 +5,7 @@
 @section('content')
     <!-- Hero Section --> 
     <div class="relative min-h-screen flex flex-col items-center justify-between bg-cover bg-center font-sans"
-    style="background-image: url('/images/home.jpg'); background-size: cover; background-position: center; max-height: 60vh;">
+    style="background-image: url('/images/commandcenter.png'); background-size: cover; background-position: center; max-height: 60vh;">
 
         <!-- Overlay -->
         <div class="absolute inset-0 bg-black opacity-20"></div>

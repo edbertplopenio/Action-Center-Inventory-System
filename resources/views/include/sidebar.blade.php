@@ -38,18 +38,15 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
-                                <i class="ph-bold ph-archive text-xl"></i>
+                            <a href="{{ route('inventory.index') }}" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
+                                <i class="fas fa-boxes text-xl"></i>
                                 <span class="flex-1 text-sm">Inventory Management</span>
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
-                                <i class="ph-bold ph-file-text text-xl"></i>
-                                <span class="flex-1 text-sm">Records</span>
-                            </a>
+                            <<a href="{{ route('borrowing-slip.index') }}" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
                         </li>
-                    </ul>
+                    </ul> 
                 </div>
             </div>
 
