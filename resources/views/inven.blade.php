@@ -639,7 +639,7 @@
                             <th>Item Name</th>
                             <th>Category</th>
                             <th>Quantity</th>
-                            <th>Unit</th>
+                            <th>Unit</th>o          o
                             <th>Description</th>
                             <th>Storage Location</th>
                             <th>Arrival Date</th>
@@ -793,28 +793,70 @@ function restoreItem(itemId) {
 
 <!-- JavaScript for AJAX form submission -->
 <script>
-    // Submit the form via AJAX
-    $('#item-form').on('submit', function (event) {
-        event.preventDefault(); // Prevent the default form submission
+    // Submit the form via AJAX and check if the item already exists
+        $('#item-form').on('submit', function (event) {
+            event.preventDefault(); // Prevent the default form submission
 
-        var formData = new FormData(this); // Collect form data
-        $.ajax({
-            url: "{{ route('items.store') }}", // The route for saving the item
-            method: "POST", // POST method
-            data: formData, // Send the form data
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                alert('Item added successfully!');
-                $('#item-form-overlay').addClass('hidden'); // Hide the modal
-                location.reload(); // Reload the page to show the new item
-            },
-            error: function(xhr, status, error) {
-                console.log(xhr.responseText); // Log the error
-                alert('An error occurred while adding the item.');
-            }
+            const itemName = $('#name').val(); // Get the item name from the input field
+            const quantity = $('#quantity').val();
+            const arrivalDate = $('#arrival_date').val();
+
+            // Check if the item already exists in the database using AJAX
+            $.ajax({
+                url: "{{ route('items.checkExistence') }}", // Assuming you have a route to check if the item exists
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    name: itemName
+                },
+                success: function(response) {
+                    if (response.exists) {
+                        // If the item exists, update the quantity and arrival date
+                        $.ajax({
+                            url: "{{ route('items.update') }}", // Update route
+                            method: 'POST',
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                id: response.item.id, // Item ID
+                                quantity: response.item.quantity + parseInt(quantity), // Update the quantity
+                                arrival_date: arrivalDate, // Update arrival date
+                            },
+                            success: function(updateResponse) {
+                                alert('Item updated successfully!');
+                                $('#item-form-overlay').addClass('hidden');
+                                location.reload(); // Reload the page to reflect changes
+                            },
+                            error: function() {
+                                alert('An error occurred while updating the item.');
+                            }
+                        });
+                    } else {
+                        // If the item does not exist, submit the form to add a new item
+                        var formData = new FormData(this); // Collect form data
+                        $.ajax({
+                            url: "{{ route('items.store') }}", // The route for saving the item
+                            method: "POST",
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function(response) {
+                                alert('Item added successfully!');
+                                $('#item-form-overlay').addClass('hidden');
+                                location.reload(); // Reload the page to show the new item
+                            },
+                            error: function(xhr, status, error) {
+                                console.log(xhr.responseText); // Log the error
+                                alert('An error occurred while adding the item.');
+                            }
+                        });
+                    }
+                },
+                error: function() {
+                    alert('An error occurred while checking the item.');
+                }
+            });
         });
-    });
+
 </script>
 
 <!-- DataTables JS -->
@@ -886,76 +928,91 @@ function restoreItem(itemId) {
 </script>
 
 <script>
-        // Open edit modal and populate fields
-        function openEditModal(item) {
-        // Populate the form fields with the item's data
-        document.getElementById('edit-item-id').value = item.id;
-        document.getElementById('edit-name').value = item.name;
-        document.getElementById('edit-quantity').value = item.quantity;
-        document.getElementById('edit-unit').value = item.unit;
-        document.getElementById('edit-category').value = item.category;
-        document.getElementById('edit-description').value = item.description;
-        document.getElementById('edit-storage_location').value = item.storage_location;
-        document.getElementById('edit-arrival_date').value = item.arrival_date;
-        document.getElementById('edit-date_purchased').value = item.date_purchased;
-        document.getElementById('edit-status').value = item.status;
+   // Open edit modal and populate fields
+function openEditModal(item) {
+   // Populate the form fields with the item's data
+   document.getElementById('edit-item-id').value = item.id; // Item ID
+   document.getElementById('edit-name').value = item.name; // Item Name
+   document.getElementById('edit-category').value = item.category; // Category
+   document.getElementById('edit-quantity').value = item.quantity; // Quantity
+   document.getElementById('edit-unit').value = item.unit; // Unit
+   document.getElementById('edit-description').value = item.description; // Description
+   document.getElementById('edit-storage_location').value = item.storage_location; // Storage Location
+   document.getElementById('edit-arrival_date').value = item.arrival_date; // Arrival Date
+   document.getElementById('edit-date_purchased').value = item.date_purchased; // Date Purchased
+   document.getElementById('edit-status').value = item.status; // Status
 
-        // Disable non-editable fields
-        document.getElementById('edit-name').disabled = true;  // Disable Item Name
-        document.getElementById('edit-unit').disabled = true;   // Disable Unit
-        document.getElementById('edit-category').disabled = true; // Disable Category
-        document.getElementById('edit-arrival_date').disabled = true;  // Disable Arrival Date
-        document.getElementById('edit-date_purchased').disabled = true;  // Disable Date Purchased
+   // Disable/Enable fields based on which you want to be editable
+   document.getElementById('edit-name').readOnly = true;  // Make Item Name readonly
+   document.getElementById('edit-category').disabled = true; // Make Category readonly
+   document.getElementById('edit-arrival_date').readOnly = true;  // Make Arrival Date readonly
+   document.getElementById('edit-date_purchased').readOnly = true;  // Make Date Purchased readonly
+   document.getElementById('edit-image').disabled = true; // Disable Image upload (if you don't want to change it)
 
-        // Show the modal
-        document.getElementById('edit-item-overlay').classList.remove('hidden');
+   // Enable fields that should be editable
+   document.getElementById('edit-quantity').readOnly = false;  // Enable Quantity
+   document.getElementById('edit-unit').readOnly = false;  // Enable Unit
+   document.getElementById('edit-description').readOnly = false; // Enable Description
+   document.getElementById('edit-storage_location').readOnly = false; // Enable Storage Location
+   document.getElementById('edit-status').readOnly = false;  // Enable Status
 
-    }
+   // Show the modal
+   document.getElementById('edit-item-overlay').classList.remove('hidden');
+}
 
-    // Event delegation for edit buttons
-    document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('edit-btn')) {
+
+
+// Event delegation for edit buttons
+// Event delegation for edit buttons
+document.addEventListener('click', function (e) {
+    if (e.target && e.target.classList.contains('edit-btn')) {
         const itemRow = e.target.closest('tr'); // Get the closest <tr> to the clicked button
         const item = {
-            id: itemRow.id.split('-')[1], // Extract the item ID from the row's ID (e.g., item-1)
-            name: itemRow.cells[0].innerText,
-            quantity: itemRow.cells[1].innerText,
-            unit: itemRow.cells[2].innerText,
-            category: itemRow.cells[3].innerText,
-            description: itemRow.cells[4].innerText,
-            storage_location: itemRow.cells[5].innerText,
-            arrival_date: itemRow.cells[6].innerText,
-            date_purchased: itemRow.cells[7].innerText,
-            status: itemRow.cells[8].innerText,
+            id: itemRow.id.split('-')[1], // Extract the item ID from the row's ID
+            name: itemRow.cells[0].innerText,  // Item Name (first column)
+            category: itemRow.cells[3].innerText,  // Category (4th column)
+            quantity: itemRow.cells[1].innerText,  // Quantity (2nd column)
+            unit: itemRow.cells[2].innerText, // Unit (3rd column)
+            description: itemRow.cells[4].innerText,  // Description (5th column)
+            storage_location: itemRow.cells[5].innerText,  // Storage Location (6th column)
+            arrival_date: itemRow.cells[6].innerText,  // Arrival Date (7th column)
+            date_purchased: itemRow.cells[7].innerText,  // Date Purchased (8th column)
+            status: itemRow.cells[8].innerText,  // Status (9th column)
         };
+
         openEditModal(item); // Call the function to open the modal and populate the form
     }
 });
 
+
+
     // Handle edit form submission
-    document.getElementById('edit-item-form').addEventListener('submit', function (event) {
-        event.preventDefault(); // Prevent default form submission
+    $('#edit-item-form').on('submit', function (event) {
+    event.preventDefault(); // Prevent the default form submission
 
-        const formData = new FormData(this);
-        const itemId = document.getElementById('edit-item-id').value;
+    var formData = new FormData(this); // Collect form data from the form
+    const itemId = document.getElementById('edit-item-id').value; // Get the item ID from the hidden input field
 
-        $.ajax({
-            url: '/edit-item/' + itemId,
-            method: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                alert('Item updated successfully!');
-                document.getElementById('edit-item-overlay').classList.add('hidden');
-                location.reload(); // Reload the page to see updated data
-            },
-            error: function (xhr) {
-                console.error(xhr.responseText); // Log the error response for debugging
-                alert('An error occurred while updating the item: ' + xhr.responseText);
-            }
-        });
+    $.ajax({
+        url: '/edit-item/' + itemId, // Use dynamic URL for editing the item
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Ensure CSRF token is included
+        },
+        success: function (response) {
+            alert('Item updated successfully!');
+            document.getElementById('edit-item-overlay').classList.add('hidden'); // Hide the modal
+            location.reload(); // Reload the page to show updated data
+        },
+        error: function (xhr) {
+            console.error(xhr.responseText); // Log the error response for debugging
+            alert('An error occurred while updating the item: ' + xhr.responseText);
+        }
     });
+});
 
     const editCancelBtn = document.getElementById('edit-cancel-btn');
     editCancelBtn.addEventListener('click', function () {

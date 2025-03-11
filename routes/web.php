@@ -21,6 +21,12 @@ Route::get('/inven', [ItemController::class, 'index'])->name('inventory');
 Route::get('/item/create', [ItemController::class, 'create'])->name('items.create'); // Show the create form
 Route::post('/item/store', [ItemController::class, 'store'])->name('items.store'); // Store the new item
 
+// Route to check if the item exists
+Route::post('/items/checkExistence', [ItemController::class, 'checkExistence'])->name('items.checkExistence');
+
+// Route to update an existing item
+Route::post('/items/update', [ItemController::class, 'update'])->name('items.update');
+
 // Archive and Restore Routes
 Route::post('/archive-item/{id}', [ItemController::class, 'archiveItem'])->name('archive-item');
 Route::post('/restore-item/{id}', [ItemController::class, 'restoreItem'])->name('restore-item');
@@ -37,9 +43,6 @@ Route::get('/user_management', function () {
 
 // Edit Item Route
 Route::post('/edit-item/{id}', [ItemController::class, 'editItem'])->name('edit-item'); // Update item
-
-// **Ensure you have the correct update method in your ItemController**
-Route::post('/items/update', [ItemController::class, 'update'])->name('items.update');
 
 // Remove the unnecessary `get-item` route as it was undefined:
 # Route::get('/get-item/{id}', 'ItemController@getItem');

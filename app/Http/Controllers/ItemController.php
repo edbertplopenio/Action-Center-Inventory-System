@@ -13,7 +13,7 @@ class ItemController extends Controller
         return view('item-form'); // This view will display the item creation form
     }
 
-    // Store the newly created item in the database
+    // Store the newly created item in the database or update it if it exists
     public function store(Request $request)
     {
         // Validate the form data
@@ -38,23 +38,39 @@ class ItemController extends Controller
             $imagePath = null; // No image uploaded, set image path to null
         }
 
-        // Store the item in the database
-        Item::create([
-            'name' => $request->name,
-            'category' => $request->category,
-            'quantity' => $request->quantity,
-            'unit' => $request->unit,
-            'description' => $request->description,
-            'storage_location' => $request->storage_location,
-            'arrival_date' => $request->arrival_date,
-            'date_purchased' => $request->date_purchased,
-            'status' => $request->status,
-            'image_url' => $imagePath,
-            'is_archived' => false, // Set default as not archived
-        ]);
+        // Check if the item already exists in the database
+        $item = Item::where('name', $request->name)->first();
 
-        // Redirect back to the form or a different route with a success message
-        return redirect()->route('inventory')->with('success', 'Item added successfully!');
+        if ($item) {
+            // If the item exists, update the quantity and arrival date
+            $item->quantity += $request->quantity; // Add the new quantity to the existing one
+            $item->arrival_date = $request->arrival_date; // Update the arrival date
+
+            // Handle the image update if needed
+            if ($imagePath) {
+                $item->image_url = $imagePath;
+            }
+
+            $item->save(); // Save the updated item
+            return redirect()->route('inventory')->with('success', 'Item quantity updated successfully!');
+        } else {
+            // If the item does not exist, create a new one
+            Item::create([
+                'name' => $request->name,
+                'category' => $request->category,
+                'quantity' => $request->quantity,
+                'unit' => $request->unit,
+                'description' => $request->description,
+                'storage_location' => $request->storage_location,
+                'arrival_date' => $request->arrival_date,
+                'date_purchased' => $request->date_purchased,
+                'status' => $request->status,
+                'image_url' => $imagePath,
+                'is_archived' => false, // Set default as not archived
+            ]);
+
+            return redirect()->route('inventory')->with('success', 'Item added successfully!');
+        }
     }
 
     // Display a list of items without pagination
@@ -140,4 +156,36 @@ class ItemController extends Controller
         // Return a success response
         return response()->json(['message' => 'Item updated successfully!']);
     }
+
+    public function checkExistence(Request $request)
+{
+    // Check if the item already exists based on its name
+    $item = Item::where('name', $request->name)->first();
+
+    if ($item) {
+        // Return the item data if it exists
+        return response()->json(['exists' => true, 'item' => $item]);
+    }
+
+    // Return false if the item does not exist
+    return response()->json(['exists' => false]);
+}
+
+public function update(Request $request)
+{
+    $item = Item::find($request->id); // Find the item by its ID
+
+    if ($item) {
+        // Update the item's quantity and arrival date
+        $item->quantity = $request->quantity;
+        $item->arrival_date = $request->arrival_date;
+        $item->save();
+
+        return response()->json(['message' => 'Item updated successfully']);
+    }
+
+    // If the item is not found, return an error
+    return response()->json(['message' => 'Item not found'], 404);
+}
+
 }
