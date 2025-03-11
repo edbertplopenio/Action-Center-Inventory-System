@@ -12,26 +12,55 @@
         <h2 class="mt-4 text-lg font-semibold text-red-600">Create a new account</h2>
       </div>
       
-      @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-      @endif
+@if ($errors->any())
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      let errors = @json($errors->all());
+
+      errors.forEach(error => {
+        if (error.includes("The email has already been taken.")) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'The email has already been taken.',
+          });
+        } else if (error.includes("The name field is required.")) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'The name field is required.',
+          });
+        } else if (error.includes("The password confirmation does not match.")) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: 'The password confirmation does not match.',
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: error,
+          });
+        }
+      });
+    });
+  </script>
+@endif
+
+
+
 
       <form class="space-y-3 flex flex-col items-center" action="{{ route('registration.post') }}" method="POST">
         @csrf
         <div class="grid grid-cols-2 gap-3 w-3/4">
           <div class="flex flex-col">
-            <label for="first_name" class="text-xs font-medium text-gray-900 mb-1">First Name</label>
-            <input type="text" name="first_name" id="first_name" autocomplete="given-name" required class="block w-full rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-900 focus:ring-2 focus:ring-red-600">
+            <label for="name" class="text-xs font-medium text-gray-900 mb-1">First Name</label>
+            <input type="text" name="name" id="name" autocomplete="given-name" required class="block w-full rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-900 focus:ring-2 focus:ring-red-600">
           </div>
           <div class="flex flex-col">
-            <label for="last_name" class="text-xs font-medium text-gray-900 mb-1">Last Name</label>
-            <input type="text" name="last_name" id="last_name" autocomplete="family-name" required class="block w-full rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-900 focus:ring-2 focus:ring-red-600">
+            <label for="name" class="text-xs font-medium text-gray-900 mb-1">Last Name</label>
+            <input type="text" name="name" id="name" autocomplete="family-name" required class="block w-full rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-900 focus:ring-2 focus:ring-red-600">
           </div>
         </div>
 
