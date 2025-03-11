@@ -27,19 +27,20 @@ class AuthManager extends Controller
     {
         // Validate login data
         $request->validate([
-            'email' => 'required|email',
+            'email'    => 'required|email',
             'password' => 'required'
         ]);
 
         // Attempt to log in with credentials
         $credentials = $request->only('email', 'password');
+
         if (Auth::attempt($credentials)) {
             // Redirect to home page on successful login
             return redirect()->route('home')->with("status", "success");
         }
 
         // Redirect back with error if login fails
-        return redirect(route('login'))->with("status", "error");
+        return redirect()->route('login')->with("status", "error");
     }
 
     // Handle registration request
@@ -47,32 +48,29 @@ class AuthManager extends Controller
     {
         // Validate registration data
         $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|confirmed', // Ensure password confirmation
-            'department' => 'required',
-            'cellphone_number' => 'required'
+            'first_name'     => 'required|string|max:100',
+            'last_name'      => 'required|string|max:100',
+            'email'          => 'required|email|unique:users,email',
+            'password'       => 'required|confirmed|min:6',
+            'department'     => 'nullable|string|max:255',
+            'contact_number' => 'nullable|string|max:20'
         ]);
 
-        // Prepare data for new user
-        $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password), // Hash the password
-            'department' => $request->department,
-            'cellphone_number' => $request->cellphone_number
-        ];
+        // Create new user
+        $user = User::create([
+            'first_name'     => $request->first_name,
+            'last_name'      => $request->last_name,
+            'email'          => $request->email,
+            'password'       => Hash::make($request->password),
+            'department'     => $request->department,
+            'contact_number' => $request->contact_number,
+        ]);
 
-        // Create new user in the database
-        $user = User::create($data);
-
-        // Check if user creation was successful
         if (!$user) {
-            return redirect(route('registration'))->with("status", "error");
+            return redirect()->route('registration')->with("status", "error");
         }
 
-        // Redirect to login page after successful registration
-        return redirect(route('login'))->with("status", "success");
+        return redirect()->route('login')->with("status", "success");
     }
 
     // Handle logout request
@@ -83,6 +81,6 @@ class AuthManager extends Controller
         Auth::logout();
 
         // Redirect to login page after logout
-        return redirect(route('login'));
+        return redirect()->route('login');
     }
 }

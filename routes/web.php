@@ -70,3 +70,14 @@ Route::get('/admin/records/archive', [RecordsController::class, 'archiveIndex'])
 Route::post('/admin/records/unarchive/{id}', [RecordsController::class, 'unarchive'])->name('records.unarchive');
 Route::put('/admin/records/{id}', [RecordsController::class, 'update'])->name('records.update');
 
+Route::prefix('admin')->middleware(['auth'])->group(function () {
+    Route::get('/users', [UsersController::class, 'index'])->name('users.index');
+});
+
+
+Route::post('/admin/users/store', [UsersController::class, 'store']);
+
+
+Route::get('/admin/users/{id}/edit', [UsersController::class, 'edit'])->name('users.edit');
+
+Route::put('/admin/users/{id}', [UsersController::class, 'update'])->name('users.update');

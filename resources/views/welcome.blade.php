@@ -3,28 +3,47 @@
 @section('title', 'Home Page')
 
 @section('content')
-    <!-- Hero Section --> 
-    <div class="relative min-h-screen flex flex-col items-center justify-between bg-cover bg-center font-sans"
-    style="background-image: url('/images/home.jpg'); background-size: cover; background-position: center; max-height: 60vh;">
 
-        <!-- Overlay -->
-        <div class="absolute inset-0 bg-black opacity-20"></div>
+<!-- Hero Section -->
+<div class="relative min-h-screen flex flex-col items-center justify-center font-sans overflow-hidden"
+     style="font-family: 'Inter', sans-serif;">
+    
+    <!-- GIF Background -->
+    <img src="/videos/0310(1).gif" alt="Background GIF" class="absolute inset-0 w-full h-full object-cover">
 
-        <!-- Content at the top -->
-        <div class="relative z-10 flex flex-col items-center text-center text-white px-6 pt-20">
-            <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold">
-                Welcome to the BatStateU <br> ACTION Center
-            </h1>
-            <p class="text-lg sm:text-xl mt-10 max-w-xl">
-                Adaptive Capacity-building and Technology Innovation for Occupational Hazards and Natural Disasters.
-            </p>
-        </div>
+    <!-- Overlay to Darken Background -->
+    <div class="absolute inset-0 bg-black bg-opacity-5 backdrop-blur-md"></div>
 
-        <!-- "About Us" button at the bottom -->
-        <div class="relative z-10 flex justify-center w-full mb-6">
-            <a href="{{ url('/about-us') }}" class="px-6 py-3 bg-indigo-500 text-white text-lg font-semibold rounded-lg shadow-lg hover:bg-indigo-600">
-                About Us
+    <!-- Main Content Container with Stronger Shadow -->
+    <div class="relative z-10 flex flex-col items-center text-center bg-white bg-opacity-80 text-black px-6 py-6 rounded-lg shadow-50xl w-full max-w-md backdrop-blur-md"
+     style="font-family: 'Inter', sans-serif;">
+
+
+        
+        <!-- Logo -->
+        <img src="/images/actioncenterlogo.png" alt="Logo" class="w-16 h-auto mb-4">
+
+        <!-- University Title -->
+        <h1 class="text-4xl sm:text-3xl md:text-2xl font-extrabold leading-tight tracking-widest"
+            style="font-family: 'Inter', sans-serif;">
+            Batangas State University<br>
+            <span class="text-4xl sm:text-3xl md:text-xl tracking-widest">ACTION Center</span>
+        </h1>
+        
+        <br>
+
+        <!-- Buttons -->
+        <div class="mt-4 flex gap-4">
+            <a href="{{ route('registration') }}" class="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition"
+               style="font-family: 'Inter', sans-serif;">
+                Register
+            </a>
+
+            <a href="{{ route('login') }}" class="px-6 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition"
+               style="font-family: 'Inter', sans-serif;">
+                Login
             </a>
         </div>
     </div>
+</div>
 @endsection

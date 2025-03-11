@@ -65,20 +65,26 @@
         <div class="fixed top-0 left-0 h-full bg-white p-6 overflow-y-auto flex flex-col shadow-lg sidebar">
             <!-- User Info -->
             <div class="flex gap-5 pb-5 border-b border-gray-200">
-                <div class="w-11 h-11 rounded-full overflow-hidden">
-                    <!-- Check if the image exists, else show initials -->
-                    <img src="{{ asset('images/users/user-placeholder.jpg') }}" alt="User Image" class="w-full object-cover" onerror="this.style.display='none'; showInitialsWithRandomColor();" />
-                    <div id="initials-avatar" class="w-full h-full text-white flex items-center justify-center text-xs font-bold" style="display:none;">
-                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}{{ strtoupper(substr(auth()->user()->name, strpos(auth()->user()->name, ' ') + 1, 1)) }}
+                <div class="w-11 h-11 rounded-full overflow-hidden relative flex items-center justify-center bg-gray-500 text-white">
+                    @if(auth()->user()->profile_picture)
+                    <img src="{{ asset('storage/' . auth()->user()->profile_picture) }}"
+                        alt="User Image"
+                        class="w-full h-full object-cover"
+                        onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+                    @endif
+
+                    <div class="{{ auth()->user()->profile_picture ? 'hidden' : '' }} w-full h-full flex items-center justify-center text-xs font-bold">
+                        {{ strtoupper(substr(auth()->user()->first_name, 0, 1)) }}{{ strtoupper(substr(auth()->user()->last_name, 0, 1)) }}
                     </div>
                 </div>
 
+
                 <div>
-                    <!-- Adjusted font size for username and email -->
-                    <p class="text-xs font-medium text-gray-500 mb-1">{{ auth()->user()->name ?? 'User Name' }}</p>
+                    <p class="text-xs font-medium text-gray-500 mb-1">{{ auth()->user()->first_name ?? 'First' }} {{ auth()->user()->last_name ?? 'Last' }}</p>
                     <p class="text-xs font-medium text-gray-500">{{ auth()->user()->email ?? 'user.email@example.com' }}</p>
                 </div>
             </div>
+
 
             <!-- Navigation Menu -->
             <div class="flex-1 mt-5">
@@ -163,44 +169,40 @@
 
 
 <script>
-                function getRandomColor() {
-                    // Generate a random color in hex format
-                    const letters = '0123456789ABCDEF';
-                    let color = '#';
-                    for (let i = 0; i < 6; i++) {
-                        color += letters[Math.floor(Math.random() * 16)];
-                    }
-                    return color;
-                }
+    function getRandomColor() {
+        // Generate a random color in hex format
+        const letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
 
-                function showInitialsWithRandomColor() {
-                    // Check if the random color already exists in localStorage
-                    let randomColor = localStorage.getItem('randomColor');
+    function showInitialsWithRandomColor() {
+        // Check if the random color already exists in localStorage
+        let randomColor = localStorage.getItem('randomColor');
 
-                    if (!randomColor) {
-                        // If no color is stored, generate a new random color
-                        randomColor = getRandomColor();
-                        // Store the color in localStorage
-                        localStorage.setItem('randomColor', randomColor);
-                    }
+        if (!randomColor) {
+            // If no color is stored, generate a new random color
+            randomColor = getRandomColor();
+            // Store the color in localStorage
+            localStorage.setItem('randomColor', randomColor);
+        }
 
-                    // Set background color of the initials div
-                    document.getElementById('initials-avatar').style.backgroundColor = randomColor;
+        // Set background color of the initials div
+        document.getElementById('initials-avatar').style.backgroundColor = randomColor;
 
-                    // Show the initials div
-                    document.getElementById('initials-avatar').style.display = 'flex';
-                }
+        // Show the initials div
+        document.getElementById('initials-avatar').style.display = 'flex';
+    }
 
-                // Call the function on page load to display the initials with the correct color
-                showInitialsWithRandomColor();
-            </script>
+    // Call the function on page load to display the initials with the correct color
+    showInitialsWithRandomColor();
+</script>
 
 </html>
 
 
 
 <!-- YUNG PROFILE PIC AYUSIN MO SHAPE -->
-
-
-
-
