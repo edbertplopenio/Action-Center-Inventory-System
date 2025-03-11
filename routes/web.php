@@ -57,4 +57,6 @@ Route::post('/borrowing-slip', [BorrowingSlipController::class, 'store'])->name(
 
 Route::delete('/borrowing-slip/{id}', [BorrowingSlipController::class, 'destroy']);
 
+Route::put('/borrowing-slip/{id}', [BorrowingSlipController::class, 'update'])->name('borrowing-slip.update');
+
 
