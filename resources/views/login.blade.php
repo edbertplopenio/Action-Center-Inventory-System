@@ -3,7 +3,7 @@
 @section('content')
 <div class="flex min-h-screen justify-center items-center px-6">
   <div class="lg:w-2/3 h-screen hidden lg:block">
-    <img class="w-full h-full object-cover" src="{{ asset('images/home.jpg') }}" alt="Background Image">
+    <img class="w-full h-full object-cover" src="{{ asset('images/bgs.jpg') }}" alt="Background Image">
   </div>
   <div class="lg:w-2/5 flex justify-center items-center">
     <div class="w-full max-w-md">
