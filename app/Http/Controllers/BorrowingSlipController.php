@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BorrowingSlip;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage; // Import the Storage facade
+use Illuminate\Support\Facades\Storage; // Import Storage for file handling
 
 class BorrowingSlipController extends Controller
 {
@@ -27,36 +27,55 @@ class BorrowingSlipController extends Controller
             'borrow_date' => 'required|date',
             'quantity' => 'required|integer',
             'due_date' => 'required|date',
-            'signature' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate image
+            'signature' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Signature is optional on create
         ]);
 
-        // Handle the file upload if there's a signature
+        // Handle the file upload if a signature is provided
+        $signaturePath = null;
         if ($request->hasFile('signature')) {
             $signature = $request->file('signature');
-            
-            // Store the file in the 'public/signatures' directory
-            $path = $signature->storeAs('public/signatures', time() . '.' . $signature->extension());
-
-            // Save the file path to the database
-            $request->merge(['signature' => $path]); // Add the file path to the request data
+            $signaturePath = $signature->storeAs('public/signatures', time() . '.' . $signature->extension());
         }
 
-        // Create and store the new borrowing slip
-        BorrowingSlip::create($request->all());
+        // Create the borrowing slip
+        BorrowingSlip::create([
+            'name' => $request->name,
+            'department' => $request->department,
+            'email' => $request->email,
+            'responsible_person' => $request->responsible_person,
+            'item_code' => $request->item_code,
+            'borrow_date' => $request->borrow_date,
+            'quantity' => $request->quantity,
+            'due_date' => $request->due_date,
+            'signature' => $signaturePath,
+        ]);
 
-        // Redirect back with a success message
         return redirect()->route('borrowing-slip.index')->with('success', 'Borrowing Slip Created Successfully!');
     }
 
     public function destroy($id)
     {
         $slip = BorrowingSlip::findOrFail($id);
+
+        // Delete the signature file if it exists
+        if ($slip->signature && Storage::exists($slip->signature)) {
+            Storage::delete($slip->signature);
+        }
+
         $slip->delete();
 
         return response()->json(['success' => true]);
     }
 
-    // Update method to handle editing a borrowing slip
+    public function edit($id)
+    {
+        // Fetch the borrowing slip to edit
+        $borrowingSlip = BorrowingSlip::findOrFail($id);
+
+        // Return the edit view with borrowing slip data
+        return view('borrowing-slip.edit', compact('borrowingSlip'));
+    }
+
     public function update(Request $request, $id)
     {
         // Validate form data
@@ -69,31 +88,42 @@ class BorrowingSlipController extends Controller
             'borrow_date' => 'required|date',
             'quantity' => 'required|integer',
             'due_date' => 'required|date',
-            'signature' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate image (signature is optional during update)
+            'signature' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Signature is optional during update
         ]);
 
-        // Find the existing borrowing slip
+        // Find the borrowing slip
         $borrowingSlip = BorrowingSlip::findOrFail($id);
 
-        // If a new signature file is uploaded, handle the file upload
+        // Handle the file upload if a new signature is provided
         if ($request->hasFile('signature')) {
-            // Delete the old signature file if it exists
-            if ($borrowingSlip->signature) {
+            // Delete old signature if exists
+            if ($borrowingSlip->signature && Storage::exists($borrowingSlip->signature)) {
                 Storage::delete($borrowingSlip->signature);
             }
 
+            // Store the new signature
             $signature = $request->file('signature');
-            $path = $signature->storeAs('public/signatures', time() . '.' . $signature->extension());
-            $request->merge(['signature' => $path]); // Add the file path to the request data
-        } else {
-            // If no new signature is uploaded, keep the old one
-            $request->merge(['signature' => $borrowingSlip->signature]);
+            $signaturePath = $signature->storeAs('public/signatures', time() . '.' . $signature->extension());
+
+            // Update signature path in the request
+            $borrowingSlip->signature = $signaturePath;
         }
 
-        // Update the borrowing slip with the new data
-        $borrowingSlip->update($request->all());
+        // Update the borrowing slip fields
+        $borrowingSlip->update([
+            'name' => $request->name,
+            'department' => $request->department,
+            'email' => $request->email,
+            'responsible_person' => $request->responsible_person,
+            'item_code' => $request->item_code,
+            'borrow_date' => $request->borrow_date,
+            'quantity' => $request->quantity,
+            'due_date' => $request->due_date,
+        ]);
 
-        // Redirect back with a success message
+        // Save changes
+        $borrowingSlip->save();
+
         return redirect()->route('borrowing-slip.index')->with('success', 'Borrowing Slip Updated Successfully!');
     }
 }

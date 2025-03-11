@@ -48,15 +48,31 @@ Route::post('/borrow/submit', function (Illuminate\Http\Request $request) {
     return back()->with('success', 'Borrowing request submitted.');
 })->name('borrow.submit');
 
-Route::get('/borrowing-slip', [BorrowingSlipController::class, 'index'])->name('borrowing-slip.index');
-
-Route::post('/borrowing-slip', [BorrowingSlipController::class, 'store'])->name('borrowing-slip.store');
-
-Route::get('/borrowing-slip', [BorrowingSlipController::class, 'index'])->name('borrowing-slip.index');
-Route::post('/borrowing-slip', [BorrowingSlipController::class, 'store'])->name('borrowing-slip.store');
-
-Route::delete('/borrowing-slip/{id}', [BorrowingSlipController::class, 'destroy']);
-
 Route::put('/borrowing-slip/{id}', [BorrowingSlipController::class, 'update'])->name('borrowing-slip.update');
 
+// Get the borrowing slips index page (View list of borrowing slips)
+Route::get('/borrowing-slip', [BorrowingSlipController::class, 'index'])->name('borrowing-slip.index');
 
+// Create a new borrowing slip (POST request)
+Route::post('/borrowing-slip', [BorrowingSlipController::class, 'store'])->name('borrowing-slip.store');
+
+// Update an existing borrowing slip (PUT request)
+Route::put('/borrowing-slip/{id}', [BorrowingSlipController::class, 'update'])->name('borrowing-slip.update');
+
+// Delete a borrowing slip (DELETE request)
+Route::delete('/borrowing-slip/{id}', [BorrowingSlipController::class, 'destroy'])->name('borrowing-slip.destroy');
+
+// Display the borrowing slips
+Route::get('/borrowing-slip', [BorrowingSlipController::class, 'index'])->name('borrowing-slip.index');
+
+// Store a new borrowing slip
+Route::post('/borrowing-slip', [BorrowingSlipController::class, 'store'])->name('borrowing-slip.store');
+
+// Update an existing borrowing slip (PUT method)
+Route::put('/borrowing-slip/{id}', [BorrowingSlipController::class, 'update'])->name('borrowing-slip.update');
+
+// Delete a borrowing slip
+Route::delete('/borrowing-slip/{id}', [BorrowingSlipController::class, 'destroy'])->name('borrowing-slip.destroy');
+
+Route::get('/borrowing-slip/{id}/edit', [BorrowingSlipController::class, 'edit'])->name('borrowing-slip.edit');
+Route::put('/borrowing-slip/{id}', [BorrowingSlipController::class, 'update'])->name('borrowing-slip.update');
