@@ -7,19 +7,21 @@
   </div>
   <div class="lg:w-2/5 flex justify-center items-center">
     <div class="w-full max-w-md">
-      <div class="text-center">
-        <img class="mx-auto h-16 w-16" src="{{ asset('images/bsulogo.png') }}" alt="Logo">
-        <h2 class="mt-4 text-lg font-semibold text-red-600">Sign in to your account</h2>
+      <div class="flex justify-center items-center space-x-4">
+        <img class="h-16 w-16" src="{{ asset('images/bsulogo.png') }}" alt="Logo">
+        <img class="h-16 w-16" src="{{ asset('images/actioncenter.png') }}" alt="Logo">
       </div>
-      
+      <h2 class="mt-4 text-lg font-semibold text-red-600 text-center">Sign in to your account</h2>
+
+
       @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
+      <div class="alert alert-danger">
+        <ul>
+          @foreach ($errors->all() as $error)
+          <li>{{ $error }}</li>
+          @endforeach
+        </ul>
+      </div>
       @endif
 
       <form class="space-y-3 flex flex-col items-center" action="{{ route('login.post') }}" method="POST">
@@ -49,7 +51,7 @@
           </button>
         </div>
       </form>
-      
+
       <p class="mt-4 text-center text-xs text-gray-500">
         Not a member? <a href="{{ route('registration') }}" class="font-semibold text-blue-500 hover:text-blue-600">Create an account</a>
       </p>
@@ -58,26 +60,26 @@
 </div>
 
 @if (session('status') == 'success')
-  <script>
-    Swal.fire({
-      icon: 'success',
-      title: 'Success',
-      text: 'Login successful!',
-      showConfirmButton: false,
-      timer: 1500
-    });
-  </script>
+<script>
+  Swal.fire({
+    icon: 'success',
+    title: 'Success',
+    text: 'Login successful!',
+    showConfirmButton: false,
+    timer: 1500
+  });
+</script>
 @endif
 
 @if (session('status') == 'error')
-  <script>
-    Swal.fire({
-      icon: 'error',
-      title: 'Oops...',
-      text: 'Invalid credentials!',
-      showConfirmButton: false,
-      timer: 1500
-    });
-  </script>
+<script>
+  Swal.fire({
+    icon: 'error',
+    title: 'Oops...',
+    text: 'Invalid credentials!',
+    showConfirmButton: false,
+    timer: 1500
+  });
+</script>
 @endif
 @endsection
