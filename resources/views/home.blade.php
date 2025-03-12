@@ -6,7 +6,7 @@
 <div class="container mx-auto p-6">
     <!-- Header -->
     <div class="flex justify-between items-center mb-8">
-        <h1 class="text-4xl font-semibold text-gray-800">ACTION Center</h1>
+        <h1 class="text-4xl font-semibold text-gray-800">Dashboard</h1>
     </div>
 
     <!-- Dashboard Cards -->
@@ -39,11 +39,12 @@
             <span class="text-sm text-gray-600 mt-2 block"><i class="fas fa-truck text-blue-500"></i> 20 units deployed this week</span>
         </div>
 
-        <!-- Full Width Inventory Dynamics -->
-        <div class="bg-white p-6 shadow-lg rounded-lg col-span-4">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Inventory Dynamics</h2>
-            <div class="bg-gray-100 h-52 rounded-lg"></div> <!-- Placeholder for Inventory Trend Chart -->
-        </div>
+        <!-- Full Width Equipment Usage Rate -->
+<div class="bg-white p-6 shadow-lg rounded-lg col-span-4">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Equipment Usage Rate</h2>
+    <div class="bg-gray-100 h-52 rounded-lg"></div> <!-- Placeholder for Equipment Usage Rate Trend Chart -->
+</div>
+
 
         <!-- Full Width Risk Assessment -->
         <div class="bg-white p-6 shadow-lg rounded-lg col-span-4">

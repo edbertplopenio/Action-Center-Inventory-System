@@ -228,7 +228,7 @@
     <div class="bg-white p-6 shadow-lg rounded-lg h-full">
         <!-- Title and Button inside this div -->
         <div class="flex justify-between items-center mb-1 pt-0">
-            <h1 class="text-3xl text-left">Records and Appraisal</h1>
+            <h1 class="text-3xl text-left">User Management</h1>
             <div class="flex space-x-2 w-auto">
                 <button id="openModalBtn" class="px-6 py-2 min-w-[140px] max-w-[160px] bg-[#4cc9f0] text-white border-2 border-[#4cc9f0] rounded-full hover:bg-[#3fb3d1] mb-2 text-sm">
                     Add Record
