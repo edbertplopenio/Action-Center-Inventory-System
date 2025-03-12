@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('layout') 
 @section('title', 'Login')
 @section('content')
 <div class="flex min-h-screen justify-center items-center px-6">
@@ -7,10 +7,13 @@
   </div>
   <div class="lg:w-2/5 flex justify-center items-center">
     <div class="w-full max-w-md">
-      <div class="text-center">
-        <img class="mx-auto h-16 w-16" src="{{ asset('images/bsulogo.png') }}" alt="Logo">
-        <h2 class="mt-4 text-lg font-semibold text-red-600">Sign in to your account</h2>
+      <div class="text-center flex justify-center items-center space-x-6"> <!-- space-x-6 for larger space between logos -->
+        <!-- First Logo -->
+        <img class="h-16 w-16" src="{{ asset('images/bsulogo.png') }}" alt="BSU Logo">
+        <!-- Second Logo (Added) -->
+        <img class="h-16 w-16" src="{{ asset('images/actioncenterlogo.png') }}" alt="Second Logo">
       </div>
+      <h2 class="mt-4 text-lg font-semibold text-red-600 text-center">Sign in to your account</h2>
       
       @if ($errors->any())
         <div class="alert alert-danger">
@@ -73,7 +76,7 @@
   <script>
     Swal.fire({
       icon: 'error',
-      title: 'Oops...'
+      title: 'Oops...',
       text: 'Invalid credentials!',
       showConfirmButton: false,
       timer: 1500

@@ -7,49 +7,49 @@
   </div>
   <div class="lg:w-2/5 flex justify-center items-center">
     <div class="w-full max-w-md">
-      <div class="text-center">
-        <img class="mx-auto h-16 w-16" src="{{ asset('images/bsulogo.png') }}" alt="Logo">
-        <h2 class="mt-4 text-lg font-semibold text-red-600">Create a new account</h2>
+      <div class="text-center flex justify-center items-center space-x-6"> <!-- space-x-6 for spacing between logos -->
+        <!-- First Logo -->
+        <img class="h-16 w-16" src="{{ asset('images/bsulogo.png') }}" alt="BSU Logo">
+        <!-- Second Logo (Added) -->
+        <img class="h-16 w-16" src="{{ asset('images/actioncenterlogo.png') }}" alt="Second Logo">
       </div>
+      <h2 class="mt-4 text-lg font-semibold text-red-600 text-center">Create a new account</h2>
       
-@if ($errors->any())
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      let errors = @json($errors->all());
+      @if ($errors->any())
+        <script>
+          document.addEventListener("DOMContentLoaded", function() {
+            let errors = @json($errors->all());
 
-      errors.forEach(error => {
-        if (error.includes("The email has already been taken.")) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'The email has already been taken.',
+            errors.forEach(error => {
+              if (error.includes("The email has already been taken.")) {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'The email has already been taken.',
+                });
+              } else if (error.includes("The name field is required.")) {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'The name field is required.',
+                });
+              } else if (error.includes("The password confirmation does not match.")) {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'The password confirmation does not match.',
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: error,
+                });
+              }
+            });
           });
-        } else if (error.includes("The name field is required.")) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'The name field is required.',
-          });
-        } else if (error.includes("The password confirmation does not match.")) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'The password confirmation does not match.',
-          });
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: error,
-          });
-        }
-      });
-    });
-  </script>
-@endif
-
-
-
+        </script>
+      @endif
 
       <form class="space-y-3 flex flex-col items-center" action="{{ route('registration.post') }}" method="POST">
         @csrf
@@ -124,7 +124,7 @@
   <script>
     Swal.fire({
       icon: 'error',
-      title: 'Oops...'
+      title: 'Oops...',
       text: 'There was an issue with the registration. Please try again.',
       showConfirmButton: false,
       timer: 1500
