@@ -3,7 +3,7 @@
 @section('title', 'Disaster Risk Reduction Inventory Dashboard')
 
 @section('content')
-    <div class="container mx-auto p-6">
+    <div class="container mx-auto p-6 overflow-hidden">
         <!-- Header -->
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-4xl font-semibold text-gray-800">Disaster Risk Reduction Inventory</h1>

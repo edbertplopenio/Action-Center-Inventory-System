@@ -12,104 +12,121 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
-        /* Table and form styling */
-        .table-container {
-            position: relative; /* Make sure the pagination is relative to this container */
-            max-height: 500px;
-            overflow-y: auto;
-        }
+    /* Apply font size and font family */
+    body,
+    #myTable {
+        font-family: 'Inter', Arial, sans-serif;
+        font-size: 16px; /* Increased for larger readability */
+        margin: 0;
+        padding: 0;
+    }
 
-        .dataTables_paginate {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            text-align: center;
-        }
+    table.dataTable thead th {
+        text-align: center;
+        font-size: 18px; /* Increased font size for header */
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    /* Table Header Styling */
+    #myTable th {
+        background-color: #EBF8FD;
+        color: #4a5568;
+        font-weight: 600;
+        text-align: center;
+        padding: 14px; /* Increased padding */
+        border-bottom: 2px solid #e2e8f0;
+    }
 
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border: 1px solid #ddd;
-        }
+    /* Table Data Styling */
+    #myTable td {
+        background-color: #ffffff;
+        color: #2d3748;
+        text-align: center;
+        padding: 12px; /* Increased padding for better spacing */
+        font-size: 16px; /* Increased font size for better readability */
+        border-bottom: 1px solid #e2e8f0;
+    }
 
-        thead {
-            background-color: #4C51BF;
-        }
+    /* Add hover effect for rows */
+    #myTable tr:hover {
+        background-color: #b3eaff;
+    }
 
-        tr {
-            transition: background-color 0.3s ease; /* Transition for hover */
-        }
+    /* Table container to make it scrollable */
+    .table-container {
+        max-height: 550px; /* Adjust the height */
+        max-width: 100%; /* Make it responsive */
+        overflow-y: auto; /* Enables vertical scrolling */
+    }
 
-        tr:hover {
-            background-color: transparent; /* Remove hover effect */
-        }
+    /* Button Styling */
+    .btn {
+        font-size: 16px; /* Increased button text for more visibility */
+        padding: 12px 20px; /* Adjusted button padding */
+    }
+</style>
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+<!-- CSS for Pagination -->
+<style>
+    /* Style the container */
+    .dataTables_length {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: 'Inter', sans-serif;
+        font-size: 16px; /* Increased font size for pagination */
+        color: #5ad4f5;
+        margin-bottom: 6px;
+        padding: 8px 16px; /* Increased padding */
+        background-color: #e6f7ff;
+        border-radius: 6px;
+        border: 1px solid #b3eaff;
+    }
 
-        .bg-indigo-600 {
-            background-color: #4C51BF;
-        }
+    .dt-length select {
+        padding: 8px 14px; /* Increased padding */
+        font-size: 16px; /* Increased font size */
+        border: 1px solid #b3eaff;
+        border-radius: 4px;
+        background-color: #ffffff;
+        color: #4aaed4;
+        cursor: pointer;
+        outline: none;
+        transition: all 0.2s ease-in-out;
+    }
 
-        .bg-indigo-700 {
-            background-color: #434190;
-        }
+    .dt-length select:focus {
+        border-color: #4cc9f0;
+        background-color: #c9efff;
+    }
+</style>
 
-        .text-gray-700 {
-            color: #4A5568;
-        }
+<!-- CSS for Search Bar -->
+<style>
+    .dt-search {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: 'Inter', sans-serif;
+        font-size: 16px; /* Increased font size for search bar */
+    }
 
-        .text-white {
-            color: white;
-        }
+    .dt-search input[type="search"] {
+        padding: 8px 16px; /* Increased padding */
+        font-size: 16px; /* Increased font size for search bar */
+        border: 1px solid #b3eaff;
+        border-radius: 4px;
+        background-color: #ffffff;
+        color: #4aaed4;
+        cursor: text;
+        outline: none;
+        transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
 
-        .rounded-lg {
-            border-radius: 10px;
-        }
-
-        .shadow-md {
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .hover\:bg-gray-50:hover {
-            background-color: transparent; /* No hover effect */
-        }
-
-        .form-input {
-            background-color: #f9fafb;
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
-        }
-
-        .form-input:focus {
-            border-color: #4C51BF;
-            outline: none;
-            box-shadow: 0 0 5px rgba(76, 81, 191, 0.3);
-        }
-
-        .bg-gray-400 {
-            background-color: #D1D5DB;
-        }
-
-        .bg-gray-500 {
-            background-color: #6B7280;
-        }
-
-        .bg-indigo-600 {
-            background-color: #4C51BF;
-        }
-
-        .bg-indigo-700 {
-            background-color: #434190;
-        }
-    </style>
+    .dt-search input[type="search"]:focus {
+        border-color: #4cc9f0;
+        background-color: #c9efff;
+    }
+</style>
 </head>
 
 <!-- Equipment Table -->

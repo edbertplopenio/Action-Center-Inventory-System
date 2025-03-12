@@ -52,21 +52,20 @@ class BorrowingSlipController extends Controller
 
         return redirect()->route('borrowing-slip.index')->with('success', 'Borrowing Slip Created Successfully!');
     }
-
     public function destroy($id)
     {
         $slip = BorrowingSlip::findOrFail($id);
-
+    
         // Delete the signature file if it exists
         if ($slip->signature && Storage::exists($slip->signature)) {
             Storage::delete($slip->signature);
         }
-
+    
         $slip->delete();
-
+    
         return response()->json(['success' => true]);
     }
-
+    
     public function edit($id)
     {
         // Fetch the borrowing slip to edit
@@ -90,25 +89,25 @@ class BorrowingSlipController extends Controller
             'due_date' => 'required|date',
             'signature' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Signature is optional during update
         ]);
-
-        // Find the borrowing slip
+    
+        // Find the borrowing slip to update
         $borrowingSlip = BorrowingSlip::findOrFail($id);
-
+    
         // Handle the file upload if a new signature is provided
         if ($request->hasFile('signature')) {
             // Delete old signature if exists
             if ($borrowingSlip->signature && Storage::exists($borrowingSlip->signature)) {
                 Storage::delete($borrowingSlip->signature);
             }
-
+    
             // Store the new signature
             $signature = $request->file('signature');
             $signaturePath = $signature->storeAs('public/signatures', time() . '.' . $signature->extension());
-
+    
             // Update signature path in the request
             $borrowingSlip->signature = $signaturePath;
         }
-
+    
         // Update the borrowing slip fields
         $borrowingSlip->update([
             'name' => $request->name,
@@ -120,10 +119,8 @@ class BorrowingSlipController extends Controller
             'quantity' => $request->quantity,
             'due_date' => $request->due_date,
         ]);
-
-        // Save changes
-        $borrowingSlip->save();
-
+    
         return redirect()->route('borrowing-slip.index')->with('success', 'Borrowing Slip Updated Successfully!');
     }
 }
+    

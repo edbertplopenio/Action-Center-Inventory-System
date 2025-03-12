@@ -76,3 +76,11 @@ Route::delete('/borrowing-slip/{id}', [BorrowingSlipController::class, 'destroy'
 
 Route::get('/borrowing-slip/{id}/edit', [BorrowingSlipController::class, 'edit'])->name('borrowing-slip.edit');
 Route::put('/borrowing-slip/{id}', [BorrowingSlipController::class, 'update'])->name('borrowing-slip.update');
+
+// In web.php (routes)
+Route::delete('/borrowing-slip/{id}', [BorrowingSlipController::class, 'destroy']);
+// routes/web.php
+
+Route::delete('/borrowing-slip/{id}', [BorrowingSlipController::class, 'destroy'])->name('borrowing-slip.destroy');
+
+Route::put('/borrowing-slip/{id}', [BorrowingSlipController::class, 'update'])->name('borrowing-slip.update');
