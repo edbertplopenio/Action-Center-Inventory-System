@@ -59,12 +59,12 @@
   </div>
 </div>
 
-@if (session('status') == 'success')
+@if (session('status') == 'registration_success')
 <script>
   Swal.fire({
     icon: 'success',
-    title: 'Success',
-    text: 'Login successful!',
+    title: 'Registration Successful!',
+    text: 'You can now log in to your account.',
     showConfirmButton: false,
     timer: 1500
   });
@@ -76,10 +76,11 @@
   Swal.fire({
     icon: 'error',
     title: 'Oops...',
-    text: 'Invalid credentials!',
+    text: 'There was an issue with the registration. Please try again.',
     showConfirmButton: false,
     timer: 1500
   });
 </script>
 @endif
+
 @endsection

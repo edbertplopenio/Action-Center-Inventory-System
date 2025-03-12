@@ -66,11 +66,15 @@ class AuthManager extends Controller
             'contact_number' => $request->contact_number,
         ]);
 
-        if (!$user) {
-            return redirect()->route('registration')->with("status", "error");
-        }
+        // Inside registrationPost method
 
-        return redirect()->route('login')->with("status", "success");
+if (!$user) {
+    return redirect()->route('registration')->with("status", "error");
+}
+
+// Use a unique status message for registration success
+return redirect()->route('login')->with("status", "registration_success");
+
     }
 
     // Handle logout request
