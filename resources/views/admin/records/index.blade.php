@@ -1096,7 +1096,7 @@
             console.log('Confirm archive clicked for record ID:', recordId);
 
             // Show success modal immediately after confirm
-            showResultModal('success', 'The record is being archived...');
+            showResultModal('Wait', 'The record is being archived...');
 
             // Perform the archive action (AJAX call or form submission)
             archiveRecord(recordId);
@@ -1149,7 +1149,7 @@
             .then(data => {
                 console.log('Archive response:', data); // Log the response from the server
                 // Show success modal
-                showResultModal('success', 'The record has been successfully archived!');
+                showResultModal('Success', 'The record has been successfully archived!');
 
                 // Remove the row from the table after successful archiving
                 removeArchivedRow(recordId);

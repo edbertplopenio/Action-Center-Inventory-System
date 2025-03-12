@@ -447,7 +447,7 @@
             console.log('Confirm unarchive clicked for record ID:', recordId);
 
             // Show success modal immediately after confirm
-            showResultModal('success', 'The record is being unarchived...');
+            showResultModal('Wait', 'The record is being unarchived...');
 
             // Perform the unarchive action (AJAX call or form submission)
             unarchiveRecord(recordId);
@@ -500,7 +500,7 @@
             .then(data => {
                 console.log('Unarchive response:', data); // Log the response from the server
                 // Show success modal
-                showResultModal('success', 'The record has been successfully unarchived!');
+                showResultModal('Success', 'The record has been successfully unarchived!');
 
                 // Remove the row from the table after successful unarchiving
                 removeUnarchivedRow(recordId);
