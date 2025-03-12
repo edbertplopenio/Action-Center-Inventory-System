@@ -16,12 +16,13 @@ class UsersController extends Controller
      */
     public function index()
     {
-        // Fetch all users
-        $users = User::all();
-
-        // Pass users to the Blade view
+        // Fetch only active users
+        $users = User::where('status', 'active')->get();
+    
+        // Pass active users to the Blade view
         return view('admin.users.index', compact('users'));
     }
+    
 
     /**
      * Store a new user.
@@ -37,23 +38,23 @@ class UsersController extends Controller
             'department' => 'nullable|string|max:255',
             'contact_number' => 'nullable|string|regex:/^[0-9]{10,15}$/',
             'password' => 'required|min:6|confirmed',
-            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Max size: 2MB
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json([
                 'status' => 'error',
                 'errors' => $validator->errors()
             ], 422);
         }
-
+    
         // Handle file upload
         $photoPath = null;
         if ($request->hasFile('profile_picture')) {
             $photoPath = $request->file('profile_picture')->store('profile_pictures', 'public');
         }
-
-        // Create new user
+    
+        // Create new user with status = active
         $user = User::create([
             'first_name' => $request->input('first_name'),
             'last_name' => $request->input('last_name'),
@@ -62,16 +63,17 @@ class UsersController extends Controller
             'department' => $request->input('department'),
             'contact_number' => $request->input('contact_number'),
             'password' => Hash::make($request->input('password')),
-            'profile_picture' => $photoPath, // Store photo path in DB
+            'profile_picture' => $photoPath,
+            'status' => 'active' // ✅ Ensure new users are active
         ]);
-
+    
         return response()->json([
             'status' => 'success',
             'message' => 'User added successfully!',
             'user' => $user
         ], 201);
     }
-
+    
     /**
      * Get a specific user's data for editing.
      */
@@ -171,4 +173,58 @@ class UsersController extends Controller
             'message' => 'Profile picture removed successfully.'
         ]);
     }
+
+
+
+
+public function deactivatedIndex()
+{
+    // Fetch only deactivated users
+    $users = User::where('status', 'deactivated')->get();
+
+    // Pass deactivated users to the Blade view
+    return view('admin.users.deactivated', compact('users'));
 }
+
+    
+
+
+
+
+    public function deactivate($id)
+{
+    $user = User::find($id);
+
+    if (!$user) {
+        return response()->json(['success' => false, 'message' => 'User not found.']);
+    }
+
+    // Update status to 'deactivated'
+    $user->update(['status' => 'deactivated']);
+
+    return response()->json(['success' => true, 'message' => 'User successfully deactivated.']);
+}
+
+
+
+public function activate($id)
+{
+    $user = User::find($id);
+
+    if (!$user) {
+        return response()->json(['success' => false, 'message' => 'User not found.'], 404);
+    }
+
+    // Update the status to 'active'
+    $user->update(['status' => 'active']);
+
+    return response()->json(['success' => true, 'message' => 'User successfully activated.']);
+}
+
+
+
+
+}
+
+
+

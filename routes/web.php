@@ -81,3 +81,17 @@ Route::post('/admin/users/store', [UsersController::class, 'store']);
 Route::get('/admin/users/{id}/edit', [UsersController::class, 'edit'])->name('users.edit');
 
 Route::put('/admin/users/{id}', [UsersController::class, 'update'])->name('users.update');
+
+
+
+
+
+Route::post('/admin/users/deactivate/{id}', [UsersController::class, 'deactivate'])->name('users.deactivate');
+
+Route::get('/admin/users/deactivated', [UsersController::class, 'deactivatedIndex'])->name('users.deactivated');
+
+
+Route::post('/admin/users/activate/{id}', [UsersController::class, 'activate'])->name('users.activate');
+
+
+
