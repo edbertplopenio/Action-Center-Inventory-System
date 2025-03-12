@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+/* Add your global styles here */
+body {
+    font-family: 'Nunito', sans-serif;
+}
+
+.navbar {
+    margin-bottom: 20px;
+}
+
+.table th, .table td {
+    vertical-align: middle;
+}
+
+form .form-group {
+    margin-bottom: 15px;
+}

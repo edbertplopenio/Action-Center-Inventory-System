@@ -2,15 +2,11 @@
 
 use App\Http\Controllers\AuthManager;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ItemController;
 
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
-
+// Authentication routes
 Route::get('/login', [AuthManager::class, 'login'])->name('login');
 Route::post('/login', [AuthManager::class, 'loginPost'])->name('login.post');
-Route::get('/registration', [AuthManager::class, 'registration'])->name('registration');
+Route::get('/registration', [AuthManager::class, 'registration'])->name('registration'); // Registration route
 Route::post('/registration', [AuthManager::class, 'registrationPost'])->name('registration.post');
 Route::get('/logout', [AuthManager::class, 'logout'])->name('logout');
 
@@ -46,3 +42,25 @@ Route::post('/edit-item/{id}', [ItemController::class, 'editItem'])->name('edit-
 
 // Remove the unnecessary `get-item` route as it was undefined:
 # Route::get('/get-item/{id}', 'ItemController@getItem');
+// Home route - can be used for authenticated users
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+// Inventory routes
+Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
+
+// Admin routes with authentication middleware
+use App\Http\Controllers\Admin\RecordsController;
+use App\Http\Controllers\Admin\UsersController;
+
+Route::prefix('admin')->middleware(['auth'])->group(function () {
+    Route::get('/records', [RecordsController::class, 'index'])->name('records.index');
+    Route::get('/users', [UsersController::class, 'index'])->name('users.index');
+});
+
+// Sample UI route for testing (can be removed or modified as needed)
+Route::get('/sample-ui', function () {
+    return view('sample-ui');
+});
+
+
+Route::post('/logout', [AuthManager::class, 'logout'])->name('logout');
