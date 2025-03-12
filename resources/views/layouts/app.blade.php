@@ -122,50 +122,54 @@
 
             <!-- Navigation Menu -->
             <div class="flex-1 mt-5">
-                <ul class="space-y-2">
-                    <li class="{{ Request::routeIs('home') ? 'bg-[#EBF8FD] text-black' : 'text-gray-600' }}">
-                        <a href="{{ route('home') }}" class="flex items-center gap-3 p-3 rounded-md">
-                            <i class="ph-bold ph-house-simple text-xl"></i>
-                            <span class="text-sm">Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="{{ Request::routeIs('inventory.index') ? 'bg-[#EBF8FD] text-black' : 'text-gray-600' }}">
-                        <a href="{{ route('inventory.index') }}" class="flex items-center gap-3 p-3 rounded-md">
-                            <i class="ph-bold ph-archive text-xl"></i>
-                            <span class="text-sm">Inventory Management</span>
-                        </a>
-                    </li>
-                    <li class="{{ Request::routeIs('records.index') ? 'bg-[#EBF8FD] text-black' : 'text-gray-600' }}">
-                        <a href="{{ route('records.index') }}" class="flex items-center gap-3 p-3 rounded-md">
-                            <i class="ph-bold ph-file-text text-xl"></i>
-                            <span class="text-sm">Records</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
+    <ul class="space-y-2">
+        <li class="{{ Request::routeIs('home') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
+            <a href="{{ route('home') }}" class="flex items-center gap-3 p-3 rounded-xl">
+                <i class="ph-bold ph-house-simple text-xl"></i>
+                <span class="text-sm">Dashboard</span>
+            </a>
+        </li>
+
+        <li class="{{ Request::routeIs('inventory.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
+            <a href="{{ route('inventory.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
+                <i class="ph-bold ph-archive text-xl"></i>
+                <span class="text-sm">Inventory Management</span>
+            </a>
+        </li>
+
+        <li class="{{ Request::routeIs('records.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
+            <a href="{{ route('records.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
+                <i class="ph-bold ph-file-text text-xl"></i>
+                <span class="text-sm">Records</span>
+            </a>
+        </li>
+    </ul>
+</div>
+
 
             <!-- Account Management -->
             <div class="mt-auto">
-                <p class="text-sm font-medium text-gray-500 uppercase mb-3">Account</p>
-                <ul class="space-y-2">
-                    <li class="{{ Request::routeIs('users.index') ? 'bg-[#EBF8FD] text-black' : 'text-gray-600' }}">
-                        <a href="{{ route('users.index') }}" class="flex items-center gap-3 p-3 rounded-md">
-                            <i class="ph-bold ph-users text-xl"></i>
-                            <span class="text-sm">Users Management</span>
-                        </a>
-                    </li>
+    <p class="text-sm font-medium text-gray-500 uppercase mb-3">Account</p>
+    <ul class="space-y-2">
+        <li class="{{ Request::routeIs('users.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
+            <a href="{{ route('users.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
+                <i class="ph-bold ph-users text-xl"></i>
+                <span class="text-sm">Users Management</span>
+            </a>
+        </li>
 
-                    <li>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                            @csrf
-                        </form>
-                        <button id="logout-btn" class="w-full flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
-                            <i class="ph-bold ph-sign-out text-xl"></i>
-                            <span class="text-sm">Logout</span>
-                        </button>
-                    </li>
-                </ul>
-            </div>
+        <li>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
+            <button id="logout-btn" class="w-full flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-xl">
+                <i class="ph-bold ph-sign-out text-xl"></i>
+                <span class="text-sm">Logout</span>
+            </button>
+        </li>
+    </ul>
+</div>
+
         </div>
 
         <!-- Main Content (Ensures Sidebar Does Not Overlap) -->
