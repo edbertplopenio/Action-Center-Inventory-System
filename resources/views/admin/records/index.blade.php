@@ -791,45 +791,42 @@
 <!-- Edit JS -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        // Function to update the form fields dynamically
+        let initialFormData = {};
+
+        // Function to populate the form fields dynamically
         function populateForm(recordData) {
             console.log("Populating Form with Data:", recordData); // Debugging
 
             document.getElementById("editRecordForm").action = `/admin/records/${recordData.id}`;
 
-            document.getElementById("editTitle").value = recordData.title ?? "";
-            document.getElementById("editFrequency").value = recordData.frequency ?? "";
-            document.getElementById("editRelatedDocuments").value = recordData.relatedDocuments ?? "";
-            document.getElementById("editDuplication").value = recordData.duplication ?? "";
-            document.getElementById("editStartYear").value = recordData.startYear || "";
-            document.getElementById("editEndYear").value = recordData.endYear || "";
-            document.getElementById("editTimeValue").value = recordData.timeValue === "P" ? "P" : "T";
-            document.getElementById("editVolume").value = recordData.volume ?? "";
+            // Store initial form data for comparison later
+            initialFormData = {
+                title: document.getElementById("editTitle").value = recordData.title ?? "",
+                frequency: document.getElementById("editFrequency").value = recordData.frequency ?? "",
+                relatedDocuments: document.getElementById("editRelatedDocuments").value = recordData.relatedDocuments ?? "",
+                duplication: document.getElementById("editDuplication").value = recordData.duplication ?? "",
+                startYear: document.getElementById("editStartYear").value = recordData.startYear || "",
+                endYear: document.getElementById("editEndYear").value = recordData.endYear || "",
+                timeValue: document.getElementById("editTimeValue").value = recordData.timeValue === "P" ? "P" : "T",
+                volume: document.getElementById("editVolume").value = recordData.volume ?? "",
+                medium: (document.getElementById("editMedium").value = recordData.medium ? recordData.medium.toLowerCase() : "paper"),
+                utilities: recordData.utility || "",
+                active: document.getElementById("editActive").value = recordData.retentionActive || "",
+                activeUnit: document.getElementById("editActiveUnit").value = recordData.retentionActiveUnit || "",
+                storage: document.getElementById("editStorage").value = recordData.retentionStorage || "",
+                storageUnit: document.getElementById("editStorageUnit").value = recordData.retentionStorageUnit || "",
+                restriction: document.getElementById("editRestriction").value = recordData.restriction ?? "open-access",
+                disposition: document.getElementById("editDisposition").value = recordData.disposition ?? "",
+                location: document.getElementById("editLocation").value = recordData.location ?? "",
+                grdsItem: document.getElementById("editGrdsItem").value = recordData.grdsItem ?? "",
+            };
 
-            // ✅ Correcting "Records Medium" Dropdown Value
-            let mediumDropdown = document.getElementById("editMedium");
-            let mediumValue = recordData.medium ? recordData.medium.toLowerCase() : "paper"; // Default to "paper" if empty
-
-            console.log("Medium Before Setting:", mediumValue); // Debugging
-
-            if (mediumValue === "paper" || mediumValue === "electronic") {
-                mediumDropdown.value = mediumValue;
-            } else {
-                mediumDropdown.value = "paper"; // Fallback to paper if value is incorrect
-            }
-
-            // Handle utility checkboxes
+            // Handle utilities (checkboxes)
             const utilities = (recordData.utility || "").split(",").map(u => u.trim().toLowerCase());
             document.getElementById("editAdm").checked = utilities.includes("adm");
             document.getElementById("editFiscal").checked = utilities.includes("f");
             document.getElementById("editLegal").checked = utilities.includes("l");
             document.getElementById("editArchival").checked = utilities.includes("a");
-
-            // Handle retention periods
-            document.getElementById("editActive").value = recordData.retentionActive || "";
-            document.getElementById("editActiveUnit").value = recordData.retentionActiveUnit || "";
-            document.getElementById("editStorage").value = recordData.retentionStorage || "";
-            document.getElementById("editStorageUnit").value = recordData.retentionStorageUnit || "";
 
             // Handle permanent selection
             if (recordData.retentionActiveUnit === "Permanent" || recordData.retentionStorageUnit === "Permanent") {
@@ -839,11 +836,42 @@
                 document.getElementById("editPermanent").checked = false;
                 toggleEditPermanent();
             }
+        }
 
-            document.getElementById("editRestriction").value = recordData.restriction ?? "open-access";
-            document.getElementById("editDisposition").value = recordData.disposition ?? "";
-            document.getElementById("editLocation").value = recordData.location ?? "";
-            document.getElementById("editGrdsItem").value = recordData.grdsItem ?? "";
+        // Function to compare form data with initial values
+        function hasChanges() {
+            let currentFormData = {
+                title: document.getElementById("editTitle").value,
+                frequency: document.getElementById("editFrequency").value,
+                relatedDocuments: document.getElementById("editRelatedDocuments").value,
+                duplication: document.getElementById("editDuplication").value,
+                startYear: document.getElementById("editStartYear").value,
+                endYear: document.getElementById("editEndYear").value,
+                timeValue: document.getElementById("editTimeValue").value,
+                volume: document.getElementById("editVolume").value,
+                medium: document.getElementById("editMedium").value,
+                utilities: getUtilityValues(),
+                active: document.getElementById("editActive").value,
+                activeUnit: document.getElementById("editActiveUnit").value,
+                storage: document.getElementById("editStorage").value,
+                storageUnit: document.getElementById("editStorageUnit").value,
+                restriction: document.getElementById("editRestriction").value,
+                disposition: document.getElementById("editDisposition").value,
+                location: document.getElementById("editLocation").value,
+                grdsItem: document.getElementById("editGrdsItem").value,
+            };
+
+            return JSON.stringify(currentFormData) !== JSON.stringify(initialFormData);
+        }
+
+        // Function to get the utility values from checkboxes
+        function getUtilityValues() {
+            let utilities = [];
+            if (document.getElementById("editAdm").checked) utilities.push("Adm");
+            if (document.getElementById("editFiscal").checked) utilities.push("F");
+            if (document.getElementById("editLegal").checked) utilities.push("L");
+            if (document.getElementById("editArchival").checked) utilities.push("A");
+            return utilities.join(",");
         }
 
         // Open edit modal and populate form
@@ -868,6 +896,17 @@
         // Handle form submission with AJAX
         $("#editRecordForm").on("submit", function (event) {
             event.preventDefault();
+
+            if (!hasChanges()) {
+                // Show SweetAlert if no changes were made
+                Swal.fire({
+                    icon: 'info',
+                    title: 'No Changes Made',
+                    text: 'You have not modified any fields.',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
 
             let form = $(this);
             let formData = form.serialize();
@@ -942,6 +981,7 @@
         }
     });
 </script>
+
 
 
 
