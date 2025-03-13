@@ -417,14 +417,6 @@
 </div>
 
 
-
-
-<script>
-
-
-</script>
-
-
 <!-- Edit JS -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
