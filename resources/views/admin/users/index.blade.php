@@ -231,7 +231,7 @@
             <h1 class="text-3xl text-left">User Management</h1>
             <div class="flex space-x-2 w-auto">
                 <button id="openModalBtn" class="px-6 py-2 min-w-[140px] max-w-[160px] bg-[#4cc9f0] text-white border-2 border-[#4cc9f0] rounded-full hover:bg-[#3fb3d1] mb-2 text-sm">
-                    Add Record
+                    Add User
                 </button>
                 <a href="{{ route('users.deactivated') }}">
                     <button class="px-6 py-2 min-w-[140px] max-w-[160px] bg-[#f0b84c] text-white border-2 border-[#f0b84c] rounded-full hover:bg-[#d19b3f] mb-2 text-sm">
@@ -1197,14 +1197,19 @@
 
 
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        console.log("✅ DOM fully loaded and parsed");
+        console.log("✅ Script Loaded");
 
+        // Modal related elements
         const modal = document.getElementById("myModal");
         const form = document.getElementById("userForm");
-        const requiredFields = ["first_name", "last_name", "email", "user_role", "department", "contact_number", "password", "password_confirmation"];
+        const closeUserModal = document.getElementById("closeUserModal");
+        const openModalBtn = document.getElementById("openModalBtn");
 
+        // Table DataTable initialization
         const userTable = $('#userTable').DataTable({
             "scrollY": "425px",  // Enable vertical scrolling with a fixed height
             "scrollCollapse": true, // Collapse height when content is less
@@ -1214,53 +1219,28 @@
             "ordering": true   // Enable sorting
         });
 
-
-        // Select the custom result modal elements
-        const resultModal = document.getElementById("resultModal");
-        const resultModalTitle = document.getElementById("resultModal-title");
-        const resultModalMessage = document.getElementById("resultModal-message");
-        const resultModalIcon = document.getElementById("resultModalIcon");
-        const resultModalIconPath = document.getElementById("resultModalIconPath");
-        const resultModalCloseBtn = document.getElementById("resultModalCloseBtn");
-
-        // Function to show the result modal
-        function showResultModal(title, message, isSuccess = true) {
-            resultModalTitle.textContent = title;
-            resultModalMessage.innerHTML = message;
-            resultModal.style.display = "block";
-            resultModal.style.zIndex = "50";
-
-            // Change the icon based on success/error
-            if (isSuccess) {
-                resultModalIcon.classList.remove("text-red-600", "bg-red-100");
-                resultModalIcon.classList.add("text-green-600", "bg-green-100");
-                resultModalIconPath.setAttribute("d", "M9 12l2 2l4 -4m-5 0a7 7 0 1 1 7 7a7 7 0 0 1 -7 -7Z");
-            } else {
-                resultModalIcon.classList.remove("text-green-600", "bg-green-100");
-                resultModalIcon.classList.add("text-red-600", "bg-red-100");
-                resultModalIconPath.setAttribute("d", "M6 18L18 6M6 6l12 12");
-            }
-        }
-
-        resultModalCloseBtn.addEventListener("click", function() {
-            resultModal.style.display = "none";
+        // Open modal when the "Add Record" button is clicked
+        openModalBtn.addEventListener("click", function() {
+            console.log("Opening modal...");
+            modal.style.display = "block";  // Show the modal
         });
 
-        document.getElementById("openModalBtn").addEventListener("click", function() {
-            modal.style.display = "block";
+        // Close modal when "Cancel" button is clicked
+        closeUserModal.addEventListener("click", function() {
+            console.log("Closing modal...");
+            modal.style.display = "none";  // Hide the modal
+            form.reset();  // Reset form inputs
         });
 
-        document.getElementById("closeUserModal").addEventListener("click", function() {
-            modal.style.display = "none";
-            form.reset();
-        });
-
+        // Submit the form for adding new user
         form.addEventListener("submit", async function(event) {
             event.preventDefault();
             let isValid = true;
             let formData = new FormData(form);
             let errorMessages = [];
 
+            // Validate required fields
+            const requiredFields = ["first_name", "last_name", "email", "user_role", "department", "contact_number", "password", "password_confirmation"];
             requiredFields.forEach(field => {
                 const input = document.getElementById(field);
                 if (input.value.trim() === "") {
@@ -1278,7 +1258,13 @@
             }
 
             if (!isValid) {
-                showResultModal("Validation Error", errorMessages.join("<br>"), false);
+                // Use SweetAlert to show error message
+                Swal.fire({
+                    title: "Validation Error",
+                    html: errorMessages.join("<br>"),
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
                 return;
             }
 
@@ -1295,40 +1281,49 @@
                 let result = await response.json();
 
                 if (response.ok) {
-                    showResultModal("Success!", "User added successfully!", true);
-                    setTimeout(() => {
+                    // Show success notification using SweetAlert
+                    Swal.fire({
+                        title: "Success!",
+                        text: "User added successfully!",
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
                         modal.style.display = "none";
                         form.reset();
-                    }, 1500);
-
-                    userTable.row.add([
-                        `${result.user.first_name} ${result.user.last_name}`,
-                        result.user.email,
-                        result.user.user_role,
-                        result.user.department || 'N/A',
-                        result.user.contact_number || 'N/A',
-                        `<button class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24">Edit</button>
-                     <button class="px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24">Deactivate</button>`
-                    ]).draw(false);
+                        userTable.row.add([
+                            `${result.user.first_name} ${result.user.last_name}`,
+                            result.user.email,
+                            result.user.user_role,
+                            result.user.department || 'N/A',
+                            result.user.contact_number || 'N/A',
+                            `<button class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24">Edit</button>
+                             <button class="px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24">Deactivate</button>`
+                        ]).draw(false);
+                    });
                 } else {
+                    // Show error notification using SweetAlert
                     let serverErrors = Object.values(result.errors).flat().join("<br>");
-                    showResultModal("Error", serverErrors || "Failed to add user.", false);
+                    Swal.fire({
+                        title: "Error",
+                        html: serverErrors || "Failed to add user.",
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
                 }
             } catch (error) {
-                showResultModal("Database Error", "Failed to add user. Please try again.", false);
+                // Show database error notification using SweetAlert
+                Swal.fire({
+                    title: "Database Error",
+                    text: "Failed to add user. Please try again.",
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
             }
         });
 
-        requiredFields.forEach(field => {
-            const input = document.getElementById(field);
-            input.addEventListener("input", function() {
-                if (input.value.trim() !== "") {
-                    input.classList.remove("border-red-500");
-                }
-            });
-        });
     });
 </script>
+
 
 
 

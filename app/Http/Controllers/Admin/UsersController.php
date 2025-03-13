@@ -29,15 +29,22 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate request
+        // Validate request with the correct email regex
         $validator = Validator::make($request->all(), [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'email' => ['required', 'regex:/^\d{2}-\d{5}@g\.batstate-u\.edu\.ph$/', 'unique:users,email'], // Correct email validation
             'user_role' => 'required|string',
             'department' => 'nullable|string|max:255',
-            'contact_number' => 'nullable|string|regex:/^[0-9]{10,15}$/',
-            'password' => 'required|min:6|confirmed',
+            'contact_number' => ['nullable', 'regex:/^(09|\+639)\d{9}$/'], // Contact number regex validation
+            'password' => [
+                'required',
+                'min:6',
+                'confirmed',
+                'regex:/[A-Z]/',  // At least one uppercase letter
+                'regex:/[0-9]/',  // At least one number
+                'regex:/[\W_]/',  // At least one special character
+            ],
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
     
@@ -88,15 +95,22 @@ class UsersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Validate request
+        // Validate request with the correct email regex
         $validator = Validator::make($request->all(), [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => "required|email|unique:users,email,$id",
+            'email' => "required|email|regex:/^\d{2}-\d{5}@g\.batstate-u\.edu\.ph$/|unique:users,email,$id", // Correct email validation
             'user_role' => 'required|string',
             'department' => 'nullable|string|max:255',
-            'contact_number' => 'nullable|string|regex:/^[0-9]{10,15}$/',
-            'password' => 'nullable|min:6|confirmed',
+            'contact_number' => ['nullable', 'regex:/^(09|\+639)\d{9}$/'], // Contact number regex validation
+            'password' => [
+                'nullable',
+                'min:6',
+                'confirmed',
+                'regex:/[A-Z]/',  // At least one uppercase letter
+                'regex:/[0-9]/',  // At least one number
+                'regex:/[\W_]/',  // At least one special character
+            ],
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Max size: 2MB
         ]);
 
@@ -174,57 +188,40 @@ class UsersController extends Controller
         ]);
     }
 
+    public function deactivatedIndex()
+    {
+        // Fetch only deactivated users
+        $users = User::where('status', 'deactivated')->get();
 
-
-
-public function deactivatedIndex()
-{
-    // Fetch only deactivated users
-    $users = User::where('status', 'deactivated')->get();
-
-    // Pass deactivated users to the Blade view
-    return view('admin.users.deactivated', compact('users'));
-}
-
-    
-
-
-
+        // Pass deactivated users to the Blade view
+        return view('admin.users.deactivated', compact('users'));
+    }
 
     public function deactivate($id)
-{
-    $user = User::find($id);
+    {
+        $user = User::find($id);
 
-    if (!$user) {
-        return response()->json(['success' => false, 'message' => 'User not found.']);
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not found.']);
+        }
+
+        // Update status to 'deactivated'
+        $user->update(['status' => 'deactivated']);
+
+        return response()->json(['success' => true, 'message' => 'User successfully deactivated.']);
     }
 
-    // Update status to 'deactivated'
-    $user->update(['status' => 'deactivated']);
+    public function activate($id)
+    {
+        $user = User::find($id);
 
-    return response()->json(['success' => true, 'message' => 'User successfully deactivated.']);
-}
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'User not found.'], 404);
+        }
 
+        // Update the status to 'active'
+        $user->update(['status' => 'active']);
 
-
-public function activate($id)
-{
-    $user = User::find($id);
-
-    if (!$user) {
-        return response()->json(['success' => false, 'message' => 'User not found.'], 404);
+        return response()->json(['success' => true, 'message' => 'User successfully activated.']);
     }
-
-    // Update the status to 'active'
-    $user->update(['status' => 'active']);
-
-    return response()->json(['success' => true, 'message' => 'User successfully activated.']);
 }
-
-
-
-
-}
-
-
-
