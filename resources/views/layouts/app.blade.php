@@ -79,9 +79,10 @@
                 </div>
 
                 <div>
-                    <p class="user-name text-xs font-medium text-gray-500 mb-1">{{ auth()->user()->first_name ?? 'First' }} {{ auth()->user()->last_name ?? 'Last' }}</p>
-                    <p class="user-email text-xs font-medium text-gray-500">{{ auth()->user()->email ?? 'user.email@example.com' }}</p>
-                </div>
+    <p class="user-name text-xs font-medium mb-1" style="color:rgb(48, 47, 46);">{{ auth()->user()->first_name ?? 'First' }} {{ auth()->user()->last_name ?? 'Last' }}</p>
+    <p class="user-email text-xs font-medium" style="color:rgb(0, 0, 0);">{{ auth()->user()->email ?? 'user.email@example.com' }}</p>
+</div>
+
             </div>
 
             <script>
@@ -93,7 +94,7 @@
 
                     // Set the default font size for both name and email
                     let defaultFontSizeName = 12; // Default font size for the name
-                    let defaultFontSizeEmail = 10; // Default font size for the email
+                    let defaultFontSizeEmail = 9; // Default font size for the email
 
                     // If the name is too long, reduce the font size
                     if (nameElement && nameElement.textContent.length > 20) {

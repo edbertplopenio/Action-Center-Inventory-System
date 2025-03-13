@@ -216,7 +216,7 @@
         </div>
 
         <!-- Table for displaying archived records -->
-        <div style="height: 500px; overflow-y: auto;">
+        <div style="height: 600px; overflow-y: auto;">
             <table id="myTable" class="display" style="width:100%">
                 <thead>
                     <tr>
