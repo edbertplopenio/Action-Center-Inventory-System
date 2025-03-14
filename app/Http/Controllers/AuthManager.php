@@ -22,57 +22,65 @@ class AuthManager extends Controller
         return view('registration');
     }
 
-    // Handle login request
-    public function loginPost(Request $request)
-    {
-        // Validate login data
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
+   // Handle login request
+public function loginPost(Request $request)
+{
+    // Validate login data using array format for regex rule
+    $request->validate([
+        'email'    => ['required', 'email', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/'],
+        'password' => 'required'
+    ]);
 
-        // Attempt to log in with credentials
-        $credentials = $request->only('email', 'password');
-        if (Auth::attempt($credentials)) {
-            // Redirect to home page on successful login
-            return redirect()->route('home')->with("status", "success");
-        }
+    // Attempt to log in with credentials
+    $credentials = $request->only('email', 'password');
 
-        // Redirect back with error if login fails
-        return redirect(route('login'))->with("status", "error");
+    if (Auth::attempt($credentials)) {
+        // Redirect to home page on successful login
+        return redirect()->route('home')->with("status", "login_success");
     }
+
+    // Redirect back with error if login fails
+    return redirect()->route('login')->with("status", "login_error");
+}
+
 
     // Handle registration request
     public function registrationPost(Request $request)
     {
-        // Validate registration data
+        // Validate registration data using array format for regex rules
         $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|confirmed', // Ensure password confirmation
-            'department' => 'required',
-            'cellphone_number' => 'required'
+            'first_name'     => 'required|string|max:100',
+            'last_name'      => 'required|string|max:100',
+            'email' => ['required', 'regex:/^\d{2}-\d{5}@g\\.batstate-u\\.edu\\.ph$/', 'unique:users,email'], // Email regex rule in array format
+            'password' => [
+                'required',
+                'confirmed',
+                'min:8',
+                'regex:/[A-Z]/',  // Ensures password contains at least one uppercase letter
+                'regex:/[0-9]/',  // Ensures password contains at least one number
+                'regex:/[\W_]/',  // Ensures password contains at least one special character
+            ],
+            'department'     => 'nullable|string|max:255',
+            'contact_number' => ['nullable', 'regex:/^(09|\+639)\d{9}$/'],  // Contact number regex rule in array format
         ]);
 
-        // Prepare data for new user
-        $data = [
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password), // Hash the password
-            'department' => $request->department,
-            'cellphone_number' => $request->cellphone_number
-        ];
+        // Create new user
+        $user = User::create([
+            'first_name'     => $request->first_name,
+            'last_name'      => $request->last_name,
+            'email'          => $request->email,
+            'password'       => Hash::make($request->password),
+            'department'     => $request->department,
+            'contact_number' => $request->contact_number,
+        ]);
 
-        // Create new user in the database
-        $user = User::create($data);
-
-        // Check if user creation was successful
+        // Inside registrationPost method
         if (!$user) {
-            return redirect(route('registration'))->with("status", "error");
+            return redirect()->route('registration')->with("status", "error");
         }
 
-        // Redirect to login page after successful registration
-        return redirect(route('login'))->with("status", "success");
+        // Use a unique status message for registration success
+        return redirect()->route('login')->with("status", "registration_success");
     }
 
     // Handle logout request
@@ -83,6 +91,6 @@ class AuthManager extends Controller
         Auth::logout();
 
         // Redirect to login page after logout
-        return redirect(route('login'));
+        return redirect()->route('login');
     }
 }

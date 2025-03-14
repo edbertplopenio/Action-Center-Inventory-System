@@ -1,82 +1,96 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthManager;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\Admin\RecordsController;
 use App\Http\Controllers\Admin\UsersController;
 
-
-// Route for the users list
-Route::get('/users', [UsersController::class, 'index'])->name('users.index');
-
-// Route for displaying a specific user's profile
-Route::get('/users/{id}', [UsersController::class, 'show'])->name('users.show');
-
-// Route for updating the user's profile
-Route::put('/users/{id}', [UsersController::class, 'update'])->name('users.update');
-
-
-// Authentication routes
+// ===================
+// ✅ Authentication Routes
+// ===================
 Route::get('/login', [AuthManager::class, 'login'])->name('login');
 Route::post('/login', [AuthManager::class, 'loginPost'])->name('login.post');
 Route::get('/registration', [AuthManager::class, 'registration'])->name('registration');
 Route::post('/registration', [AuthManager::class, 'registrationPost'])->name('registration.post');
-Route::get('/logout', [AuthManager::class, 'logout'])->name('logout');
 Route::post('/logout', [AuthManager::class, 'logout'])->name('logout');
 
-// Home route (Dashboard)
+// ===================
+// ✅ Home Route
+// ===================
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-// About page
-Route::get('/about-us', function () {
-    return view('about');
-});
-
-// Inventory routes
+// ===================
+// ✅ Inventory Routes
+// ===================
 Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
 
-// Admin Panel (Requires Authentication)
+// ===================
+// ✅ Admin Routes (Protected by Authentication Middleware)
+// ===================
 Route::prefix('admin')->middleware(['auth'])->group(function () {
+    // Records Management
     Route::get('/records', [RecordsController::class, 'index'])->name('records.index');
+    Route::post('/records/store', [RecordsController::class, 'store'])->name('records.store'); // ✅ Added Store Route for Records
+
+    // User Management
     Route::get('/users', [UsersController::class, 'index'])->name('users.index');
 });
 
-// Sample UI Route (For Testing)
+// ===================
+// ✅ Sample UI Route (For Testing UI Components, Optional)
+// ===================
 Route::get('/sample-ui', function () {
     return view('sample-ui');
 });
 
 
-
-
-// User Management Routes
 Route::prefix('admin')->middleware(['auth'])->group(function () {
-    // Route to list all users
+    Route::get('/records', [RecordsController::class, 'index'])->name('records.index');
+    Route::get('/records/archive', [RecordsController::class, 'archiveIndex'])->name('records.archive');
+    Route::post('/records/archive/{id}', [RecordsController::class, 'archive'])->name('records.archive.store');
+    Route::post('/records/restore/{id}', [RecordsController::class, 'restore'])->name('records.restore');
+});
+
+
+
+
+Route::post('/submit-record', [RecordsController::class, 'store'])->name('records.store');
+Route::post('/records/archive/{id}', [RecordsController::class, 'archive'])->name('records.archive.store');
+
+
+Route::get('/admin/records/archive', [RecordsController::class, 'archiveIndex'])->name('records.archive');
+
+
+Route::post('/admin/records/unarchive/{id}', [RecordsController::class, 'unarchive'])->name('records.unarchive');
+Route::put('/admin/records/{id}', [RecordsController::class, 'update'])->name('records.update');
+
+Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/users', [UsersController::class, 'index'])->name('users.index');
-
-    // Route to view a single user's profile
-    Route::get('/users/{id}/profile', [UsersController::class, 'show'])->name('users.show');
-
-    // Route to update user's profile
-    Route::put('/users/{id}/profile', [UsersController::class, 'update'])->name('users.update');
 });
 
 
-// Borrowing Slips Management Routes
-Route::prefix('borrowing-slip')->group(function () {
-    Route::get('/', [BorrowingSlipController::class, 'index'])->name('borrowing-slip.index');
-    Route::post('/', [BorrowingSlipController::class, 'store'])->name('borrowing-slip.store');
-    Route::get('/{id}/edit', [BorrowingSlipController::class, 'edit'])->name('borrowing-slip.edit');
-    Route::put('/{id}', [BorrowingSlipController::class, 'update'])->name('borrowing-slip.update');
-    Route::delete('/{id}', [BorrowingSlipController::class, 'destroy'])->name('borrowing-slip.destroy');
-});
+Route::post('/admin/users/store', [UsersController::class, 'store']);
 
-// Borrow Request Submission (Form Handling)
-Route::post('/borrow/submit', function (Illuminate\Http\Request $request) {
-    return back()->with('success', 'Borrowing request submitted.');
-})->name('borrow.submit');
+
+Route::get('/admin/users/{id}/edit', [UsersController::class, 'edit'])->name('users.edit');
+
+Route::put('/admin/users/{id}', [UsersController::class, 'update'])->name('users.update');
+
+
+
+
+
+Route::post('/admin/users/deactivate/{id}', [UsersController::class, 'deactivate'])->name('users.deactivate');
+
+Route::get('/admin/users/deactivated', [UsersController::class, 'deactivatedIndex'])->name('users.deactivated');
+
+
+Route::post('/admin/users/activate/{id}', [UsersController::class, 'activate'])->name('users.activate');
+
+
