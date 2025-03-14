@@ -146,7 +146,7 @@
                 <li>
                     <a href="{{ route('users.index') }}" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
                         <i class="ph-bold ph-users text-xl"></i>
-                        <span class="text-sm">Users Management</span>
+                        <span class="text-sm">Profile</span>
                     </a>
                 </li>
 

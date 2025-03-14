@@ -42,12 +42,17 @@
                                 <i class="ph-bold ph-archive text-xl"></i>
                                 <span class="flex-1 text-sm">Inventory Management</span>
                             </a>
+                            <a href="{{ route('borrowing-slip.index') }}">
+                    <i class="ph-bold ph-file-text text-xl"></i>
+                    Borrowing Slip
+                </a>
                         </li>
                         <li>
                             <a href="#" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
                                 <i class="ph-bold ph-file-text text-xl"></i>
                                 <span class="flex-1 text-sm">Records</span>
                             </a>
+            </div>
                         </li>
                     </ul>
                 </div>
@@ -62,7 +67,7 @@
                         <li>
                             <a href="#" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
                                 <i class="ph-bold ph-user text-xl"></i>
-                                <span class="flex-1 text-sm">User Management</span>
+                                <span class="flex-1 text-sm">Profile</span>
                             </a>
                         </li>
                         <li>

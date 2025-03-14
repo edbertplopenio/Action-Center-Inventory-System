@@ -17,7 +17,8 @@ class User extends Authenticatable
         'email',
         'password',
         'department',
-        'cellphone_number'
+        'cellphone_number',
+        'photo',  // Add the 'photo' column to the fillable array
     ];
 
     protected $hidden = [
