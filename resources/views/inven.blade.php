@@ -502,6 +502,7 @@
                 </table>
             </div>
         </div>
+        
         <!-- Office Supplies Tab -->
         <div id="office-supplies-content" class="tab-content">
             <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">Office Supplies</h3>
