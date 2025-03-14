@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Disaster Risk Reduction Inventory Dashboard')
+@section('title', 'Action Center')
 
 @section('content')
 
