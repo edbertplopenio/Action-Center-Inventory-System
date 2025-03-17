@@ -3,10 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthManager;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\Borrower\InventoryController as BorrowerInventoryController;  // Import Borrower Inventory Controller
+use App\Http\Controllers\Admin\InventoryController as AdminInventoryController;  // Import Admin Inventory Controller
+
+use App\Http\Controllers\Borrower\BorrowEquipmentController; 
 use App\Http\Controllers\Admin\RecordsController;
 use App\Http\Controllers\Admin\UsersController;
-
+use App\Http\Controllers\Borrower\ProfileController;  // Import the ProfileController
 // ===================
 // ✅ Authentication Routes
 // ===================
@@ -25,10 +28,17 @@ Route::get('/', function () {
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-// ===================
-// ✅ Inventory Routes
-// ===================
-Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
+
+// Admin Inventory Route
+Route::get('/admin/inventory', [AdminInventoryController::class, 'index'])->name('admin.inventory.index')->middleware('auth');
+
+// Borrower Inventory Route
+Route::get('/borrower/inventory', [BorrowerInventoryController::class, 'index'])->name('borrower.inventory.index')->middleware('auth');
+
+
+// Borrower Borrow Equipment Route
+Route::get('/borrower/borrow-equipment', [BorrowEquipmentController::class, 'index'])->name('borrower.borrow-equipment.index')->middleware('auth');
+
 
 // ===================
 // ✅ Admin Routes (Protected by Authentication Middleware)
@@ -95,3 +105,5 @@ Route::post('/admin/users/activate/{id}', [UsersController::class, 'activate'])-
 
 
 
+// Profile Route for Borrowers
+Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index')->middleware('auth');

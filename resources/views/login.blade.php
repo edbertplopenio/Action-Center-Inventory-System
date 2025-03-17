@@ -7,11 +7,11 @@
     <img class="w-full h-full object-cover" src="{{ asset('images/LoginPage.png') }}" alt="Background Image">
   </div>
 
-  
+
 
   <!-- Login Form Container (Blurred Background but Sharp Text) -->
   <div class="relative z-10 bg-red-600 bg-opacity-40 backdrop-blur-xl p-8 rounded-2xl shadow-lg w-96 flex flex-col items-center"
-       style="backdrop-filter: blur(10px);">
+    style="backdrop-filter: blur(10px);">
     <div class="flex justify-center items-center space-x-4">
       <img class="h-16 w-16" src="{{ asset('images/bsulogo.png') }}" alt="Logo">
       <img class="h-16 w-16" src="{{ asset('images/actioncenter.png') }}" alt="Logo">
@@ -56,14 +56,14 @@
         <label for="remember" class="ml-2 text-xs text-white">Remember me</label>
       </div>
 
-      <button type="submit" class="w-full flex justify-center rounded-md px-3 py-1 text-xs font-semibold text-white hover:bg-blue-600 focus:ring-2 focus:ring-red-600" style="background-color: #780000;">
-  Login
-</button>
+      <button type="submit" class="w-auto px-20 py-2 text-xs font-semibold text-white rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-red-600" style="background-color: #780000;">
+        Login
+      </button>
 
 
-    <p class="mt-4 text-center text-xs text-white">
-      Not a member? <a href="{{ route('registration') }}" class="font-semibold text-blue-400 hover:text-blue-500">Create an account</a>
-    </p>
+      <p class="mt-4 text-center text-xs text-white">
+        Not a member? <a href="{{ route('registration') }}" class="font-semibold text-blue-400 hover:text-blue-500">Create an account</a>
+      </p>
   </div>
 </div>
 
