@@ -56,8 +56,3 @@
 
 
 @endsection
-
-
-
-
-<!-- AYusin mo yung tbody scrollbar -->
