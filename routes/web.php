@@ -8,6 +8,7 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+// Authentication Routes
 Route::get('/login', [AuthManager::class, 'login'])->name('login');
 Route::post('/login', [AuthManager::class, 'loginPost'])->name('login.post');
 Route::get('/registration', [AuthManager::class, 'registration'])->name('registration');
@@ -15,34 +16,32 @@ Route::post('/registration', [AuthManager::class, 'registrationPost'])->name('re
 Route::get('/logout', [AuthManager::class, 'logout'])->name('logout');
 
 // Inventory Routes
-Route::get('/inven', [ItemController::class, 'index'])->name('inventory');
+Route::get('/inventory', [ItemController::class, 'index'])->name('inventory');
 
-// Item Routes
-Route::get('/item/create', [ItemController::class, 'create'])->name('items.create'); // Show the create form
-Route::post('/item/store', [ItemController::class, 'store'])->name('items.store'); // Store the new item
+// Item Management Routes
+Route::get('/item/create', [ItemController::class, 'create'])->name('items.create'); // Show create form
+Route::post('/item/store', [ItemController::class, 'store'])->name('items.store'); // Store new item
 
-// Route to check if the item exists
+// Check if item exists
 Route::post('/items/checkExistence', [ItemController::class, 'checkExistence'])->name('items.checkExistence');
 
-// Route to update an existing item
-Route::post('/items/update', [ItemController::class, 'update'])->name('items.update');
+// Update existing item
+Route::put('edit-item/{id}', [ItemController::class, 'update'])->name('items.update');
 
-// Archive and Restore Routes
-Route::post('/archive-item/{id}', [ItemController::class, 'archiveItem'])->name('archive-item');
-Route::post('/restore-item/{id}', [ItemController::class, 'restoreItem'])->name('restore-item');
 
-// Borrow page
+// Archive & Restore Routes (Soft Delete)
+// Correct route to archive an item
+Route::post('/archive-item/{id}', [ItemController::class, 'archive']);
+
+Route::post('/items/restore/{id}', [ItemController::class, 'restore'])->name('items.restore'); // Restore item
+Route::get('/items/archived', [ItemController::class, 'archivedItems'])->name('items.archived'); // View archived items
+
+// Borrow Page
 Route::get('/borrow', function () {
     return view('borrow');
 })->name('borrow');
 
-// User Management
+// User Management Page
 Route::get('/user_management', function () {
     return view('user_management');
-});
-
-// Edit Item Route
-Route::post('/edit-item/{id}', [ItemController::class, 'editItem'])->name('edit-item'); // Update item
-
-// Remove the unnecessary `get-item` route as it was undefined:
-# Route::get('/get-item/{id}', 'ItemController@getItem');
+})->name('user.management');
