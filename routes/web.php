@@ -25,16 +25,12 @@ Route::post('/item/store', [ItemController::class, 'store'])->name('items.store'
 // Check if item exists
 Route::post('/items/checkExistence', [ItemController::class, 'checkExistence'])->name('items.checkExistence');
 
-// Update existing item
-Route::put('edit-item/{id}', [ItemController::class, 'update'])->name('items.update');
-
-
 // Archive & Restore Routes (Soft Delete)
-// Correct route to archive an item
-Route::post('/archive-item/{id}', [ItemController::class, 'archive']);
+Route::post('/archive-item/{id}', [ItemController::class, 'archive'])->whereNumber('id')->name('items.archive'); // Archive an item
+Route::post('/items/restore/{id}', [ItemController::class, 'restore'])->whereNumber('id')->name('items.restore'); // Restore an archived item
 
-Route::post('/items/restore/{id}', [ItemController::class, 'restore'])->name('items.restore'); // Restore item
-Route::get('/items/archived', [ItemController::class, 'archivedItems'])->name('items.archived'); // View archived items
+// View archived items
+Route::get('/items/archived', [ItemController::class, 'archivedItems'])->name('items.archived');
 
 // Borrow Page
 Route::get('/borrow', function () {
@@ -45,3 +41,7 @@ Route::get('/borrow', function () {
 Route::get('/user_management', function () {
     return view('user_management');
 })->name('user.management');
+
+Route::get('/items/{id}/edit', [ItemController::class, 'edit']);
+Route::post('/items/update', [ItemController::class, 'update']);
+Route::put('/items/{id}', [ItemController::class, 'update'])->name('items.update');

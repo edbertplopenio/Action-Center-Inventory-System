@@ -247,7 +247,7 @@
                     <option value="DRRM Equipment">DRRM Equipment</option>    
                     <option value="Office Supplies">Office Supplies</option>
                     <option value="Emergency Kits">Emergency Kits</option>
-                    <option value="Other Item">Other Item</option>
+                    <option value="Other Items">Other Item</option>
                     </select>
                 </div>
             </div>
@@ -318,78 +318,140 @@
     </div>
 </div>
 
-<!-- Modal Overlay for Editing Item -->
+<!-- Edit Item Modal -->
+<div id="editModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden justify-center items-center">
+    <div class="bg-white p-6 rounded shadow-lg w-1/3">
+        <h2 class="text-lg font-bold mb-4">Edit Item</h2>
+
+        <form id="edit-form" method="POST" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+
+            <!-- Hidden field for item ID -->
+            <input type="hidden" id="edit-id" name="id">
+
+            <!-- Item Name (Read-Only) -->
+            <label for="edit-name">Item Name</label>
+            <input type="text" id="edit-name" name="name" class="w-full p-2 border rounded bg-gray-200" readonly>
+
+            <!-- Quantity (Editable) -->
+            <label for="edit-quantity">Quantity</label>
+            <input type="number" id="edit-quantity" name="quantity" class="w-full p-2 border rounded" required>
+
+            <!-- Unit (Read-Only) -->
+            <label for="edit-unit">Unit</label>
+            <input type="text" id="edit-unit" name="unit" class="w-full p-2 border rounded bg-gray-200" readonly>
+
+            <!-- Category (Read-Only) -->
+            <label for="edit-category">Category</label>
+            <input type="text" id="edit-category" name="category" class="w-full p-2 border rounded bg-gray-200" readonly>
+
+            <!-- Description (Editable) -->
+            <label for="edit-description">Description</label>
+            <textarea id="edit-description" name="description" class="w-full p-2 border rounded"></textarea>
+
+            <!-- Storage Location (Editable) -->
+            <label for="edit-storage_location">Storage Location</label>
+            <input type="text" id="edit-storage_location" name="storage_location" class="w-full p-2 border rounded" required>
+
+            <!-- Arrival Date (Editable) -->
+            <label for="edit-arrival_date">Arrival Date</label>
+            <input type="date" id="edit-arrival_date" name="arrival_date" class="w-full p-2 border rounded" required>
+
+            <!-- Date Purchased (Read-Only) -->
+            <label for="edit-date_purchased">Date Purchased</label>
+            <input type="date" id="edit-date_purchased" name="date_purchased" class="w-full p-2 border rounded bg-gray-200" readonly>
+
+            <!-- Status (Editable) -->
+            <label for="edit-status">Status</label>
+            <select id="edit-status" name="status" class="w-full p-2 border rounded">
+                <option value="Available">Available</option>
+                <option value="Unavailable">Unavailable</option>
+            </select>
+
+            <!-- Image Upload (Editable) -->
+            <label for="edit-image">Image</label>
+            <input type="file" id="edit-image" name="image" class="w-full p-2 border rounded">
+
+            <!-- Buttons -->
+            <div class="flex justify-end space-x-2 mt-4">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
+                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded" onclick="closeEditModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- here is the edit modal-->
+<!-- Edit Item Modal (Place before </body>) -->
 <div id="edit-item-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
     <div class="bg-white p-6 rounded-lg w-2/3 max-w-4xl">
         <h3 class="text-xl font-semibold mb-4">Edit Item</h3>
-        <!-- Update the form action dynamically using the correct route -->
-        editForm.action = '{{ route('items.update', '') }}/' + item.id; // Dynamic route with item ID
+        
+        <form id="edit-form" method="POST" enctype="multipart/form-data">
             @csrf
-            @method('PUT') <!-- This ensures the form uses the PUT method -->
+            @method('PUT')
 
-            <!-- Hidden input for item ID (to be populated dynamically via JavaScript) -->
+            <!-- Hidden input for item ID -->
             <input type="hidden" id="edit-item-id" name="id">
 
+            <!-- Read-Only Fields -->
             <div class="form-row">
                 <div>
                     <label for="edit-name" class="block text-sm font-semibold text-black mb-2">Item Name</label>
-                    <input type="text" id="edit-name" name="name" class="w-full p-2 border rounded-md bg-transparent text-black" required>
+                    <input type="text" id="edit-name" name="name" class="w-full p-2 border rounded-md bg-gray-200" readonly>
                 </div>
                 <div>
                     <label for="edit-category" class="block text-sm font-semibold text-black mb-2">Category</label>
-                    <select id="edit-category" name="category" class="w-full p-2 border rounded-md bg-transparent text-black" required>
-                        <option value="DRRM Equipment">DRRM Equipment</option>
-                        <option value="Office Supplies">Office Supplies</option>
-                        <option value="Emergency Kits">Emergency Kits</option>
-                        <option value="Other Item">Other Item</option>
-                    </select>
+                    <input type="text" id="edit-category" name="category" class="w-full p-2 border rounded-md bg-gray-200" readonly>
                 </div>
             </div>
 
             <div class="form-row">
-                <div>
-                    <label for="edit-quantity" class="block text-sm font-semibold text-black mb-2">Quantity</label>
-                    <input type="number" id="edit-quantity" name="quantity" class="w-full p-2 border rounded-md bg-transparent text-black" required>
-                </div>
                 <div>
                     <label for="edit-unit" class="block text-sm font-semibold text-black mb-2">Unit</label>
-                    <input type="text" id="edit-unit" name="unit" class="w-full p-2 border rounded-md bg-transparent text-black" required>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div>
-                    <label for="edit-description" class="block text-sm font-semibold text-black mb-2">Description</label>
-                    <input type="text" id="edit-description" name="description" class="w-full p-2 border rounded-md bg-transparent text-black" required>
-                </div>
-                <div>
-                    <label for="edit-storage_location" class="block text-sm font-semibold text-black mb-2">Storage Location</label>
-                    <input type="text" id="edit-storage_location" name="storage_location" class="w-full p-2 border rounded-md bg-transparent text-black" required>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div>
-                    <label for="edit-arrival_date" class="block text-sm font-semibold text-black mb-2">Arrival Date</label>
-                    <input type="date" id="edit-arrival_date" name="arrival_date" class="w-full p-2 border rounded-md bg-transparent text-black" required>
+                    <input type="text" id="edit-unit" name="unit" class="w-full p-2 border rounded-md bg-gray-200" readonly>
                 </div>
                 <div>
                     <label for="edit-date_purchased" class="block text-sm font-semibold text-black mb-2">Date Purchased</label>
-                    <input type="date" id="edit-date_purchased" name="date_purchased" class="w-full p-2 border rounded-md bg-transparent text-black" required>
+                    <input type="date" id="edit-date_purchased" name="date_purchased" class="w-full p-2 border rounded-md bg-gray-200" readonly>
+                </div>
+            </div>
+
+            <!-- Editable Fields -->
+            <div class="form-row">
+                <div>
+                    <label for="edit-quantity" class="block text-sm font-semibold text-black mb-2">Quantity</label>
+                    <input type="number" id="edit-quantity" name="quantity" class="w-full p-2 border rounded-md">
+                </div>
+                <div>
+                    <label for="edit-description" class="block text-sm font-semibold text-black mb-2">Description</label>
+                    <input type="text" id="edit-description" name="description" class="w-full p-2 border rounded-md">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div>
+                    <label for="edit-storage_location" class="block text-sm font-semibold text-black mb-2">Storage Location</label>
+                    <input type="text" id="edit-storage_location" name="storage_location" class="w-full p-2 border rounded-md">
+                </div>
+                <div>
+                    <label for="edit-arrival_date" class="block text-sm font-semibold text-black mb-2">Arrival Date</label>
+                    <input type="date" id="edit-arrival_date" name="arrival_date" class="w-full p-2 border rounded-md">
                 </div>
             </div>
 
             <div class="form-row">
                 <div>
                     <label for="edit-status" class="block text-sm font-semibold text-black mb-2">Status</label>
-                    <select id="edit-status" name="status" class="w-full p-2 border rounded-md bg-transparent text-black" required>
+                    <select id="edit-status" name="status" class="w-full p-2 border rounded-md">
                         <option value="Available">Available</option>
                         <option value="Unavailable">Unavailable</option>
                     </select>
                 </div>
                 <div>
                     <label for="edit-image" class="block text-sm font-semibold text-black mb-2">Image</label>
-                    <input type="file" id="image_url" name="image_url" accept="image/*" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
+                    <input type="file" id="edit-image" name="image" accept="image/*" class="w-full p-2 border rounded-md">
+                    <img id="current-image-preview" src="" class="mt-2 max-w-[100px] hidden">
                 </div>
             </div>
 
@@ -400,6 +462,7 @@
         </form>
     </div>
 </div>
+
 
 <!-- Main Content -->
 <div class="flex-1 p-6 relative">
@@ -454,12 +517,10 @@
                         <td>{{ $item->status }}</td>
                         <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
                         <td class="action-buttons">
-                            <!-- Edit button with the form that sends the request with the item ID -->
-                            <form action="{{ route('items.update', $item->id) }}" method="POST">
-                                @csrf
-                                @method('PUT')
-                                <button type="submit" class="edit-btn">Edit</button>
-                            </form>
+                            <button onclick="openEditModal({{ $item->id }})" class="edit-btn"> 
+                                Edit
+                            </button>
+
                             <button class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
                         </td>
                     </tr>
@@ -501,12 +562,10 @@
                         <td>{{ $item->status }}</td>
                         <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
                         <td class="action-buttons">
-                            <!-- Edit button with the form that sends the request with the item ID -->
-                            <form action="{{ route('items.update', $item->id) }}" method="POST">
-                                @csrf
-                                @method('PUT')
-                                <button type="submit" class="edit-btn">Edit</button>
-                            </form>
+                            <button onclick="openEditModal({{ $item->id }})" class="edit-btn"> 
+                                Edit
+                            </button>
+
                             <button class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
                         </td>
                     </tr>
@@ -548,12 +607,10 @@
                         <td>{{ $item->status }}</td>
                         <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
                         <td class="action-buttons">
-                            <!-- Edit button with the form that sends the request with the item ID -->
-                            <form action="{{ route('items.update', $item->id) }}" method="POST">
-                                @csrf
-                                @method('PUT')
-                                <button type="submit" class="edit-btn">Edit</button>
-                            </form>
+                            <button onclick="openEditModal({{ $item->id }})" class="edit-btn"> 
+                                Edit
+                            </button>
+
                             <button class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
                         </td>
                     </tr>
@@ -595,15 +652,12 @@
                         <td>{{ $item->status }}</td>
                         <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
                         <td class="action-buttons">
-                            <!-- Edit button with the form that sends the request with the item ID -->
-                            <form action="{{ route('items.update', $item->id) }}" method="POST">
-                                @csrf
-                                @method('PUT')
-                                <button type="submit" class="edit-btn">Edit</button>
-                            </form>
+                            <button onclick="openEditModal({{ $item->id }})" class="edit-btn"> 
+                                Edit
+                            </button>
+
                             <button class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
                         </td>
-                    </tr>
                 @endforeach
             </tbody>
         </table>
@@ -642,12 +696,10 @@
                         <td>{{ $item->status }}</td>
                         <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
                         <td class="action-buttons">
-                            <!-- Edit button with the form that sends the request with the item ID -->
-                            <form action="{{ route('items.update', $item->id) }}" method="POST">
-                                @csrf
-                                @method('PUT')
-                                <button type="submit" class="edit-btn">Edit</button>
-                            </form>
+                            <button onclick="openEditModal({{ $item->id }})" class="edit-btn"> 
+                                Edit
+                            </button>
+
                             <button class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
                         </td>
                     </tr>
@@ -824,7 +876,7 @@ function restoreItem(itemId) {
                 if (response.exists) {
                     // If the item exists, update the quantity and arrival date
                     $.ajax({
-                        url: "{{ route('items.update') }}", // Update route
+                        url: "{{ route('items.update', ['id' => '__ID__']) }}".replace('__ID__', itemId),
                         method: 'POST',
                         data: {
                             _token: '{{ csrf_token() }}',
@@ -871,28 +923,83 @@ function restoreItem(itemId) {
 
 <!-- JavaScript for Handling Item Edit Logic -->
 <script>
-    function openEditModal(item) {
-    // Populate the form fields with the item's data
-    document.getElementById('edit-item-id').value = item.id; // Item ID
-    document.getElementById('edit-name').value = item.name; // Item Name
-    document.getElementById('edit-category').value = item.category; // Category
-    document.getElementById('edit-quantity').value = item.quantity; // Quantity
-    document.getElementById('edit-unit').value = item.unit; // Unit
-    document.getElementById('edit-description').value = item.description; // Description
-    document.getElementById('edit-storage_location').value = item.storage_location; // Storage Location
-    document.getElementById('edit-arrival_date').value = item.arrival_date; // Arrival Date
-    document.getElementById('edit-date_purchased').value = item.date_purchased; // Date Purchased
-    document.getElementById('edit-status').value = item.status; // Status
+function openEditModal(itemId) {
+    console.log("Fetching item with ID:", itemId); // Debugging log
 
-    // Set the form's action URL with the item ID
-    const editForm = document.getElementById('edit-item-form');
-    editForm.action = '/edit-item/' + item.id; // Dynamic route with item ID
+    fetch(`/items/${itemId}/edit`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Failed to fetch item data. Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(item => {
+            console.log("Fetched item data:", item); // Debugging log
 
-    // Show the modal with all the fields
-    document.getElementById('edit-item-overlay').classList.remove('hidden');
+            // Populate form fields
+            document.getElementById('edit-item-id').value = item.id;
+            document.getElementById('edit-name').value = item.name;
+            document.getElementById('edit-category').value = item.category;
+            document.getElementById('edit-unit').value = item.unit;
+            document.getElementById('edit-date_purchased').value = item.date_purchased;
+            document.getElementById('edit-quantity').value = item.quantity;
+            document.getElementById('edit-description').value = item.description;
+            document.getElementById('edit-storage_location').value = item.storage_location;
+            document.getElementById('edit-arrival_date').value = item.arrival_date;
+            document.getElementById('edit-status').value = item.status;
+
+            // Set form action dynamically
+            document.getElementById('edit-form').action = `/items/${item.id}`;
+
+            // Show the modal
+            document.getElementById('edit-item-overlay').classList.remove('hidden');
+        })
+        .catch(error => {
+            console.error("Error fetching item:", error);
+            alert('Failed to fetch item data.');
+        });
 }
 
+// Close modal when clicking cancel
+document.getElementById('edit-cancel-btn').addEventListener('click', function() {
+    document.getElementById('edit-item-overlay').classList.add('hidden');
+});
 
+$(document).on('click', '.editButton', function () {
+    var itemId = $(this).data('id'); // Get item ID from button
+
+    $.ajax({
+        url: '/items/' + itemId + '/edit', // Fetch item data
+        type: 'GET',
+        success: function (data) {
+            if (data.success) {
+                $('#editItemModal').modal('show'); // Show the modal
+
+                // Populate fields (only editable fields)
+                $('#editQuantity').val(data.item.quantity);
+                $('#editDescription').val(data.item.description);
+                $('#editStorageLocation').val(data.item.storage_location);
+                $('#editArrivalDate').val(data.item.arrival_date);
+                $('#editStatus').val(data.item.status);
+                
+                // Image preview
+                if (data.item.image) {
+                    $('#currentImage').attr('src', '/storage/' + data.item.image).show();
+                } else {
+                    $('#currentImage').hide();
+                }
+
+                // Hidden field for item ID
+                $('#editItemId').val(data.item.id);
+            } else {
+                alert('Failed to fetch item data.');
+            }
+        },
+        error: function () {
+            alert('Error fetching item data.');
+        }
+    });
+});
 
 
 // Event delegation for edit buttons
@@ -1021,32 +1128,43 @@ document.addEventListener('click', function (e) {
 </script>
 
 <script>
-   // Open edit modal and populate fields
-   function openEditModal(item) {
-    // Populate the form fields with the item's data
-    document.getElementById('edit-item-id').value = item.id; // Item ID
-    document.getElementById('edit-name').value = item.name; // Item Name
-    document.getElementById('edit-category').value = item.category; // Category
-    document.getElementById('edit-quantity').value = item.quantity; // Quantity
-    document.getElementById('edit-unit').value = item.unit; // Unit
-    document.getElementById('edit-description').value = item.description; // Description
-    document.getElementById('edit-storage_location').value = item.storage_location; // Storage Location
-    document.getElementById('edit-arrival_date').value = item.arrival_date; // Arrival Date
-    document.getElementById('edit-date_purchased').value = item.date_purchased; // Date Purchased
-    document.getElementById('edit-status').value = item.status; // Status
+    
+    document.addEventListener("DOMContentLoaded", () => {
+    const editButtons = document.querySelectorAll(".edit-btn");
+    const editForm = document.getElementById("edit-item-overlay");
+    
+    editButtons.forEach(button => {
+        button.addEventListener("click", function() {
+            const item = JSON.parse(this.getAttribute("data-item")); // Extract item data
 
-    // Set the form's action URL dynamically with the item ID
-    const editForm = document.getElementById('edit-item-form');
-    editForm.action = '/edit-item/' + item.id; // Dynamic route with item ID
+            // Set form action dynamically
+            document.getElementById("edit-item-form").action = `{{ route('items.update', '') }}/${item.id}`;
+            document.getElementById("edit-item-id").value = item.id;
+            document.getElementById("edit-name").value = item.name;
+            document.getElementById("edit-category").value = item.category;
+            document.getElementById("edit-quantity").value = item.quantity;
+            document.getElementById("edit-unit").value = item.unit;
+            document.getElementById("edit-description").value = item.description;
+            document.getElementById("edit-storage_location").value = item.storage_location;
+            document.getElementById("edit-arrival_date").value = item.arrival_date;
+            document.getElementById("edit-date_purchased").value = item.date_purchased;
+            document.getElementById("edit-status").value = item.status;
+            
+            // Handle image (optional: show preview if needed)
+            if (item.image_url) {
+                document.getElementById("image_url").required = false; // Make optional if image already exists
+            }
 
-    // Show the modal with all the fields
-    document.getElementById('edit-item-overlay').classList.remove('hidden');
-}
+            editForm.classList.remove("hidden"); // Show modal
+        });
+    });
 
+    // Close the modal when clicking the cancel button
+    document.getElementById("edit-cancel-btn").addEventListener("click", () => {
+        editForm.classList.add("hidden");
+    });
+});
 
-
-
-// Event delegation for edit buttons
 // Event delegation for edit buttons
 document.addEventListener('click', function (e) {
     if (e.target && e.target.classList.contains('edit-btn')) {
@@ -1132,5 +1250,133 @@ document.addEventListener('click', function (e) {
     });
 });
 </script>
+<script>
+    $(document).ready(function () {
+        $(".edit-btn").click(function () {
+            let itemId = $(this).data("id");
+
+            // Fetch item details via AJAX
+            $.ajax({
+                url: "/items/" + itemId + "/edit",
+                type: "GET",
+                success: function (data) {
+                    $("#editItemId").val(data.id);
+                    $("#editItemName").val(data.name);
+                    $("#editItemQuantity").val(data.quantity);
+                    $("#editModal").removeClass("hidden");
+                },
+                error: function () {
+                    alert("Failed to fetch item data.");
+                }
+            });
+        });
+
+        // Close modal
+        $("#closeModal").click(function () {
+            $("#editModal").addClass("hidden");
+        });
+
+        // Handle form submission
+        $("#editForm").submit(function (e) {
+            e.preventDefault();
+
+            let itemId = $("#editItemId").val();
+            let itemName = $("#editItemName").val();
+            let itemQuantity = $("#editItemQuantity").val();
+
+            $.ajax({
+                url: "/items/" + itemId,
+                type: "PUT",
+                data: {
+                    _token: $("meta[name='csrf-token']").attr("content"),
+                    name: itemName,
+                    quantity: itemQuantity
+                },
+                success: function () {
+                    alert("Item updated successfully!");
+                    location.reload();
+                },
+                error: function () {
+                    alert("Failed to update item.");
+                }
+            });
+        });
+    });
+</script>
+
+<!-- ✅ JavaScript to Handle Edit Function -->
+<script>
+$(document).ready(function () {
+    // Open edit modal and fetch item data
+    $(document).on('click', '.editButton', function () {
+        var itemId = $(this).data('id');
+
+        $.ajax({
+            url: '/items/' + itemId + '/edit',
+            type: 'GET',
+            success: function (data) {
+                if (data.success) {
+                    $('#edit-item-overlay').removeClass('hidden'); // Show modal
+                    
+                    // Populate Read-Only Fields
+                    $('#edit-item-id').val(data.item.id);
+                    $('#edit-name').val(data.item.name);
+                    $('#edit-category').val(data.item.category);
+                    $('#edit-unit').val(data.item.unit);
+                    $('#edit-date_purchased').val(data.item.date_purchased);
+
+                    // Populate Editable Fields
+                    $('#edit-quantity').val(data.item.quantity);
+                    $('#edit-description').val(data.item.description);
+                    $('#edit-storage_location').val(data.item.storage_location);
+                    $('#edit-arrival_date').val(data.item.arrival_date);
+                    $('#edit-status').val(data.item.status);
+
+                    // Show current image
+                    if (data.item.image_url) {
+                        $('#current-image-preview').attr('src', '/storage/' + data.item.image_url).removeClass('hidden');
+                    } else {
+                        $('#current-image-preview').addClass('hidden');
+                    }
+                } else {
+                    alert('Failed to fetch item data.');
+                }
+            },
+            error: function () {
+                alert('Error fetching item data.');
+            }
+        });
+    });
+
+    // Submit Edit Form via AJAX
+    $('#edit-form').submit(function (e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: '/items/' + $('#edit-item-id').val(),
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                alert(response.message);
+                location.reload(); // Refresh page after update
+            },
+            error: function () {
+                alert('Error updating item.');
+            }
+        });
+    });
+
+    // Close modal when clicking Cancel
+    $('#edit-cancel-btn').click(function () {
+        $('#edit-item-overlay').addClass('hidden');
+    });
+});
+
+
+</script>
+
 </body>
 </html>

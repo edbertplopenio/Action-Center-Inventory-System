@@ -8,7 +8,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Item extends Model
 {
-    use HasFactory, SoftDeletes; // ✅ Enables soft deletes
+    use HasFactory;
+    
+    protected $table = 'items'; // Ensure table name matches database
+    use HasFactory, SoftDeletes; // Enables soft deletes
 
     // Define the fields that are mass assignable
     protected $fillable = [
@@ -26,6 +29,11 @@ class Item extends Model
 
     // Enable soft delete timestamp
     protected $dates = ['deleted_at'];
+
+    /**
+     * The primary key associated with the table.
+     */
+    protected $primaryKey = 'id'; // Ensures that Laravel uses 'id' as the primary key
 
     /**
      * Scope to get only non-archived (active) items.
@@ -58,4 +66,14 @@ class Item extends Model
     {
         return $this->delete();
     }
+
+    /**
+     * Ensure the 'id' field is returned when the object is accessed.
+     */
+    public function getIdAttribute()
+    {
+        return $this->attributes['id'];
+    }
+
+    
 }
