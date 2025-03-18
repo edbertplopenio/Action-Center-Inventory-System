@@ -1,3 +1,6 @@
+Index blade:
+
+
 @extends('layouts.app')
 
 @section('title', 'Borrowing Slip')

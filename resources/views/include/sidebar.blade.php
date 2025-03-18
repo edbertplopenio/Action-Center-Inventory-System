@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,13 +15,17 @@
 
     <!-- Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
 
     <!-- Custom Styles -->
     <style>
-        /* Sidebar Styles */
         .sidebar {
-            width: 20rem; /* Increased sidebar width */
-            height: 100vh; /* Ensure full height */
+            width: 20rem; /* Sidebar width */
+            height: 100vh;
             background-color: white;
             box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
             position: fixed;
@@ -31,11 +34,11 @@
             padding-top: 1rem;
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Ensures space distribution */
+            justify-content: space-between;
         }
 
         .main-content {
-            margin-left: 20rem; /* Adjusted margin to match the increased sidebar width */
+            margin-left: 20rem;
             padding: 2rem;
         }
 
@@ -50,21 +53,21 @@
         }
 
         .profile-section img {
-            width: 60px; /* Increased image size */
+            width: 60px;
             height: 60px;
             object-fit: cover;
             border-radius: 50%;
-            margin-bottom: 10px; /* Added space between image and text */
+            margin-bottom: 10px;
         }
 
         .profile-section div p {
             margin: 0;
-            font-size: 1rem; /* Increased font size */
+            font-size: 1rem;
             color: #6B7280;
         }
 
         .profile-section div p:first-child {
-            font-weight: bold; /* Emphasize the user's name */
+            font-weight: bold;
         }
 
         /* Sidebar Links */
@@ -87,13 +90,13 @@
             margin-right: 10px;
         }
 
-        /* Footer section for logout */
+        /* Logout Section */
         .logout-section {
             margin-top: auto;
             padding-top: 1rem;
         }
 
-        /* Button Styles */
+        /* Logout Button */
         #logout-btn {
             width: 100%;
             display: flex;
@@ -110,10 +113,10 @@
             color: black;
         }
 
-        /* Ensure the sidebar is responsive */
+        /* Responsive Sidebar */
         @media screen and (max-width: 768px) {
             .sidebar {
-                width: 16rem; /* Adjust width for smaller screens */
+                width: 16rem;
             }
 
             .main-content {
@@ -122,17 +125,18 @@
         }
     </style>
 </head>
-
 <body class="font-inter bg-gray-100">
 
     <div class="flex">
         <!-- Sidebar -->
         <div class="sidebar">
             <!-- Profile Section -->
-            <div class="profile-section">
+            <div class="profile-section px-4">
                 <div class="w-12 h-12 rounded-full overflow-hidden">
-                    <img src="{{ asset('images/users/user-placeholder.jpg') }}" alt="User Image" class="w-full object-cover" onerror="this.style.display='none'; showInitialsWithRandomColor();" />
-                    <div id="initials-avatar" class="w-full h-full text-white flex items-center justify-center text-xs font-bold" style="display:none;">
+                    <img src="{{ asset('images/users/user-placeholder.jpg') }}" alt="User Image"
+                        class="w-full object-cover" onerror="this.style.display='none'; showInitialsWithRandomColor();" />
+                    <div id="initials-avatar" class="w-full h-full text-white flex items-center justify-center text-xs font-bold"
+                        style="display:none;">
                         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}{{ strtoupper(substr(auth()->user()->name, strpos(auth()->user()->name, ' ') + 1, 1)) }}
                     </div>
                 </div>
@@ -143,7 +147,7 @@
             </div>
 
             <!-- Navigation Links -->
-            <div class="sidebar-links">
+            <div class="sidebar-links px-4">
                 <a href="{{ route('home') }}">
                     <i class="ph-bold ph-house-simple text-xl"></i>
                     Dashboard
@@ -158,23 +162,25 @@
                 </a>
             </div>
 
-            <!-- Logout Section -->
-            <div class="logout-section">
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+<!-- Account Section -->
+<div class="mt-auto px-4">
+    <div class="space-y-5">
+        <p class="text-sm font-medium text-gray-500 uppercase mb-3">Account</p>
+        <ul class="space-y-2">
+            <!-- Logout Button -->
+            <li>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
                     @csrf
                 </form>
-                <button id="logout-btn" class="flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-md">
+                <button type="button" onclick="document.getElementById('logout-form').submit();"
+                    class="w-full flex items-center gap-3 p-3 text-gray-700 hover:bg-gray-100 hover:text-red-600 rounded-md">
                     <i class="ph-bold ph-sign-out text-xl"></i>
-                    Logout
+                    <span class="flex-1 text-sm">Logout</span>
                 </button>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="main-content">
-            @yield('content')
-        </div>
+            </li>
+        </ul>
     </div>
+</div>
 
     <script>
         // Fallback for initials when no image is provided
@@ -201,5 +207,4 @@
     </script>
 
 </body>
-
 </html>
