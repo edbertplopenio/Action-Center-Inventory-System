@@ -13,6 +13,8 @@ use App\Http\Controllers\Borrower\ProfileController;  // Import the ProfileContr
 
 use App\Http\Controllers\Admin\InventoryRequestController;
 
+
+
 // ===================
 // ✅ Authentication Routes
 // ===================
@@ -117,3 +119,15 @@ Route::get('/borrower/inventory', [InventoryController::class, 'index'])->name('
 
 // Borrowing Request
 Route::get('/borrowing-request', [InventoryRequestController::class, 'index'])->name('admin.borrowing-request.index');
+
+use App\Http\Controllers\Borrower\BorrowedItemsController;
+
+// Borrowed Equipment Routes (Borrowers)
+Route::prefix('borrower')->middleware(['auth'])->group(function () {
+    Route::get('/borrow-equipment', [BorrowedItemsController::class, 'index'])->name('borrower.borrow-equipment.index');
+    Route::get('/borrow-equipment/create', [BorrowedItemsController::class, 'create'])->name('borrower.borrow-equipment.create');
+    Route::post('/borrow-equipment', [BorrowedItemsController::class, 'store'])->name('borrower.borrow-equipment.store');
+    Route::get('/borrow-equipment/{borrowedItem}/edit', [BorrowedItemsController::class, 'edit'])->name('borrower.borrow-equipment.edit');
+    Route::put('/borrow-equipment/{borrowedItem}', [BorrowedItemsController::class, 'update'])->name('borrower.borrow-equipment.update');
+    Route::delete('/borrow-equipment/{borrowedItem}', [BorrowedItemsController::class, 'destroy'])->name('borrower.borrow-equipment.destroy');
+});

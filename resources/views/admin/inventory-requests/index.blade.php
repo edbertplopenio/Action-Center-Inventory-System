@@ -37,7 +37,7 @@
     <div class="bg-white p-6 shadow-lg rounded-lg h-full">
         <!-- Title and Button inside this div -->
         <div class="flex justify-between items-center mb-1 pt-0">
-            <h1 class="text-3xl text-left">Borrow Request</h1>
+            <h1 class="text-3xl text-left">Borrowing Request</h1>
             
         </div>
 
