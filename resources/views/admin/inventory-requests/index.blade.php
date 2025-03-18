@@ -18,20 +18,32 @@
 
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
 
+
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
 
 <!-- Include SweetAlert Library -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Include SweetAlert Library -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
 
 </head>
 
 <div class="mx-auto p-2" style="width: 1220px; height: 700px; font-family: 'Inter', sans-serif;">
-    <div class="bg-white p-6 shadow-lg rounded-lg h-full text-center">
-        <!-- Centered Title and Subtitle -->
-        <h1 class="text-3xl">Borrow Equipment</h1>
-        <h2 class="text-xl text-gray-600">ACTION Center</h2>
+
+
+    <div class="bg-white p-6 shadow-lg rounded-lg h-full">
+        <!-- Title and Button inside this div -->
+        <div class="flex justify-between items-center mb-1 pt-0">
+            <h1 class="text-3xl text-left">Borrow Request</h1>
+            
+        </div>
+
+
+
+
     </div>
 </div>
 

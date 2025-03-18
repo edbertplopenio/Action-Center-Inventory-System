@@ -5,11 +5,14 @@ use App\Http\Controllers\AuthManager;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Borrower\InventoryController as BorrowerInventoryController;  // Import Borrower Inventory Controller
 use App\Http\Controllers\Admin\InventoryController as AdminInventoryController;  // Import Admin Inventory Controller
-
+use App\Http\Controllers\Borrower\InventoryController;
 use App\Http\Controllers\Borrower\BorrowEquipmentController; 
 use App\Http\Controllers\Admin\RecordsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Borrower\ProfileController;  // Import the ProfileController
+
+use App\Http\Controllers\Admin\InventoryRequestController;
+
 // ===================
 // ✅ Authentication Routes
 // ===================
@@ -107,3 +110,10 @@ Route::post('/admin/users/activate/{id}', [UsersController::class, 'activate'])-
 
 // Profile Route for Borrowers
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index')->middleware('auth');
+
+
+
+Route::get('/borrower/inventory', [InventoryController::class, 'index'])->name('borrower.inventory.index');
+
+// Borrowing Request
+Route::get('/borrowing-request', [InventoryRequestController::class, 'index'])->name('admin.borrowing-request.index');
