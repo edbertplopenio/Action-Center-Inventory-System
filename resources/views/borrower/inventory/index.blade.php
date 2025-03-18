@@ -9,7 +9,7 @@
 
     <!-- Add Google Fonts link for Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    
+
     <!-- Include DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
 
@@ -191,37 +191,35 @@
                         <th>Quantity</th>
                         <th>Unit</th>
                         <th>Description</th>
-                        <th>Storage Location</th>
                         <th>Status</th>
                         <th>Image</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($items as $item)
-                    <tr class="item-row cursor-pointer"
-                        data-id="{{ $item->id }}"
-                        data-name="{{ $item->name }}"
-                        data-category="{{ $item->category }}"
-                        data-quantity="{{ $item->quantity }}"
-                        data-unit="{{ $item->unit }}"
-                        data-description="{{ $item->description }}"
-                        data-storage-location="{{ $item->storage_location }}"
-                        data-status="{{ $item->status }}"
-                        data-image-url="{{ $item->image_url }}">
-                        
+                    <tr>
                         <td>{{ $item->name }}</td>
                         <td>{{ $item->category }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->description }}</td>
-                        <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->status }}</td>
                         <td>
                             @if($item->image_url)
-                                <img src="{{ $item->image_url }}" alt="Item Image" style="width: 50px; height: 50px;">
+                            <img src="{{ $item->image_url }}" alt="Item Image" style="width: 50px; height: 50px;">
                             @else
-                                No Image
+                            No Image
                             @endif
+                        </td>
+                        <td>
+                            <button
+                                class="borrow-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] 
+    focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24"
+                                onclick="borrowItem('{{ $item->id }}')">
+                                Borrow
+                            </button>
+
                         </td>
                     </tr>
                     @empty
@@ -236,27 +234,191 @@
 </div>
 
 
+
+
+
+
+
+<!-- Modal -->
+
+
+<!-- Borrow Confirmation Modal -->
+<div class="relative z-10 hidden" id="confirmationModal" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-gray-500/75 transition-opacity"></div>
+    <div class="fixed inset-0 z-10 flex items-center justify-center">
+        <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-yellow-100 sm:mx-0 sm:size-10">
+                        <svg class="size-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                        </svg>
+                    </div>
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <h3 class="text-base font-semibold text-gray-900">Confirm Borrow</h3>
+                        <p class="mt-2 text-sm text-gray-500">Are you sure you want to borrow this item?</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                <button type="button" class="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-blue-500 sm:ml-3 sm:w-auto" id="confirmBorrowBtn">Yes, Borrow</button>
+                <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto" id="cancelBorrowBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Borrow Item Modal -->
+<div class="relative z-10 hidden" id="borrowModal" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-black/50 transition-opacity"></div>
+    <div class="fixed inset-0 z-10 flex items-center justify-center">
+        <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md">
+            <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Enter Borrow Details</h3>
+
+                <!-- Modal Form -->
+                <form id="borrowForm">
+                    <div class="space-y-4">
+                        <!-- Borrow Date -->
+                        <div>
+                            <label for="borrow-date" class="block text-xs font-medium text-gray-900">Borrow Date</label>
+                            <input type="date" id="borrow-date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                        </div>
+
+                        <!-- Due Date -->
+                        <div>
+                            <label for="due-date" class="block text-xs font-medium text-gray-900">Due Date</label>
+                            <input type="date" id="due-date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                        </div>
+
+                        <!-- Quantity (Two-Column Layout) -->
+                        <div>
+                            <label class="block text-xs font-medium text-gray-900">Quantity</label>
+                            <div class="grid grid-cols-2 gap-4 mt-1">
+                                <!-- Current Quantity -->
+                                <div class="flex flex-col">
+                                    <span class="text-xs font-medium text-gray-600">Current Quantity</span>
+                                    <input type="text" id="current-quantity" class="py-1.5 px-3 border border-gray-300 rounded-md bg-gray-100 text-center sm:text-xs" readonly>
+                                </div>
+
+                                <!-- Quantity to Borrow -->
+                                <div class="flex flex-col">
+                                    <span class="text-xs font-medium text-gray-600">Quantity to Borrow</span>
+                                    <input type="number" id="borrow-quantity" min="1" class="py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs text-center">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hidden field for Item ID -->
+                    <input type="hidden" id="borrow-item-id">
+
+                    <!-- Action Buttons -->
+                    <div class="mt-6 flex items-center justify-end gap-x-6">
+                        <button type="button" class="text-xs font-semibold text-gray-900" id="closeBorrowModalBtn">Cancel</button>
+                        <button type="submit" class="rounded-md bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-500">Confirm Borrow</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script>
-$(document).ready(function() {
-    let table = $('#myTable');
+document.addEventListener("DOMContentLoaded", function () {
+    const confirmationModal = document.getElementById("confirmationModal");
+    const borrowModal = document.getElementById("borrowModal");
 
-    // Remove "No records found" row if present
-    if (table.find("tbody tr").length === 1 && table.find("#noRecordsRow").length === 1) {
-        table.find("#noRecordsRow").remove(); // Remove "No records found" row
-    }
+    const confirmBorrowBtn = document.getElementById("confirmBorrowBtn");
+    const cancelBorrowBtn = document.getElementById("cancelBorrowBtn");
+    const closeBorrowModalBtn = document.getElementById("closeBorrowModalBtn");
 
-    // Initialize DataTables with additional settings
-    table.DataTable({
-        scrollY: '425px',
-        scrollCollapse: true,
-        scrollX: false,
-        paging: true,
-        searching: true,
-        ordering: true,
+    const borrowForm = document.getElementById("borrowForm");
 
+    let selectedItemId = null;
+
+    // Open Confirmation Modal when Borrow button is clicked
+    window.borrowItem = function (itemId) {
+        selectedItemId = itemId;
+        confirmationModal.style.display = "block";
+    };
+
+    // Close Confirmation Modal
+    cancelBorrowBtn.addEventListener("click", function () {
+        confirmationModal.style.display = "none";
+    });
+
+    // Proceed to Borrow Details Modal
+    confirmBorrowBtn.addEventListener("click", function () {
+        confirmationModal.style.display = "none";
+        borrowModal.style.display = "block";
+        document.getElementById("borrow-item-id").value = selectedItemId;
+    });
+
+    // Close Borrow Modal
+    closeBorrowModalBtn.addEventListener("click", function () {
+        borrowModal.style.display = "none";
+    });
+
+    // Handle Borrow Form Submission
+    borrowForm.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const borrowDate = document.getElementById("borrow-date").value;
+        const dueDate = document.getElementById("due-date").value;
+        const quantity = document.getElementById("quantity").value;
+
+        if (!borrowDate || !dueDate || !quantity) {
+            alert("Please fill in all fields.");
+            return;
+        }
+
+        fetch("/borrow-item", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+            },
+            body: JSON.stringify({
+                item_id: selectedItemId,
+                borrow_date: borrowDate,
+                due_date: dueDate,
+                quantity: quantity
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Item borrowed successfully!");
+                borrowModal.style.display = "none"; // Close modal
+            } else {
+                alert("Error borrowing item.");
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("Something went wrong.");
+        });
     });
 });
 
+
+
+    $(document).ready(function() {
+        $('#myTable').DataTable({
+            scrollY: '425px',
+            scrollCollapse: true,
+            paging: true,
+            searching: true,
+            ordering: true
+        });
+    });
 </script>
+
+
+
+
 
 @endsection

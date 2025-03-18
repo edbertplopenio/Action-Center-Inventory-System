@@ -169,7 +169,7 @@
                     <li class="{{ Request::routeIs('borrower.borrow-equipment.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                         <a href="{{ route('borrower.borrow-equipment.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
                             <i class="ph-bold ph-file-text text-xl"></i> <!-- Borrow Equipment Icon -->
-                            <span class="text-sm">Borrow Equipment</span>
+                            <span class="text-sm">Borrowed Equipment</span>
                         </a>
                     </li>
                     @endif

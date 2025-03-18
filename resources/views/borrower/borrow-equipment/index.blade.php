@@ -173,6 +173,13 @@
         }
     </style>
 
+<style>
+    /* Center table header and body content */
+    #borrowedTable th, #borrowedTable td {
+        text-align: center;
+    }
+</style>
+
 
 </head>
 
