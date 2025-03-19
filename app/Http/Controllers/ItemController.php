@@ -33,28 +33,53 @@ class ItemController extends Controller
      */
     public function store(Request $request)
 {
-    $validatedData = $request->validate([
+    $request->validate([
         'item_name' => 'required|string|max:255',
+        'quantity' => 'required|integer|min:1',
+        'unit' => 'required|string|max:255',
         'category' => 'required|string|max:255',
-        'quantity' => 'required|integer',
-        'unit' => 'required|string|max:50',
         'description' => 'nullable|string',
         'storage_location' => 'required|string|max:255',
         'arrival_date' => 'required|date',
         'date_purchased' => 'required|date',
-        'status' => 'required|string|max:50',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate image
+        'status' => 'required|string|max:255',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
     ]);
 
-    // Handle the image upload if provided
-    if ($request->hasFile('image')) {
-        $imagePath = $request->file('image')->store('images', 'public');
-        $validatedData['image_url'] = '/storage/' . $imagePath;
+    // Check if the item already exists
+    $item = Item::where('item_name', $request->item_name)
+                ->where('category', $request->category)
+                ->first();
+
+    if ($item) {
+        // Update existing item
+        $item->quantity += $request->quantity; // Increase quantity
+        $item->arrival_date = $request->arrival_date; // Update arrival date
+        $item->date_purchased = $request->date_purchased; // Update purchase date
+        $item->save();
+    } else {
+        // Create new item
+        $item = new Item();
+        $item->item_name = $request->item_name;
+        $item->quantity = $request->quantity;
+        $item->unit = $request->unit;
+        $item->category = $request->category;
+        $item->description = $request->description;
+        $item->storage_location = $request->storage_location;
+        $item->arrival_date = $request->arrival_date;
+        $item->date_purchased = $request->date_purchased;
+        $item->status = $request->status;
+
+        // Handle image upload if provided
+        if ($request->hasFile('image')) {
+            $filename = time() . '.' . $request->image->extension();
+            $request->image->move(public_path('images'), $filename);
+            $item->image_url = 'images/' . $filename;
+        }
+
+        $item->save();
     }
 
-    // Create the item
-    Item::create($validatedData);
-
-    return redirect()->route('inventory')->with('success', 'Item added successfully!');
+    return redirect()->back()->with('success', 'Item added successfully!');
 }
 }
