@@ -5,27 +5,27 @@
 @section('content')
 
 <head>
-<meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-<!-- Add Google Fonts link for Inter -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Add Google Fonts link for Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
-<!-- Include DataTables CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
+    <!-- Include DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
 
-<!-- Include jQuery (required for DataTables) -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include jQuery (required for DataTables) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- Include DataTables JS -->
-<script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+    <!-- Include DataTables JS -->
+    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
 
-<!-- Include SweetAlert Library -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
+    <!-- Include SweetAlert Library -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
-    
+
+
+
     <!-- Added scrollbar in the tbody -->
     <style>
         /* Apply font size and font family */
@@ -176,12 +176,13 @@
         }
     </style>
 
-<style>
-    /* Center table header and body content */
-    #requestsTable th, #requestsTable td {
-        text-align: center;
-    }
-</style>
+    <style>
+        /* Center table header and body content */
+        #requestsTable th,
+        #requestsTable td {
+            text-align: center;
+        }
+    </style>
 
 
 </head>
@@ -208,37 +209,39 @@
                 <tbody>
                     @forelse($borrowing_requests as $request)
                     <tr>
-                    <td>
-    @if($request->borrower)
-        {{ $request->borrower->first_name }} {{ $request->borrower->last_name }}
-    @else
-        <span class="text-red-500">No Borrower Found</span>
-    @endif
-</td>
+                        <td>
+                            @if($request->borrower)
+                            {{ $request->borrower->first_name }} {{ $request->borrower->last_name }}
+                            @else
+                            <span class="text-red-500">No Borrower Found</span>
+                            @endif
+                        </td>
 
                         <td>{{ $request->item->name }}</td>
                         <td>{{ $request->quantity_borrowed }}</td>
                         <td>{{ \Carbon\Carbon::parse($request->borrow_date)->format('Y-m-d') }}</td>
                         <td>{{ \Carbon\Carbon::parse($request->due_date)->format('Y-m-d') }}</td>
                         <td>
-                            <span class="px-2 py-1 text-xs font-semibold 
-                                {{ $request->status == 'Pending' ? 'bg-yellow-500 text-white' : '' }}
-                                {{ $request->status == 'Approved' ? 'bg-green-500 text-white' : '' }}
-                                {{ $request->status == 'Rejected' ? 'bg-red-500 text-white' : '' }}
-                                rounded">
+                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                                {{ $request->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                                {{ $request->status == 'Approved' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                                {{ $request->status == 'Rejected' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                                {{ $request->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                                {{ $request->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
+                                {{ $request->status == 'Overdue' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
                                 {{ $request->status }}
                             </span>
                         </td>
                         <td>
                             <button class="approve-btn px-2 py-1 m-1 bg-green-500 text-white rounded 
                             hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-xs w-24"
-                            onclick="updateStatus('{{ $request->id }}', 'Approved')">
+                                onclick="updateStatus('{{ $request->id }}', 'Approved')">
                                 Approve
                             </button>
 
                             <button class="reject-btn px-2 py-1 m-1 bg-red-500 text-white rounded 
                             hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 text-xs w-24"
-                            onclick="updateStatus('{{ $request->id }}', 'Rejected')">
+                                onclick="updateStatus('{{ $request->id }}', 'Rejected')">
                                 Reject
                             </button>
                         </td>
@@ -253,6 +256,7 @@
         </div>
     </div>
 </div>
+
 
 <script>
     $(document).ready(function() {
