@@ -166,12 +166,13 @@
                     </li>
 
                     <!-- Borrow Equipment: Visible only to Borrower -->
-                    <li class="{{ Request::routeIs('borrower.borrow-equipment.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
+                    <li class="{{ Request::routeIs('borrower.borrow-equipment.index') ? 'bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 text-white rounded-xl' : 'text-gray-600' }}">
                         <a href="{{ route('borrower.borrow-equipment.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
                             <i class="ph-bold ph-file-text text-xl"></i> <!-- Borrow Equipment Icon -->
                             <span class="text-sm">Borrowed Equipment</span>
                         </a>
                     </li>
+
                     @endif
 
                     <!-- Borrowing Request: Visible only to Admin -->
