@@ -173,12 +173,13 @@
         }
     </style>
 
-<style>
-    /* Center table header and body content */
-    #borrowedTable th, #borrowedTable td {
-        text-align: center;
-    }
-</style>
+    <style>
+        /* Center table header and body content */
+        #borrowedTable th,
+        #borrowedTable td {
+            text-align: center;
+        }
+    </style>
 
 
 </head>
@@ -203,6 +204,7 @@
                         <th>Status</th>
                         <th>Responsible Person</th>
                         <th>Image</th>
+                        <th>Action</th> <!-- Added Action Column -->
                     </tr>
                 </thead>
                 <tbody>
@@ -246,15 +248,25 @@
                             No Image
                             @endif
                         </td>
+                        <td>
+                            <button
+                                class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] 
+                                focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-[10px] w-24 print-button"
+                                data-id="{{ $borrowed->id }}">
+                                Generate Report
+                            </button>
+
+                        </td>
                     </tr>
                     @empty
                     <tr id="noRecordsRow">
-                        <td colspan="10" class="text-center">No borrowed items found.</td>
+                        <td colspan="11" class="text-center">No borrowed items found.</td>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
+
 
     </div>
 </div>

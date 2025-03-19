@@ -214,8 +214,7 @@
                         </td>
                         <td>
                             <button
-                                class="borrow-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] 
-    focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24"
+                                class="borrow-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24"
                                 onclick="borrowItem('{{ $item->id }}')">
                                 Borrow
                             </button>
@@ -327,84 +326,82 @@
 
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    const confirmationModal = document.getElementById("confirmationModal");
-    const borrowModal = document.getElementById("borrowModal");
+    document.addEventListener("DOMContentLoaded", function() {
+        const confirmationModal = document.getElementById("confirmationModal");
+        const borrowModal = document.getElementById("borrowModal");
 
-    const confirmBorrowBtn = document.getElementById("confirmBorrowBtn");
-    const cancelBorrowBtn = document.getElementById("cancelBorrowBtn");
-    const closeBorrowModalBtn = document.getElementById("closeBorrowModalBtn");
+        const confirmBorrowBtn = document.getElementById("confirmBorrowBtn");
+        const cancelBorrowBtn = document.getElementById("cancelBorrowBtn");
+        const closeBorrowModalBtn = document.getElementById("closeBorrowModalBtn");
 
-    const borrowForm = document.getElementById("borrowForm");
+        const borrowForm = document.getElementById("borrowForm");
 
-    let selectedItemId = null;
+        let selectedItemId = null;
 
-    // Open Confirmation Modal when Borrow button is clicked
-    window.borrowItem = function (itemId) {
-        selectedItemId = itemId;
-        confirmationModal.style.display = "block";
-    };
+        // Open Confirmation Modal when Borrow button is clicked
+        window.borrowItem = function(itemId) {
+            selectedItemId = itemId;
+            confirmationModal.style.display = "block";
+        };
 
-    // Close Confirmation Modal
-    cancelBorrowBtn.addEventListener("click", function () {
-        confirmationModal.style.display = "none";
-    });
+        // Close Confirmation Modal
+        cancelBorrowBtn.addEventListener("click", function() {
+            confirmationModal.style.display = "none";
+        });
 
-    // Proceed to Borrow Details Modal
-    confirmBorrowBtn.addEventListener("click", function () {
-        confirmationModal.style.display = "none";
-        borrowModal.style.display = "block";
-        document.getElementById("borrow-item-id").value = selectedItemId;
-    });
+        // Proceed to Borrow Details Modal
+        confirmBorrowBtn.addEventListener("click", function() {
+            confirmationModal.style.display = "none";
+            borrowModal.style.display = "block";
+            document.getElementById("borrow-item-id").value = selectedItemId;
+        });
 
-    // Close Borrow Modal
-    closeBorrowModalBtn.addEventListener("click", function () {
-        borrowModal.style.display = "none";
-    });
+        // Close Borrow Modal
+        closeBorrowModalBtn.addEventListener("click", function() {
+            borrowModal.style.display = "none";
+        });
 
-    // Handle Borrow Form Submission
-    borrowForm.addEventListener("submit", function (event) {
-        event.preventDefault();
+        // Handle Borrow Form Submission
+        borrowForm.addEventListener("submit", function(event) {
+            event.preventDefault();
 
-        const borrowDate = document.getElementById("borrow-date").value;
-        const dueDate = document.getElementById("due-date").value;
-        const quantity = document.getElementById("quantity").value;
+            const borrowDate = document.getElementById("borrow-date").value;
+            const dueDate = document.getElementById("due-date").value;
+            const quantity = document.getElementById("quantity").value;
 
-        if (!borrowDate || !dueDate || !quantity) {
-            alert("Please fill in all fields.");
-            return;
-        }
-
-        fetch("/borrow-item", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
-            },
-            body: JSON.stringify({
-                item_id: selectedItemId,
-                borrow_date: borrowDate,
-                due_date: dueDate,
-                quantity: quantity
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert("Item borrowed successfully!");
-                borrowModal.style.display = "none"; // Close modal
-            } else {
-                alert("Error borrowing item.");
+            if (!borrowDate || !dueDate || !quantity) {
+                alert("Please fill in all fields.");
+                return;
             }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            alert("Something went wrong.");
+
+            fetch("/borrow-item", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                    },
+                    body: JSON.stringify({
+                        item_id: selectedItemId,
+                        borrow_date: borrowDate,
+                        due_date: dueDate,
+                        quantity: quantity
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Item borrowed successfully!");
+                        borrowModal.style.display = "none"; // Close modal
+                    } else {
+                        alert("Error borrowing item.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("Something went wrong.");
+                });
         });
     });
-});
-
-
 
     $(document).ready(function() {
         $('#myTable').DataTable({
