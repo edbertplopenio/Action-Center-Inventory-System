@@ -74,7 +74,7 @@ class ItemController extends Controller
         if ($request->hasFile('image')) {
             $filename = time() . '.' . $request->image->extension();
             $request->image->move(public_path('images'), $filename);
-            $item->image_url = 'images/' . $filename;
+            $item->image = 'images/' . $filename;
         }
 
         $item->save();
