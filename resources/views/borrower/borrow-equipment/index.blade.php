@@ -188,6 +188,12 @@
     <div class="bg-white p-6 shadow-lg rounded-lg h-full">
         <div class="flex justify-between items-center mb-1 pt-0">
             <h1 class="text-3xl text-left">Borrowed Equipments</h1>
+            <div class="flex space-x-2 w-auto">
+            <button id="openModal" type="button" class="text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 shadow-lg shadow-teal-500/50 dark:shadow-lg dark:shadow-teal-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+    Generate Report
+</button>
+            
+            </div>
         </div>
 
         <div style="height: 625px; overflow-y: auto;">
@@ -204,7 +210,6 @@
                         <th>Status</th>
                         <th>Responsible Person</th>
                         <th>Image</th>
-                        <th>Action</th> <!-- Added Action Column -->
                     </tr>
                 </thead>
                 <tbody>
@@ -230,15 +235,15 @@
                         <td>{{ $borrowed->due_date }}</td>
                         <td>{{ $borrowed->return_date ?? 'Not Returned' }}</td>
                         <td>
-                            @if($borrowed->status == 'Pending')
-                            <span class="badge badge-warning">{{ $borrowed->status }}</span>
-                            @elseif($borrowed->status == 'Approved')
-                            <span class="badge badge-success">{{ $borrowed->status }}</span>
-                            @elseif($borrowed->status == 'Overdue')
-                            <span class="badge badge-danger">{{ $borrowed->status }}</span>
-                            @else
-                            <span class="badge badge-secondary">{{ $borrowed->status }}</span>
-                            @endif
+                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                        {{ $borrowed->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                        {{ $borrowed->status == 'Approved' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                        {{ $borrowed->status == 'Rejected' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                        {{ $borrowed->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                        {{ $borrowed->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
+                        {{ $borrowed->status == 'Overdue' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                                {{ $borrowed->status }}
+                            </span>
                         </td>
                         <td>{{ $borrowed->responsible_person }}</td>
                         <td>
@@ -248,19 +253,10 @@
                             No Image
                             @endif
                         </td>
-                        <td>
-                            <button
-                                class="px-2 py-1 m-1 bg-[#57cc99] text-white rounded hover:bg-[#45a17e] 
-                                focus:outline-none focus:ring-2 focus:ring-[#57cc99] text-[10px] w-24 print-button"
-                                data-id="{{ $borrowed->id }}">
-                                Generate Report
-                            </button>
-
-                        </td>
                     </tr>
                     @empty
                     <tr id="noRecordsRow">
-                        <td colspan="11" class="text-center">No borrowed items found.</td>
+                        <td colspan="10" class="text-center">No borrowed items found.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -268,8 +264,82 @@
         </div>
 
 
+
+
     </div>
 </div>
+
+
+
+
+<div class="relative z-10" id="myModal" aria-labelledby="modal-title" role="dialog" aria-modal="true" style="display: none;">
+    <!-- Backdrop -->
+    <div class="fixed inset-0 bg-black/50 transition-opacity" aria-hidden="true"></div>
+
+    <div class="fixed inset-0 z-10 flex items-center justify-center">
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:items-center sm:p-0">
+            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full" style="max-width: 90%; height: auto;">
+                <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
+                    <h3 class="text-lg font-semibold text-gray-900" id="modal-title">Generate Report</h3>
+
+                    <!-- Report Preview -->
+                    <div id="reportContent" class="mt-4 p-4 border rounded bg-gray-100 text-sm">
+                        <p class="text-gray-700">This is a sample report content. Modify it as needed.</p>
+                    </div>
+
+                    <!-- Modal Buttons -->
+                    <div class="mt-5 flex justify-end space-x-3">
+                        <button id="printReport" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                            Print Report
+                        </button>
+                        <button id="closeModal" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const openModalBtn = document.getElementById("openModal");
+    const modal = document.getElementById("myModal");
+    const closeModalBtn = document.getElementById("closeModal");
+    const printBtn = document.getElementById("printReport");
+
+    // Open modal
+    openModalBtn.addEventListener("click", function () {
+        modal.style.display = "block";
+    });
+
+    // Close modal
+    closeModalBtn.addEventListener("click", function () {
+        modal.style.display = "none";
+    });
+
+    // Print report
+    printBtn.addEventListener("click", function () {
+        const printContent = document.getElementById("reportContent").innerHTML;
+        const printWindow = window.open("", "", "width=800,height=600");
+        printWindow.document.write(`<html><head><title>Print Report</title></head><body>${printContent}</body></html>`);
+        printWindow.document.close();
+        printWindow.print();
+    });
+});
+
+</script>
+
+
+
+
+
+
 
 
 <script>

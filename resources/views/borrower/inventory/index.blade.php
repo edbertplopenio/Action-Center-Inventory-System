@@ -215,10 +215,9 @@
                         <td>
                             <button
                                 class="borrow-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24"
-                                onclick="borrowItem('{{ $item->id }}')">
+                                onclick="borrowItem('{{ $item->id }}', '{{ $item->quantity }}')">
                                 Borrow
                             </button>
-
                         </td>
                     </tr>
                     @empty
@@ -227,6 +226,7 @@
                     </tr>
                     @endforelse
                 </tbody>
+
             </table>
         </div>
     </div>
@@ -240,6 +240,240 @@
 
 <!-- Modal -->
 
+
+
+<!-- Borrow Item Modal -->
+<!-- Borrow Item Modal -->
+<div class="relative z-10 hidden" id="borrowModal" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-black/50 transition-opacity"></div>
+    <div class="fixed inset-0 z-10 flex items-center justify-center">
+        <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md">
+            <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
+                <h3 class="text-lg font-semibold text-gray-900" id="modal-title">Enter Borrow Details</h3>
+
+                <!-- Modal Form -->
+                <form id="borrowForm">
+                    <div class="space-y-4">
+                        <!-- Borrow Date -->
+                        <div>
+                            <label for="borrow-date" class="block text-xs font-medium text-gray-900">Borrow Date</label>
+                            <input type="date" id="borrow-date" required class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-xs">
+                            <p class="text-xs text-red-500 hidden" id="borrow-date-error">Please select a borrow date.</p>
+                        </div>
+
+                        <!-- Due Date -->
+                        <div>
+                            <label for="due-date" class="block text-xs font-medium text-gray-900">Due Date</label>
+                            <input type="date" id="due-date" required class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-xs">
+                            <p class="text-xs text-red-500 hidden" id="due-date-error">Please select a due date.</p>
+                        </div>
+
+                        <!-- Quantity (Two-Column Layout) -->
+                        <div>
+                            <label class="block text-xs font-medium text-gray-900">Quantity</label>
+                            <div class="grid grid-cols-2 gap-4 mt-1">
+                                <!-- Current Quantity -->
+                                <div class="flex flex-col">
+                                    <span class="text-xs font-medium text-gray-600">Current Quantity</span>
+                                    <input type="text" id="current-quantity" class="py-1.5 px-3 border border-gray-300 rounded-md bg-gray-100 text-center sm:text-xs" readonly>
+                                </div>
+
+                                <!-- Quantity to Borrow -->
+                                <div class="flex flex-col">
+                                    <span class="text-xs font-medium text-gray-600">Quantity to Borrow</span>
+                                    <input type="number" id="borrow-quantity" min="1" required class="py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-xs text-center">
+                                    <p class="text-xs text-red-500 hidden" id="borrow-quantity-error">Enter a valid quantity.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hidden field for Item ID -->
+                    <input type="hidden" id="borrow-item-id">
+
+                    <!-- Action Buttons -->
+                    <div class="mt-6 flex items-center justify-end gap-x-6">
+                        <button type="button" class="text-xs font-semibold text-gray-900 hover:text-gray-600" id="closeBorrowModalBtn">Cancel</button>
+                        <button type="submit" class="rounded-md bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-500">Confirm Borrow</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const borrowModal = document.getElementById("borrowModal");
+    const closeBorrowModalBtn = document.getElementById("closeBorrowModalBtn");
+    const borrowForm = document.getElementById("borrowForm");
+    const borrowDateInput = document.getElementById("borrow-date");
+    const dueDateInput = document.getElementById("due-date");
+    const quantityInput = document.getElementById("borrow-quantity"); // Quantity to borrow input
+    const currentQuantityInput = document.getElementById("current-quantity"); // Current quantity in modal
+    const errorMessageDiv = document.getElementById("error-message"); // Div for displaying errors
+
+    let selectedItemId = null;
+    let currentQuantity = 0; // Store the initial current quantity for the item
+
+    // Function to get today's date in YYYY-MM-DD format
+    function getCurrentDate() {
+        const today = new Date();
+        return today.toISOString().split("T")[0]; // Format: YYYY-MM-DD
+    }
+
+    // Open Borrow Details Modal directly
+    window.borrowItem = function(itemId, itemCurrentQuantity) {
+        selectedItemId = itemId;
+        currentQuantity = itemCurrentQuantity; // Set the current quantity for the item
+        borrowModal.style.display = "block";
+        document.getElementById("borrow-item-id").value = selectedItemId;
+        borrowDateInput.value = getCurrentDate(); // Auto-fill borrow date
+        currentQuantityInput.value = currentQuantity; // Set the current quantity in the modal
+    };
+
+    // When quantity to borrow is changed, calculate the remaining quantity
+    quantityInput.addEventListener("input", function() {
+        const borrowQuantity = parseInt(quantityInput.value) || 0;
+        const remainingQuantity = currentQuantity - borrowQuantity;
+        
+        // Update the current quantity dynamically based on what is entered
+        currentQuantityInput.value = remainingQuantity >= 0 ? remainingQuantity : currentQuantity;
+
+        // If the quantity to borrow exceeds current quantity, show error
+        if (remainingQuantity < 0) {
+            quantityInput.setCustomValidity("Quantity to borrow cannot exceed the available quantity.");
+            quantityInput.reportValidity(); // Trigger the validation UI
+        } else {
+            quantityInput.setCustomValidity(""); // Reset the custom validity
+        }
+    });
+
+    // Check if Due Date is later than Borrow Date
+    function validateDueDate() {
+        const borrowDate = new Date(borrowDateInput.value);
+        const dueDate = new Date(dueDateInput.value);
+
+        if (dueDate <= borrowDate) {
+            dueDateInput.setCustomValidity("Due Date must be later than Borrow Date.");
+            dueDateInput.reportValidity(); // Trigger the validation UI
+        } else {
+            dueDateInput.setCustomValidity(""); // Reset the custom validity
+        }
+    }
+
+    // Listen for changes in Due Date and validate it
+    dueDateInput.addEventListener("input", validateDueDate);
+
+    // Close Borrow Modal and reset form fields
+    closeBorrowModalBtn.addEventListener("click", function() {
+        borrowModal.style.display = "none";
+        
+        // Reset the fields to ensure no previous data is left
+        borrowForm.reset();
+        currentQuantityInput.value = ""; // Clear current quantity display
+        errorMessageDiv.innerHTML = ""; // Clear error messages
+    });
+
+    // Borrow Form Validation & Submission
+    borrowForm.addEventListener("submit", function(event) {
+        event.preventDefault();
+        errorMessageDiv.innerHTML = ""; // Clear previous errors
+
+        const borrowDate = borrowDateInput.value.trim();
+        const dueDate = dueDateInput.value.trim();
+        const borrowQuantity = quantityInput.value.trim();
+
+        let errors = [];
+
+        // Field Validation
+        if (!borrowDate) errors.push("Borrow Date is required.");
+        if (!dueDate) errors.push("Due Date is required.");
+        if (!borrowQuantity) errors.push("Quantity is required.");
+
+        // Show Errors if any
+        if (errors.length > 0) {
+            errorMessageDiv.innerHTML = errors.map(error => `<p style="color:red;">${error}</p>`).join("");
+            return;
+        }
+
+        // Proceed with Submission if No Errors
+        fetch("/borrow-item", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                },
+                body: JSON.stringify({
+                    item_id: selectedItemId,
+                    borrow_date: borrowDate,
+                    due_date: dueDate,
+                    quantity: borrowQuantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Item borrowed successfully!");
+                    borrowModal.style.display = "none"; // Close modal
+                } else {
+                    alert("Error borrowing item.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Something went wrong.");
+            });
+    });
+});
+
+$(document).ready(function() {
+    $('#myTable').DataTable({
+        scrollY: '425px',
+        scrollCollapse: true,
+        paging: true,
+        searching: true,
+        ordering: true
+    });
+});
+
+
+
+</script>
+
+
+
+<!-- Success/Error Modal -->
+<div class="relative z-20 hidden" id="messageModal" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-black/50 transition-opacity"></div>
+    <div class="fixed inset-0 z-20 flex items-center justify-center">
+        <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md">
+            <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <!-- Icon -->
+                    <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-gray-100 sm:mx-0 sm:size-10">
+                        <svg id="modal-icon" class="size-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                            <path id="modal-icon-path" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                    </div>
+                    <!-- Message Content -->
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <h3 class="text-base font-semibold text-gray-900" id="modal-title">Message Title</h3>
+                        <p class="mt-2 text-sm text-gray-500" id="modal-message">Message description goes here.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                <button type="button" class="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-blue-500 sm:ml-3 sm:w-auto" id="closeMessageModalBtn">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Borrow Confirmation Modal -->
 <div class="relative z-10 hidden" id="confirmationModal" role="dialog" aria-modal="true">
@@ -266,155 +500,6 @@
         </div>
     </div>
 </div>
-
-
-<!-- Borrow Item Modal -->
-<div class="relative z-10 hidden" id="borrowModal" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-    <div class="fixed inset-0 bg-black/50 transition-opacity"></div>
-    <div class="fixed inset-0 z-10 flex items-center justify-center">
-        <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md">
-            <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
-                <h3 class="text-lg font-semibold text-gray-900">Enter Borrow Details</h3>
-
-                <!-- Modal Form -->
-                <form id="borrowForm">
-                    <div class="space-y-4">
-                        <!-- Borrow Date -->
-                        <div>
-                            <label for="borrow-date" class="block text-xs font-medium text-gray-900">Borrow Date</label>
-                            <input type="date" id="borrow-date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
-                        </div>
-
-                        <!-- Due Date -->
-                        <div>
-                            <label for="due-date" class="block text-xs font-medium text-gray-900">Due Date</label>
-                            <input type="date" id="due-date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
-                        </div>
-
-                        <!-- Quantity (Two-Column Layout) -->
-                        <div>
-                            <label class="block text-xs font-medium text-gray-900">Quantity</label>
-                            <div class="grid grid-cols-2 gap-4 mt-1">
-                                <!-- Current Quantity -->
-                                <div class="flex flex-col">
-                                    <span class="text-xs font-medium text-gray-600">Current Quantity</span>
-                                    <input type="text" id="current-quantity" class="py-1.5 px-3 border border-gray-300 rounded-md bg-gray-100 text-center sm:text-xs" readonly>
-                                </div>
-
-                                <!-- Quantity to Borrow -->
-                                <div class="flex flex-col">
-                                    <span class="text-xs font-medium text-gray-600">Quantity to Borrow</span>
-                                    <input type="number" id="borrow-quantity" min="1" class="py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs text-center">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Hidden field for Item ID -->
-                    <input type="hidden" id="borrow-item-id">
-
-                    <!-- Action Buttons -->
-                    <div class="mt-6 flex items-center justify-end gap-x-6">
-                        <button type="button" class="text-xs font-semibold text-gray-900" id="closeBorrowModalBtn">Cancel</button>
-                        <button type="submit" class="rounded-md bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-500">Confirm Borrow</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const confirmationModal = document.getElementById("confirmationModal");
-        const borrowModal = document.getElementById("borrowModal");
-
-        const confirmBorrowBtn = document.getElementById("confirmBorrowBtn");
-        const cancelBorrowBtn = document.getElementById("cancelBorrowBtn");
-        const closeBorrowModalBtn = document.getElementById("closeBorrowModalBtn");
-
-        const borrowForm = document.getElementById("borrowForm");
-
-        let selectedItemId = null;
-
-        // Open Confirmation Modal when Borrow button is clicked
-        window.borrowItem = function(itemId) {
-            selectedItemId = itemId;
-            confirmationModal.style.display = "block";
-        };
-
-        // Close Confirmation Modal
-        cancelBorrowBtn.addEventListener("click", function() {
-            confirmationModal.style.display = "none";
-        });
-
-        // Proceed to Borrow Details Modal
-        confirmBorrowBtn.addEventListener("click", function() {
-            confirmationModal.style.display = "none";
-            borrowModal.style.display = "block";
-            document.getElementById("borrow-item-id").value = selectedItemId;
-        });
-
-        // Close Borrow Modal
-        closeBorrowModalBtn.addEventListener("click", function() {
-            borrowModal.style.display = "none";
-        });
-
-        // Handle Borrow Form Submission
-        borrowForm.addEventListener("submit", function(event) {
-            event.preventDefault();
-
-            const borrowDate = document.getElementById("borrow-date").value;
-            const dueDate = document.getElementById("due-date").value;
-            const quantity = document.getElementById("quantity").value;
-
-            if (!borrowDate || !dueDate || !quantity) {
-                alert("Please fill in all fields.");
-                return;
-            }
-
-            fetch("/borrow-item", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
-                    },
-                    body: JSON.stringify({
-                        item_id: selectedItemId,
-                        borrow_date: borrowDate,
-                        due_date: dueDate,
-                        quantity: quantity
-                    })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert("Item borrowed successfully!");
-                        borrowModal.style.display = "none"; // Close modal
-                    } else {
-                        alert("Error borrowing item.");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                    alert("Something went wrong.");
-                });
-        });
-    });
-
-    $(document).ready(function() {
-        $('#myTable').DataTable({
-            scrollY: '425px',
-            scrollCollapse: true,
-            paging: true,
-            searching: true,
-            ordering: true
-        });
-    });
-</script>
-
-
 
 
 
