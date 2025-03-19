@@ -291,10 +291,13 @@
                     <!-- Hidden field for Item ID -->
                     <input type="hidden" id="borrow-item-id">
 
+                    <!-- Error message div (added this section) -->
+                    <div id="error-message" class="text-xs text-red-500"></div>
+
                     <!-- Action Buttons -->
                     <div class="mt-6 flex items-center justify-end gap-x-6">
                         <button type="button" class="text-xs font-semibold text-gray-900 hover:text-gray-600" id="closeBorrowModalBtn">Cancel</button>
-                        <button type="submit" class="rounded-md bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-500">Confirm Borrow</button>
+                        <button type="submit" class="rounded-md bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-500" id="submitBorrowButton">Confirm Borrow</button>
                     </div>
                 </form>
             </div>
@@ -307,8 +310,9 @@
 
 
 
+
 <script>
-document.addEventListener("DOMContentLoaded", function() {
+   document.addEventListener("DOMContentLoaded", function() {
     const borrowModal = document.getElementById("borrowModal");
     const closeBorrowModalBtn = document.getElementById("closeBorrowModalBtn");
     const borrowForm = document.getElementById("borrowForm");
@@ -341,7 +345,7 @@ document.addEventListener("DOMContentLoaded", function() {
     quantityInput.addEventListener("input", function() {
         const borrowQuantity = parseInt(quantityInput.value) || 0;
         const remainingQuantity = currentQuantity - borrowQuantity;
-        
+
         // Update the current quantity dynamically based on what is entered
         currentQuantityInput.value = remainingQuantity >= 0 ? remainingQuantity : currentQuantity;
 
@@ -373,63 +377,80 @@ document.addEventListener("DOMContentLoaded", function() {
     // Close Borrow Modal and reset form fields
     closeBorrowModalBtn.addEventListener("click", function() {
         borrowModal.style.display = "none";
-        
+
         // Reset the fields to ensure no previous data is left
         borrowForm.reset();
         currentQuantityInput.value = ""; // Clear current quantity display
         errorMessageDiv.innerHTML = ""; // Clear error messages
     });
 
-    // Borrow Form Validation & Submission
-    borrowForm.addEventListener("submit", function(event) {
-        event.preventDefault();
-        errorMessageDiv.innerHTML = ""; // Clear previous errors
+   // Borrow Item Form Submission
+borrowForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+    console.log("Form submission triggered"); // Debug line: Check if form submission is triggered
 
-        const borrowDate = borrowDateInput.value.trim();
-        const dueDate = dueDateInput.value.trim();
-        const borrowQuantity = quantityInput.value.trim();
+    errorMessageDiv.innerHTML = ""; // Clear previous errors
 
-        let errors = [];
+    const borrowDate = borrowDateInput.value.trim();
+    const dueDate = dueDateInput.value.trim();
+    const borrowQuantity = quantityInput.value.trim();
 
-        // Field Validation
-        if (!borrowDate) errors.push("Borrow Date is required.");
-        if (!dueDate) errors.push("Due Date is required.");
-        if (!borrowQuantity) errors.push("Quantity is required.");
+    let errors = [];
 
-        // Show Errors if any
-        if (errors.length > 0) {
-            errorMessageDiv.innerHTML = errors.map(error => `<p style="color:red;">${error}</p>`).join("");
-            return;
+    // Field Validation
+    if (!borrowDate) errors.push("Borrow Date is required.");
+    if (!dueDate) errors.push("Due Date is required.");
+    if (!borrowQuantity) errors.push("Quantity is required.");
+
+    // Show Errors if any
+    if (errors.length > 0) {
+        console.log("Validation errors: ", errors); // Debug line: Log validation errors
+        errorMessageDiv.innerHTML = errors.map(error => `<p style="color:red;">${error}</p>`).join("");
+        return;
+    }
+
+    // Debugging the values before submitting
+    console.log("Borrow Date:", borrowDate);
+    console.log("Due Date:", dueDate);
+    console.log("Borrow Quantity:", borrowQuantity);
+    console.log("Item ID:", selectedItemId);
+
+    // Proceed with Submission if No Errors
+    console.log("Submitting data..."); // Debug line: Check if we are proceeding to the fetch request
+
+    fetch("{{ route('borrow.item') }}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+        },
+        body: JSON.stringify({
+            item_id: selectedItemId,
+            borrow_date: borrowDate,
+            due_date: dueDate,
+            quantity: borrowQuantity
+        })
+    })
+    .then(response => {
+        console.log("Response received:", response); // Debug line: Check response status
+        return response.json();
+    })
+    .then(data => {
+        console.log("Response data:", data); // Debug line: Check the response body
+
+        if (data.success) {
+            alert("Item borrowed successfully!");
+            borrowModal.style.display = "none"; // Close modal
+        } else {
+            alert(data.error || "Error borrowing item.");
         }
-
-        // Proceed with Submission if No Errors
-        fetch("/borrow-item", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
-                },
-                body: JSON.stringify({
-                    item_id: selectedItemId,
-                    borrow_date: borrowDate,
-                    due_date: dueDate,
-                    quantity: borrowQuantity
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert("Item borrowed successfully!");
-                    borrowModal.style.display = "none"; // Close modal
-                } else {
-                    alert("Error borrowing item.");
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                alert("Something went wrong.");
-            });
+    })
+    .catch(error => {
+        console.error("Error:", error); // Debug line: Check any errors in the fetch request
+        alert("Something went wrong.");
     });
+});
+
 });
 
 $(document).ready(function() {
@@ -441,8 +462,6 @@ $(document).ready(function() {
         ordering: true
     });
 });
-
-
 
 </script>
 

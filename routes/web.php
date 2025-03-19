@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Borrower\InventoryController as BorrowerInventoryController;  // Import Borrower Inventory Controller
 use App\Http\Controllers\Admin\InventoryController as AdminInventoryController;  // Import Admin Inventory Controller
 use App\Http\Controllers\Borrower\InventoryController;
+use App\Http\Controllers\Borrower\BorrowedEquipmentController;
 use App\Http\Controllers\Borrower\BorrowEquipmentController; 
 use App\Http\Controllers\Admin\RecordsController;
 use App\Http\Controllers\Admin\UsersController;
@@ -41,8 +42,7 @@ Route::get('/admin/inventory', [AdminInventoryController::class, 'index'])->name
 Route::get('/borrower/inventory', [BorrowerInventoryController::class, 'index'])->name('borrower.inventory.index')->middleware('auth');
 
 
-// Borrower Borrow Equipment Route
-Route::get('/borrower/borrow-equipment', [BorrowEquipmentController::class, 'index'])->name('borrower.borrow-equipment.index')->middleware('auth');
+
 
 
 // ===================
@@ -131,3 +131,17 @@ Route::prefix('borrower')->middleware(['auth'])->group(function () {
     Route::put('/borrow-equipment/{borrowedItem}', [BorrowedItemsController::class, 'update'])->name('borrower.borrow-equipment.update');
     Route::delete('/borrow-equipment/{borrowedItem}', [BorrowedItemsController::class, 'destroy'])->name('borrower.borrow-equipment.destroy');
 });
+
+
+
+
+
+// Borrowed Items Routes
+Route::middleware('auth')->group(function() {
+    // Store a new borrow request
+    Route::post('/borrow-item', [BorrowEquipmentController::class, 'store'])->name('borrow.item');
+
+    // Get borrowed items for the logged-in user
+    Route::get('/borrowed-items', [BorrowEquipmentController::class, 'index'])->name('borrowed.items');
+});
+
