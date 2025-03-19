@@ -243,7 +243,7 @@
             </button>
         </div>
 
-                <!-- All Items Tab -->
+<!-- All Items Tab -->
 <div id="all-items-content" class="tab-content active">
     <h3 class="text-xl font-semibold mb-4">All Items</h3>
     <div class="table-container">
@@ -266,7 +266,7 @@
             <tbody>
                 @foreach($allItems as $item)
                     <tr id="item-{{ $item->id }}">
-                    <td>{{ $item->item_name }}</td> 
+                        <td>{{ $item->item_name }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->category }}</td>
@@ -280,8 +280,8 @@
                             <button onclick="openEditModal({{ $item->id }})" class="edit-btn"> 
                                 Edit
                             </button>
-
-                            <button class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
+                            <!-- Archive Button: AJAX for archiving -->
+                            <button type="button" class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
                         </td>
                     </tr>
                 @endforeach
@@ -297,7 +297,7 @@
         <table id="equipmentTable" class="display">
             <thead>
                 <tr>
-                    <th>Equipment Name</th>
+                    <th>Item Name</th>
                     <th>Quantity</th>
                     <th>Unit</th>
                     <th>Description</th>
@@ -312,7 +312,7 @@
             <tbody>
                 @foreach($drrmItems as $item)
                     <tr id="item-{{ $item->id }}">
-                    <td>{{ $item->item_name }}</td> 
+                        <td>{{ $item->item_name }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->description }}</td>
@@ -325,8 +325,8 @@
                             <button onclick="openEditModal({{ $item->id }})" class="edit-btn"> 
                                 Edit
                             </button>
-
-                            <button class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
+                            <!-- Archive Button: AJAX for archiving -->
+                            <button type="button" class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
                         </td>
                     </tr>
                 @endforeach
@@ -335,9 +335,10 @@
     </div>
 </div>
 
+
 <!-- Office Supplies Tab -->
 <div id="office-supplies-content" class="tab-content">
-    <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">Office Supplies</h3>
+    <h3 class="text-xl font-semibold mb-4">Office Supplies</h3>
     <div class="table-container">
         <table id="officeSuppliesTable" class="display">
             <thead>
@@ -357,7 +358,7 @@
             <tbody>
                 @foreach($officeItems as $item)
                     <tr id="item-{{ $item->id }}">
-                    <td>{{ $item->item_name }}</td> 
+                        <td>{{ $item->item_name }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->description }}</td>
@@ -370,8 +371,8 @@
                             <button onclick="openEditModal({{ $item->id }})" class="edit-btn"> 
                                 Edit
                             </button>
-
-                            <button class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
+                            <!-- Archive Button: AJAX for archiving -->
+                            <button type="button" class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
                         </td>
                     </tr>
                 @endforeach
@@ -380,9 +381,10 @@
     </div>
 </div>
 
+
 <!-- Emergency Kits Tab -->
 <div id="emergency-kits-content" class="tab-content">
-    <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">Emergency Kits</h3>
+    <h3 class="text-xl font-semibold mb-4">Emergency Kits</h3>
     <div class="table-container">
         <table id="emergencyKitsTable" class="display">
             <thead>
@@ -402,7 +404,7 @@
             <tbody>
                 @foreach($emergencyItems as $item)
                     <tr id="item-{{ $item->id }}">
-                    <td>{{ $item->item_name }}</td> 
+                        <td>{{ $item->item_name }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->description }}</td>
@@ -415,9 +417,10 @@
                             <button onclick="openEditModal({{ $item->id }})" class="edit-btn"> 
                                 Edit
                             </button>
-
-                            <button class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
+                            <!-- Archive Button: AJAX for archiving -->
+                            <button type="button" class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
                         </td>
+                    </tr>
                 @endforeach
             </tbody>
         </table>
@@ -446,7 +449,7 @@
             <tbody>
                 @foreach($otherItems as $item)
                     <tr id="item-{{ $item->id }}">
-                    <td>{{ $item->item_name }}</td> 
+                        <td>{{ $item->item_name }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->description }}</td>
@@ -459,8 +462,8 @@
                             <button onclick="openEditModal({{ $item->id }})" class="edit-btn"> 
                                 Edit
                             </button>
-
-                            <button class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
+                            <!-- Archive Button: AJAX for archiving -->
+                            <button type="button" class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
                         </td>
                     </tr>
                 @endforeach
@@ -471,7 +474,7 @@
 
 <!-- Archives Tab -->
 <div id="archives-content" class="tab-content">
-    <h3 class="text-xl font-semibold" style="margin-bottom: 16px;">Archives</h3>
+    <h3 class="text-xl font-semibold mb-4">Archives</h3>
     <div class="table-container">
         <table id="archivesTable" class="display">
             <thead>
@@ -492,7 +495,7 @@
             <tbody>
                 @foreach($archivedItems as $item)
                     <tr id="archived-{{ $item->id }}">
-                    <td>{{ $item->item_name }}</td> 
+                        <td>{{ $item->item_name }}</td>
                         <td>{{ $item->category }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
@@ -503,7 +506,11 @@
                         <td>{{ $item->status }}</td>
                         <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
                         <td class="action-buttons">
-                            <button class="restore-btn" onclick="restoreItem({{ $item->id }})">Restore</button>
+                            <!-- Restore Button: Form for restoring an archived item -->
+                            <form action="{{ route('restore.item', $item->id) }}" method="POST" class="inline-block">
+                                @csrf
+                                <button type="submit" class="restore-btn">Restore</button>
+                            </form>
                         </td>
                     </tr>
                 @endforeach
@@ -631,6 +638,47 @@
         });
     });
 </script>
+
+<SCRIPT>
+    //ARCHIVES
+    function archiveItem(itemId) {
+    $.ajax({
+        url: '/archive-item/' + itemId,
+        type: 'POST',
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(response) {
+            alert('Item archived successfully.');
+            $('#item-' + itemId).remove(); // Remove the item row from the table
+        },
+        error: function(xhr) {
+            alert('Error archiving item.');
+        }
+    });
+}
+
+function restoreItem(itemId) {
+    $.ajax({
+        url: '/restore-item/' + itemId,
+        type: 'POST',
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(response) {
+            alert('Item restored successfully.');
+            location.reload(); // Reload the page to update the table
+        },
+        error: function(xhr) {
+            alert('Error restoring item.');
+        }
+    });
+}
+
+</script>
+
+
+</SCRIPT>
 
 <!-- Modal Overlay for Adding Item -->
 <div id="addItemModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
