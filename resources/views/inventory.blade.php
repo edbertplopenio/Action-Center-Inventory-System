@@ -224,246 +224,6 @@
     </style>
 </head>
 <body class="bg-gray-100">
-
-<!-- Modal Overlay for Adding Item -->
-<div id="item-form-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
-    <div class="bg-white p-6 rounded-lg w-2/3 max-w-4xl">
-        <h3 class="text-xl font-semibold mb-4">Add New Item</h3>
-        <form id="item-form" action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-
-            <!-- Start of form row (2 fields per row) -->
-            <div class="form-row">
-                <!-- Item Name -->
-                <div>
-                    <label for="name" class="block text-sm font-semibold text-black mb-2">Item Name</label>
-                    <input type="text" id="name" name="name" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
-                </div>
-
-                <!-- Category -->
-                <div>
-                    <label for="category" class="block text-sm font-semibold text-black mb-2">Category</label>
-                    <select id="category" name="category" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
-                    <option value="DRRM Equipment">DRRM Equipment</option>    
-                    <option value="Office Supplies">Office Supplies</option>
-                    <option value="Emergency Kits">Emergency Kits</option>
-                    <option value="Other Items">Other Item</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <!-- Quantity -->
-                <div>
-                    <label for="quantity" class="block text-sm font-semibold text-black mb-2">Quantity</label>
-                    <input type="number" id="quantity" name="quantity" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
-                </div>
-
-                <!-- Unit -->
-                <div>
-                    <label for="unit" class="block text-sm font-semibold text-black mb-2">Unit</label>
-                    <input type="text" id="unit" name="unit" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <!-- Description -->
-                <div>
-                    <label for="description" class="block text-sm font-semibold text-black mb-2">Description</label>
-                    <input type="text" id="description" name="description" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
-                </div>
-
-                <!-- Arrival Date -->
-                <div>
-                    <label for="arrival_date" class="block text-sm font-semibold text-black mb-2">Arrival Date</label>
-                    <input type="date" id="arrival_date" name="arrival_date" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <!-- Date Purchased -->
-                <div>
-                    <label for="date_purchased" class="block text-sm font-semibold text-black mb-2">Date Purchased</label>
-                    <input type="date" id="date_purchased" name="date_purchased" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
-                </div>
-
-                <!-- Status -->
-                <div>
-                    <label for="status" class="block text-sm font-semibold text-black mb-2">Status</label>
-                    <select id="status" name="status" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
-                        <option value="Available">Available</option>
-                        <option value="Unavailable">Unavailable</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Image -->
-            <div class="mb-4">
-                <label for="image" class="block text-sm font-semibold text-black mb-2">Image</label>
-                <input type="file" id="image" name="image" accept="image/*" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
-            </div>
-
-            <!-- Storage Location -->
-            <div class="mb-4">
-                <label for="storage_location" class="block text-sm font-semibold text-black mb-2">Storage Location</label>
-                <input type="text" id="storage_location" name="storage_location" class="w-full p-2 border rounded-md bg-transparent text-black focus:ring-2 focus:ring-red-500 focus:border-red-500" required>
-            </div>
-
-            <!-- Buttons -->
-            <div class="flex justify-between mt-4">
-                <button type="reset" id="cancel-btn" class="px-4 py-2 bg-green-400 text-black rounded-md transition duration-300 hover:bg-green-600 hover:text-white">Cancel</button>
-                <button type="submit" class="px-4 py-2 bg-green-400 text-black rounded-md transition duration-300 hover:bg-green-600 hover:text-white">Save</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Edit Item Modal -->
-<div id="editModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden justify-center items-center">
-    <div class="bg-white p-6 rounded shadow-lg w-1/3">
-        <h2 class="text-lg font-bold mb-4">Edit Item</h2>
-
-        <form id="edit-form" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-
-            <!-- Hidden field for item ID -->
-            <input type="hidden" id="edit-id" name="id">
-
-            <!-- Item Name (Read-Only) -->
-            <label for="edit-name">Item Name</label>
-            <input type="text" id="edit-name" name="name" class="w-full p-2 border rounded bg-gray-200" readonly>
-
-            <!-- Quantity (Editable) -->
-            <label for="edit-quantity">Quantity</label>
-            <input type="number" id="edit-quantity" name="quantity" class="w-full p-2 border rounded" required>
-
-            <!-- Unit (Read-Only) -->
-            <label for="edit-unit">Unit</label>
-            <input type="text" id="edit-unit" name="unit" class="w-full p-2 border rounded bg-gray-200" readonly>
-
-            <!-- Category (Read-Only) -->
-            <label for="edit-category">Category</label>
-            <input type="text" id="edit-category" name="category" class="w-full p-2 border rounded bg-gray-200" readonly>
-
-            <!-- Description (Editable) -->
-            <label for="edit-description">Description</label>
-            <textarea id="edit-description" name="description" class="w-full p-2 border rounded"></textarea>
-
-            <!-- Storage Location (Editable) -->
-            <label for="edit-storage_location">Storage Location</label>
-            <input type="text" id="edit-storage_location" name="storage_location" class="w-full p-2 border rounded" required>
-
-            <!-- Arrival Date (Editable) -->
-            <label for="edit-arrival_date">Arrival Date</label>
-            <input type="date" id="edit-arrival_date" name="arrival_date" class="w-full p-2 border rounded" required>
-
-            <!-- Date Purchased (Read-Only) -->
-            <label for="edit-date_purchased">Date Purchased</label>
-            <input type="date" id="edit-date_purchased" name="date_purchased" class="w-full p-2 border rounded bg-gray-200" readonly>
-
-            <!-- Status (Editable) -->
-            <label for="edit-status">Status</label>
-            <select id="edit-status" name="status" class="w-full p-2 border rounded">
-                <option value="Available">Available</option>
-                <option value="Unavailable">Unavailable</option>
-            </select>
-
-            <!-- Image Upload (Editable) -->
-            <label for="edit-image">Image</label>
-            <input type="file" id="edit-image" name="image" class="w-full p-2 border rounded">
-
-            <!-- Buttons -->
-            <div class="flex justify-end space-x-2 mt-4">
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
-                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded" onclick="closeEditModal()">Cancel</button>
-            </div>
-        </form>
-    </div>
-</div>
-<!-- here is the edit modal-->
-<!-- Edit Item Modal (Place before </body>) -->
-<div id="edit-item-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
-    <div class="bg-white p-6 rounded-lg w-2/3 max-w-4xl">
-        <h3 class="text-xl font-semibold mb-4">Edit Item</h3>
-        
-        <form id="edit-form" method="POST" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
-
-            <!-- Hidden input for item ID -->
-            <input type="hidden" id="edit-item-id" name="id">
-
-            <!-- Read-Only Fields -->
-            <div class="form-row">
-                <div>
-                    <label for="edit-name" class="block text-sm font-semibold text-black mb-2">Item Name</label>
-                    <input type="text" id="edit-name" name="name" class="w-full p-2 border rounded-md bg-gray-200" readonly>
-                </div>
-                <div>
-                    <label for="edit-category" class="block text-sm font-semibold text-black mb-2">Category</label>
-                    <input type="text" id="edit-category" name="category" class="w-full p-2 border rounded-md bg-gray-200" readonly>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div>
-                    <label for="edit-unit" class="block text-sm font-semibold text-black mb-2">Unit</label>
-                    <input type="text" id="edit-unit" name="unit" class="w-full p-2 border rounded-md bg-gray-200" readonly>
-                </div>
-                <div>
-                    <label for="edit-date_purchased" class="block text-sm font-semibold text-black mb-2">Date Purchased</label>
-                    <input type="date" id="edit-date_purchased" name="date_purchased" class="w-full p-2 border rounded-md bg-gray-200" readonly>
-                </div>
-            </div>
-
-            <!-- Editable Fields -->
-            <div class="form-row">
-                <div>
-                    <label for="edit-quantity" class="block text-sm font-semibold text-black mb-2">Quantity</label>
-                    <input type="number" id="edit-quantity" name="quantity" class="w-full p-2 border rounded-md">
-                </div>
-                <div>
-                    <label for="edit-description" class="block text-sm font-semibold text-black mb-2">Description</label>
-                    <input type="text" id="edit-description" name="description" class="w-full p-2 border rounded-md">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div>
-                    <label for="edit-storage_location" class="block text-sm font-semibold text-black mb-2">Storage Location</label>
-                    <input type="text" id="edit-storage_location" name="storage_location" class="w-full p-2 border rounded-md">
-                </div>
-                <div>
-                    <label for="edit-arrival_date" class="block text-sm font-semibold text-black mb-2">Arrival Date</label>
-                    <input type="date" id="edit-arrival_date" name="arrival_date" class="w-full p-2 border rounded-md">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div>
-                    <label for="edit-status" class="block text-sm font-semibold text-black mb-2">Status</label>
-                    <select id="edit-status" name="status" class="w-full p-2 border rounded-md">
-                        <option value="Available">Available</option>
-                        <option value="Unavailable">Unavailable</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="edit-image" class="block text-sm font-semibold text-black mb-2">Image</label>
-                    <input type="file" id="edit-image" name="image" accept="image/*" class="w-full p-2 border rounded-md">
-                    <img id="current-image-preview" src="" class="mt-2 max-w-[100px] hidden">
-                </div>
-            </div>
-
-            <div class="flex justify-between mt-4">
-                <button type="button" id="edit-cancel-btn" class="px-4 py-2 bg-red-400 text-white rounded-md">Cancel</button>
-                <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded-md">Save</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-
 <!-- Main Content -->
 <div class="flex-1 p-6 relative">
     <div class="bg-white shadow-md rounded-lg p-6">
@@ -506,7 +266,7 @@
             <tbody>
                 @foreach($allItems as $item)
                     <tr id="item-{{ $item->id }}">
-                        <td>{{ $item->name }}</td>
+                    <td>{{ $item->item_name }}</td> 
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->category }}</td>
@@ -550,9 +310,9 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($items as $item)
+                @foreach($drrmItems as $item)
                     <tr id="item-{{ $item->id }}">
-                        <td>{{ $item->name }}</td>
+                    <td>{{ $item->item_name }}</td> 
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->description }}</td>
@@ -595,9 +355,9 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($officeSupplies as $item)
+                @foreach($officeItems as $item)
                     <tr id="item-{{ $item->id }}">
-                        <td>{{ $item->name }}</td>
+                    <td>{{ $item->item_name }}</td> 
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->description }}</td>
@@ -640,9 +400,9 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($emergencyKits as $item)
+                @foreach($emergencyItems as $item)
                     <tr id="item-{{ $item->id }}">
-                        <td>{{ $item->name }}</td>
+                    <td>{{ $item->item_name }}</td> 
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->description }}</td>
@@ -686,7 +446,7 @@
             <tbody>
                 @foreach($otherItems as $item)
                     <tr id="item-{{ $item->id }}">
-                        <td>{{ $item->name }}</td>
+                    <td>{{ $item->item_name }}</td> 
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->description }}</td>
@@ -732,7 +492,7 @@
             <tbody>
                 @foreach($archivedItems as $item)
                     <tr id="archived-{{ $item->id }}">
-                        <td>{{ $item->name }}</td>
+                    <td>{{ $item->item_name }}</td> 
                         <td>{{ $item->category }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
@@ -756,44 +516,6 @@
     </div>
 </div>
 <script>
-function archiveItem(itemId) {
-    console.log("Archiving item: " + itemId); // Debugging log
-
-    $.ajax({
-        url: '/archive-item/' + itemId,
-        method: 'POST',
-        data: {
-            _token: '{{ csrf_token() }}',
-        },
-        success: function(response) {
-            console.log("Item archived successfully:", response); // Debugging log
-            alert(response.message);
-            location.reload(); // Refresh page to update UI
-        },
-        error: function(xhr) {
-            console.error("Error archiving item:", xhr.responseText); // Debugging log
-            alert("Failed to archive item. Check console for details.");
-        }
-    });
-}
-
-
-function restoreItem(itemId) {
-    $.ajax({
-        url: '/restore-item/' + itemId,
-        method: 'POST',
-        data: {
-            _token: '{{ csrf_token() }}',
-        },
-        success: function(response) {
-            alert(response.message);
-            location.reload(); // Refresh page to update UI
-        }
-    });
-}
-
-
-
     function switchTab(tab) {
         console.log("Switching to tab: ", tab);  // For debugging
 
@@ -827,237 +549,6 @@ function restoreItem(itemId) {
         initializeDataTables();
     });
 </script>
-
-<!-- JavaScript for Modal Logic -->
-<script>
-    const addItemBtn = document.getElementById('add-item-btn');
-    const itemFormOverlay = document.getElementById('item-form-overlay');
-    const cancelBtn = document.getElementById('cancel-btn');
-    const form = document.getElementById('item-form');
-
-    // Open the modal
-    addItemBtn.addEventListener('click', function () {
-        itemFormOverlay.classList.remove('hidden');
-    });
-
-    // Close the modal when clicking outside the form
-    window.addEventListener('click', function (event) {
-        if (event.target === itemFormOverlay) {
-            itemFormOverlay.classList.add('hidden');
-        }
-    });
-
-    // Cancel button logic
-    cancelBtn.addEventListener('click', function () {
-        form.reset(); // Reset the form fields
-        itemFormOverlay.classList.add('hidden'); // Hide the overlay
-    });
-</script>
-
-<!-- JavaScript for AJAX form submission -->
-<script>
-    // Submit the form via AJAX and check if the item already exists
-    $('#item-form').on('submit', function (event) {
-        event.preventDefault(); // Prevent the default form submission
-
-        const itemName = $('#name').val(); // Get the item name from the input field
-        const quantity = $('#quantity').val();
-        const arrivalDate = $('#arrival_date').val();
-
-        // Check if the item already exists in the database using AJAX
-        $.ajax({
-            url: "{{ route('items.checkExistence') }}", // Assuming you have a route to check if the item exists
-            method: 'POST',
-            data: {
-                _token: '{{ csrf_token() }}',
-                name: itemName
-            },
-            success: function(response) {
-                if (response.exists) {
-                    // If the item exists, update the quantity and arrival date
-                    $.ajax({
-                        url: "{{ route('items.update', ['id' => '__ID__']) }}".replace('__ID__', itemId),
-                        method: 'POST',
-                        data: {
-                            _token: '{{ csrf_token() }}',
-                            id: response.item.id, // Item ID
-                            quantity: response.item.quantity + parseInt(quantity), // Update the quantity
-                            arrival_date: arrivalDate, // Update arrival date
-                        },
-                        success: function(updateResponse) {
-                            alert('Item updated successfully!');
-                            $('#item-form-overlay').addClass('hidden');
-                            location.reload(); // Reload the page to reflect changes
-                        },
-                        error: function() {
-                            alert('An error occurred while updating the item.');
-                        }
-                    });
-                } else {
-                    // If the item does not exist, submit the form to add a new item
-                    var formData = new FormData(this); // Collect form data
-                    $.ajax({
-                        url: "{{ route('items.store') }}", // The route for saving the item
-                        method: "POST",
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function(response) {
-                            alert('Item added successfully!');
-                            $('#item-form-overlay').addClass('hidden');
-                            location.reload(); // Reload the page to show the new item
-                        },
-                        error: function(xhr, status, error) {
-                            console.log(xhr.responseText); // Log the error
-                            alert('An error occurred while adding the item.');
-                        }
-                    });
-                }
-            },
-            error: function() {
-                alert('An error occurred while checking the item.');
-            }
-        });
-    });
-</script>
-
-<!-- JavaScript for Handling Item Edit Logic -->
-<script>
-function openEditModal(itemId) {
-    console.log("Fetching item with ID:", itemId); // Debugging log
-
-    fetch(`/items/${itemId}/edit`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Failed to fetch item data. Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(item => {
-            console.log("Fetched item data:", item); // Debugging log
-
-            // Populate form fields
-            document.getElementById('edit-item-id').value = item.id;
-            document.getElementById('edit-name').value = item.name;
-            document.getElementById('edit-category').value = item.category;
-            document.getElementById('edit-unit').value = item.unit;
-            document.getElementById('edit-date_purchased').value = item.date_purchased;
-            document.getElementById('edit-quantity').value = item.quantity;
-            document.getElementById('edit-description').value = item.description;
-            document.getElementById('edit-storage_location').value = item.storage_location;
-            document.getElementById('edit-arrival_date').value = item.arrival_date;
-            document.getElementById('edit-status').value = item.status;
-
-            // Set form action dynamically
-            document.getElementById('edit-form').action = `/items/${item.id}`;
-
-            // Show the modal
-            document.getElementById('edit-item-overlay').classList.remove('hidden');
-        })
-        .catch(error => {
-            console.error("Error fetching item:", error);
-            alert('Failed to fetch item data.');
-        });
-}
-
-// Close modal when clicking cancel
-document.getElementById('edit-cancel-btn').addEventListener('click', function() {
-    document.getElementById('edit-item-overlay').classList.add('hidden');
-});
-
-$(document).on('click', '.editButton', function () {
-    var itemId = $(this).data('id'); // Get item ID from button
-
-    $.ajax({
-        url: '/items/' + itemId + '/edit', // Fetch item data
-        type: 'GET',
-        success: function (data) {
-            if (data.success) {
-                $('#editItemModal').modal('show'); // Show the modal
-
-                // Populate fields (only editable fields)
-                $('#editQuantity').val(data.item.quantity);
-                $('#editDescription').val(data.item.description);
-                $('#editStorageLocation').val(data.item.storage_location);
-                $('#editArrivalDate').val(data.item.arrival_date);
-                $('#editStatus').val(data.item.status);
-                
-                // Image preview
-                if (data.item.image) {
-                    $('#currentImage').attr('src', '/storage/' + data.item.image).show();
-                } else {
-                    $('#currentImage').hide();
-                }
-
-                // Hidden field for item ID
-                $('#editItemId').val(data.item.id);
-            } else {
-                alert('Failed to fetch item data.');
-            }
-        },
-        error: function () {
-            alert('Error fetching item data.');
-        }
-    });
-});
-
-
-// Event delegation for edit buttons
-document.addEventListener('click', function (e) {
-    if (e.target && e.target.classList.contains('edit-btn')) {
-        const itemRow = e.target.closest('tr'); // Get the closest <tr> to the clicked button
-        const item = {
-            id: itemRow.id.split('-')[1], // Extract the item ID from the row's ID
-            name: itemRow.cells[0].innerText,  // Item Name (first column)
-            category: itemRow.cells[3].innerText,  // Category (4th column)
-            quantity: itemRow.cells[1].innerText,  // Quantity (2nd column)
-            unit: itemRow.cells[2].innerText, // Unit (3rd column)
-            description: itemRow.cells[4].innerText,  // Description (5th column)
-            storage_location: itemRow.cells[5].innerText,  // Storage Location (6th column)
-            arrival_date: itemRow.cells[6].innerText,  // Arrival Date (7th column)
-            date_purchased: itemRow.cells[7].innerText,  // Date Purchased (8th column)
-            status: itemRow.cells[8].innerText,  // Status (9th column)
-        };
-
-        openEditModal(item); // Call the function to open the modal and populate the form
-    }
-});
-
-    // Handle edit form submission
-    $('#edit-item-form').on('submit', function (event) {
-        event.preventDefault(); // Prevent the default form submission
-
-        var formData = new FormData(this); // Collect form data from the form
-        const itemId = document.getElementById('edit-item-id').value; // Get the item ID from the hidden input field
-
-        $.ajax({
-            url: '/edit-item/' + itemId, // Send to the correct URL (make sure this matches the route in web.php)
-            method: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Add CSRF token
-            },
-            success: function (response) {
-                alert('Item updated successfully!');
-                document.getElementById('edit-item-overlay').classList.add('hidden'); // Hide the modal
-                location.reload(); // Reload the page to show updated data
-            },
-            error: function (xhr) {
-                console.error(xhr.responseText); // Log the error for debugging
-                alert('An error occurred while updating the item: ' + xhr.responseText);
-            }
-        });
-    });
-
-    // Cancel edit
-    const editCancelBtn = document.getElementById('edit-cancel-btn');
-    editCancelBtn.addEventListener('click', function () {
-        document.getElementById('edit-item-overlay').classList.add('hidden'); // Hide the modal
-    });
-</script>
-
 
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
@@ -1126,257 +617,102 @@ document.addEventListener('click', function (e) {
     }
     
 </script>
-
-<script>
-    
-    document.addEventListener("DOMContentLoaded", () => {
-    const editButtons = document.querySelectorAll(".edit-btn");
-    const editForm = document.getElementById("edit-item-overlay");
-    
-    editButtons.forEach(button => {
-        button.addEventListener("click", function() {
-            const item = JSON.parse(this.getAttribute("data-item")); // Extract item data
-
-            // Set form action dynamically
-            document.getElementById("edit-item-form").action = `{{ route('items.update', '') }}/${item.id}`;
-            document.getElementById("edit-item-id").value = item.id;
-            document.getElementById("edit-name").value = item.name;
-            document.getElementById("edit-category").value = item.category;
-            document.getElementById("edit-quantity").value = item.quantity;
-            document.getElementById("edit-unit").value = item.unit;
-            document.getElementById("edit-description").value = item.description;
-            document.getElementById("edit-storage_location").value = item.storage_location;
-            document.getElementById("edit-arrival_date").value = item.arrival_date;
-            document.getElementById("edit-date_purchased").value = item.date_purchased;
-            document.getElementById("edit-status").value = item.status;
-            
-            // Handle image (optional: show preview if needed)
-            if (item.image_url) {
-                document.getElementById("image_url").required = false; // Make optional if image already exists
-            }
-
-            editForm.classList.remove("hidden"); // Show modal
-        });
-    });
-
-    // Close the modal when clicking the cancel button
-    document.getElementById("edit-cancel-btn").addEventListener("click", () => {
-        editForm.classList.add("hidden");
-    });
-});
-
-// Event delegation for edit buttons
-document.addEventListener('click', function (e) {
-    if (e.target && e.target.classList.contains('edit-btn')) {
-        const itemRow = e.target.closest('tr'); // Get the closest <tr> to the clicked button
-        const item = {
-            id: itemRow.id.split('-')[1], // Extract the item ID from the row's ID
-            name: itemRow.cells[0].innerText,  // Item Name (first column)
-            category: itemRow.cells[3].innerText,  // Category (4th column)
-            quantity: itemRow.cells[1].innerText,  // Quantity (2nd column)
-            unit: itemRow.cells[2].innerText, // Unit (3rd column)
-            description: itemRow.cells[4].innerText,  // Description (5th column)
-            storage_location: itemRow.cells[5].innerText,  // Storage Location (6th column)
-            arrival_date: itemRow.cells[6].innerText,  // Arrival Date (7th column)
-            date_purchased: itemRow.cells[7].innerText,  // Date Purchased (8th column)
-            status: itemRow.cells[8].innerText,  // Status (9th column)
-        };
-
-        openEditModal(item); // Call the function to open the modal and populate the form
-    }
-});
-
-
-
-    // Handle edit form submission
-    $('#edit-item-form').on('submit', function (event) {
-    event.preventDefault(); // Prevent the default form submission
-
-    var formData = new FormData(this); // Collect form data from the form
-    const itemId = document.getElementById('edit-item-id').value; // Get the item ID from the hidden input field
-
-    $.ajax({
-        url: '/edit-item/' + itemId, // Use dynamic URL for editing the item
-        method: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Ensure CSRF token is included
-        },
-        success: function (response) {
-            alert('Item updated successfully!');
-            document.getElementById('edit-item-overlay').classList.add('hidden'); // Hide the modal
-            location.reload(); // Reload the page to show updated data
-        },
-        error: function (xhr) {
-            console.error(xhr.responseText); // Log the error response for debugging
-            alert('An error occurred while updating the item: ' + xhr.responseText);
-        }
-    });
-});
-
-    const editCancelBtn = document.getElementById('edit-cancel-btn');
-    editCancelBtn.addEventListener('click', function () {
-        document.getElementById('edit-item-overlay').classList.add('hidden'); // Hide the modal
-    });
-
-
-
-    $('#edit-item-form').on('submit', function (event) {
-    event.preventDefault(); // Prevent the default form submission
-
-    var formData = new FormData(this); // Collect form data from the form
-    const itemId = document.getElementById('edit-item-id').value; // Get the item ID from the hidden input field
-
-    $.ajax({
-        url: '/edit-item/' + itemId, // Send to the correct URL (make sure this matches the route in web.php)
-        method: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') // Add CSRF token
-        },
-        success: function (response) {
-            alert('Item updated successfully!');
-            document.getElementById('edit-item-overlay').classList.add('hidden'); // Hide the modal
-            location.reload(); // Reload the page to show the updated item
-        },
-        error: function (xhr) {
-            console.error(xhr.responseText); // Log the error for debugging
-            alert('An error occurred while updating the item: ' + xhr.responseText);
-        }
-    });
-});
-</script>
+<!-- Add item JavaScript for Modal Control -->
 <script>
     $(document).ready(function () {
-        $(".edit-btn").click(function () {
-            let itemId = $(this).data("id");
-
-            // Fetch item details via AJAX
-            $.ajax({
-                url: "/items/" + itemId + "/edit",
-                type: "GET",
-                success: function (data) {
-                    $("#editItemId").val(data.id);
-                    $("#editItemName").val(data.name);
-                    $("#editItemQuantity").val(data.quantity);
-                    $("#editModal").removeClass("hidden");
-                },
-                error: function () {
-                    alert("Failed to fetch item data.");
-                }
-            });
+        // Event listener for Add Item button
+        $("#add-item-btn").click(function () {
+            $("#addItemModal").removeClass("hidden");
         });
 
-        // Close modal
-        $("#closeModal").click(function () {
-            $("#editModal").addClass("hidden");
-        });
-
-        // Handle form submission
-        $("#editForm").submit(function (e) {
-            e.preventDefault();
-
-            let itemId = $("#editItemId").val();
-            let itemName = $("#editItemName").val();
-            let itemQuantity = $("#editItemQuantity").val();
-
-            $.ajax({
-                url: "/items/" + itemId,
-                type: "PUT",
-                data: {
-                    _token: $("meta[name='csrf-token']").attr("content"),
-                    name: itemName,
-                    quantity: itemQuantity
-                },
-                success: function () {
-                    alert("Item updated successfully!");
-                    location.reload();
-                },
-                error: function () {
-                    alert("Failed to update item.");
-                }
-            });
+        // Close modal actions
+        $("#closeModal, #cancelModal").click(function () {
+            $("#addItemModal").addClass("hidden");
         });
     });
 </script>
 
-<!-- ✅ JavaScript to Handle Edit Function -->
-<script>
-$(document).ready(function () {
-    // Open edit modal and fetch item data
-    $(document).on('click', '.editButton', function () {
-        var itemId = $(this).data('id');
+<!-- Modal Overlay for Adding Item -->
+<div id="addItemModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
+    <div class="bg-white p-6 rounded-lg w-2/3 max-w-4xl">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold">Add New Item</h3>
+            <button id="closeModal" class="text-black hover:text-red-500 text-2xl">&times;</button>
+        </div>
+        <form id="itemForm" action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="item_name" class="block text-sm font-semibold text-black mb-2">Item Name</label>
+                    <input type="text" id="item_name" name="item_name" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
+                </div>
 
-        $.ajax({
-            url: '/items/' + itemId + '/edit',
-            type: 'GET',
-            success: function (data) {
-                if (data.success) {
-                    $('#edit-item-overlay').removeClass('hidden'); // Show modal
-                    
-                    // Populate Read-Only Fields
-                    $('#edit-item-id').val(data.item.id);
-                    $('#edit-name').val(data.item.name);
-                    $('#edit-category').val(data.item.category);
-                    $('#edit-unit').val(data.item.unit);
-                    $('#edit-date_purchased').val(data.item.date_purchased);
+                <div>
+                    <label for="category" class="block text-sm font-semibold text-black mb-2">Category</label>
+                    <select id="category" name="category" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
+                        <option value="DRRM Equipment">DRRM Equipment</option>
+                        <option value="Office Supplies">Office Supplies</option>
+                        <option value="Emergency Kits">Emergency Kits</option>
+                        <option value="Other Items">Other Items</option>
+                    </select>
+                </div>
 
-                    // Populate Editable Fields
-                    $('#edit-quantity').val(data.item.quantity);
-                    $('#edit-description').val(data.item.description);
-                    $('#edit-storage_location').val(data.item.storage_location);
-                    $('#edit-arrival_date').val(data.item.arrival_date);
-                    $('#edit-status').val(data.item.status);
+                <div>
+                    <label for="quantity" class="block text-sm font-semibold text-black mb-2">Quantity</label>
+                    <input type="number" id="quantity" name="quantity" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
+                </div>
 
-                    // Show current image
-                    if (data.item.image_url) {
-                        $('#current-image-preview').attr('src', '/storage/' + data.item.image_url).removeClass('hidden');
-                    } else {
-                        $('#current-image-preview').addClass('hidden');
-                    }
-                } else {
-                    alert('Failed to fetch item data.');
-                }
-            },
-            error: function () {
-                alert('Error fetching item data.');
-            }
-        });
-    });
+                <div>
+                    <label for="unit" class="block text-sm font-semibold text-black mb-2">Unit</label>
+                    <input type="text" id="unit" name="unit" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
+                </div>
 
-    // Submit Edit Form via AJAX
-    $('#edit-form').submit(function (e) {
-        e.preventDefault();
-        var formData = new FormData(this);
+                <div>
+                    <label for="description" class="block text-sm font-semibold text-black mb-2">Description</label>
+                    <textarea id="description" name="description" rows="3" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500"></textarea>
+                </div>
 
-        $.ajax({
-            url: '/items/' + $('#edit-item-id').val(),
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (response) {
-                alert(response.message);
-                location.reload(); // Refresh page after update
-            },
-            error: function () {
-                alert('Error updating item.');
-            }
-        });
-    });
+                <div>
+                    <label for="storage_location" class="block text-sm font-semibold text-black mb-2">Storage Location</label>
+                    <input type="text" id="storage_location" name="storage_location" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
+                </div>
 
-    // Close modal when clicking Cancel
-    $('#edit-cancel-btn').click(function () {
-        $('#edit-item-overlay').addClass('hidden');
-    });
-});
+                <div>
+                    <label for="arrival_date" class="block text-sm font-semibold text-black mb-2">Arrival Date</label>
+                    <input type="date" id="arrival_date" name="arrival_date" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
+                </div>
 
+                <div>
+                    <label for="date_purchased" class="block text-sm font-semibold text-black mb-2">Date Purchased</label>
+                    <input type="date" id="date_purchased" name="date_purchased" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
+                </div>
 
-</script>
+                <div>
+                    <label for="status" class="block text-sm font-semibold text-black mb-2">Status</label>
+                    <select id="status" name="status" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
+                        <option value="Available">Available</option>
+                        <option value="Unavailable">Unavailable</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="image" class="block text-sm font-semibold text-black mb-2">Image</label>
+                    <input type="file" id="image" name="image" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500">
+                </div>
+            </div>
+
+            <div class="flex justify-between mt-4">
+                <button type="button" id="cancelModal" class="px-4 py-2 bg-gray-400 text-black rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
+                    Cancel
+                </button>
+                <button type="submit" class="px-4 py-2 bg-green-400 text-black rounded-md transition duration-300 hover:bg-green-600 hover:text-white">
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 
 </body>
 </html>
