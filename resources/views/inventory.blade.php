@@ -677,6 +677,65 @@ function restoreItem(itemId) {
 
 </script>
 
+<SCRIPT>//EDIT SCRIPTS
+    // Open the Edit Item Modal and populate fields
+    function openEditModal(itemId) {
+    $.ajax({
+        url: '/get-item/' + itemId, // Fetch item data for the given itemId
+        method: 'GET',
+        success: function(item) {
+            // Populate the form fields with the item data
+            $('#edit_item_id').val(item.id);
+            $('#edit_quantity').val(item.quantity);
+            $('#edit_storage_location').val(item.storage_location);
+            $('#edit_arrival_date').val(item.arrival_date);
+            $('#edit_date_purchased').val(item.date_purchased);
+            $('#edit_status').val(item.status);
+
+            // Dynamically set the form's action URL to include the itemId
+            var formAction = "{{ route('items.update', ['id' => '__ID__']) }}".replace('__ID__', item.id);
+            $('#editItemForm').attr('action', formAction); // Set the action URL for form
+
+            // Show the modal
+            $('#editItemModal').removeClass('hidden');
+        },
+        error: function(xhr) {
+            alert('Error fetching item data.');
+        }
+    });
+}
+
+
+
+
+
+// Close the Edit Modal
+$('#closeEditModal, #cancelEditModal').click(function() {
+    $('#editItemModal').addClass('hidden');
+});
+
+
+
+// Close the modal after saving the item
+$('#editItemForm').submit(function(e) {
+    e.preventDefault();  // Prevent default form submission
+    
+    // Send the form data using AJAX
+    $.ajax({
+        url: $(this).attr('action'),  // Get the form's action URL
+        method: 'POST',
+        data: $(this).serialize(),   // Serialize the form data
+        success: function(response) {
+            alert('Item updated successfully!');
+            $('#editItemModal').addClass('hidden');
+            location.reload(); // Refresh the page to show the updated data
+        },
+        error: function(xhr) {
+            alert('Error updating item.');
+        }
+    });
+});
+
 
 </SCRIPT>
 
@@ -760,6 +819,63 @@ function restoreItem(itemId) {
         </form>
     </div>
 </div>
+
+<!--EDIT MODAL-->
+<!-- Edit Item Modal -->
+<div id="editItemModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
+    <div class="bg-white p-6 rounded-lg w-2/3 max-w-4xl">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-xl font-semibold">Edit Item</h3>
+            <button id="closeEditModal" class="text-black hover:text-red-500 text-2xl">&times;</button>
+        </div>
+        <form id="editItemForm" action="{{ route('items.update', ['id' => '__ID__']) }}" method="POST">
+            @csrf
+            @method('PUT') <!-- Use PUT method for updates -->
+            <input type="hidden" id="edit_item_id" name="item_id">
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Edit form fields (only editable fields) -->
+                <div>
+                    <label for="edit_quantity" class="block text-sm font-semibold text-black mb-2">Quantity</label>
+                    <input type="number" id="edit_quantity" name="quantity" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500">
+                </div>
+
+                <div>
+                    <label for="edit_storage_location" class="block text-sm font-semibold text-black mb-2">Storage Location</label>
+                    <input type="text" id="edit_storage_location" name="storage_location" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500">
+                </div>
+
+                <div>
+                    <label for="edit_arrival_date" class="block text-sm font-semibold text-black mb-2">Arrival Date</label>
+                    <input type="date" id="edit_arrival_date" name="arrival_date" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500">
+                </div>
+
+                <div>
+                    <label for="edit_date_purchased" class="block text-sm font-semibold text-black mb-2">Date Purchased</label>
+                    <input type="date" id="edit_date_purchased" name="date_purchased" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500">
+                </div>
+
+                <div>
+                    <label for="edit_status" class="block text-sm font-semibold text-black mb-2">Status</label>
+                    <select id="edit_status" name="status" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500">
+                        <option value="Available">Available</option>
+                        <option value="Unavailable">Unavailable</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex justify-between mt-4">
+                <button type="button" id="cancelEditModal" class="px-4 py-2 bg-gray-400 text-black rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
+                    Cancel
+                </button>
+                <button type="submit" class="px-4 py-2 bg-green-400 text-black rounded-md transition duration-300 hover:bg-green-600 hover:text-white">
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
 
 
 </body>

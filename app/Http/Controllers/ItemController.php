@@ -85,30 +85,74 @@ class ItemController extends Controller
     }
 
     /**
+     * Fetch and return item details for editing.
+     */
+    public function editItem($id)
+    {
+        $item = Item::find($id);
+        if ($item) {
+            return response()->json($item);
+        }
+        return response()->json(['error' => 'Item not found.'], 404);
+    }
+
+    /**
+     * Update the specified item in the database.
+     */
+    public function update(Request $request, $id)
+    {
+        $item = Item::find($id);
+
+        if (!$item) {
+            return redirect()->back()->with('error', 'Item not found.');
+        }
+
+        // Only update editable fields
+        $item->quantity = $request->quantity;
+        $item->storage_location = $request->storage_location;
+        $item->arrival_date = $request->arrival_date;
+        $item->date_purchased = $request->date_purchased;
+        $item->status = $request->status;
+
+        // Handle image upload if provided
+        if ($request->hasFile('image')) {
+            $filename = time() . '.' . $request->image->extension();
+            $request->image->move(public_path('images'), $filename);
+            $item->image = 'images/' . $filename;
+        }
+
+        $item->save();
+
+        return redirect()->back()->with('success', 'Item updated successfully!');
+    }
+
+    /**
      * Archive (soft delete) an item.
      */
     public function archiveItem($id)
-{
-    $item = Item::find($id);
-    if ($item) {
-        $item->is_archived = true; // Set is_archived to true for archiving
-        $item->save(); // Save the change to the database
-        return redirect()->back()->with('success', 'Item archived successfully.'); // Redirect back to the same page with success message
+    {
+        $item = Item::find($id);
+        if ($item) {
+            $item->is_archived = true; // Set is_archived to true for archiving
+            $item->save(); // Save the change to the database
+            return redirect()->back()->with('success', 'Item archived successfully.'); // Redirect back to the same page with success message
+        }
+        return redirect()->back()->with('error', 'Item not found.'); // Return an error if item not found
     }
-    return redirect()->back()->with('error', 'Item not found.'); // Return an error if item not found
-}
 
-public function restoreItem($id)
-{
-    $item = Item::find($id);
-    if ($item) {
-        $item->is_archived = false; // Set is_archived to false for restoring
-        $item->save(); // Save the change to the database
-        return redirect()->back()->with('success', 'Item restored successfully.'); // Redirect back to the same page with success message
+    /**
+     * Restore an archived item.
+     */
+    public function restoreItem($id)
+    {
+        $item = Item::find($id);
+        if ($item) {
+            $item->is_archived = false; // Set is_archived to false for restoring
+            $item->save(); // Save the change to the database
+            return redirect()->back()->with('success', 'Item restored successfully.'); // Redirect back to the same page with success message
+        }
+        return redirect()->back()->with('error', 'Item not found.'); // Return an error if item not found
     }
-    return redirect()->back()->with('error', 'Item not found.'); // Return an error if item not found
-}
-
 
     /**
      * Permanently delete an archived item.

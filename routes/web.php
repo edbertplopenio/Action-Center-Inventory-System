@@ -26,14 +26,28 @@ Route::controller(AuthManager::class)->group(function () {
 // Inventory Routes
 // ===========================
 Route::controller(ItemController::class)->group(function () {
-    Route::get('/inventory', 'index')->name('inventory'); // Display all items
-    Route::post('/items/store', 'store')->name('items.store'); // Store a new item
-    Route::get('/items/{id}/edit', 'edit')->name('items.edit'); // Show edit form
-    Route::put('/items/{id}', 'update')->name('items.update'); // Update item details
-    Route::delete('/items/{id}', 'destroy')->name('items.destroy'); // Permanently delete item
+    // Display all items in the inventory
+    Route::get('/inventory', 'index')->name('inventory'); 
+
+    // Store a new item
+    Route::post('/items/store', 'store')->name('items.store'); 
+
+    // Show edit form for an item
+    Route::get('/items/{id}/edit', 'editItem')->name('items.edit'); 
+
+    // Update item details
+    Route::put('/items/{id}', 'update')->name('items.update'); 
+
+    // Permanently delete item
+    Route::delete('/items/{id}', 'deletePermanently')->name('items.destroy'); 
 
     // Routes for Archiving (Soft Delete), Restoring, and Permanently Deleting Items
     Route::post('/archive-item/{id}', 'archiveItem')->name('archive.item');    // Archive (soft delete)
     Route::post('/restore-item/{id}', 'restoreItem')->name('restore.item');    // Restore (unarchive)
     Route::delete('/delete-item/{id}', 'deletePermanently')->name('delete.item'); // Permanently delete an archived item
+
+    // Route for fetching item data for editing
+    Route::get('/get-item/{id}', 'editItem')->name('get.item.data'); // Fetch item data for editing
+    Route::put('/items/{id}', 'ItemController@update')->name('items.update');
+
 });
