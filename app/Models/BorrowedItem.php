@@ -1,9 +1,12 @@
 <?php
 
+// BorrowedItem.php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;  // Import Carbon
 
 class BorrowedItem extends Model
 {
@@ -24,6 +27,13 @@ class BorrowedItem extends Model
         'is_archived',
     ];
 
+    // Cast borrow_date and due_date to Carbon instances
+    protected $casts = [
+        'borrow_date' => 'datetime',
+        'due_date' => 'date', // Cast due_date as a date type
+        'return_date' => 'date', // Cast return_date as a date type
+    ];
+
     // Relationship with Item model
     public function item()
     {
@@ -36,3 +46,4 @@ class BorrowedItem extends Model
         return $this->belongsTo(User::class, 'borrower_id');
     }
 }
+

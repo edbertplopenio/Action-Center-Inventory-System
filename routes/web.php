@@ -149,3 +149,21 @@ Route::middleware('auth')->group(function() {
 
 // routes/web.php
 Route::post('/admin/inventory-requests/update-status/{id}', [InventoryRequestController::class, 'updateStatus'])->name('admin.updateStatus');
+
+
+
+
+// routes/web.php
+
+use App\Http\Controllers\Admin\ReturnItemsController;
+
+// Admin Returning Items Routes
+Route::prefix('admin')->middleware(['auth'])->group(function () {
+    // Show list of borrowed items to be returned
+    Route::get('/return-items', [ReturnItemsController::class, 'index'])->name('admin.return-items.index');
+
+    // Mark an item as returned
+    Route::post('/return-items/mark/{id}', [ReturnItemsController::class, 'markAsReturned'])->name('admin.return-items.mark');
+});
+
+
