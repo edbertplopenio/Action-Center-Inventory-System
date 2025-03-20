@@ -48,6 +48,6 @@ Route::controller(ItemController::class)->group(function () {
 
     // Route for fetching item data for editing
     Route::get('/get-item/{id}', 'editItem')->name('get.item.data'); // Fetch item data for editing
-    Route::put('/items/{id}', 'ItemController@update')->name('items.update');
+    Route::put('/items/{id}', 'update')->name('items.update');  // Use 'update' directly
 
 });

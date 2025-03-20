@@ -677,7 +677,8 @@ function restoreItem(itemId) {
 
 </script>
 
-<SCRIPT>//EDIT SCRIPTS
+<script>
+// Open the Edit Modal and populate fields with item data
 function openEditModal(itemId) {
     $.ajax({
         url: '/get-item/' + itemId, // Fetch item data for the given itemId
@@ -708,27 +709,19 @@ function openEditModal(itemId) {
     });
 }
 
-
-// Close the Edit Modal
-$('#closeEditModal, #cancelEditModal').click(function() {
-    $('#editItemModal').addClass('hidden');
-});
-
-
-
-// Close the modal after saving the item
+// Save the updated item data when the form is submitted
 $('#editItemForm').submit(function(e) {
     e.preventDefault();  // Prevent default form submission
     
     // Send the form data using AJAX
     $.ajax({
         url: $(this).attr('action'),  // Get the form's action URL
-        method: 'POST',
+        method: 'POST',  // Use 'POST' for the AJAX request
         data: $(this).serialize(),   // Serialize the form data
         success: function(response) {
             alert('Item updated successfully!');
             $('#editItemModal').addClass('hidden');
-            location.reload(); // Refresh the page to show the updated data
+            location.reload();  // Refresh the page to show the updated data
         },
         error: function(xhr) {
             alert('Error updating item.');
@@ -736,8 +729,13 @@ $('#editItemForm').submit(function(e) {
     });
 });
 
-
-</SCRIPT>
+$(document).ready(function () {
+    // Close the Edit Item Modal when clicking the "Cancel" button or the "Close" button (×)
+    $("#cancelEditModal, #closeEditModal").click(function () {
+        $("#editItemModal").addClass("hidden");  // Hide the modal
+    });
+});
+</script>
 
 <!-- Modal Overlay for Adding Item -->
 <div id="addItemModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
@@ -828,9 +826,9 @@ $('#editItemForm').submit(function(e) {
             <h3 class="text-xl font-semibold">Edit Item</h3>
             <button id="closeEditModal" class="text-black hover:text-red-500 text-2xl">&times;</button>
         </div>
-        <form id="editItemForm" action="{{ route('items.update', ['id' => '__ID__']) }}" method="POST" enctype="multipart/form-data">
+        <form id="editItemForm" action="{{ route('items.update', ['id' => '__ID__']) }}" method="POST">
             @csrf
-            @method('PUT') <!-- Use PUT method for updates -->
+            @method('PUT')  <!-- Use PUT method for updates -->
             <input type="hidden" id="edit_item_id" name="item_id">
             <div class="grid grid-cols-2 gap-4">
                 <!-- Add editable fields here -->
