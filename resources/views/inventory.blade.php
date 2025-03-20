@@ -736,7 +736,6 @@ $(document).ready(function () {
     });
 });
 </script>
-
 <!-- Modal Overlay for Adding Item -->
 <div id="addItemModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
     <div class="bg-white p-6 rounded-lg w-2/3 max-w-4xl">
@@ -818,7 +817,6 @@ $(document).ready(function () {
     </div>
 </div>
 
-<!--EDIT MODAL-->
 <!-- Edit Item Modal -->
 <div id="editItemModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
     <div class="bg-white p-6 rounded-lg w-2/3 max-w-4xl">
@@ -831,8 +829,6 @@ $(document).ready(function () {
             @method('PUT')  <!-- Use PUT method for updates -->
             <input type="hidden" id="edit_item_id" name="item_id">
             <div class="grid grid-cols-2 gap-4">
-                <!-- Add editable fields here -->
-
                 <div>
                     <label for="edit_item_name" class="block text-sm font-semibold text-black mb-2">Item Name</label>
                     <input type="text" id="edit_item_name" name="item_name" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
