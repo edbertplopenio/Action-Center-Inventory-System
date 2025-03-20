@@ -213,53 +213,56 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($borrowed_items as $borrowed)
-                    <tr class="borrowed-row cursor-pointer"
-                        data-id="{{ $borrowed->id }}"
-                        data-item-name="{{ $borrowed->item->name }}"
-                        data-category="{{ $borrowed->item->category }}"
-                        data-quantity="{{ $borrowed->quantity_borrowed }}"
-                        data-unit="{{ $borrowed->item->unit }}"
-                        data-borrow-date="{{ $borrowed->borrow_date }}"
-                        data-due-date="{{ $borrowed->due_date }}"
-                        data-return-date="{{ $borrowed->return_date ?? 'Not Returned' }}"
-                        data-status="{{ $borrowed->status }}"
-                        data-responsible-person="{{ $borrowed->responsible_person }}"
-                        data-image-url="{{ $borrowed->item->image_url }}">
+    @forelse($borrowed_items as $borrowed)
+    <tr class="borrowed-row cursor-pointer"
+        data-id="{{ $borrowed->id }}"
+        data-item-name="{{ $borrowed->item->name }}"
+        data-category="{{ $borrowed->item->category }}"
+        data-quantity="{{ $borrowed->quantity_borrowed }}"
+        data-unit="{{ $borrowed->item->unit }}"
+        data-borrow-date="{{ $borrowed->borrow_date }}"
+        data-due-date="{{ $borrowed->due_date }}"
+        data-return-date="{{ $borrowed->return_date ?? 'Not Returned' }}"
+        data-status="{{ $borrowed->status }}"
+        data-responsible-person="{{ $borrowed->responsible_person }}"
+        data-image-url="{{ $borrowed->item->image_url }}">
 
-                        <td>{{ $borrowed->item->name }}</td>
-                        <td>{{ $borrowed->item->category }}</td>
-                        <td>{{ $borrowed->quantity_borrowed }}</td>
-                        <td>{{ $borrowed->item->unit }}</td>
-                        <td>{{ $borrowed->borrow_date }}</td>
-                        <td>{{ $borrowed->due_date }}</td>
-                        <td>{{ $borrowed->return_date ?? 'Not Returned' }}</td>
-                        <td>
-                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-                        {{ $borrowed->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
-                        {{ $borrowed->status == 'Approved' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
-                        {{ $borrowed->status == 'Rejected' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
-                        {{ $borrowed->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-                        {{ $borrowed->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
-                        {{ $borrowed->status == 'Overdue' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
-                                {{ $borrowed->status }}
-                            </span>
-                        </td>
-                        <td>{{ $borrowed->responsible_person }}</td>
-                        <td>
-                            @if($borrowed->item->image_url)
-                            <img src="{{ asset($borrowed->item->image_url) }}" alt="Item Image" style="width: 50px; height: 50px;">
-                            @else
-                            No Image
-                            @endif
-                        </td>
-                    </tr>
-                    @empty
-                    <tr id="noRecordsRow">
-                        <td colspan="10" class="text-center">No borrowed items found.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
+        <td>{{ $borrowed->item->name }}</td>
+        <td>{{ $borrowed->item->category }}</td>
+        <td>{{ $borrowed->quantity_borrowed }}</td>
+        <td>{{ $borrowed->item->unit }}</td>
+        <td>{{ $borrowed->borrow_date }}</td>
+        <td>{{ $borrowed->due_date }}</td>
+        <td>{{ $borrowed->return_date ?? 'Not Returned' }}</td>
+        <td>
+            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                {{ $borrowed->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                {{ $borrowed->status == 'Approved' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                {{ $borrowed->status == 'Rejected' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                {{ $borrowed->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                {{ $borrowed->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
+                {{ $borrowed->status == 'Overdue' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}
+                {{ $borrowed->status == 'Lost' ? 'bg-gray-500/10 text-gray-500 border border-gray-500' : '' }}
+                {{ $borrowed->status == 'Damaged' ? 'bg-pink-500/10 text-pink-500 border border-pink-500' : '' }}">
+                {{ $borrowed->status }}
+            </span>
+        </td>
+        <td>{{ $borrowed->responsible_person }}</td>
+        <td>
+            @if($borrowed->item->image_url)
+            <img src="{{ asset($borrowed->item->image_url) }}" alt="Item Image" style="width: 50px; height: 50px;">
+            @else
+            No Image
+            @endif
+        </td>
+    </tr>
+    @empty
+    <tr id="noRecordsRow">
+        <td colspan="10" class="text-center">No borrowed items found.</td>
+    </tr>
+    @endforelse
+</tbody>
+
             </table>
         </div>
 

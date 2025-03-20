@@ -207,51 +207,54 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($borrowing_requests as $request)
-                    <tr>
-                        <td>
-                            @if($request->borrower)
-                            {{ $request->borrower->first_name }} {{ $request->borrower->last_name }}
-                            @else
-                            <span class="text-red-500">No Borrower Found</span>
-                            @endif
-                        </td>
+    @forelse($borrowing_requests as $request)
+    <tr>
+        <td>
+            @if($request->borrower)
+            {{ $request->borrower->first_name }} {{ $request->borrower->last_name }}
+            @else
+            <span class="text-red-500">No Borrower Found</span>
+            @endif
+        </td>
 
-                        <td>{{ $request->item->name }}</td>
-                        <td>{{ $request->quantity_borrowed }}</td>
-                        <td>{{ \Carbon\Carbon::parse($request->borrow_date)->format('Y-m-d') }}</td>
-                        <td>{{ \Carbon\Carbon::parse($request->due_date)->format('Y-m-d') }}</td>
-                        <td>
-                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-                                {{ $request->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
-                                {{ $request->status == 'Approved' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
-                                {{ $request->status == 'Rejected' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
-                                {{ $request->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-                                {{ $request->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
-                                {{ $request->status == 'Overdue' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
-                                {{ $request->status }}
-                            </span>
-                        </td>
-                        <td>
-                            <button class="approve-btn px-2 py-1 m-1 bg-green-500 text-white rounded 
-                            hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-xs w-24"
-                                onclick="updateStatus('{{ $request->id }}', 'Approved')">
-                                Approve
-                            </button>
+        <td>{{ $request->item->name }}</td>
+        <td>{{ $request->quantity_borrowed }}</td>
+        <td>{{ \Carbon\Carbon::parse($request->borrow_date)->format('Y-m-d') }}</td>
+        <td>{{ \Carbon\Carbon::parse($request->due_date)->format('Y-m-d') }}</td>
+        <td>
+            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                {{ $request->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                {{ $request->status == 'Approved' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                {{ $request->status == 'Rejected' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                {{ $request->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                {{ $request->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
+                {{ $request->status == 'Overdue' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}
+                {{ $request->status == 'Lost' ? 'bg-gray-500/10 text-gray-500 border border-gray-500' : '' }}
+                {{ $request->status == 'Damaged' ? 'bg-pink-500/10 text-pink-500 border border-pink-500' : '' }}">
+                {{ $request->status }}
+            </span>
+        </td>
+        <td>
+            <button class="approve-btn px-2 py-1 m-1 bg-green-500 text-white rounded 
+            hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-xs w-24"
+                onclick="updateStatus('{{ $request->id }}', 'Approved')">
+                Approve
+            </button>
 
-                            <button class="reject-btn px-2 py-1 m-1 bg-red-500 text-white rounded 
-                            hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 text-xs w-24"
-                                onclick="updateStatus('{{ $request->id }}', 'Rejected')">
-                                Reject
-                            </button>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="7" class="text-center">No borrowing requests found.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
+            <button class="reject-btn px-2 py-1 m-1 bg-red-500 text-white rounded 
+            hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 text-xs w-24"
+                onclick="updateStatus('{{ $request->id }}', 'Rejected')">
+                Reject
+            </button>
+        </td>
+    </tr>
+    @empty
+    <tr>
+        <td colspan="7" class="text-center">No borrowing requests found.</td>
+    </tr>
+    @endforelse
+</tbody>
+
             </table>
         </div>
     </div>
