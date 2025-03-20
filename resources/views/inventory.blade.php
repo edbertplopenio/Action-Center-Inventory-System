@@ -678,15 +678,18 @@ function restoreItem(itemId) {
 </script>
 
 <SCRIPT>//EDIT SCRIPTS
-    // Open the Edit Item Modal and populate fields
-    function openEditModal(itemId) {
+function openEditModal(itemId) {
     $.ajax({
         url: '/get-item/' + itemId, // Fetch item data for the given itemId
         method: 'GET',
         success: function(item) {
             // Populate the form fields with the item data
             $('#edit_item_id').val(item.id);
+            $('#edit_item_name').val(item.item_name);
+            $('#edit_category').val(item.category);
             $('#edit_quantity').val(item.quantity);
+            $('#edit_unit').val(item.unit);
+            $('#edit_description').val(item.description);
             $('#edit_storage_location').val(item.storage_location);
             $('#edit_arrival_date').val(item.arrival_date);
             $('#edit_date_purchased').val(item.date_purchased);
@@ -704,9 +707,6 @@ function restoreItem(itemId) {
         }
     });
 }
-
-
-
 
 
 // Close the Edit Modal
@@ -828,15 +828,41 @@ $('#editItemForm').submit(function(e) {
             <h3 class="text-xl font-semibold">Edit Item</h3>
             <button id="closeEditModal" class="text-black hover:text-red-500 text-2xl">&times;</button>
         </div>
-        <form id="editItemForm" action="{{ route('items.update', ['id' => '__ID__']) }}" method="POST">
+        <form id="editItemForm" action="{{ route('items.update', ['id' => '__ID__']) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT') <!-- Use PUT method for updates -->
             <input type="hidden" id="edit_item_id" name="item_id">
             <div class="grid grid-cols-2 gap-4">
-                <!-- Edit form fields (only editable fields) -->
+                <!-- Add editable fields here -->
+
+                <div>
+                    <label for="edit_item_name" class="block text-sm font-semibold text-black mb-2">Item Name</label>
+                    <input type="text" id="edit_item_name" name="item_name" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
+                </div>
+
+                <div>
+                    <label for="edit_category" class="block text-sm font-semibold text-black mb-2">Category</label>
+                    <select id="edit_category" name="category" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500">
+                        <option value="DRRM Equipment">DRRM Equipment</option>
+                        <option value="Office Supplies">Office Supplies</option>
+                        <option value="Emergency Kits">Emergency Kits</option>
+                        <option value="Other Items">Other Items</option>
+                    </select>
+                </div>
+
                 <div>
                     <label for="edit_quantity" class="block text-sm font-semibold text-black mb-2">Quantity</label>
-                    <input type="number" id="edit_quantity" name="quantity" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500">
+                    <input type="number" id="edit_quantity" name="quantity" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
+                </div>
+
+                <div>
+                    <label for="edit_unit" class="block text-sm font-semibold text-black mb-2">Unit</label>
+                    <input type="text" id="edit_unit" name="unit" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500">
+                </div>
+
+                <div>
+                    <label for="edit_description" class="block text-sm font-semibold text-black mb-2">Description</label>
+                    <textarea id="edit_description" name="description" rows="3" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500"></textarea>
                 </div>
 
                 <div>
@@ -861,6 +887,11 @@ $('#editItemForm').submit(function(e) {
                         <option value="Unavailable">Unavailable</option>
                     </select>
                 </div>
+
+                <div>
+                    <label for="edit_image" class="block text-sm font-semibold text-black mb-2">Image</label>
+                    <input type="file" id="edit_image" name="image" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500">
+                </div>
             </div>
 
             <div class="flex justify-between mt-4">
@@ -874,9 +905,6 @@ $('#editItemForm').submit(function(e) {
         </form>
     </div>
 </div>
-
-
-
 
 </body>
 </html>
