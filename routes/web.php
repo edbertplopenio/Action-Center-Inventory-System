@@ -145,3 +145,7 @@ Route::middleware('auth')->group(function() {
     Route::get('/borrowed-items', [BorrowEquipmentController::class, 'index'])->name('borrowed.items');
 });
 
+
+
+// routes/web.php
+Route::post('/admin/inventory-requests/update-status/{id}', [InventoryRequestController::class, 'updateStatus'])->name('admin.updateStatus');

@@ -189,14 +189,14 @@
         <div class="flex justify-between items-center mb-1 pt-0">
             <h1 class="text-3xl text-left">Borrowed Equipments</h1>
             <div class="flex space-x-2 w-auto">
-            <button id="openModal" type="button" class="text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 shadow-lg shadow-teal-500/50 dark:shadow-lg dark:shadow-teal-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
-    Generate Report
-</button>
-            
+                <button id="openModal" type="button" class="text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 shadow-lg shadow-teal-500/50 dark:shadow-lg dark:shadow-teal-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+                    Generate Report
+                </button>
+
             </div>
         </div>
 
-        <div style="height: 625px; overflow-y: auto;">
+        <div style="height: 620px; overflow-y: auto;">
             <table id="borrowedTable" class="display" style="width:100%">
                 <thead>
                     <tr>
@@ -213,29 +213,29 @@
                     </tr>
                 </thead>
                 <tbody>
-    @forelse($borrowed_items as $borrowed)
-    <tr class="borrowed-row cursor-pointer"
-        data-id="{{ $borrowed->id }}"
-        data-item-name="{{ $borrowed->item->name }}"
-        data-category="{{ $borrowed->item->category }}"
-        data-quantity="{{ $borrowed->quantity_borrowed }}"
-        data-unit="{{ $borrowed->item->unit }}"
-        data-borrow-date="{{ $borrowed->borrow_date }}"
-        data-due-date="{{ $borrowed->due_date }}"
-        data-return-date="{{ $borrowed->return_date ?? 'Not Returned' }}"
-        data-status="{{ $borrowed->status }}"
-        data-responsible-person="{{ $borrowed->responsible_person }}"
-        data-image-url="{{ $borrowed->item->image_url }}">
+                    @forelse($borrowed_items as $borrowed)
+                    <tr class="borrowed-row cursor-pointer"
+                        data-id="{{ $borrowed->id }}"
+                        data-item-name="{{ $borrowed->item->name }}"
+                        data-category="{{ $borrowed->item->category }}"
+                        data-quantity="{{ $borrowed->quantity_borrowed }}"
+                        data-unit="{{ $borrowed->item->unit }}"
+                        data-borrow-date="{{ $borrowed->borrow_date }}"
+                        data-due-date="{{ $borrowed->due_date }}"
+                        data-return-date="{{ $borrowed->return_date ?? 'Not Returned' }}"
+                        data-status="{{ $borrowed->status }}"
+                        data-responsible-person="{{ $borrowed->responsible_person }}"
+                        data-image-url="{{ $borrowed->item->image_url }}">
 
-        <td>{{ $borrowed->item->name }}</td>
-        <td>{{ $borrowed->item->category }}</td>
-        <td>{{ $borrowed->quantity_borrowed }}</td>
-        <td>{{ $borrowed->item->unit }}</td>
-        <td>{{ $borrowed->borrow_date }}</td>
-        <td>{{ $borrowed->due_date }}</td>
-        <td>{{ $borrowed->return_date ?? 'Not Returned' }}</td>
-        <td>
-            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                        <td>{{ $borrowed->item->name }}</td>
+                        <td>{{ $borrowed->item->category }}</td>
+                        <td>{{ $borrowed->quantity_borrowed }}</td>
+                        <td>{{ $borrowed->item->unit }}</td>
+                        <td>{{ $borrowed->borrow_date }}</td>
+                        <td>{{ $borrowed->due_date }}</td>
+                        <td>{{ $borrowed->return_date ?? 'Not Returned' }}</td>
+                        <td>
+                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
                 {{ $borrowed->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
                 {{ $borrowed->status == 'Approved' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
                 {{ $borrowed->status == 'Rejected' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
@@ -244,24 +244,24 @@
                 {{ $borrowed->status == 'Overdue' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}
                 {{ $borrowed->status == 'Lost' ? 'bg-gray-500/10 text-gray-500 border border-gray-500' : '' }}
                 {{ $borrowed->status == 'Damaged' ? 'bg-pink-500/10 text-pink-500 border border-pink-500' : '' }}">
-                {{ $borrowed->status }}
-            </span>
-        </td>
-        <td>{{ $borrowed->responsible_person }}</td>
-        <td>
-            @if($borrowed->item->image_url)
-            <img src="{{ asset($borrowed->item->image_url) }}" alt="Item Image" style="width: 50px; height: 50px;">
-            @else
-            No Image
-            @endif
-        </td>
-    </tr>
-    @empty
-    <tr id="noRecordsRow">
-        <td colspan="10" class="text-center">No borrowed items found.</td>
-    </tr>
-    @endforelse
-</tbody>
+                                {{ $borrowed->status }}
+                            </span>
+                        </td>
+                        <td>{{ $borrowed->responsible_person }}</td>
+                        <td>
+                            @if($borrowed->item->image_url)
+                            <img src="{{ asset($borrowed->item->image_url) }}" alt="Item Image" style="width: 50px; height: 50px;">
+                            @else
+                            No Image
+                            @endif
+                        </td>
+                    </tr>
+                    @empty
+                    <tr id="noRecordsRow">
+                        <td colspan="10" class="text-center">No borrowed items found.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
 
             </table>
         </div>
@@ -310,32 +310,31 @@
 
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-    const openModalBtn = document.getElementById("openModal");
-    const modal = document.getElementById("myModal");
-    const closeModalBtn = document.getElementById("closeModal");
-    const printBtn = document.getElementById("printReport");
+    document.addEventListener("DOMContentLoaded", function() {
+        const openModalBtn = document.getElementById("openModal");
+        const modal = document.getElementById("myModal");
+        const closeModalBtn = document.getElementById("closeModal");
+        const printBtn = document.getElementById("printReport");
 
-    // Open modal
-    openModalBtn.addEventListener("click", function () {
-        modal.style.display = "block";
+        // Open modal
+        openModalBtn.addEventListener("click", function() {
+            modal.style.display = "block";
+        });
+
+        // Close modal
+        closeModalBtn.addEventListener("click", function() {
+            modal.style.display = "none";
+        });
+
+        // Print report
+        printBtn.addEventListener("click", function() {
+            const printContent = document.getElementById("reportContent").innerHTML;
+            const printWindow = window.open("", "", "width=800,height=600");
+            printWindow.document.write(`<html><head><title>Print Report</title></head><body>${printContent}</body></html>`);
+            printWindow.document.close();
+            printWindow.print();
+        });
     });
-
-    // Close modal
-    closeModalBtn.addEventListener("click", function () {
-        modal.style.display = "none";
-    });
-
-    // Print report
-    printBtn.addEventListener("click", function () {
-        const printContent = document.getElementById("reportContent").innerHTML;
-        const printWindow = window.open("", "", "width=800,height=600");
-        printWindow.document.write(`<html><head><title>Print Report</title></head><body>${printContent}</body></html>`);
-        printWindow.document.close();
-        printWindow.print();
-    });
-});
-
 </script>
 
 

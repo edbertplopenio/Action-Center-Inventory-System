@@ -204,7 +204,19 @@
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->description }}</td>
-                        <td>{{ $item->status }}</td>
+                        <td>
+                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                {{ $item->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                {{ $item->status == 'Reserved' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                {{ $item->status == 'Out of Stock' ? 'bg-gray-500/10 text-gray-500 border border-gray-500' : '' }}
+                {{ $item->status == 'Needs Repair' ? 'bg-pink-500/10 text-pink-500 border border-pink-500' : '' }}
+                {{ $item->status == 'Damaged' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                {{ $item->status == 'Lost' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
+                {{ $item->status == 'Retired' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                                {{ $item->status }}
+                            </span>
+                        </td>
                         <td>
                             @if($item->image_url)
                             <img src="{{ $item->image_url }}" alt="Item Image" style="width: 50px; height: 50px;">
@@ -226,6 +238,7 @@
                     </tr>
                     @endforelse
                 </tbody>
+
 
             </table>
         </div>
@@ -312,157 +325,156 @@
 
 
 <script>
-   document.addEventListener("DOMContentLoaded", function() {
-    const borrowModal = document.getElementById("borrowModal");
-    const closeBorrowModalBtn = document.getElementById("closeBorrowModalBtn");
-    const borrowForm = document.getElementById("borrowForm");
-    const borrowDateInput = document.getElementById("borrow-date");
-    const dueDateInput = document.getElementById("due-date");
-    const quantityInput = document.getElementById("borrow-quantity"); // Quantity to borrow input
-    const currentQuantityInput = document.getElementById("current-quantity"); // Current quantity in modal
-    const errorMessageDiv = document.getElementById("error-message"); // Div for displaying errors
+    document.addEventListener("DOMContentLoaded", function() {
+        const borrowModal = document.getElementById("borrowModal");
+        const closeBorrowModalBtn = document.getElementById("closeBorrowModalBtn");
+        const borrowForm = document.getElementById("borrowForm");
+        const borrowDateInput = document.getElementById("borrow-date");
+        const dueDateInput = document.getElementById("due-date");
+        const quantityInput = document.getElementById("borrow-quantity"); // Quantity to borrow input
+        const currentQuantityInput = document.getElementById("current-quantity"); // Current quantity in modal
+        const errorMessageDiv = document.getElementById("error-message"); // Div for displaying errors
 
-    let selectedItemId = null;
-    let currentQuantity = 0; // Store the initial current quantity for the item
+        let selectedItemId = null;
+        let currentQuantity = 0; // Store the initial current quantity for the item
 
-    // Function to get today's date in YYYY-MM-DD format
-    function getCurrentDate() {
-        const today = new Date();
-        return today.toISOString().split("T")[0]; // Format: YYYY-MM-DD
-    }
-
-    // Open Borrow Details Modal directly
-    window.borrowItem = function(itemId, itemCurrentQuantity) {
-        selectedItemId = itemId;
-        currentQuantity = itemCurrentQuantity; // Set the current quantity for the item
-        borrowModal.style.display = "block";
-        document.getElementById("borrow-item-id").value = selectedItemId;
-        borrowDateInput.value = getCurrentDate(); // Auto-fill borrow date
-        currentQuantityInput.value = currentQuantity; // Set the current quantity in the modal
-    };
-
-    // When quantity to borrow is changed, calculate the remaining quantity
-    quantityInput.addEventListener("input", function() {
-        const borrowQuantity = parseInt(quantityInput.value) || 0;
-        const remainingQuantity = currentQuantity - borrowQuantity;
-
-        // Update the current quantity dynamically based on what is entered
-        currentQuantityInput.value = remainingQuantity >= 0 ? remainingQuantity : currentQuantity;
-
-        // If the quantity to borrow exceeds current quantity, show error
-        if (remainingQuantity < 0) {
-            quantityInput.setCustomValidity("Quantity to borrow cannot exceed the available quantity.");
-            quantityInput.reportValidity(); // Trigger the validation UI
-        } else {
-            quantityInput.setCustomValidity(""); // Reset the custom validity
+        // Function to get today's date in YYYY-MM-DD format
+        function getCurrentDate() {
+            const today = new Date();
+            return today.toISOString().split("T")[0]; // Format: YYYY-MM-DD
         }
-    });
 
-    // Check if Due Date is later than Borrow Date
-    function validateDueDate() {
-        const borrowDate = new Date(borrowDateInput.value);
-        const dueDate = new Date(dueDateInput.value);
+        // Open Borrow Details Modal directly
+        window.borrowItem = function(itemId, itemCurrentQuantity) {
+            selectedItemId = itemId;
+            currentQuantity = itemCurrentQuantity; // Set the current quantity for the item
+            borrowModal.style.display = "block";
+            document.getElementById("borrow-item-id").value = selectedItemId;
+            borrowDateInput.value = getCurrentDate(); // Auto-fill borrow date
+            currentQuantityInput.value = currentQuantity; // Set the current quantity in the modal
+        };
 
-        if (dueDate <= borrowDate) {
-            dueDateInput.setCustomValidity("Due Date must be later than Borrow Date.");
-            dueDateInput.reportValidity(); // Trigger the validation UI
-        } else {
-            dueDateInput.setCustomValidity(""); // Reset the custom validity
+        // When quantity to borrow is changed, calculate the remaining quantity
+        quantityInput.addEventListener("input", function() {
+            const borrowQuantity = parseInt(quantityInput.value) || 0;
+            const remainingQuantity = currentQuantity - borrowQuantity;
+
+            // Update the current quantity dynamically based on what is entered
+            currentQuantityInput.value = remainingQuantity >= 0 ? remainingQuantity : currentQuantity;
+
+            // If the quantity to borrow exceeds current quantity, show error
+            if (remainingQuantity < 0) {
+                quantityInput.setCustomValidity("Quantity to borrow cannot exceed the available quantity.");
+                quantityInput.reportValidity(); // Trigger the validation UI
+            } else {
+                quantityInput.setCustomValidity(""); // Reset the custom validity
+            }
+        });
+
+        // Check if Due Date is later than Borrow Date
+        function validateDueDate() {
+            const borrowDate = new Date(borrowDateInput.value);
+            const dueDate = new Date(dueDateInput.value);
+
+            if (dueDate <= borrowDate) {
+                dueDateInput.setCustomValidity("Due Date must be later than Borrow Date.");
+                dueDateInput.reportValidity(); // Trigger the validation UI
+            } else {
+                dueDateInput.setCustomValidity(""); // Reset the custom validity
+            }
         }
-    }
 
-    // Listen for changes in Due Date and validate it
-    dueDateInput.addEventListener("input", validateDueDate);
+        // Listen for changes in Due Date and validate it
+        dueDateInput.addEventListener("input", validateDueDate);
 
-    // Close Borrow Modal and reset form fields
-    closeBorrowModalBtn.addEventListener("click", function() {
-        borrowModal.style.display = "none";
+        // Close Borrow Modal and reset form fields
+        closeBorrowModalBtn.addEventListener("click", function() {
+            borrowModal.style.display = "none";
 
-        // Reset the fields to ensure no previous data is left
-        borrowForm.reset();
-        currentQuantityInput.value = ""; // Clear current quantity display
-        errorMessageDiv.innerHTML = ""; // Clear error messages
+            // Reset the fields to ensure no previous data is left
+            borrowForm.reset();
+            currentQuantityInput.value = ""; // Clear current quantity display
+            errorMessageDiv.innerHTML = ""; // Clear error messages
+        });
+
+        // Borrow Item Form Submission
+        borrowForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+            console.log("Form submission triggered"); // Debug line: Check if form submission is triggered
+
+            errorMessageDiv.innerHTML = ""; // Clear previous errors
+
+            const borrowDate = borrowDateInput.value.trim();
+            const dueDate = dueDateInput.value.trim();
+            const borrowQuantity = quantityInput.value.trim();
+
+            let errors = [];
+
+            // Field Validation
+            if (!borrowDate) errors.push("Borrow Date is required.");
+            if (!dueDate) errors.push("Due Date is required.");
+            if (!borrowQuantity) errors.push("Quantity is required.");
+
+            // Show Errors if any
+            if (errors.length > 0) {
+                console.log("Validation errors: ", errors); // Debug line: Log validation errors
+                errorMessageDiv.innerHTML = errors.map(error => `<p style="color:red;">${error}</p>`).join("");
+                return;
+            }
+
+            // Debugging the values before submitting
+            console.log("Borrow Date:", borrowDate);
+            console.log("Due Date:", dueDate);
+            console.log("Borrow Quantity:", borrowQuantity);
+            console.log("Item ID:", selectedItemId);
+
+            // Proceed with Submission if No Errors
+            console.log("Submitting data..."); // Debug line: Check if we are proceeding to the fetch request
+
+            fetch("{{ route('borrow.item') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                    },
+                    body: JSON.stringify({
+                        item_id: selectedItemId,
+                        borrow_date: borrowDate,
+                        due_date: dueDate,
+                        quantity: borrowQuantity
+                    })
+                })
+                .then(response => {
+                    console.log("Response received:", response); // Debug line: Check response status
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Response data:", data); // Debug line: Check the response body
+
+                    if (data.success) {
+                        alert("Item borrowed successfully!");
+                        borrowModal.style.display = "none"; // Close modal
+                    } else {
+                        alert(data.error || "Error borrowing item.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error); // Debug line: Check any errors in the fetch request
+                    alert("Something went wrong.");
+                });
+        });
+
     });
 
-   // Borrow Item Form Submission
-borrowForm.addEventListener("submit", function(event) {
-    event.preventDefault();
-    console.log("Form submission triggered"); // Debug line: Check if form submission is triggered
-
-    errorMessageDiv.innerHTML = ""; // Clear previous errors
-
-    const borrowDate = borrowDateInput.value.trim();
-    const dueDate = dueDateInput.value.trim();
-    const borrowQuantity = quantityInput.value.trim();
-
-    let errors = [];
-
-    // Field Validation
-    if (!borrowDate) errors.push("Borrow Date is required.");
-    if (!dueDate) errors.push("Due Date is required.");
-    if (!borrowQuantity) errors.push("Quantity is required.");
-
-    // Show Errors if any
-    if (errors.length > 0) {
-        console.log("Validation errors: ", errors); // Debug line: Log validation errors
-        errorMessageDiv.innerHTML = errors.map(error => `<p style="color:red;">${error}</p>`).join("");
-        return;
-    }
-
-    // Debugging the values before submitting
-    console.log("Borrow Date:", borrowDate);
-    console.log("Due Date:", dueDate);
-    console.log("Borrow Quantity:", borrowQuantity);
-    console.log("Item ID:", selectedItemId);
-
-    // Proceed with Submission if No Errors
-    console.log("Submitting data..."); // Debug line: Check if we are proceeding to the fetch request
-
-    fetch("{{ route('borrow.item') }}", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
-        },
-        body: JSON.stringify({
-            item_id: selectedItemId,
-            borrow_date: borrowDate,
-            due_date: dueDate,
-            quantity: borrowQuantity
-        })
-    })
-    .then(response => {
-        console.log("Response received:", response); // Debug line: Check response status
-        return response.json();
-    })
-    .then(data => {
-        console.log("Response data:", data); // Debug line: Check the response body
-
-        if (data.success) {
-            alert("Item borrowed successfully!");
-            borrowModal.style.display = "none"; // Close modal
-        } else {
-            alert(data.error || "Error borrowing item.");
-        }
-    })
-    .catch(error => {
-        console.error("Error:", error); // Debug line: Check any errors in the fetch request
-        alert("Something went wrong.");
+    $(document).ready(function() {
+        $('#myTable').DataTable({
+            scrollY: '425px',
+            scrollCollapse: true,
+            paging: true,
+            searching: true,
+            ordering: true
+        });
     });
-});
-
-});
-
-$(document).ready(function() {
-    $('#myTable').DataTable({
-        scrollY: '425px',
-        scrollCollapse: true,
-        paging: true,
-        searching: true,
-        ordering: true
-    });
-});
-
 </script>
 
 

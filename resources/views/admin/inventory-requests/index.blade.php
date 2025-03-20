@@ -264,7 +264,7 @@
 <script>
     $(document).ready(function() {
         $('#requestsTable').DataTable({
-            scrollY: '425px',
+            scrollY: '420px',
             scrollCollapse: true,
             paging: true,
             searching: true,
@@ -273,36 +273,37 @@
     });
 
     function updateStatus(id, status) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You are about to " + status.toLowerCase() + " this request.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: status === 'Approved' ? '#28a745' : '#dc3545',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, ' + status.toLowerCase() + ' it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '/admin/inventory-requests/update-status/' + id,
-                    type: 'POST',
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        status: status
-                    },
-                    success: function(response) {
-                        Swal.fire('Updated!', 'The request has been ' + status.toLowerCase() + '.', 'success')
-                            .then(() => {
-                                location.reload();
-                            });
-                    },
-                    error: function() {
-                        Swal.fire('Error!', 'Something went wrong.', 'error');
-                    }
-                });
-            }
-        });
-    }
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You are about to " + status.toLowerCase() + " this request.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: status === 'Approved' ? '#28a745' : '#dc3545',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, ' + status.toLowerCase() + ' it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '/admin/inventory-requests/update-status/' + id,
+                type: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    status: status
+                },
+                success: function(response) {
+                    Swal.fire('Updated!', 'The request has been ' + status.toLowerCase() + '.', 'success')
+                        .then(() => {
+                            location.reload();
+                        });
+                },
+                error: function() {
+                    Swal.fire('Error!', 'Something went wrong.', 'error');
+                }
+            });
+        }
+    });
+}
+
 </script>
 
 

@@ -17,4 +17,28 @@ class InventoryRequestController extends Controller
 
         return view('admin.inventory-requests.index', compact('borrowing_requests'));
     }
+
+
+    // app/Http/Controllers/Admin/InventoryRequestController.php
+public function updateStatus(Request $request, $id)
+{
+    // Validate the status input
+    $request->validate([
+        'status' => 'required|in:Pending,Approved,Rejected,Borrowed,Returned,Overdue,Lost,Damaged',
+    ]);
+
+    // Find the borrowing request by ID
+    $borrowedItem = BorrowedItem::findOrFail($id);
+
+    // Update the status
+    $borrowedItem->status = $request->status;
+    $borrowedItem->save();
+
+    // Return a response
+    return response()->json([
+        'success' => true,
+        'message' => 'Status updated successfully!',
+    ]);
+}
+
 }
