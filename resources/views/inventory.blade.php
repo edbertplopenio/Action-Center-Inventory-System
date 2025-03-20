@@ -818,6 +818,8 @@ $(document).ready(function () {
     </div>
 </div>
 
+
+
 <!--EDIT MODAL-->
 <!-- Edit Item Modal -->
 <div id="editItemModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
