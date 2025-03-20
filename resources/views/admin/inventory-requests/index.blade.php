@@ -184,6 +184,14 @@
         }
     </style>
 
+    <style>
+        button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+    </style>
+
 
 </head>
 
@@ -235,18 +243,30 @@
             </span>
         </td>
         <td>
-            <button class="approve-btn px-2 py-1 m-1 bg-green-500 text-white rounded 
-            hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-xs w-24"
-                onclick="updateStatus('{{ $request->id }}', 'Approved')">
-                Approve
-            </button>
+    <button class="approve-btn px-2 py-1 m-1 bg-green-500 text-white rounded 
+    hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-xs w-24"
+    onclick="updateStatus('{{ $request->id }}', 'Approved')"
+    @if(in_array($request->status, ['Approved', 'Rejected', 'Borrowed', 'Returned', 'Overdue', 'Lost', 'Damaged']))
+        disabled
+        style="opacity: 0.5;"
+        data-toggle="tooltip" data-placement="top" title="This request cannot be approved because it is already in a final state."
+    @endif>
+        Approve
+    </button>
 
-            <button class="reject-btn px-2 py-1 m-1 bg-red-500 text-white rounded 
-            hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 text-xs w-24"
-                onclick="updateStatus('{{ $request->id }}', 'Rejected')">
-                Reject
-            </button>
-        </td>
+    <button class="reject-btn px-2 py-1 m-1 bg-red-500 text-white rounded 
+    hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 text-xs w-24"
+    onclick="updateStatus('{{ $request->id }}', 'Rejected')"
+    @if(in_array($request->status, ['Approved', 'Rejected', 'Borrowed', 'Returned', 'Overdue', 'Lost', 'Damaged']))
+        disabled
+        style="opacity: 0.5;"
+        data-toggle="tooltip" data-placement="top" title="This request cannot be rejected because it is already in a final state."
+    @endif>
+        Reject
+    </button>
+</td>
+
+
     </tr>
     @empty
     <tr>
@@ -262,17 +282,21 @@
 
 
 <script>
-    $(document).ready(function() {
-        $('#requestsTable').DataTable({
-            scrollY: '420px',
-            scrollCollapse: true,
-            paging: true,
-            searching: true,
-            ordering: true
-        });
+   $(document).ready(function() {
+    // Initialize DataTable
+    $('#requestsTable').DataTable({
+        scrollY: '420px',
+        scrollCollapse: true,
+        paging: true,
+        searching: true,
+        ordering: true
     });
 
-    function updateStatus(id, status) {
+    // Initialize tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+});
+
+function updateStatus(id, status) {
     Swal.fire({
         title: 'Are you sure?',
         text: "You are about to " + status.toLowerCase() + " this request.",
@@ -303,6 +327,7 @@
         }
     });
 }
+
 
 </script>
 
