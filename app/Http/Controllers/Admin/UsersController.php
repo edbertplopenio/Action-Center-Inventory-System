@@ -22,7 +22,6 @@ class UsersController extends Controller
         // Pass active users to the Blade view
         return view('admin.users.index', compact('users'));
     }
-    
 
     /**
      * Store a new user.
@@ -33,10 +32,9 @@ class UsersController extends Controller
         $validator = Validator::make($request->all(), [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => ['required', 'regex:/^\d{2}-\d{5}@g\.batstate-u\.edu\.ph$/', 'unique:users,email'], // Correct email validation
+            'email' => ['required', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', 'unique:users,email'],
             'user_role' => 'required|string',
             'department' => 'nullable|string|max:255',
-            'contact_number' => ['nullable', 'regex:/^(09|\+639)\d{9}$/'], // Contact number regex validation
             'password' => [
                 'required',
                 'min:6',
@@ -68,7 +66,6 @@ class UsersController extends Controller
             'email' => $request->input('email'),
             'user_role' => $request->input('user_role'),
             'department' => $request->input('department'),
-            'contact_number' => $request->input('contact_number'),
             'password' => Hash::make($request->input('password')),
             'profile_picture' => $photoPath,
             'status' => 'active' // ✅ Ensure new users are active
@@ -99,10 +96,9 @@ class UsersController extends Controller
         $validator = Validator::make($request->all(), [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => "required|email|regex:/^\d{2}-\d{5}@g\.batstate-u\.edu\.ph$/|unique:users,email,$id", // Correct email validation
+            'email' => ['required', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', 'unique:users,email'],
             'user_role' => 'required|string',
             'department' => 'nullable|string|max:255',
-            'contact_number' => ['nullable', 'regex:/^(09|\+639)\d{9}$/'], // Contact number regex validation
             'password' => [
                 'nullable',
                 'min:6',
