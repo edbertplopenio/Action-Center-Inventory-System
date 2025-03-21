@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #scanner-container {
+            margin-top: 20px;
+        }
+        #video {
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid #ccc;
+        }
+        #result {
+            margin-top: 10px;
+            font-size: 1.2em;
+        }
+        #qr-code-container {
+            margin-bottom: 20px;
+        }
+        #qr-code {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+        }
+        #upload-container {
+            margin-top: 20px;
+        }
+        #upload-image {
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>QR Code Scanner</h1>
+
+    <!-- QR Code Display Section -->
+    <div id="qr-code-container">
+        <h2>Scan this QR Code</h2>
+        <img id="qr-code" src="path/to/your-qr-code.png" alt="QR Code">
+    </div>
+
+    <div id="scanner-container">
+        <video id="video" autoplay></video>
+        <div id="result"></div>
+    </div>
+
+    <!-- Image Upload Section -->
+    <div id="upload-container">
+        <h2>Upload an Image</h2>
+        <input type="file" id="upload-image" accept="image/*">
+        <div id="uploaded-result"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+    <script>
+        const video = document.getElementById('video');
+        const resultDiv = document.getElementById('result');
+        const uploadImageInput = document.getElementById('upload-image');
+        const uploadedResultDiv = document.getElementById('uploaded-result');
+        let isQRCodeDetected = false;
+
+        // Set up webcam
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+            .then(stream => {
+                video.srcObject = stream;
+                video.setAttribute('playsinline', true); // for iOS
+                video.play();
+                scanQRCode();
+            })
+            .catch(err => {
+                resultDiv.textContent = "Error accessing camera: " + err;
+            });
+
+        // Function to scan QR code from webcam
+        function scanQRCode() {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+
+            setInterval(() => {
+                if (isQRCodeDetected) return; // Stop scanning once a QR code is detected
+
+                // Draw the video frame to the canvas
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // Try to decode the QR code
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+
+                if (qrCode) {
+                    resultDiv.textContent = 'QR Code detected: ' + qrCode.data;
+                    isQRCodeDetected = true; // Mark that a QR code has been detected
+                } else {
+                    resultDiv.textContent = 'Scanning for QR code...';
+                }
+            }, 100); // Scan every 100ms
+        }
+
+        // Function to scan QR code from uploaded image
+        uploadImageInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        context.drawImage(img, 0, 0, img.width, img.height);
+                        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                        const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+
+                        if (qrCode) {
+                            uploadedResultDiv.textContent = 'QR Code detected in image: ' + qrCode.data;
+                        } else {
+                            uploadedResultDiv.textContent = 'No QR Code detected in image.';
+                        }
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>
