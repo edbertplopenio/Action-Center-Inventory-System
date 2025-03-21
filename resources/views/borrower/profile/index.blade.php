@@ -31,8 +31,9 @@
                         <div class="w-72 h-72 rounded-full border border-white flex items-center justify-center mb-4 relative">
                             <!-- Profile Image Display -->
                             <img id="profile-image-display" 
-                                 src="{{ asset('storage/' . ($user->profile_image ?? 'default_profile.jpg')) }}" 
-                                 alt="Profile Image" class="w-72 h-72 rounded-full object-cover" />
+     src="{{ asset('storage/' . ($user->profile_image ?? 'default_profile.jpg')) }}" 
+     alt="Profile Image" class="w-72 h-72 rounded-full object-cover border-4 border-white" />
+
         
                             <!-- Edit Button inside the Frame (Lower Part) -->
                             <button type="button" class="absolute bottom-2 right-2 text-white border border-white rounded-full p-2 bg-blue-600 hover:bg-blue-700" 
