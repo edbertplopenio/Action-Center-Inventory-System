@@ -33,7 +33,6 @@ class BorrowEquipmentController extends Controller
         $borrowedItem = BorrowedItem::create([
             'borrower_id' => Auth::id(),
             'item_id' => $item->id,
-            'item_code' => $item->name,  // Assuming item code is the name of the item
             'quantity_borrowed' => $request->quantity,
             'borrow_date' => Carbon::parse($request->borrow_date),
             'due_date' => Carbon::parse($request->due_date),
