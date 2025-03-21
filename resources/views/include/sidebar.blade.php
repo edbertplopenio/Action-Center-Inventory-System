@@ -21,6 +21,24 @@
                 <div class="w-11 h-11 rounded-full overflow-hidden">
                     <img src="../../frontend/public/images/users/user-placeholder.jpg" alt="User Image" class="w-full object-cover" />
                 </div>
+                <div class="flex gap-5 pb-5 border-b border-gray-200">
+    <div class="w-11 h-11 rounded-full overflow-hidden relative flex items-center justify-center bg-gray-500 text-white">
+        @if(auth()->user()->profile_image)
+        <img src="{{ asset('storage/' . auth()->user()->profile_image) }}"
+            alt="User Image"
+            class="w-full h-full object-cover"
+            onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+        @endif
+
+        <div class="{{ auth()->user()->profile_image ? 'hidden' : '' }} w-full h-full flex items-center justify-center text-xs font-bold">
+            {{ strtoupper(substr(auth()->user()->first_name, 0, 1)) }}{{ strtoupper(substr(auth()->user()->last_name, 0, 1)) }}
+        </div>
+    </div>
+    <div>
+        <p class="text-sm font-medium text-gray-500 mb-1">{{ auth()->user()->first_name ?? 'First' }} {{ auth()->user()->last_name ?? 'Last' }}</p>
+        <p class="text-sm font-medium text-gray-500">{{ auth()->user()->email ?? 'user.email@example.com' }}</p>
+    </div>
+</div>
                 <div>
                     <p class="text-sm font-medium text-gray-500 mb-1">User Name</p>
                     <p class="text-sm font-medium text-gray-500">user.email@example.com</p>
