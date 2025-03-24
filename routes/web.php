@@ -3,18 +3,15 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthManager;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Borrower\InventoryController as BorrowerInventoryController;  // Import Borrower Inventory Controller
-use App\Http\Controllers\Admin\InventoryController as AdminInventoryController;  // Import Admin Inventory Controller
-use App\Http\Controllers\Borrower\InventoryController;
-use App\Http\Controllers\Borrower\BorrowedEquipmentController;
-use App\Http\Controllers\Borrower\BorrowEquipmentController; 
+use App\Http\Controllers\ItemController;
+use App\Http\Controllers\Admin\InventoryController as AdminInventoryController;
+use App\Http\Controllers\Borrower\InventoryController as BorrowerInventoryController;
 use App\Http\Controllers\Admin\RecordsController;
 use App\Http\Controllers\Admin\UsersController;
-use App\Http\Controllers\Borrower\ProfileController;  // Import the ProfileController
-
 use App\Http\Controllers\Admin\InventoryRequestController;
-
-
+use App\Http\Controllers\Borrower\ProfileController;
+use App\Http\Controllers\Borrower\BorrowedItemsController;
+use App\Http\Controllers\Borrower\BorrowEquipmentController;
 
 // ===================
 // ✅ Authentication Routes
@@ -32,97 +29,69 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+// ===========================
+// Inventory Routes (ItemController)
+// ===========================
 
+Route::controller(ItemController::class)->group(function () {
+    // Display all items in the inventory
+    Route::get('/inventory', 'index')->name('inventory'); 
 
-// Admin Inventory Route
-Route::get('/admin/inventory', [AdminInventoryController::class, 'index'])->name('admin.inventory.index')->middleware('auth');
+    // Store a new item
+    Route::post('/items/store', 'store')->name('items.store'); // Explicitly define post for storing items
 
-// Borrower Inventory Route
-Route::get('/borrower/inventory', [BorrowerInventoryController::class, 'index'])->name('borrower.inventory.index')->middleware('auth');
+    // Show edit form for an item
+    Route::get('/items/{id}/edit', 'editItem')->name('items.edit'); 
 
+    // Update item details
+    Route::put('/items/{id}', 'update')->name('items.update'); 
 
+    // Permanently delete item
+    Route::delete('/items/{id}', 'deletePermanently')->name('items.destroy'); 
 
+    // Routes for Archiving (Soft Delete), Restoring, and Permanently Deleting Items
+    Route::post('/archive-item/{id}', 'archiveItem')->name('archive.item');    // Archive (soft delete)
+    Route::post('/restore-item/{id}', 'restoreItem')->name('restore.item');    // Restore (unarchive)
+    Route::delete('/delete-item/{id}', 'deletePermanently')->name('delete.item'); // Permanently delete an archived item
 
+    // Route for fetching item data for editing
+    Route::get('/get-item/{id}', 'editItem')->name('get.item.data'); // Fetch item data for editing
+});
 
-// ===================
-// ✅ Admin Routes (Protected by Authentication Middleware)
-// ===================
+// ===========================
+// Admin Routes (Protected by Authentication Middleware)
+// ===========================
 Route::prefix('admin')->middleware(['auth'])->group(function () {
+    // Admin Inventory Route
+    Route::get('/inventory', [AdminInventoryController::class, 'index'])->name('admin.inventory.index');
+
     // Records Management
     Route::get('/records', [RecordsController::class, 'index'])->name('records.index');
     Route::post('/records/store', [RecordsController::class, 'store'])->name('records.store'); // ✅ Added Store Route for Records
 
     // User Management
     Route::get('/users', [UsersController::class, 'index'])->name('users.index');
+    Route::get('/users/{id}/edit', [UsersController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{id}', [UsersController::class, 'update'])->name('users.update');
+    Route::post('/users/store', [UsersController::class, 'store']);
 });
 
-// ===================
-// ✅ Sample UI Route (For Testing UI Components, Optional)
-// ===================
-Route::get('/sample-ui', function () {
-    return view('sample-ui');
+// ===========================
+// Borrower Routes (Borrower Inventory Controller)
+// ===========================
+Route::prefix('borrower')->middleware(['auth'])->group(function () {
+    // Borrower Inventory Route
+    Route::get('/inventory', [BorrowerInventoryController::class, 'index'])->name('borrower.inventory.index');
 });
 
-
-Route::prefix('admin')->middleware(['auth'])->group(function () {
-    Route::get('/records', [RecordsController::class, 'index'])->name('records.index');
-    Route::get('/records/archive', [RecordsController::class, 'archiveIndex'])->name('records.archive');
-    Route::post('/records/archive/{id}', [RecordsController::class, 'archive'])->name('records.archive.store');
-    Route::post('/records/restore/{id}', [RecordsController::class, 'restore'])->name('records.restore');
-});
-
-
-
-
-Route::post('/submit-record', [RecordsController::class, 'store'])->name('records.store');
-Route::post('/records/archive/{id}', [RecordsController::class, 'archive'])->name('records.archive.store');
-
-
-Route::get('/admin/records/archive', [RecordsController::class, 'archiveIndex'])->name('records.archive');
-
-
-Route::post('/admin/records/unarchive/{id}', [RecordsController::class, 'unarchive'])->name('records.unarchive');
-Route::put('/admin/records/{id}', [RecordsController::class, 'update'])->name('records.update');
-
-Route::prefix('admin')->middleware(['auth'])->group(function () {
-    Route::get('/users', [UsersController::class, 'index'])->name('users.index');
-});
-
-
-Route::post('/admin/users/store', [UsersController::class, 'store']);
-
-
-Route::get('/admin/users/{id}/edit', [UsersController::class, 'edit'])->name('users.edit');
-
-Route::put('/admin/users/{id}', [UsersController::class, 'update'])->name('users.update');
-
-
-
-
-
-Route::post('/admin/users/deactivate/{id}', [UsersController::class, 'deactivate'])->name('users.deactivate');
-
-Route::get('/admin/users/deactivated', [UsersController::class, 'deactivatedIndex'])->name('users.deactivated');
-
-
-Route::post('/admin/users/activate/{id}', [UsersController::class, 'activate'])->name('users.activate');
-
-
-
-// Profile Route for Borrowers
+// ===========================
+// Profile Routes
+// ===========================
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index')->middleware('auth');
 
-
-
-Route::get('/borrower/inventory', [InventoryController::class, 'index'])->name('borrower.inventory.index');
-
-// Borrowing Request
-Route::get('/borrowing-request', [InventoryRequestController::class, 'index'])->name('admin.borrowing-request.index');
-
-use App\Http\Controllers\Borrower\BorrowedItemsController;
-
-// Borrowed Equipment Routes (Borrowers)
+// ===========================
+// Borrowed Items Routes
+// ===========================
 Route::prefix('borrower')->middleware(['auth'])->group(function () {
     Route::get('/borrow-equipment', [BorrowedItemsController::class, 'index'])->name('borrower.borrow-equipment.index');
     Route::get('/borrow-equipment/create', [BorrowedItemsController::class, 'create'])->name('borrower.borrow-equipment.create');
@@ -132,38 +101,15 @@ Route::prefix('borrower')->middleware(['auth'])->group(function () {
     Route::delete('/borrow-equipment/{borrowedItem}', [BorrowedItemsController::class, 'destroy'])->name('borrower.borrow-equipment.destroy');
 });
 
+// ===========================
+// Borrowing Request Routes
+// ===========================
+Route::get('/borrowing-request', [InventoryRequestController::class, 'index'])->name('admin.borrowing-request.index');
 
-
-
-
-// Borrowed Items Routes
-Route::middleware('auth')->group(function() {
-    // Store a new borrow request
-    Route::post('/borrow-item', [BorrowEquipmentController::class, 'store'])->name('borrow.item');
-
-    // Get borrowed items for the logged-in user
-    Route::get('/borrowed-items', [BorrowEquipmentController::class, 'index'])->name('borrowed.items');
-});
-
-
-
-// routes/web.php
-Route::post('/admin/inventory-requests/update-status/{id}', [InventoryRequestController::class, 'updateStatus'])->name('admin.updateStatus');
-
-
-
-
-// routes/web.php
-
-use App\Http\Controllers\Admin\ReturnItemsController;
-
-// Admin Returning Items Routes
+// ===========================
+// Returning Items Routes
+// ===========================
 Route::prefix('admin')->middleware(['auth'])->group(function () {
-    // Show list of borrowed items to be returned
     Route::get('/return-items', [ReturnItemsController::class, 'index'])->name('admin.return-items.index');
-
-    // Mark an item as returned
     Route::post('/return-items/mark/{id}', [ReturnItemsController::class, 'markAsReturned'])->name('admin.return-items.mark');
 });
-
-
