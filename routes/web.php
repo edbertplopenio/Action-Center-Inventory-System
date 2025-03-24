@@ -29,6 +29,11 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+// Admin Inventory Route
+Route::get('/admin/inventory', [AdminInventoryController::class, 'index'])->name('admin.inventory.index')->middleware('auth');
+// Borrower Inventory Route
+Route::get('/borrower/inventory', [BorrowerInventoryController::class, 'index'])->name('borrower.inventory.index')->middleware('auth');
 // ===========================
 // Inventory Routes (ItemController)
 // ===========================
