@@ -350,23 +350,26 @@
 
 
 
-        <!-- Right Side: QR Code Scanner -->
-        <div class="w-1/2 pl-4 flex flex-col justify-between" style="height: 400px;">
-            <h2 class="text-xl mb-4">Scan QR Code</h2>
-            <div id="scanner-container" class="flex justify-center" style="height: 100%;">
-                <video id="video" autoplay class="w-full max-w-md h-auto border-2 border-gray-300"></video>
-            </div>
-            <div id="result" class="mt-2">Scanning for QR code...</div>
+<!-- Right Side: QR Code Scanner -->
+<div class="w-1/2 pl-4 flex flex-col justify-between" style="height: 400px;">
+    <h2 class="text-xl mb-4">Scan QR Code</h2>
+    <div id="scanner-container" class="flex justify-center" style="height: 100%;">
+        <video id="video" autoplay class="w-full max-w-md h-auto border-2 border-gray-300"></video>
+    </div>
+    <div id="result" class="mt-2">Scanning for QR code...</div>
 
-            <!-- Flex container for buttons -->
-            <div class="flex gap-4 mt-4">
-                <!-- Close Button -->
-                <button class="px-4 py-2 bg-blue-500 text-white rounded w-1/2" onclick="closeQRScanner()">Close</button>
+    <!-- Flex container for buttons -->
+    <div class="flex gap-4 mt-4">
+        <!-- Close Button -->
+        <button class="px-4 py-2 bg-blue-500 text-white rounded w-1/2" onclick="closeQRScanner()">Close</button>
 
-                <!-- Approve Button -->
-                <button class="px-4 py-2 bg-green-500 text-white rounded w-1/2">Approve</button>
-            </div>
-        </div>
+        <!-- Approve Button -->
+        <button class="px-4 py-2 bg-green-500 text-white rounded w-1/2">Approve</button>
+
+        <!-- Undo Button -->
+        <button class="px-4 py-2 bg-gray-500 text-white rounded w-1/2" onclick="undoAction()" id="undoButton" disabled>Undo</button>
+    </div>
+</div>
 
     </div>
 </div>
@@ -391,6 +394,7 @@
 
     let isScanning = false; // Controls if scanning is ongoing
     let scannedQRCodeList = []; // To store scanned QR codes for reference
+    let scannedRows = []; // Store each row with its original index for undo functionality
 
     function openQRScanner(itemId) {
         // Show the QR code modal
@@ -497,6 +501,7 @@
                         scannedQRCodeList.push(qrCode.data); // Add scanned QR code to the list
                         highlightAndMoveRow(qrCode.data);
                         updateItemStatus(qrCode.data); // Update status when a valid QR code is scanned
+                        document.getElementById('undoButton').disabled = false; // Enable Undo button
                     }
                 } else {
                     resultText.textContent = 'Scanning for QR code...';
@@ -510,7 +515,7 @@
             const tableRows = document.querySelectorAll('#codeTable tbody tr');
             let matchFound = false;
 
-            tableRows.forEach(row => {
+            tableRows.forEach((row, index) => {
                 const qrCodeCell = row.cells[0]; // QR Code is in the first column
                 const qrCode = qrCodeCell ? qrCodeCell.textContent : null;
 
@@ -527,20 +532,15 @@
                         block: "center"
                     });
 
+                    // Store the row and its original index in scannedRows
+                    scannedRows.push({
+                        row: row,
+                        index: index
+                    });
+
                     // Move the row to the top (prepend it)
                     const tbody = document.getElementById('codeTable').getElementsByTagName('tbody')[0];
                     tbody.insertBefore(row, tbody.firstChild); // Insert the row at the top
-
-                    // Add to the highlighted rows list if it's not already there
-                    if (!highlightedRows.includes(row)) {
-                        highlightedRows.push(row);
-                    }
-                } else {
-                    // Reset the background color for non-matching rows
-                    if (!highlightedRows.includes(row)) {
-                        row.style.backgroundColor = ''; // Reset the background color
-                        row.style.color = ''; // Reset text color
-                    }
                 }
             });
 
@@ -553,7 +553,6 @@
                 });
             }
         }
-
 
         // Update Item Status when a QR code is successfully scanned
         function updateItemStatus(scannedQRCode) {
@@ -569,13 +568,45 @@
             }
         }
 
+        // Undo action: Revert row changes
+        window.undoAction = function() {
+            if (scannedRows.length > 0) {
+                // Get the last scanned row
+                const lastScanned = scannedRows.pop();
+
+                // Remove highlight and reset status
+                lastScanned.row.style.backgroundColor = '';
+                lastScanned.row.style.color = '';
+                const statusCell = lastScanned.row.cells[1];
+                statusCell.textContent = 'Available'; // Reset status to original
+
+                // Move the row back to its original position in the table
+                const tbody = document.getElementById('codeTable').getElementsByTagName('tbody')[0];
+                const rows = Array.from(tbody.rows);
+                tbody.insertBefore(lastScanned.row, rows[lastScanned.index]);
+
+                // Remove the QR code from the scanned list to allow it to be scanned again
+                const scannedQRCodeIndex = scannedQRCodeList.indexOf(lastScanned.row.cells[0].textContent);
+                if (scannedQRCodeIndex !== -1) {
+                    scannedQRCodeList.splice(scannedQRCodeIndex, 1);
+                }
+
+                // Disable the Undo button if no rows are left to undo
+                if (scannedRows.length === 0) {
+                    document.getElementById('undoButton').disabled = true;
+                }
+            }
+        }
+
         // Close the QR scanner modal
         function closeQRScanner() {
             document.getElementById('qr-modal').classList.add('hidden');
             isScanning = false; // Stop scanning when modal is closed
+            document.getElementById('undoButton').disabled = true; // Disable Undo button
         }
     }
 </script>
+
 
 
 @endsection
