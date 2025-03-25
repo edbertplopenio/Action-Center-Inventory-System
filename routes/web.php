@@ -167,3 +167,9 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
 });
 
 
+Route::get('/admin/borrowing-request', [InventoryRequestController::class, 'index'])->name('admin.borrowing-request.index');
+
+
+Route::get('/admin/get-item-qr-codes/{itemId}', [InventoryRequestController::class, 'getItemQRCodes']);
+
+

@@ -308,4 +308,222 @@
 
 
 
+
+
+
+
+
+
+
+
+
+<!-- Modal for QR Code Scanner -->
+<div id="qr-modal" class="mx-auto p-2 hidden fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm bg-black bg-opacity-50 transition-all duration-300 ease-in-out" style="font-family: 'Inter', sans-serif;">
+    <div class="bg-white p-8 rounded-lg max-w-4xl w-full max-h-[600px] flex">
+
+
+        <!-- Left Side: Table Container with item codes -->
+        <div class="h-full overflow-y-auto w-1/2">
+
+            <table id="codeTable" class="display" style="width: 100%; height: 100%; border: 2px solid #ccc; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="text-align: center;">Item Code</th>
+                        <th style="text-align: center;">Status</th>
+                    </tr>
+                </thead>
+                <tbody style="text-align: center;">
+                    <tr>
+                        <td>ITEM001</td>
+                        <td>Available</td>
+                    </tr>
+                    <tr>
+                        <td>ITEM002</td>
+                        <td>Available</td>
+                    </tr>
+                    <tr>
+                        <td>ITEM003</td>
+                        <td>Available</td>
+                    </tr>
+                    <tr>
+                        <td>ITEM001</td>
+                        <td>Available</td>
+                    </tr>
+                    <tr>
+                        <td>ITEM002</td>
+                        <td>Available</td>
+                    </tr>
+                    <tr>
+                        <td>ITEM003</td>
+                        <td>Available</td>
+                    </tr>
+                    <tr>
+                        <td>ITEM001</td>
+                        <td>Available</td>
+                    </tr>
+                    <tr>
+                        <td>ITEM002</td>
+                        <td>Available</td>
+                    </tr>
+                    <tr>
+                        <td>ITEM003</td>
+                        <td>Available</td>
+                    </tr>
+                    <tr>
+                        <td>ITEM001</td>
+                        <td>Available</td>
+                    </tr>
+                    <tr>
+                        <td>ITEM002</td>
+                        <td>Available</td>
+                    </tr>
+                    <tr>
+                        <td>ITEM003</td>
+                        <td>Available</td>
+                    </tr>
+                </tbody>
+
+            </table>
+        </div>
+
+        <!-- Right Side: QR Code Scanner -->
+        <div class="w-1/2 pl-4 flex flex-col justify-between" style="height: 400px;">
+            <h2 class="text-xl mb-4">Scan QR Code</h2>
+            <div id="scanner-container" class="flex justify-center" style="height: 100%;">
+                <video id="video" autoplay class="w-full max-w-md h-auto border-2 border-gray-300"></video>
+            </div>
+            <div id="result" class="mt-2">Scanning for QR code...</div>
+
+            <!-- Flex container for buttons -->
+            <div class="flex gap-4 mt-4">
+                <!-- Close Button -->
+                <button class="px-4 py-2 bg-blue-500 text-white rounded w-1/2" onclick="closeQRScanner()">Close</button>
+
+                <!-- Approve Button -->
+                <button class="px-4 py-2 bg-green-500 text-white rounded w-1/2">Approve</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Initialize DataTable
+        $('#codeTable').DataTable({
+            scrollY: '420px',
+            scrollCollapse: true,
+            paging: true,
+            searching: true,
+            ordering: false
+        });
+
+        // Initialize tooltips
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
+    function openQRScanner(itemCode) {
+        document.getElementById('qr-modal').classList.remove('hidden');
+        let scannedCode = '';
+
+        // Set up webcam for scanning
+        const video = document.getElementById('video');
+        const resultDiv = document.getElementById('result');
+        navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: "environment"
+                }
+            })
+            .then(stream => {
+                video.srcObject = stream;
+                video.setAttribute('playsinline', true); // for iOS
+                video.play();
+                scanQRCode();
+            })
+            .catch(err => {
+                resultDiv.textContent = "Error accessing camera: " + err;
+            });
+
+        // Function to scan QR code from webcam
+        function scanQRCode() {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+
+            setInterval(() => {
+                // Draw the video frame to the canvas
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // Try to decode the QR code
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+
+                if (qrCode) {
+                    scannedCode = qrCode.data; // Store the scanned code
+                    resultDiv.textContent = 'QR Code detected: ' + scannedCode;
+                    if (scannedCode === itemCode) {
+                        // The QR code matches the item code, approve the request
+                        approveRequest();
+                    } else {
+                        resultDiv.textContent = 'QR Code does not match the item code.';
+                    }
+                } else {
+                    resultDiv.textContent = 'Scanning for QR code...';
+                }
+            }, 100); // Scan every 100ms
+        }
+
+        // Function to approve the request
+        function approveRequest() {
+            Swal.fire({
+                title: 'QR Code matched!',
+                text: "Do you want to approve this request?",
+                icon: 'success',
+                confirmButtonText: 'Yes, approve it!',
+                showCancelButton: true,
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    updateStatus(itemCode, 'Approved');
+                    closeQRScanner();
+                }
+            });
+        }
+
+        // Close the QR scanner modal
+        function closeQRScanner() {
+            document.getElementById('qr-modal').classList.add('hidden');
+        }
+    }
+
+    function closeQRScanner() {
+        document.getElementById('qr-modal').classList.add('hidden');
+    }
+
+    function updateStatus(itemCode, status) {
+        // Send the update to the backend to approve the request
+        $.ajax({
+            url: '/admin/inventory-requests/update-status',
+            type: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                itemCode: itemCode,
+                status: status
+            },
+            success: function(response) {
+                Swal.fire('Updated!', 'The request has been ' + status.toLowerCase() + '.', 'success')
+                    .then(() => {
+                        location.reload();
+                    });
+            },
+            error: function() {
+                Swal.fire('Error!', 'Something went wrong.', 'error');
+            }
+        });
+    }
+</script>
+
+
+
 @endsection
