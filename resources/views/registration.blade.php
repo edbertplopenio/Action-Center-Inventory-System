@@ -6,12 +6,12 @@
   <!-- Background image -->
   <img class="absolute w-full h-full object-cover" src="{{ asset('images/bgs.png') }}" alt="Background Image">
 
-  <div class="relative z-10 bg-red-600 bg-opacity-40 backdrop-blur-xl p-2 rounded-2xl shadow-lg" style="width: calc(33.33% + 192px); backdrop-filter: blur(10px); transform: translateX(35%);">
+  <div class="relative z-10 bg-white bg-opacity-40 backdrop-blur-xl p-6 rounded-2xl shadow-lg" style="width: calc(33.33% + 192px); transform: translateX(35%);">
     <!-- Flexbox for layout adjustment -->
     
     <div class="w-full flex flex-col">
       <!-- Create a new account heading -->
-      <h2 class="mt-2 text-lg font-semibold mb-2 text-center" style="color:rgb(255, 255, 255);">Create a new account</h2>
+      <h2 class="mt-2 text-lg font-semibold mb-2 text-center text-white">Create a new account</h2>
 
       <form class="space-y-3 flex flex-col items-center" action="{{ route('registration.post') }}" method="POST">
         @csrf
@@ -36,7 +36,7 @@
           <label for="email" class="text-xs font-medium text-white mb-1">Email address</label>
           <input type="email" name="email" id="email" value="{{ old('email') }}" autocomplete="email" required class="block w-full rounded-md border border-gray-300 px-3 py-2 text-xs text-gray-900 focus:ring-2 focus:ring-red-600">
           @error('email')
-          <span class="text-white text-xs">{{ $message }}</span>
+          <span class="text-red-600 text-xs">{{ $message }}</span>
           @enderror
         </div>
 
