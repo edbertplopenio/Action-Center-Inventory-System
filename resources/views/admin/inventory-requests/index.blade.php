@@ -200,13 +200,13 @@
 
 
 
-<style>
-    .highlight {
-    background-color: #90ee90;  /* Light green for highlight */
-    color: #000;
-}
-
-</style>
+    <style>
+        .highlight {
+            background-color: #90ee90;
+            /* Light green for highlight */
+            color: #000;
+        }
+    </style>
 
 
 </head>
@@ -325,11 +325,11 @@
 
 
         <div class="h-full overflow-y-auto w-1/2">
-            <table id="codeTable" class="display" style="width: 100%; height: 100%; border: 2px solid #ccc; border-collapse: collapse;">
+            <table id="codeTable" class="display" style="width: 100%; height: 100%; border: 2px solid #ccc; border-collapse: collapse; table-layout: fixed;">
                 <thead>
                     <tr>
-                        <th style="text-align: center;">QR Code</th>
-                        <th style="text-align: center;">Status</th>
+                        <th style="text-align: center; width: 50%;">QR Code</th>
+                        <th style="text-align: center; width: 50%;">Status</th>
                     </tr>
                 </thead>
                 <tbody style="text-align: center;">
@@ -337,15 +337,16 @@
                     @foreach ($item->individualItems as $individualItem)
                     <tr>
                         <!-- Display the QR code -->
-                        <td>{{ $individualItem->qr_code }}</td>
+                        <td style="text-align: center;">{{ $individualItem->qr_code }}</td>
                         <!-- Display the status -->
-                        <td>{{ $individualItem->status }}</td>
+                        <td style="text-align: center;">{{ $individualItem->status }}</td>
                     </tr>
                     @endforeach
                     @endforeach
                 </tbody>
             </table>
         </div>
+
 
 
 
@@ -388,190 +389,192 @@
         $('[data-toggle="tooltip"]').tooltip();
     });
 
-    let isScanning = false;  // Controls if scanning is ongoing
-let scannedQRCodeList = [];  // To store scanned QR codes for reference
+    let isScanning = false; // Controls if scanning is ongoing
+    let scannedQRCodeList = []; // To store scanned QR codes for reference
 
-function openQRScanner(itemId) {
-    // Show the QR code modal
-    document.getElementById('qr-modal').classList.remove('hidden');
+    function openQRScanner(itemId) {
+        // Show the QR code modal
+        document.getElementById('qr-modal').classList.remove('hidden');
 
-    // Clear the table body before updating it with new data
-    const resultDiv = document.getElementById('codeTable').getElementsByTagName('tbody')[0];
-    resultDiv.innerHTML = ''; // Clear previous QR code data
+        // Clear the table body before updating it with new data
+        const resultDiv = document.getElementById('codeTable').getElementsByTagName('tbody')[0];
+        resultDiv.innerHTML = ''; // Clear previous QR code data
 
-    // Display loading message while fetching QR codes
-    resultDiv.innerHTML = '<tr><td colspan="2" class="text-center">Loading QR Codes...</td></tr>';
+        // Display loading message while fetching QR codes
+        resultDiv.innerHTML = '<tr><td colspan="2" class="text-center">Loading QR Codes...</td></tr>';
 
-    // Fetch QR codes for the selected item using AJAX
-    $.ajax({
-        url: '/admin/get-item-qr-codes/' + itemId, // Make sure this URL is correct
-        method: 'GET',
-        success: function(response) {
-            // Clear the loading message once QR codes are fetched
-            resultDiv.innerHTML = '';
+        // Fetch QR codes for the selected item using AJAX
+        $.ajax({
+            url: '/admin/get-item-qr-codes/' + itemId, // Make sure this URL is correct
+            method: 'GET',
+            success: function(response) {
+                // Clear the loading message once QR codes are fetched
+                resultDiv.innerHTML = '';
 
-            // Check if we received QR codes
-            if (response.qr_codes && response.qr_codes.length > 0) {
-                // Display each QR code as it arrives
-                response.qr_codes.forEach(function(qrCode) {
+                // Check if we received QR codes
+                if (response.qr_codes && response.qr_codes.length > 0) {
+                    // Display each QR code as it arrives
+                    response.qr_codes.forEach(function(qrCode) {
+                        const row = document.createElement('tr');
+                        const qrCell = document.createElement('td');
+                        const statusCell = document.createElement('td');
+
+                        // Insert QR code and status into the table
+                        qrCell.textContent = qrCode.qr_code;
+                        statusCell.textContent = qrCode.status;
+
+                        // Append the row to the table
+                        row.appendChild(qrCell);
+                        row.appendChild(statusCell);
+                        resultDiv.appendChild(row); // Append the row immediately
+                    });
+                } else {
+                    // If no QR codes are available, show a message
                     const row = document.createElement('tr');
-                    const qrCell = document.createElement('td');
-                    const statusCell = document.createElement('td');
-
-                    // Insert QR code and status into the table
-                    qrCell.textContent = qrCode.qr_code;
-                    statusCell.textContent = qrCode.status;
-
-                    // Append the row to the table
-                    row.appendChild(qrCell);
-                    row.appendChild(statusCell);
-                    resultDiv.appendChild(row); // Append the row immediately
-                });
-            } else {
-                // If no QR codes are available, show a message
+                    const emptyCell = document.createElement('td');
+                    emptyCell.colSpan = 2;
+                    emptyCell.textContent = "No QR codes found for this item.";
+                    row.appendChild(emptyCell);
+                    resultDiv.appendChild(row);
+                }
+            },
+            error: function(err) {
+                console.error('Error fetching QR codes:', err);
+                // Display error message
                 const row = document.createElement('tr');
-                const emptyCell = document.createElement('td');
-                emptyCell.colSpan = 2;
-                emptyCell.textContent = "No QR codes found for this item.";
-                row.appendChild(emptyCell);
+                const errorCell = document.createElement('td');
+                errorCell.colSpan = 2;
+                errorCell.textContent = "Error loading QR codes.";
+                row.appendChild(errorCell);
                 resultDiv.appendChild(row);
             }
-        },
-        error: function(err) {
-            console.error('Error fetching QR codes:', err);
-            // Display error message
-            const row = document.createElement('tr');
-            const errorCell = document.createElement('td');
-            errorCell.colSpan = 2;
-            errorCell.textContent = "Error loading QR codes.";
-            row.appendChild(errorCell);
-            resultDiv.appendChild(row);
-        }
-    });
+        });
 
-    // Setup webcam for scanning
-    const video = document.getElementById('video');
-    const resultText = document.getElementById('result');
+        // Setup webcam for scanning
+        const video = document.getElementById('video');
+        const resultText = document.getElementById('result');
 
-    // Start scanning process
-    isScanning = true;  // Begin scanning
-    scannedQRCodeList = []; // Reset the list of scanned QR codes
+        // Start scanning process
+        isScanning = true; // Begin scanning
+        scannedQRCodeList = []; // Reset the list of scanned QR codes
 
-    navigator.mediaDevices.getUserMedia({
-        video: {
-            facingMode: "environment"
-        }
-    }).then(stream => {
-        video.srcObject = stream;
-        video.setAttribute('playsinline', true); // for iOS
-        video.play();
-        scanQRCode();
-    }).catch(err => {
-        resultText.textContent = "Error accessing camera: " + err;
-    });
-
-    // QR code scanning function
-    function scanQRCode() {
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-
-        const scanInterval = setInterval(() => {
-            if (!isScanning) {
-                clearInterval(scanInterval);  // Stop scanning if flag is set to false
-                return;
+        navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: "environment"
             }
+        }).then(stream => {
+            video.srcObject = stream;
+            video.setAttribute('playsinline', true); // for iOS
+            video.play();
+            scanQRCode();
+        }).catch(err => {
+            resultText.textContent = "Error accessing camera: " + err;
+        });
 
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        // QR code scanning function
+        function scanQRCode() {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
 
-            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-            const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
-
-            if (qrCode) {
-                resultText.textContent = 'QR Code detected: ' + qrCode.data;
-
-                // If QR code is valid and not already scanned, highlight and add it
-                if (!scannedQRCodeList.includes(qrCode.data)) {
-                    scannedQRCodeList.push(qrCode.data);  // Add scanned QR code to the list
-                    highlightAndMoveRow(qrCode.data);
-                    updateItemStatus(qrCode.data); // Update status when a valid QR code is scanned
+            const scanInterval = setInterval(() => {
+                if (!isScanning) {
+                    clearInterval(scanInterval); // Stop scanning if flag is set to false
+                    return;
                 }
-            } else {
-                resultText.textContent = 'Scanning for QR code...';
-            }
-        }, 100); // Scan every 100ms
-    }
 
-    let highlightedRows = [];  // Array to store highlighted rows
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-function highlightAndMoveRow(scannedQRCode) {
-    const tableRows = document.querySelectorAll('#codeTable tbody tr');
-    let matchFound = false;
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
 
-    tableRows.forEach(row => {
-        const qrCodeCell = row.cells[0]; // QR Code is in the first column
-        const qrCode = qrCodeCell ? qrCodeCell.textContent : null;
+                if (qrCode) {
+                    resultText.textContent = 'QR Code detected: ' + qrCode.data;
 
-        if (qrCode && qrCode === scannedQRCode) {
-            matchFound = true;
+                    // If QR code is valid and not already scanned, highlight and add it
+                    if (!scannedQRCodeList.includes(qrCode.data)) {
+                        scannedQRCodeList.push(qrCode.data); // Add scanned QR code to the list
+                        highlightAndMoveRow(qrCode.data);
+                        updateItemStatus(qrCode.data); // Update status when a valid QR code is scanned
+                    }
+                } else {
+                    resultText.textContent = 'Scanning for QR code...';
+                }
+            }, 100); // Scan every 100ms
+        }
 
-            // Highlight the current row
-            row.style.backgroundColor = '#D3CBFF';  // Light green background for highlight
-            row.style.color = '#000';  // Ensure text is visible
+        let highlightedRows = []; // Array to store highlighted rows
 
-            // Scroll to the matching row
-            row.scrollIntoView({ behavior: "smooth", block: "center" });
+        function highlightAndMoveRow(scannedQRCode) {
+            const tableRows = document.querySelectorAll('#codeTable tbody tr');
+            let matchFound = false;
 
-            // Move the row to the top (prepend it)
-            const tbody = document.getElementById('codeTable').getElementsByTagName('tbody')[0];
-            tbody.insertBefore(row, tbody.firstChild);  // Insert the row at the top
+            tableRows.forEach(row => {
+                const qrCodeCell = row.cells[0]; // QR Code is in the first column
+                const qrCode = qrCodeCell ? qrCodeCell.textContent : null;
 
-            // Add to the highlighted rows list if it's not already there
-            if (!highlightedRows.includes(row)) {
-                highlightedRows.push(row);
-            }
-        } else {
-            // Reset the background color for non-matching rows
-            if (!highlightedRows.includes(row)) {
-                row.style.backgroundColor = '';  // Reset the background color
-                row.style.color = '';  // Reset text color
+                if (qrCode && qrCode === scannedQRCode) {
+                    matchFound = true;
+
+                    // Highlight the current row
+                    row.style.backgroundColor = '#D3CBFF'; // Light green background for highlight
+                    row.style.color = '#000'; // Ensure text is visible
+
+                    // Scroll to the matching row
+                    row.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center"
+                    });
+
+                    // Move the row to the top (prepend it)
+                    const tbody = document.getElementById('codeTable').getElementsByTagName('tbody')[0];
+                    tbody.insertBefore(row, tbody.firstChild); // Insert the row at the top
+
+                    // Add to the highlighted rows list if it's not already there
+                    if (!highlightedRows.includes(row)) {
+                        highlightedRows.push(row);
+                    }
+                } else {
+                    // Reset the background color for non-matching rows
+                    if (!highlightedRows.includes(row)) {
+                        row.style.backgroundColor = ''; // Reset the background color
+                        row.style.color = ''; // Reset text color
+                    }
+                }
+            });
+
+            // If no match was found, show a SweetAlert message
+            if (!matchFound) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'QR Code not found',
+                    text: 'The scanned QR code is not present in the table.',
+                });
             }
         }
-    });
-
-    // If no match was found, show a SweetAlert message
-    if (!matchFound) {
-        Swal.fire({
-            icon: 'error',
-            title: 'QR Code not found',
-            text: 'The scanned QR code is not present in the table.',
-        });
-    }
-}
 
 
-    // Update Item Status when a QR code is successfully scanned
-    function updateItemStatus(scannedQRCode) {
-        // Find the item with the matching QR code
-        const row = Array.from(document.querySelectorAll('#codeTable tbody tr')).find(row => {
-            const qrCodeCell = row.cells[0]; // QR Code is in the first column
-            return qrCodeCell && qrCodeCell.textContent === scannedQRCode;
-        });
+        // Update Item Status when a QR code is successfully scanned
+        function updateItemStatus(scannedQRCode) {
+            // Find the item with the matching QR code
+            const row = Array.from(document.querySelectorAll('#codeTable tbody tr')).find(row => {
+                const qrCodeCell = row.cells[0]; // QR Code is in the first column
+                return qrCodeCell && qrCodeCell.textContent === scannedQRCode;
+            });
 
-        if (row) {
-            const statusCell = row.cells[1]; // Status is in the second column
-            statusCell.textContent = 'Borrowed'; // Update status to 'Borrowed'
+            if (row) {
+                const statusCell = row.cells[1]; // Status is in the second column
+                statusCell.textContent = 'Borrowed'; // Update status to 'Borrowed'
+            }
+        }
+
+        // Close the QR scanner modal
+        function closeQRScanner() {
+            document.getElementById('qr-modal').classList.add('hidden');
+            isScanning = false; // Stop scanning when modal is closed
         }
     }
-
-    // Close the QR scanner modal
-    function closeQRScanner() {
-        document.getElementById('qr-modal').classList.add('hidden');
-        isScanning = false;  // Stop scanning when modal is closed
-    }
-}
-
 </script>
 
 
