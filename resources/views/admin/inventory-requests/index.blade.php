@@ -350,26 +350,26 @@
 
 
 
-<!-- Right Side: QR Code Scanner -->
-<div class="w-1/2 pl-4 flex flex-col justify-between" style="height: 400px;">
-    <h2 class="text-xl mb-4">Scan QR Code</h2>
-    <div id="scanner-container" class="flex justify-center" style="height: 100%;">
-        <video id="video" autoplay class="w-full max-w-md h-auto border-2 border-gray-300"></video>
-    </div>
-    <div id="result" class="mt-2">Scanning for QR code...</div>
+        <!-- Right Side: QR Code Scanner -->
+        <div class="w-1/2 pl-4 flex flex-col justify-between" style="height: 400px;">
+            <h2 class="text-xl mb-4">Scan QR Code</h2>
+            <div id="scanner-container" class="flex justify-center" style="height: 100%;">
+                <video id="video" autoplay class="w-full max-w-md h-auto border-2 border-gray-300"></video>
+            </div>
+            <div id="result" class="mt-2">Scanning for QR code...</div>
 
-    <!-- Flex container for buttons -->
-    <div class="flex gap-4 mt-4">
-        <!-- Close Button -->
-        <button class="px-4 py-2 bg-blue-500 text-white rounded w-1/2" onclick="closeQRScanner()">Close</button>
+            <!-- Flex container for buttons -->
+            <div class="flex gap-4 mt-4">
+                <!-- Close Button -->
+                <button class="px-4 py-2 bg-blue-500 text-white rounded w-1/2" onclick="closeQRScanner()">Close</button>
 
-        <!-- Approve Button -->
-        <button class="px-4 py-2 bg-green-500 text-white rounded w-1/2">Approve</button>
+                <!-- Approve Button -->
+                <button class="px-4 py-2 bg-green-500 text-white rounded w-1/2">Approve</button>
 
-        <!-- Undo Button -->
-        <button class="px-4 py-2 bg-gray-500 text-white rounded w-1/2" onclick="undoAction()" id="undoButton" disabled>Undo</button>
-    </div>
-</div>
+                <!-- Undo Button -->
+                <button class="px-4 py-2 bg-gray-500 text-white rounded w-1/2" onclick="undoAction()" id="undoButton" disabled>Undo</button>
+            </div>
+        </div>
 
     </div>
 </div>
@@ -598,15 +598,40 @@
             }
         }
 
-        // Close the QR scanner modal
-        function closeQRScanner() {
-            document.getElementById('qr-modal').classList.add('hidden');
-            isScanning = false; // Stop scanning when modal is closed
-            document.getElementById('undoButton').disabled = true; // Disable Undo button
-        }
+        
     }
 </script>
 
+
+
+
+
+
+<script>
+    function closeQRScanner() {
+        // Hide the QR modal
+        document.getElementById('qr-modal').classList.add('hidden');
+
+        // Stop the camera stream (if it's being used)
+        const video = document.getElementById('video');
+        const stream = video.srcObject;
+
+        if (stream) {
+            const tracks = stream.getTracks();
+            tracks.forEach(track => track.stop()); // Stop all media tracks (video, audio)
+            video.srcObject = null; // Reset the video element's source
+        }
+
+        // Stop the scanning process
+        isScanning = false;
+
+        // Clear any previously scanned QR codes
+        scannedQRCodeList = [];
+
+        // Reset the undo action button to disabled
+        document.getElementById('undoButton').disabled = true;
+    }
+</script>
 
 
 @endsection
