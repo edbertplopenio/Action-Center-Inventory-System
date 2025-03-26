@@ -321,7 +321,7 @@
 
 <!-- Modal for QR Code Scanner -->
 <div id="qr-modal" class="mx-auto p-2 hidden fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm bg-black bg-opacity-50 transition-all duration-300 ease-in-out" style="font-family: 'Inter', sans-serif;">
-    <div class="bg-white p-8 rounded-lg max-w-4xl w-full max-h-[600px] flex">
+    <div class="bg-white p-8 rounded-lg max-w-4xl w-full max-h-[680px] flex">
 
 
         <div class="h-full overflow-y-auto w-1/2">
@@ -380,18 +380,17 @@
 <script>
     $(document).ready(function() {
         // Initialize DataTable
-        $('#codeTable').DataTable({
+        var table = $('#codeTable').DataTable({
             paging: true,
             searching: true,
             ordering: false,
             pageLength: 10, // Set number of rows per page to 10
-            lengthChange: false // Disable the entries per page dropdown
+            lengthChange: false, // Disable the entries per page dropdown
         });
 
         // Initialize tooltips
         $('[data-toggle="tooltip"]').tooltip();
     });
-
 
     let isScanning = false; // Controls if scanning is ongoing
     let scannedQRCodeList = []; // To store scanned QR codes for reference
@@ -461,7 +460,6 @@
             }
         });
 
-
         // Setup webcam for scanning
         const video = document.getElementById('video');
         const resultText = document.getElementById('result');
@@ -517,42 +515,49 @@
             }, 100); // Scan every 100ms
         }
 
-        let highlightedRows = []; // Array to store highlighted rows
-
         function highlightAndMoveRow(scannedQRCode) {
-            const tableRows = document.querySelectorAll('#codeTable tbody tr');
+            const table = $('#codeTable').DataTable();
+            const rows = table.rows().nodes();
             let matchFound = false;
 
-            tableRows.forEach((row, index) => {
-                const qrCodeCell = row.cells[0]; // QR Code is in the first column
+            $(rows).each(function(index, row) {
+                const qrCodeCell = row.cells[0];
                 const qrCode = qrCodeCell ? qrCodeCell.textContent : null;
 
                 if (qrCode && qrCode === scannedQRCode) {
                     matchFound = true;
 
-                    // Highlight the current row
-                    row.style.backgroundColor = '#D3CBFF'; // Light green background for highlight
-                    row.style.color = '#000'; // Ensure text is visible
-
-                    // Scroll to the matching row
+                    // Highlight the row
+                    row.style.backgroundColor = '#D3CBFF';
+                    row.style.color = '#000';
                     row.scrollIntoView({
                         behavior: "smooth",
                         block: "center"
                     });
 
-                    // Store the row and its original index in scannedRows
+                    // Get the row index in the entire table (not just current page)
+                    const rowIndex = table.row(row).index();
+
+                    // Get the page number where the row is located
+                    const pageNumber = Math.floor(rowIndex / table.settings()[0]._iDisplayLength);
+
+                    // Move to the page containing the QR code
+                    table.page(pageNumber).draw('page');
+
+                    // Optionally, you can also update the row status here
+                    const statusCell = row.cells[1];
+                    statusCell.textContent = 'Borrowed'; // Update status to 'Borrowed'
+
+                    // Save the row to scannedRows for undo functionality
                     scannedRows.push({
                         row: row,
-                        index: index
+                        index: rowIndex,
+                        originalStatus: row.cells[1].textContent, // Save original status to revert later
+                        originalPage: pageNumber // Save the original page number
                     });
-
-                    // Move the row to the top (prepend it)
-                    const tbody = document.getElementById('codeTable').getElementsByTagName('tbody')[0];
-                    tbody.insertBefore(row, tbody.firstChild); // Insert the row at the top
                 }
             });
 
-            // If no match was found, show a SweetAlert message
             if (!matchFound) {
                 Swal.fire({
                     icon: 'error',
@@ -561,6 +566,9 @@
                 });
             }
         }
+
+
+
 
         // Update Item Status when a QR code is successfully scanned
         function updateItemStatus(scannedQRCode) {
@@ -577,6 +585,7 @@
         }
 
         // Undo action: Revert row changes
+        // Undo action: Revert row changes
         window.undoAction = function() {
             if (scannedRows.length > 0) {
                 // Get the last scanned row
@@ -586,7 +595,7 @@
                 lastScanned.row.style.backgroundColor = '';
                 lastScanned.row.style.color = '';
                 const statusCell = lastScanned.row.cells[1];
-                statusCell.textContent = 'Available'; // Reset status to original
+                statusCell.textContent = lastScanned.originalStatus; // Reset status to original
 
                 // Move the row back to its original position in the table
                 const tbody = document.getElementById('codeTable').getElementsByTagName('tbody')[0];
@@ -599,6 +608,10 @@
                     scannedQRCodeList.splice(scannedQRCodeIndex, 1);
                 }
 
+                // Move the table back to the original page where the row was located
+                const table = $('#codeTable').DataTable();
+                table.page(lastScanned.originalPage).draw('page'); // Move to the original page
+
                 // Disable the Undo button if no rows are left to undo
                 if (scannedRows.length === 0) {
                     document.getElementById('undoButton').disabled = true;
@@ -606,9 +619,9 @@
             }
         }
 
-
     }
 </script>
+
 
 
 
