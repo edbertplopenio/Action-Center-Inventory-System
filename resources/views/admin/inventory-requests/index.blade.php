@@ -381,16 +381,17 @@
     $(document).ready(function() {
         // Initialize DataTable
         $('#codeTable').DataTable({
-            scrollY: '420px',
-            scrollCollapse: true,
             paging: true,
             searching: true,
-            ordering: false
+            ordering: false,
+            pageLength: 10, // Set number of rows per page to 10
+            lengthChange: false // Disable the entries per page dropdown
         });
 
         // Initialize tooltips
         $('[data-toggle="tooltip"]').tooltip();
     });
+
 
     let isScanning = false; // Controls if scanning is ongoing
     let scannedQRCodeList = []; // To store scanned QR codes for reference
@@ -417,7 +418,11 @@
 
                 // Check if we received QR codes
                 if (response.qr_codes && response.qr_codes.length > 0) {
-                    // Display each QR code as it arrives
+                    // Clear the table using DataTable API
+                    var table = $('#codeTable').DataTable();
+                    table.clear(); // Clear existing rows
+
+                    // Add the new rows from the response
                     response.qr_codes.forEach(function(qrCode) {
                         const row = document.createElement('tr');
                         const qrCell = document.createElement('td');
@@ -430,7 +435,9 @@
                         // Append the row to the table
                         row.appendChild(qrCell);
                         row.appendChild(statusCell);
-                        resultDiv.appendChild(row); // Append the row immediately
+
+                        // Use DataTable to add the row and update the view
+                        table.row.add($(row)).draw();
                     });
                 } else {
                     // If no QR codes are available, show a message
@@ -453,6 +460,7 @@
                 resultDiv.appendChild(row);
             }
         });
+
 
         // Setup webcam for scanning
         const video = document.getElementById('video');
@@ -598,7 +606,7 @@
             }
         }
 
-        
+
     }
 </script>
 
