@@ -599,37 +599,38 @@
         // Undo action: Revert row changes
         // Undo action: Revert row changes
         window.undoAction = function() {
-            if (scannedRows.length > 0) {
-                // Get the last scanned row
-                const lastScanned = scannedRows.pop();
+    if (scannedRows.length > 0) {
+        // Get the last scanned row
+        const lastScanned = scannedRows.pop();
 
-                // Remove highlight and reset status
-                lastScanned.row.style.backgroundColor = '';
-                lastScanned.row.style.color = '';
-                const statusCell = lastScanned.row.cells[1];
-                statusCell.textContent = lastScanned.originalStatus; // Reset status to original
+        // Remove highlight and reset status to 'Available'
+        lastScanned.row.style.backgroundColor = '';
+        lastScanned.row.style.color = '';
+        const statusCell = lastScanned.row.cells[1];
+        statusCell.textContent = 'Available'; // Set status to 'Available'
 
-                // Move the row back to its original position in the table
-                const tbody = document.getElementById('codeTable').getElementsByTagName('tbody')[0];
-                const rows = Array.from(tbody.rows);
-                tbody.insertBefore(lastScanned.row, rows[lastScanned.index]);
+        // Move the row back to its original position in the table
+        const tbody = document.getElementById('codeTable').getElementsByTagName('tbody')[0];
+        const rows = Array.from(tbody.rows);
+        tbody.insertBefore(lastScanned.row, rows[lastScanned.index]);
 
-                // Remove the QR code from the scanned list to allow it to be scanned again
-                const scannedQRCodeIndex = scannedQRCodeList.indexOf(lastScanned.row.cells[0].textContent);
-                if (scannedQRCodeIndex !== -1) {
-                    scannedQRCodeList.splice(scannedQRCodeIndex, 1);
-                }
-
-                // Move the table back to the original page where the row was located
-                const table = $('#codeTable').DataTable();
-                table.page(lastScanned.originalPage).draw('page'); // Move to the original page
-
-                // Disable the Undo button if no rows are left to undo
-                if (scannedRows.length === 0) {
-                    document.getElementById('undoButton').disabled = true;
-                }
-            }
+        // Remove the QR code from the scanned list to allow it to be scanned again
+        const scannedQRCodeIndex = scannedQRCodeList.indexOf(lastScanned.row.cells[0].textContent);
+        if (scannedQRCodeIndex !== -1) {
+            scannedQRCodeList.splice(scannedQRCodeIndex, 1);
         }
+
+        // Move the table back to the original page where the row was located
+        const table = $('#codeTable').DataTable();
+        table.page(lastScanned.originalPage).draw('page'); // Move to the original page
+
+        // Disable the Undo button if no rows are left to undo
+        if (scannedRows.length === 0) {
+            document.getElementById('undoButton').disabled = true;
+        }
+    }
+}
+
 
     }
 </script>
