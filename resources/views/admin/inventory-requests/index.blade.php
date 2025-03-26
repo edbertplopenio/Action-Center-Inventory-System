@@ -516,56 +516,68 @@
         }
 
         function highlightAndMoveRow(scannedQRCode) {
-            const table = $('#codeTable').DataTable();
-            const rows = table.rows().nodes();
-            let matchFound = false;
+    const table = $('#codeTable').DataTable();
+    const rows = table.rows().nodes();
+    let matchFound = false;
 
-            $(rows).each(function(index, row) {
-                const qrCodeCell = row.cells[0];
-                const qrCode = qrCodeCell ? qrCodeCell.textContent : null;
+    $(rows).each(function(index, row) {
+        const qrCodeCell = row.cells[0];
+        const qrCode = qrCodeCell ? qrCodeCell.textContent : null;
 
-                if (qrCode && qrCode === scannedQRCode) {
-                    matchFound = true;
+        if (qrCode && qrCode === scannedQRCode) {
+            matchFound = true;
 
-                    // Highlight the row
-                    row.style.backgroundColor = '#D3CBFF';
-                    row.style.color = '#000';
-                    row.scrollIntoView({
-                        behavior: "smooth",
-                        block: "center"
-                    });
+            // Check if the status is already 'Borrowed'
+            const statusCell = row.cells[1];
+            if (statusCell.textContent === 'Borrowed') {
+                // Show SweetAlert if the item is already borrowed
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Item Already Borrowed',
+                    text: 'This item has already been marked as borrowed.',
+                });
+                return; // Exit the function if the item is already borrowed
+            }
 
-                    // Get the row index in the entire table (not just current page)
-                    const rowIndex = table.row(row).index();
-
-                    // Get the page number where the row is located
-                    const pageNumber = Math.floor(rowIndex / table.settings()[0]._iDisplayLength);
-
-                    // Move to the page containing the QR code
-                    table.page(pageNumber).draw('page');
-
-                    // Optionally, you can also update the row status here
-                    const statusCell = row.cells[1];
-                    statusCell.textContent = 'Borrowed'; // Update status to 'Borrowed'
-
-                    // Save the row to scannedRows for undo functionality
-                    scannedRows.push({
-                        row: row,
-                        index: rowIndex,
-                        originalStatus: row.cells[1].textContent, // Save original status to revert later
-                        originalPage: pageNumber // Save the original page number
-                    });
-                }
+            // Highlight the row if the status is not 'Borrowed'
+            row.style.backgroundColor = '#D3CBFF';
+            row.style.color = '#000';
+            row.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
             });
 
-            if (!matchFound) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'QR Code not found',
-                    text: 'The scanned QR code is not present in the table.',
-                });
-            }
+            // Get the row index in the entire table (not just current page)
+            const rowIndex = table.row(row).index();
+
+            // Get the page number where the row is located
+            const pageNumber = Math.floor(rowIndex / table.settings()[0]._iDisplayLength);
+
+            // Move to the page containing the QR code
+            table.page(pageNumber).draw('page');
+
+            // Update the status to 'Borrowed'
+            statusCell.textContent = 'Borrowed';
+
+            // Save the row to scannedRows for undo functionality
+            scannedRows.push({
+                row: row,
+                index: rowIndex,
+                originalStatus: row.cells[1].textContent, // Save original status to revert later
+                originalPage: pageNumber // Save the original page number
+            });
         }
+    });
+
+    if (!matchFound) {
+        Swal.fire({
+            icon: 'error',
+            title: 'QR Code not found',
+            text: 'The scanned QR code is not present in the table.',
+        });
+    }
+}
+
 
 
 
