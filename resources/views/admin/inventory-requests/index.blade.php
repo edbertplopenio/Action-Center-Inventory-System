@@ -370,7 +370,9 @@
                 <button class="px-4 py-2 bg-blue-500 text-white rounded w-1/2" onclick="closeQRScanner()">Close</button>
 
                 <!-- Approve Button -->
-                <button class="px-4 py-2 bg-green-500 text-white rounded w-1/2">Approve</button>
+                <!-- Approve Button -->
+                <button id="approveButton" class="px-4 py-2 bg-green-500 text-white rounded w-1/2" disabled>Approve</button>
+
 
                 <!-- Undo Button -->
                 <button class="px-4 py-2 bg-gray-500 text-white rounded w-1/2" onclick="undoAction()" id="undoButton" disabled>Undo</button>
@@ -508,6 +510,10 @@
             if (scannedCount >= totalRequestQuantity) {
                 resultText.textContent = 'Scanning complete. All required QR codes have been scanned.';
                 isScanning = false; // Stop scanning
+
+                // Enable the Approve button once scanning is complete
+                document.getElementById('approveButton').disabled = false; // Enable Approve button
+
                 return;
             }
 
@@ -525,6 +531,10 @@
                     resultText.textContent = 'Scanning complete. All required QR codes have been scanned.';
                     isScanning = false;
                     clearInterval(scanInterval); // Stop the scanning interval
+
+                    // Enable the Approve button once scanning is complete
+                    document.getElementById('approveButton').disabled = false; // Enable Approve button
+
                     return;
                 }
 
@@ -558,6 +568,8 @@
                             // Change the color of the counter text to green if the scanned count reaches or exceeds the target
                             if (scannedCount >= totalRequestQuantity) {
                                 document.getElementById('request-counter').style.color = 'green';
+                                // Enable the Approve button once scanning is complete
+                                document.getElementById('approveButton').disabled = false; // Enable Approve button
                             }
 
                             // Enable Undo button once a scan is done
@@ -569,6 +581,7 @@
                 }
             }, 100); // Scan every 100ms
         }
+
 
 
 
@@ -599,7 +612,7 @@
                     }
 
                     // Highlight the row if the status is not 'Borrowed'
-                    row.style.backgroundColor = '#D3CBFF';
+                    row.style.backgroundColor = '#27D29C';
                     row.style.color = '#000';
                     row.scrollIntoView({
                         behavior: "smooth",
@@ -703,8 +716,14 @@
                 if (scannedRows.length === 0) {
                     document.getElementById('undoButton').disabled = true;
                 }
+
+                // Re-disable the Approve button if the scanned count is not complete
+                if (scannedCount < totalRequestQuantity) {
+                    document.getElementById('approveButton').disabled = true; // Re-disable the Approve button
+                }
             }
         };
+
 
 
 
