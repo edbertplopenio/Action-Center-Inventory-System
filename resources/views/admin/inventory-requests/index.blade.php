@@ -501,12 +501,27 @@
 
         // QR code scanning function
         function scanQRCode() {
+            // If the scanned count matches or exceeds the requested quantity, stop scanning
+            if (scannedCount >= totalRequestQuantity) {
+                resultText.textContent = 'Scanning complete. All required QR codes have been scanned.';
+                isScanning = false; // Stop scanning
+                return;
+            }
+
             const canvas = document.createElement('canvas');
             const context = canvas.getContext('2d');
 
             const scanInterval = setInterval(() => {
                 if (!isScanning) {
                     clearInterval(scanInterval); // Stop scanning if flag is set to false
+                    return;
+                }
+
+                // If scanned count is already >= total request quantity, stop scanning and do nothing
+                if (scannedCount >= totalRequestQuantity) {
+                    resultText.textContent = 'Scanning complete. All required QR codes have been scanned.';
+                    isScanning = false;
+                    clearInterval(scanInterval); // Stop the scanning interval
                     return;
                 }
 
@@ -546,6 +561,8 @@
                 }
             }, 100); // Scan every 100ms
         }
+
+
 
 
         function highlightAndMoveRow(scannedQRCode) {
