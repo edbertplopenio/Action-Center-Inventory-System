@@ -418,6 +418,9 @@
         // Update the counter initially as 0/total
         document.getElementById('request-counter').textContent = `${scannedCount}/${totalRequestQuantity}`;
 
+        // Reset the color of the counter to the default color (black or gray)
+        document.getElementById('request-counter').style.color = ''; // Reset to the default color
+
         // Clear the table body before updating it with new data
         const resultDiv = document.getElementById('codeTable').getElementsByTagName('tbody')[0];
         resultDiv.innerHTML = ''; // Clear previous QR code data
@@ -552,6 +555,11 @@
                             scannedCount++;
                             document.getElementById('request-counter').textContent = `${scannedCount}/${totalRequestQuantity}`;
 
+                            // Change the color of the counter text to green if the scanned count reaches or exceeds the target
+                            if (scannedCount >= totalRequestQuantity) {
+                                document.getElementById('request-counter').style.color = 'green';
+                            }
+
                             // Enable Undo button once a scan is done
                             document.getElementById('undoButton').disabled = false; // Enable Undo button
                         }
@@ -561,6 +569,7 @@
                 }
             }, 100); // Scan every 100ms
         }
+
 
 
 
@@ -646,8 +655,6 @@
             }
         }
 
-        // Undo action: Revert row changes
-        // Undo action: Revert row changes
         window.undoAction = function() {
             if (scannedRows.length > 0) {
                 // Get the last scanned row
@@ -674,12 +681,31 @@
                 const table = $('#codeTable').DataTable();
                 table.page(lastScanned.originalPage).draw('page'); // Move to the original page
 
+                // Decrease the scanned count
+                scannedCount--;
+
+                // Update the counter display
+                document.getElementById('request-counter').textContent = `${scannedCount}/${totalRequestQuantity}`;
+
+                // Reset the color of the counter if the scanned count is below the target
+                if (scannedCount < totalRequestQuantity) {
+                    document.getElementById('request-counter').style.color = ''; // Reset to default color
+                }
+
+                // Re-enable scanning if it's not complete
+                if (scannedCount < totalRequestQuantity) {
+                    isScanning = true; // Allow scanning to continue
+                    scanQRCode(); // Call the scanQRCode function again to continue scanning
+                    document.getElementById('undoButton').disabled = false; // Re-enable Undo button if scanning continues
+                }
+
                 // Disable the Undo button if no rows are left to undo
                 if (scannedRows.length === 0) {
                     document.getElementById('undoButton').disabled = true;
                 }
             }
-        }
+        };
+
 
 
     }
