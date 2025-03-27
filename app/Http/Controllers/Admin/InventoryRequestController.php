@@ -50,11 +50,18 @@ class InventoryRequestController extends Controller
         // Fetch the item with its associated individual items (QR codes)
         $item = Item::with('individualItems')->findOrFail($itemId);
     
-        // Return the QR codes of the individual items
+        // Fetch the total quantity borrowed for this item
+        $totalQuantityRequested = BorrowedItem::where('item_id', $itemId)
+            ->where('status', 'Borrowed') // You can adjust this condition based on your needs
+            ->sum('quantity_borrowed'); // Sum up the quantity_borrowed for each borrowed item
+    
+        // Return the QR codes and the total quantity requested for this item
         return response()->json([
-            'qr_codes' => $item->individualItems
+            'qr_codes' => $item->individualItems,
+            'total_quantity_requested' => $totalQuantityRequested, // Add this line
         ]);
     }
+    
     
 
 }
