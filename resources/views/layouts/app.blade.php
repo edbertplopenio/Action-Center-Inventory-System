@@ -193,7 +193,7 @@
                         <a href="{{ route('admin.return-items.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
                         <i class="ph-bold ph-arrow-u-down-left text-xl"></i> <!-- Example class name -->
 
-                            <span class="text-sm">Return Items</span>
+                            <span class="text-sm">Item Return</span>
                         </a>
                     </li>
 
