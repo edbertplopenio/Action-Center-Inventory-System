@@ -526,18 +526,27 @@
                         highlightAndMoveRow(qrCode.data);
                         updateItemStatus(qrCode.data); // Update status when a valid QR code is scanned
 
-                        // Update the scanned count and the counter
-                        scannedCount++;
-                        document.getElementById('request-counter').textContent = `${scannedCount}/${totalRequestQuantity}`;
+                        // Only update the scanned count if the QR code is valid (exists in the table)
+                        const row = Array.from(document.querySelectorAll('#codeTable tbody tr')).find(row => {
+                            const qrCodeCell = row.cells[0]; // QR Code is in the first column
+                            return qrCodeCell && qrCodeCell.textContent === qrCode.data;
+                        });
 
-                        // Enable Undo button once a scan is done
-                        document.getElementById('undoButton').disabled = false; // Enable Undo button
+                        if (row) {
+                            // Update the scanned count and the counter
+                            scannedCount++;
+                            document.getElementById('request-counter').textContent = `${scannedCount}/${totalRequestQuantity}`;
+
+                            // Enable Undo button once a scan is done
+                            document.getElementById('undoButton').disabled = false; // Enable Undo button
+                        }
                     }
                 } else {
                     resultText.textContent = 'Scanning for QR code...';
                 }
             }, 100); // Scan every 100ms
         }
+
 
         function highlightAndMoveRow(scannedQRCode) {
             const table = $('#codeTable').DataTable();
