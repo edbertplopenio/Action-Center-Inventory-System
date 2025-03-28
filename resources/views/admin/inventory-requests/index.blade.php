@@ -763,4 +763,98 @@
 </script>
 
 
+
+
+
+
+
+
+<!-- Modal for Receipt (Item Details) -->
+<div id="receipt-modal" class="mx-auto p-4 hidden fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm bg-black bg-opacity-50 transition-all duration-300 ease-in-out" style="font-family: 'Inter', sans-serif;">
+    <div class="bg-white p-6 rounded-lg w-[400px] max-h-[500px] flex flex-col justify-between shadow-lg border border-gray-200">
+        <div class="w-full overflow-y-auto">
+            <h2 class="text-2xl font-semibold mb-4 text-center">Item Borrowed Receipt</h2>
+            
+            <!-- Display Item Details -->
+            <div id="receipt-details" class="space-y-2">
+                <div class="flex justify-between">
+                    <span class="font-medium">Item Name:</span>
+                    <span id="item-name" class="font-light text-gray-700">Sample Item</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="font-medium">Borrowed By:</span>
+                    <span id="borrower-name" class="font-light text-gray-700">John Doe</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="font-medium">Quantity Borrowed:</span>
+                    <span id="borrowed-quantity" class="font-light text-gray-700">2</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="font-medium">Borrowed On:</span>
+                    <span id="borrowed-date" class="font-light text-gray-700">2025-03-28</span>
+                </div>
+            </div>
+
+            <div class="my-4 border-t border-gray-300"></div>
+        </div>
+
+        <!-- Buttons to close the modal -->
+        <div class="flex gap-4 mt-6">
+            <button class="px-4 py-2 bg-blue-500 text-white rounded-lg w-1/2 shadow-md hover:bg-blue-600 transition duration-200" onclick="closeReceiptModal()">Close</button>
+            <button class="px-4 py-2 bg-green-500 text-white rounded-lg w-1/2 shadow-md hover:bg-green-600 transition duration-200" onclick="confirmBorrow()">Confirm</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<script>
+    // Function to handle the Approve button click
+document.getElementById('approveButton').addEventListener('click', function() {
+    // Get details for the item to be borrowed (you can use the scanned QR codes or pass the item ID)
+    const itemDetails = {
+        itemName: "Sample Item",   // Replace with actual item name
+        borrowerName: "John Doe", // Replace with actual borrower name
+        borrowedQuantity: scannedCount, // Replace with actual quantity borrowed
+        borrowedDate: new Date().toLocaleDateString() // Current date for borrowed date
+    };
+
+    // Populate the receipt modal with these details
+    document.getElementById('item-name').textContent = itemDetails.itemName;
+    document.getElementById('borrower-name').textContent = itemDetails.borrowerName;
+    document.getElementById('borrowed-quantity').textContent = itemDetails.borrowedQuantity;
+    document.getElementById('borrowed-date').textContent = itemDetails.borrowedDate;
+
+    // Show the receipt modal
+    document.getElementById('receipt-modal').classList.remove('hidden');
+});
+
+// Function to close the receipt modal
+function closeReceiptModal() {
+    document.getElementById('receipt-modal').classList.add('hidden');
+}
+
+// Function to confirm the borrow action (you can implement your own logic here to finalize the borrowing)
+function confirmBorrow() {
+    // Logic to confirm the borrow (e.g., send data to the server to mark the items as borrowed)
+    console.log("Item Borrowed");
+
+    // Close the modal after confirming
+    closeReceiptModal();
+}
+
+</script>
+
+
+
+
+
+
+
+
+
+
 @endsection
