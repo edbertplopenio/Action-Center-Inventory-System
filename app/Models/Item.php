@@ -28,5 +28,9 @@ class Item extends Model
         'is_archived',
     ];
 
-    // Optionally, define any hidden or guarded attributes, dates, etc.
+    // Define relationship with IndividualItem
+    public function individualItems()
+    {
+        return $this->hasMany(IndividualItem::class);
+    }
 }

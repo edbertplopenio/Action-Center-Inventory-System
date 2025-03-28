@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Item;
+use App\Models\IndividualItem;
 
 class ItemController extends Controller
 {
@@ -29,7 +30,7 @@ class ItemController extends Controller
     }
 
     /**
-     * Store a newly created item in the database.
+     * Store items in the database.
      */
     public function store(Request $request)
     {
@@ -44,7 +45,7 @@ class ItemController extends Controller
             'arrival_date' => 'required|date',
             'date_purchased' => 'required|date',
             'status' => 'required|string|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         // Check if the item already exists (same name & category)
@@ -71,14 +72,64 @@ class ItemController extends Controller
             $item->date_purchased = $request->date_purchased;
             $item->status = $request->status;
 
-            // Handle image upload if provided
-            if ($request->hasFile('image')) {
-                $filename = time() . '.' . $request->image->extension();
-                $request->image->move(public_path('images'), $filename);
-                $item->image = 'images/' . $filename;
+            // Handle image upload if provided and save URL to `image_url`
+            if ($request->hasFile('image_url')) {
+                $filename = time() . '.' . $request->image_url->extension();
+                $request->image_url->move(public_path('images'), $filename);
+                $item->image_url = 'images/' . $filename;
             }
 
+            // Generate item code based on category abbreviation and count of items in that category
+            $category = $request->category;
+
+            // Map categories to their abbreviations
+            $categoryMap = [
+                'DRRM Equipment' => 'DRRM',
+                'Office Supplies' => 'Office',
+                'Emergency Kits' => 'Emergency',
+                'Other Items' => 'Other',
+            ];
+
+            // Get the abbreviation for the category
+            $categoryAbbreviation = isset($categoryMap[$category]) ? $categoryMap[$category] : strtoupper($category);
+
+            // Count how many items are in this category
+            $itemCount = Item::where('category', $category)->count();
+
+            // Process item name to get initials if it's more than 8 characters or has more than one word
+            $itemName = strtoupper($request->name); // Uppercase the item name
+            $nameParts = explode(' ', $itemName); // Split the name into words
+            $itemInitials = '';
+
+            if (count($nameParts) > 1 || strlen($itemName) > 8) {
+                // Take the first letter of each word for names with more than 1 word or > 8 chars
+                foreach ($nameParts as $part) {
+                    $itemInitials .= strtoupper(substr($part, 0, 1)); // Take the first letter of each word
+                }
+            } else {
+                $itemInitials = strtoupper(substr($itemName, 0, 2)); // Otherwise, take first 2 letters
+            }
+
+            // Generate a single item code for the new item
+            $itemCode = $categoryAbbreviation . '-' . str_pad($itemCount + 1, 2, '0', STR_PAD_LEFT) . '-' . $itemInitials;
+
+            // Store the item code
+            $item->item_code = $itemCode;
+
             $item->save();
+
+            // Generate individual items based on quantity
+            for ($i = 1; $i <= $item->quantity; $i++) {
+                // Generate the item code based on the quantity
+                $individualItemCode = $itemCode . '-' . str_pad($i, 2, '0', STR_PAD_LEFT);
+
+                // Create individual items
+                $individualItem = new IndividualItem();
+                $individualItem->item_id = $item->id;
+                $individualItem->qr_code = $individualItemCode;  // Store the QR code string
+                $individualItem->status = $item->status;
+                $individualItem->save();
+            }
         }
 
         return redirect()->back()->with('success', 'Item added successfully!');
@@ -114,11 +165,11 @@ class ItemController extends Controller
         $item->date_purchased = $request->date_purchased;
         $item->status = $request->status;
 
-        // Handle image upload if provided
-        if ($request->hasFile('image')) {
-            $filename = time() . '.' . $request->image->extension();
-            $request->image->move(public_path('images'), $filename);
-            $item->image = 'images/' . $filename;
+        // Handle image upload if provided and save URL to `image_url`
+        if ($request->hasFile('image_url')) {
+            $filename = time() . '.' . $request->image_url->extension();
+            $request->image_url->move(public_path('images'), $filename);
+            $item->image_url = 'images/' . $filename;
         }
 
         $item->save();

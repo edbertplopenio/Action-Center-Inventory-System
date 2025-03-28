@@ -28,8 +28,8 @@
 
         /* Custom tab color styles */
         .tab-button {
-            padding: 0.5rem 1.5rem;
-            font-size: 0.9rem; /* Reduced font size */
+            padding: 0.3rem 1rem; /* Reduced padding */
+            font-size: 0.8rem; /* Reduced font size */
             font-weight: 500;
             color: white;
             cursor: pointer;
@@ -43,23 +43,27 @@
 
         .tab-button.active {
             font-weight: bold;
-            background-color: #4A90E2; /* Consistent background color for active tab */
+            background-color: #4A90E2; /* Active tab background color */
         }
 
         /* Flex container for Tabs and Add Item Button */
         .tab-container {
             display: flex;
             align-items: center;
-            margin-bottom: -0.2rem;
+            margin-bottom: -0.5rem; /* Slightly smaller margin */
             margin-top: .5rem;
         }
-
-        .tab-button-container {
+                .tab-button-container {
             display: flex;
         }
 
         .tab-button + .tab-button {
-            margin-left: 0.5rem;
+            margin-left: 0.4rem; /* Reduced margin between tabs */
+        }
+
+        #add-item-btn {
+            padding: 0.4rem 0.8rem; /* Reduced padding */
+            font-size: 0.9rem; /* Slightly smaller font */
         }
 
         /* Position the Add Item button to the right side of the tabs */
@@ -73,8 +77,20 @@
             transition: background-color 0.3s;
         }
 
+        #add-item-btn {
+            margin-left: auto; /* Push the button to the far right */
+            background-color: rgb(21, 183, 75); /* Green */
+            color: white;
+            padding: 0.3rem 0.6rem; /* Reduced padding */
+            font-size: 0.8rem; /* Slightly smaller font */
+            border-radius: 0.375rem; /* Consistent border radius with tabs */
+            cursor: pointer;
+            transition: background-color 0.3s, opacity 0.3s ease;
+        }
+
         #add-item-btn:hover {
-            background-color: #2F9C5A;
+            background-color: #2F9C5A; /* Darker green for hover effect */
+            opacity: 0.8; /* Slight opacity change on hover */
         }
 
         /* Custom Tab Colors */
@@ -99,26 +115,31 @@
         }
 
         table th, table td {
-            padding: 0.6rem; /* Reduced padding for better alignment */
+            padding: 0.5rem; /* Reduced padding for better alignment */
             text-align: left;
             border-bottom: 1px solid #E5E5E5;
-            font-size: 0.9rem; /* Reduced font size */
+            font-size: 0.8rem; /* Reduced font size */
+            text-align: center;
         }
         table th {
-            background-color: #F7FAFC;
-            color: #2D3748;
-        }
+    background-color: transparent;  /* Remove background color */
+    color: inherit;  /* Inherit text color from the parent or default styling */
+    text-align: center;
+}
 
-        table tr:hover {
-            background-color: #F1F1F1;
-        }
+/* Hover effect on table headers */
+table th:hover {
+    background-color: #f0f0f0; /* Light grey background color on hover */
+    color: #2D3748; /* Dark text color on hover */
+    cursor: pointer; /* Pointer cursor to indicate interactivity */
+}
 
         .table-container {
             width: 100%; /* Ensure it takes full width */
             height: auto; /* Fixed height for vertical scrolling */
             overflow-x: auto; /* Enable horizontal scrolling only */
             overflow-y: hidden; /* Prevent vertical scrollbar in outer container */
-            margin-top: -1.5rem; /* Adjust margin for spacing */  
+            margin-top: 0.3rem; /* Adjust margin for spacing */  
             margin-bottom: -1.7rem;  
             
         }
@@ -183,88 +204,192 @@
     }
 
     /* Styling for the Action Buttons */
-    .action-buttons {
+        .action-buttons {
         display: flex;
         justify-content: center;
-        align-items: center;  /* Vertically center the buttons */
-        gap: 8px;  /* Space between buttons */
-        height: 100%;  /* Ensure it takes the full height of the row */
-        text-align: center;  /* Ensure buttons are centered in the cell */
+        align-items: center;
+        gap: 4px; /* Smaller gap between buttons */
     }
 
-    /* Ensure buttons have the same height as table rows and are aligned */
-    .edit-btn, .archive-btn {
-        padding: 6px 12px;
-        border-radius: 4px;
-        font-size: 14px;
-        text-align: center;
-        cursor: pointer;
-        width: 80px;  /* Set consistent width for the buttons */
-        height: auto;  /* Ensure buttons fill the row height */
-        display: inline-block;
-        margin-top: 0.5rem;
-    }
 
-    /* Edit button style */
+
+    /* Edit Button Style */
     .edit-btn {
-        background-color: #4cc9f0;
-        color: white;
-        transition: background-color 0.3s, transform 0.2s;
-    }
+    background-color: rgb(21, 183, 75);
+    color: white;
+    padding: 3px 8px; /* Smaller padding */
+    border-radius: 3px; /* Slightly smaller rounded corners */
+    font-size: 0.7rem; /* Slightly smaller font size */
+    font-weight: normal; /* Regular font weight */
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s ease; /* Transition for color and scale */
+    margin-top: 0.6rem;
+    margin-bottom: 0.6rem;
+}
 
-    .edit-btn:hover {
-        background-color: rgb(65, 175, 209);
-    }
+.edit-btn:hover {
+    background-color: #38a169; /* Darker green on hover */
+    transform: scale(1.05); /* Slight scaling effect */
+}
 
     /* Archive button style */
     .archive-btn {
-        background-color: rgb(255, 176, 48);
-        color: white;
-        transition: background-color 0.3s, transform 0.2s;
-    }
+    background-color: #f56565; /* Red background */
+    color: white;
+    padding: 3px 8px; /* Smaller padding */
+    border-radius: 3px; /* Slightly smaller rounded corners */
+    font-size: 0.7rem; /* Slightly smaller font size */
+    font-weight: normal; /* Regular font weight */
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s ease; /* Transition for color and scale */
+    margin-top: 0.6rem;
+    margin-bottom: 0.6rem;
+}
 
-    .archive-btn:hover {
-        background-color: rgb(234, 71, 71);  /* Hover effect */
-    }
+.archive-btn:hover {
+    background-color: #e53e3e; /* Darker red on hover */
+    transform: scale(1.05); /* Slight scaling effect */
+}
 
     /* Restore button style for archived items */
     .restore-btn {
-        background-color: rgb(21, 183, 75);
-        color: white;
-        border-radius: 4px;
-        font-size: 14px;
-        padding: 6px 12px;
-        cursor: pointer;
-        text-align: center;
-        transition: background-color 0.3s, transform 0.2s;
+    background-color: rgb(21, 183, 75);
+    color: white;
+    padding: 3px 8px; /* Smaller padding */
+    border-radius: 3px; /* Slightly smaller rounded corners */
+    font-size: 0.7rem; /* Slightly smaller font size */
+    font-weight: normal; /* Regular font weight */
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s ease; /* Transition for color and scale */
+    margin-top: 0.6rem;
+    margin-bottom: 0.6rem;        
+    transition: background-color 0.3s, transform 0.2s;
     }
 
     .restore-btn:hover {
         background-color: rgb(81, 166, 109);  /* Darker shade of green for hover effect */
         transform: scale(1.05);  /* Slight scaling effect */
     }
-/* Change font size for the whole table */
-table.dataTable {
-    font-size: 14px;  /* You can adjust this to your desired font size */
-}
 
 /* Change font size for table headers */
 table.dataTable thead th {
-    font-size: 16px;  /* Adjust the font size for the headers */
+    font-size: 11px;  /* Adjust the font size for the headers */
+    text-align: center; 
 }
 
 /* Change font size for table cells */
 table.dataTable tbody td {
     font-size: 14px;  /* Adjust the font size for table data cells */
+    text-align: center; 
 }
 
-/* For specific columns, you can target them using nth-child or custom classes */
-table.dataTable tbody td:nth-child(2) {
-    font-size: 12px;  /* Adjust the font size of the second column */
+/**/ 
+/**/
+/* Style the container */
+ /* Entries per page Dropdown */
+ .dataTables_length {
+        display: flex;
+        align-items: center;
+        gap: 4px; /* Smaller gap */
+        font-family: 'Inter', sans-serif;
+        font-size: 10px; /* Smaller font size */
+        margin-bottom: 6px;
+        padding: 2px 4px;
+        background-color: #e6f7ff;
+        border-radius: 6px;
+        border: 1px solid #b3eaff;
+    }
+
+    .dataTables_length select {
+        padding: 4px 8px;
+        border: 1px solid #b3eaff;
+        border-radius: 4px;
+        background-color: #ffffff;
+        color: #4aaed4;
+        font-size: 10px;
+        cursor: pointer;
+        outline: none;
+        transition: all 0.2s ease-in-out;
+        width: 50px; /* Reduced width */
+    }
+
+    /* Adjust Search Box */
+    .dataTables_filter input {
+        padding: 4px 8px;
+        border: 1px solid #b3eaff;
+        border-radius: 4px;
+        background-color: #ffffff;
+        color: #4aaed4;
+        font-size: 10px;
+        cursor: text;
+        outline: none;
+        width: 150px; /* Make the search box smaller */
+    }
+    .dataTables_length select, .dataTables_filter input {
+    font-size: 9px; /* Reduced font size */
+    padding: 3px 6px; /* Reduced padding */
 }
 
+    /* Pagination Controls */
+    .dataTables_paginate {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+    }
 
-    </style>
+    .dataTables_paginate a {
+    padding: 3px 6px; /* Reduced padding */
+    font-size: 9px; /* Smaller font size */
+}
+
+    .dataTables_paginate a {
+        padding: 4px 8px;
+        background-color: #4A90E2;
+        color: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 10px; /* Smaller font size */
+        transition: background-color 0.2s ease;
+    }
+
+    .dataTables_paginate a:hover {
+        background-color: #0073e6;
+    }
+
+    /* Scrollable tbody */
+    .dataTables_scrollBody {
+        max-height: 400px; /* Adjust height as needed */
+        overflow-y: auto;
+    }
+
+/* Shrink DataTable control elements consistently */
+.dt-length,
+.dt-search,
+.dt-info,
+.dt-paging {
+    font-size: 10px !important;
+    padding: 2px 5px !important;
+}
+
+/* Dropdown for entries per page */
+.dt-length select {
+    font-size: 10px !important;
+    padding: 2px 4px !important;
+}
+
+/* Search bar input */
+.dt-search input[type="search"] {
+    font-size: 10px !important;
+    padding: 4px 6px !important;
+}
+
+/* Pagination buttons */
+.dt-paging .paginate_button {
+    font-size: 10px !important;
+    padding: 2px 5px !important;
+}
+
+</style>
 </head>
 <body class="bg-gray-100">
 <!-- Main Content -->
@@ -279,18 +404,19 @@ table.dataTable tbody td:nth-child(2) {
                 <button id="archives-tab" class="tab-button archives-tab ml-2" onclick="switchTab('archives')">Archives</button>
             </div>
             <!-- Add Item Button (Right Aligned) -->
-            <button id="add-item-btn" class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
+            <button id="add-item-btn" class="tab-button add-item-btn">
                 + Add Item
             </button>
         </div>
 
 <!-- All Items Tab -->
 <div id="all-items-content" class="tab-content active">
-    <h3 class="text-xl font-semibold mb-4">All Items</h3>
+    <!--<h3 class="text-xl font-semibold mb-4">All Items</h3>-->
     <div class="table-container">
         <table id="allItemsTable" class="display">
             <thead>
                 <tr>
+                    <th>Item Code</th>
                     <th>Item Name</th>
                     <th>Quantity</th>
                     <th>Unit</th>
@@ -307,6 +433,7 @@ table.dataTable tbody td:nth-child(2) {
             <tbody>
                 @foreach($allItems as $item)
                     <tr id="item-{{ $item->id }}">
+                        <td>{{ $item->item_code }}</td>
                         <td>{{ $item->name }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
@@ -333,11 +460,12 @@ table.dataTable tbody td:nth-child(2) {
 
 <!-- DRRM Equipment Tab -->
 <div id="equipment-content" class="tab-content">
-    <h3 class="text-xl font-semibold mb-4">DRRM Equipment</h3>
+    <!--<h3 class="text-xl font-semibold mb-4">DRRM Equipment</h3>--->
     <div class="table-container">
         <table id="equipmentTable" class="display">
             <thead>
                 <tr>
+                    <th>Item Code</th>
                     <th>Item Name</th>
                     <th>Quantity</th>
                     <th>Unit</th>
@@ -353,6 +481,7 @@ table.dataTable tbody td:nth-child(2) {
             <tbody>
                 @foreach($drrmItems as $item)
                     <tr id="item-{{ $item->id }}">
+                    <td>{{ $item->item_code }}</td>
                         <td>{{ $item->name }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
@@ -379,11 +508,12 @@ table.dataTable tbody td:nth-child(2) {
 
 <!-- Office Supplies Tab -->
 <div id="office-supplies-content" class="tab-content">
-    <h3 class="text-xl font-semibold mb-4">Office Supplies</h3>
+    <!--<h3 class="text-xl font-semibold mb-4">Office Supplies</h3>--->
     <div class="table-container">
         <table id="officeSuppliesTable" class="display">
             <thead>
                 <tr>
+                    <th>Item Code</th>
                     <th>Item Name</th>
                     <th>Quantity</th>
                     <th>Unit</th>
@@ -399,6 +529,7 @@ table.dataTable tbody td:nth-child(2) {
             <tbody>
                 @foreach($officeItems as $item)
                     <tr id="item-{{ $item->id }}">
+                    <td>{{ $item->item_code }}</td>
                         <td>{{ $item->name }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
@@ -425,11 +556,12 @@ table.dataTable tbody td:nth-child(2) {
 
 <!-- Emergency Kits Tab -->
 <div id="emergency-kits-content" class="tab-content">
-    <h3 class="text-xl font-semibold mb-4">Emergency Kits</h3>
+    <!--<h3 class="text-xl font-semibold mb-4">Emergency Kits</h3>-->
     <div class="table-container">
         <table id="emergencyKitsTable" class="display">
             <thead>
                 <tr>
+                <th>Item Code</th>
                     <th>Item Name</th>
                     <th>Quantity</th>
                     <th>Unit</th>
@@ -445,6 +577,7 @@ table.dataTable tbody td:nth-child(2) {
             <tbody>
                 @foreach($emergencyItems as $item)
                     <tr id="item-{{ $item->id }}">
+                    <td>{{ $item->item_code }}</td>
                         <td>{{ $item->name }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
@@ -470,11 +603,12 @@ table.dataTable tbody td:nth-child(2) {
 
 <!-- Other Items Tab -->
 <div id="other-items-content" class="tab-content">
-    <h3 class="text-xl font-semibold mb-4">Other Items</h3>
+    <!--<h3 class="text-xl font-semibold mb-4">Other Items</h3>--->
     <div class="table-container">
         <table id="otherItemsTable" class="display">
             <thead>
                 <tr>
+                <th>Item Code</th>
                     <th>Item Name</th>
                     <th>Quantity</th>
                     <th>Unit</th>
@@ -490,6 +624,7 @@ table.dataTable tbody td:nth-child(2) {
             <tbody>
                 @foreach($otherItems as $item)
                     <tr id="item-{{ $item->id }}">
+                    <td>{{ $item->item_code }}</td>
                         <td>{{ $item->name }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
@@ -515,11 +650,12 @@ table.dataTable tbody td:nth-child(2) {
 
 <!-- Archives Tab -->
 <div id="archives-content" class="tab-content">
-    <h3 class="text-xl font-semibold mb-4">Archives</h3>
+    <!--<h3 class="text-xl font-semibold mb-4">Archives</h3>-->
     <div class="table-container">
         <table id="archivesTable" class="display">
             <thead>
                 <tr>
+                <th>Item Code</th>
                     <th>Item Name</th>
                     <th>Category</th>
                     <th>Quantity</th>
@@ -536,6 +672,7 @@ table.dataTable tbody td:nth-child(2) {
             <tbody>
                 @foreach($archivedItems as $item)
                     <tr id="archived-{{ $item->id }}">
+                    <td>{{ $item->item_code }}</td>
                         <td>{{ $item->name }}</td>
                         <td>{{ $item->category }}</td>
                         <td>{{ $item->quantity }}</td>
@@ -545,7 +682,7 @@ table.dataTable tbody td:nth-child(2) {
                         <td>{{ $item->arrival_date }}</td>
                         <td>{{ $item->date_purchased }}</td>
                         <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
                         <td class="action-buttons">
                             <!-- Restore Button: Form for restoring an archived item -->
                             <form action="{{ route('restore.item', $item->id) }}" method="POST" class="inline-block">
@@ -611,115 +748,126 @@ table.dataTable tbody td:nth-child(2) {
     });
 </script>
 
+<script> 
+    $(document).ready(function () {
+        $('#allItemsTable').DataTable({
+            scrollY: '425px', 
+            scrollCollapse: true,
+            paging: true,
+            searching: true,
+            ordering: true,
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            "pageLength": 10,
+            "initComplete": function(settings, json) {
+                $('#allItemsTable').css('font-size', '12px');
+                $('#allItemsTable thead th').css('font-size', '10px');
+                $('#allItemsTable tbody td').css('font-size', '10px');
+            }
+        });
 
-<script>function initializeDataTables() {
+        $('#equipmentTable').DataTable({
+            scrollY: '425px',
+            scrollCollapse: true,
+            paging: true,
+            searching: true,
+            ordering: true,
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            "pageLength": 10,
+            "initComplete": function(settings, json) {
+                $('#equipmentTable').css('font-size', '12px');
+                $('#equipmentTable thead th').css('font-size', '10px');
+                $('#equipmentTable tbody td').css('font-size', '10px');
+            }
+        });
 
-// Initialize All Items Table
-$('#allItemsTable').DataTable({
-    "scrollY": '425px', // Set vertical scroll inside the table
-    "scrollCollapse": true, // Enable collapsing the table when data is small
-    "paging": true, // Enable pagination
-    "searching": true, // Enable search
-    "ordering": true, // Enable sorting
-    "initComplete": function(settings, json) {
-            // Change font size for the table
-            $('#allItemsTable').css('font-size', '12px');
-            $('#allItemsTable thead th').css('font-size', '10px'); // Make header font size smaller
-            $('#allItemsTable tbody td').css('font-size', '10px'); // Set body font size
-        }
+        $('#officeSuppliesTable').DataTable({
+            scrollY: '425px',
+            scrollCollapse: true,
+            paging: true,
+            searching: true,
+            ordering: true,
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            "pageLength": 10,
+            "initComplete": function(settings, json) {
+                $('#officeSuppliesTable').css('font-size', '12px');
+                $('#officeSuppliesTable thead th').css('font-size', '10px');
+                $('#officeSuppliesTable tbody td').css('font-size', '10px');
+            }
+        });
+
+        $('#emergencyKitsTable').DataTable({
+            scrollY: '425px',
+            scrollCollapse: true,
+            paging: true,
+            searching: true,
+            ordering: true,
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            "pageLength": 10,
+            "initComplete": function(settings, json) {
+                $('#emergencyKitsTable').css('font-size', '12px');
+                $('#emergencyKitsTable thead th').css('font-size', '10px');
+                $('#emergencyKitsTable tbody td').css('font-size', '10px');
+            }
+        });
+
+        $('#otherItemsTable').DataTable({
+            scrollY: '425px',
+            scrollCollapse: true,
+            paging: true,
+            searching: true,
+            ordering: true,
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            "pageLength": 10,
+            "initComplete": function(settings, json) {
+                $('#otherItemsTable').css('font-size', '12px');
+                $('#otherItemsTable thead th').css('font-size', '10px');
+                $('#otherItemsTable tbody td').css('font-size', '10px');
+            }
+        });
+
+        $('#archivesTable').DataTable({
+            scrollY: '425px',
+            scrollCollapse: true,
+            paging: true,
+            searching: true,
+            ordering: true,
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            "pageLength": 10,
+            "initComplete": function(settings, json) {
+                $('#archivesTable').css('font-size', '12px');
+                $('#archivesTable thead th').css('font-size', '10px');
+                $('#archivesTable tbody td').css('font-size', '10px');
+            }
+        });
     });
-
-// Initialize Equipment Table
-$('#equipmentTable').DataTable({
-    "scrollY": '425px', // Set vertical scroll inside the table
-    "scrollCollapse": true, // Enable collapsing the table when data is small
-    "paging": true, // Enable pagination
-    "searching": true, // Enable search
-    "ordering": true, // Enable sorting
-    "initComplete": function(settings, json) {
-        // Change font size for this table
-        $('#equipmentTable').css('font-size', '12px');
-        $('#equipmentTable thead th').css('font-size', '10px'); // Set header font size
-        $('#equipmentTable tbody td').css('font-size', '10px'); // Set body font size
-    }
-});
-
-// Initialize Office Supplies Table
-$('#officeSuppliesTable').DataTable({
-    "scrollY": '425px', // Set vertical scroll inside the table
-    "scrollCollapse": true, // Enable collapsing the table when data is small
-    "paging": true, // Enable pagination
-    "searching": true, // Enable search
-    "ordering": true, // Enable sorting
-    "initComplete": function(settings, json) {
-        // Change font size for this table
-        $('#officeSuppliesTable').css('font-size', '12px');
-        $('#officeSuppliesTable thead th').css('font-size', '10px'); // Set header font size
-        $('#officeSuppliesTable tbody td').css('font-size', '10px'); // Set body font size
-    }
-});
-
-// Initialize Emergency Kits Table
-$('#emergencyKitsTable').DataTable({
-    "scrollY": '425px', // Set vertical scroll inside the table
-    "scrollCollapse": true, // Enable collapsing the table when data is small
-    "paging": true, // Enable pagination
-    "searching": true, // Enable search
-    "ordering": true, // Enable sorting
-    "initComplete": function(settings, json) {
-        // Change font size for this table
-        $('#emergencyKitsTable').css('font-size', '12px');
-        $('#emergencyKitsTable thead th').css('font-size', '10px'); // Set header font size
-        $('#emergencyKitsTable tbody td').css('font-size', '10px'); // Set body font size
-    }
-});
-
-// Initialize Other Items Table
-$('#otherItemsTable').DataTable({
-    "scrollY": '425px', // Set vertical scroll inside the table
-    "scrollCollapse": true, // Enable collapsing the table when data is small
-    "paging": true, // Enable pagination
-    "searching": true, // Enable search
-    "ordering": true, // Enable sorting
-    "initComplete": function(settings, json) {
-        // Change font size for this table
-        $('#otherItemsTable').css('font-size', '12px');
-        $('#otherItemsTable thead th').css('font-size', '10px'); // Set header font size
-        $('#otherItemsTable tbody td').css('font-size', '10px'); // Set body font size
-    }
-});
-
-// Initialize Archives Table
-$('#archivesTable').DataTable({
-    "scrollY": '425px', // Set vertical scroll inside the table
-    "scrollCollapse": true, // Enable collapsing the table when data is small
-    "paging": true, // Enable pagination
-    "searching": true, // Enable search
-    "ordering": true, // Enable sorting
-    "initComplete": function(settings, json) {
-        // Change font size for this table
-        $('#archivesTable').css('font-size', '12px');
-        $('#archivesTable thead th').css('font-size', '10px'); // Set header font size
-        $('#archivesTable tbody td').css('font-size', '10px'); // Set body font size
-    }
-});
-
-}
-
 </script>
+
+
 <!-- Add item JavaScript for Modal Control -->
 <script>
     $(document).ready(function () {
-        // Event listener for Add Item button
-        $("#add-item-btn").click(function () {
-            $("#addItemModal").removeClass("hidden");
-        });
-
-        // Close modal actions
-        $("#closeModal, #cancelModal").click(function () {
-            $("#addItemModal").addClass("hidden");
-        });
+    // Event listener for Add Item button
+    $("#add-item-btn").click(function () {
+        $("#addItemModal").removeClass("hidden");
     });
+
+    // Close modal actions
+    $("#closeModal, #cancelModal").click(function () {
+        $("#addItemModal").addClass("hidden");
+    });
+
+    // Add validation before saving the form
+    $("#itemForm").submit(function (e) {
+        var quantity = $("#quantity").val(); // Get the quantity value
+
+        // Check if quantity is 0
+        if (parseInt(quantity) === 0) {
+            e.preventDefault();  // Prevent the form from submitting
+            alert("Quantity cannot be zero! Please enter a valid quantity.");
+        }
+    });
+});
+
 </script>
 
 <SCRIPT>
@@ -821,170 +969,174 @@ $(document).ready(function () {
 </script>
 
 <!-- Modal Overlay for Adding Item -->
-<div id="addItemModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
-    <div class="bg-white p-6 rounded-lg w-2/3 max-w-4xl">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-semibold">Add New Item</h3>
-            <button id="closeModal" class="text-black hover:text-red-500 text-2xl">&times;</button>
+<div id="addItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
+    <div class="relative z-10 flex items-center justify-center">
+        <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full" style="max-width: 90%; height: auto;">
+            <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Item</h3>
+
+                <form id="itemForm" action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="name" class="block text-xs font-medium text-gray-900">Item Name</label>
+                                <input type="text" id="name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                            </div>
+
+                            <div>
+                                <label for="category" class="block text-xs font-medium text-gray-900">Category</label>
+                                <select id="category" name="category" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                    <option value="DRRM Equipment">DRRM Equipment</option>
+                                    <option value="Office Supplies">Office Supplies</option>
+                                    <option value="Emergency Kits">Emergency Kits</option>
+                                    <option value="Other Items">Other Items</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="quantity" class="block text-xs font-medium text-gray-900">Quantity</label>
+                                <input type="number" id="quantity" name="quantity" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                            </div>
+
+                            <div>
+                                <label for="unit" class="block text-xs font-medium text-gray-900">Unit</label>
+                                <input type="text" id="unit" name="unit" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                            </div>
+
+                            <div>
+                                <label for="description" class="block text-xs font-medium text-gray-900">Description</label>
+                                <textarea id="description" name="description" rows="3" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs"></textarea>
+                            </div>
+
+                            <div>
+                                <label for="storage_location" class="block text-xs font-medium text-gray-900">Storage Location</label>
+                                <input type="text" id="storage_location" name="storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                            </div>
+
+                            <div>
+                                <label for="arrival_date" class="block text-xs font-medium text-gray-900">Arrival Date</label>
+                                <input type="date" id="arrival_date" name="arrival_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                            </div>
+
+                            <div>
+                                <label for="date_purchased" class="block text-xs font-medium text-gray-900">Date Purchased</label>
+                                <input type="date" id="date_purchased" name="date_purchased" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                            </div>
+
+                            <div>
+                                <label for="status" class="block text-xs font-medium text-gray-900">Status</label>
+                                <select id="status" name="status" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                    <option value="Available">Available</option>
+                                    <option value="Unavailable">Unavailable</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="image_url" class="block text-xs font-medium text-gray-900">Image</label>
+                                <input type="file" id="image_url" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                            </div>
+                        </div>
+
+                        <div class="mt-6 flex items-center justify-end gap-x-6">
+                            <button type="button" id="cancelModal" class="text-xs font-semibold text-gray-900 px-4 py-2 bg-gray-400 rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
+                                Cancel
+                            </button>
+                            <button type="submit" class="rounded-md bg-green-400 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-green-600 hover:text-white">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-        <form id="itemForm" action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label for="name" class="block text-sm font-semibold text-black mb-2">Item Name</label>
-                    <input type="text" id="name" name="name" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
-                </div>
-
-                <div>
-                    <label for="category" class="block text-sm font-semibold text-black mb-2">Category</label>
-                    <select id="category" name="category" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
-                        <option value="DRRM Equipment">DRRM Equipment</option>
-                        <option value="Office Supplies">Office Supplies</option>
-                        <option value="Emergency Kits">Emergency Kits</option>
-                        <option value="Other Items">Other Items</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label for="quantity" class="block text-sm font-semibold text-black mb-2">Quantity</label>
-                    <input type="number" id="quantity" name="quantity" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
-                </div>
-
-                <div>
-                    <label for="unit" class="block text-sm font-semibold text-black mb-2">Unit</label>
-                    <input type="text" id="unit" name="unit" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
-                </div>
-
-                <div>
-                    <label for="description" class="block text-sm font-semibold text-black mb-2">Description</label>
-                    <textarea id="description" name="description" rows="3" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500"></textarea>
-                </div>
-
-                <div>
-                    <label for="storage_location" class="block text-sm font-semibold text-black mb-2">Storage Location</label>
-                    <input type="text" id="storage_location" name="storage_location" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
-                </div>
-
-                <div>
-                    <label for="arrival_date" class="block text-sm font-semibold text-black mb-2">Arrival Date</label>
-                    <input type="date" id="arrival_date" name="arrival_date" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
-                </div>
-
-                <div>
-                    <label for="date_purchased" class="block text-sm font-semibold text-black mb-2">Date Purchased</label>
-                    <input type="date" id="date_purchased" name="date_purchased" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
-                </div>
-
-                <div>
-                    <label for="status" class="block text-sm font-semibold text-black mb-2">Status</label>
-                    <select id="status" name="status" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
-                        <option value="Available">Available</option>
-                        <option value="Unavailable">Unavailable</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label for="image" class="block text-sm font-semibold text-black mb-2">Image</label>
-                    <input type="file" id="image" name="image" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500">
-                </div>
-            </div>
-
-            <div class="flex justify-between mt-4">
-                <button type="button" id="cancelModal" class="px-4 py-2 bg-gray-400 text-black rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
-                    Cancel
-                </button>
-                <button type="submit" class="px-4 py-2 bg-green-400 text-black rounded-md transition duration-300 hover:bg-green-600 hover:text-white">
-                    Save
-                </button>
-            </div>
-        </form>
     </div>
 </div>
 
-
-<!--EDIT MODAL-->
 <!-- Edit Item Modal -->
-<div id="editItemModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex justify-center items-center z-50">
-    <div class="bg-white p-6 rounded-lg w-2/3 max-w-4xl">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-semibold">Edit Item</h3>
-            <button id="closeEditModal" class="text-black hover:text-red-500 text-2xl">&times;</button>
+<div id="editItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
+    <div class="relative z-10 flex items-center justify-center">
+        <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full" style="max-width: 90%; height: auto;">
+            <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Edit Item</h3>
+
+                <form id="editItemForm" action="{{ route('items.update', ['id' => '__ID__']) }}" method="POST">
+                    @csrf
+                    @method('PUT')  <!-- Use PUT method for updates -->
+                    <input type="hidden" id="edit_item_id" name="item_id">
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="edit_item_name" class="block text-xs font-medium text-gray-900">Item Name</label>
+                                <input type="text" id="edit_item_name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                            </div>
+
+                            <div>
+                                <label for="edit_category" class="block text-xs font-medium text-gray-900">Category</label>
+                                <select id="edit_category" name="category" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                    <option value="DRRM Equipment">DRRM Equipment</option>
+                                    <option value="Office Supplies">Office Supplies</option>
+                                    <option value="Emergency Kits">Emergency Kits</option>
+                                    <option value="Other Items">Other Items</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="edit_quantity" class="block text-xs font-medium text-gray-900">Quantity</label>
+                                <input type="number" id="edit_quantity" name="quantity" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                            </div>
+
+                            <div>
+                                <label for="edit_unit" class="block text-xs font-medium text-gray-900">Unit</label>
+                                <input type="text" id="edit_unit" name="unit" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                            </div>
+
+                            <div>
+                                <label for="edit_description" class="block text-xs font-medium text-gray-900">Description</label>
+                                <textarea id="edit_description" name="description" rows="3" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs"></textarea>
+                            </div>
+
+                            <div>
+                                <label for="edit_storage_location" class="block text-xs font-medium text-gray-900">Storage Location</label>
+                                <input type="text" id="edit_storage_location" name="storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                            </div>
+
+                            <div>
+                                <label for="edit_arrival_date" class="block text-xs font-medium text-gray-900">Arrival Date</label>
+                                <input type="date" id="edit_arrival_date" name="arrival_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                            </div>
+
+                            <div>
+                                <label for="edit_date_purchased" class="block text-xs font-medium text-gray-900">Date Purchased</label>
+                                <input type="date" id="edit_date_purchased" name="date_purchased" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                            </div>
+
+                            <div>
+                                <label for="edit_status" class="block text-xs font-medium text-gray-900">Status</label>
+                                <select id="edit_status" name="status" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                    <option value="Available">Available</option>
+                                    <option value="Unavailable">Unavailable</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="edit_image" class="block text-xs font-medium text-gray-900">Image</label>
+                                <input type="file" id="edit_image" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                            </div>
+                        </div>
+
+                        <div class="mt-6 flex items-center justify-end gap-x-6">
+                            <button type="button" id="cancelEditModal" class="text-xs font-semibold text-gray-900 px-4 py-2 bg-gray-400 rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
+                                Cancel
+                            </button>
+                            <button type="submit" class="rounded-md bg-green-400 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-green-600 hover:text-white">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-        <form id="editItemForm" action="{{ route('items.update', ['id' => '__ID__']) }}" method="POST">
-            @csrf
-            @method('PUT')  <!-- Use PUT method for updates -->
-            <input type="hidden" id="edit_item_id" name="item_id">
-            <div class="grid grid-cols-2 gap-4">
-                <!-- Add editable fields here -->
-
-                <div>
-                    <label for="edit_item_name" class="block text-sm font-semibold text-black mb-2">Item Name</label>
-                    <input type="text" id="edit_item_name" name="name" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
-                </div>
-
-                <div>
-                    <label for="edit_category" class="block text-sm font-semibold text-black mb-2">Category</label>
-                    <select id="edit_category" name="category" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500">
-                        <option value="DRRM Equipment">DRRM Equipment</option>
-                        <option value="Office Supplies">Office Supplies</option>
-                        <option value="Emergency Kits">Emergency Kits</option>
-                        <option value="Other Items">Other Items</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label for="edit_quantity" class="block text-sm font-semibold text-black mb-2">Quantity</label>
-                    <input type="number" id="edit_quantity" name="quantity" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500" required>
-                </div>
-
-                <div>
-                    <label for="edit_unit" class="block text-sm font-semibold text-black mb-2">Unit</label>
-                    <input type="text" id="edit_unit" name="unit" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500">
-                </div>
-
-                <div>
-                    <label for="edit_description" class="block text-sm font-semibold text-black mb-2">Description</label>
-                    <textarea id="edit_description" name="description" rows="3" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500"></textarea>
-                </div>
-
-                <div>
-                    <label for="edit_storage_location" class="block text-sm font-semibold text-black mb-2">Storage Location</label>
-                    <input type="text" id="edit_storage_location" name="storage_location" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500">
-                </div>
-
-                <div>
-                    <label for="edit_arrival_date" class="block text-sm font-semibold text-black mb-2">Arrival Date</label>
-                    <input type="date" id="edit_arrival_date" name="arrival_date" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500">
-                </div>
-
-                <div>
-                    <label for="edit_date_purchased" class="block text-sm font-semibold text-black mb-2">Date Purchased</label>
-                    <input type="date" id="edit_date_purchased" name="date_purchased" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500">
-                </div>
-
-                <div>
-                    <label for="edit_status" class="block text-sm font-semibold text-black mb-2">Status</label>
-                    <select id="edit_status" name="status" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500">
-                        <option value="Available">Available</option>
-                        <option value="Unavailable">Unavailable</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label for="edit_image" class="block text-sm font-semibold text-black mb-2">Image</label>
-                    <input type="file" id="edit_image" name="image_url" class="w-full p-2 border rounded-md focus:ring-2 focus:ring-red-500">
-                </div>
-            </div>
-
-            <div class="flex justify-between mt-4">
-                <button type="button" id="cancelEditModal" class="px-4 py-2 bg-gray-400 text-black rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
-                    Cancel
-                </button>
-                <button type="submit" class="px-4 py-2 bg-green-400 text-black rounded-md transition duration-300 hover:bg-green-600 hover:text-white">
-                    Save
-                </button>
-            </div>
-        </form>
     </div>
 </div>
 
