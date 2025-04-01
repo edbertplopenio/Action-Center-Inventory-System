@@ -22,7 +22,20 @@
         </div>
       @endif
 
+
       <form class="space-y-3" action="{{ route('registration.post') }}" method="POST">
+
+  <div class="relative z-10 bg-white bg-opacity-30 backdrop-blur-xl p-1 rounded-2xl shadow-lg h-[40px]" style="width: calc(33.33% + 192px); backdrop-filter: blur(10px); transform: translateX(35%);">
+
+
+    <!-- Flexbox for layout adjustment -->
+    
+    <div class="w-full flex flex-col">
+      <!-- Create a new account heading -->
+      <h2 class="mt-2 text-lg font-semibold mb-2 text-center" style="color:rgb(255, 255, 255);">Create a new account</h2>
+
+      <form class="space-y-3 flex flex-col items-center" action="{{ route('registration.post') }}" method="POST">
+
         @csrf
         <!-- Name Field -->
         <div>

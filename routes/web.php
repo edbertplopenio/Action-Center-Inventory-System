@@ -9,7 +9,6 @@ use App\Http\Controllers\Admin\RecordsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\EquipmentController;
 
-// Authentication routes
 Route::get('/login', [AuthManager::class, 'login'])->name('login');
 Route::post('/login', [AuthManager::class, 'loginPost'])->name('login.post');
 Route::get('/registration', [AuthManager::class, 'registration'])->name('registration');
@@ -65,4 +64,51 @@ Route::post('/borrowing-slip/{id}/approve', [BorrowingSlipController::class, 'ap
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [HomeController::class, 'index'])->name('dashboard');
 });
+
 Route::get('/inventory', [EquipmentController::class, 'index'])->name('inventory.index');
+
+Route::post('/admin/users/store', [UsersController::class, 'store']);
+
+
+Route::get('/admin/users/{id}/edit', [UsersController::class, 'edit'])->name('users.edit');
+
+Route::put('/admin/users/{id}', [UsersController::class, 'update'])->name('users.update');
+
+
+
+
+
+Route::post('/admin/users/deactivate/{id}', [UsersController::class, 'deactivate'])->name('users.deactivate');
+
+Route::get('/admin/users/deactivated', [UsersController::class, 'deactivatedIndex'])->name('users.deactivated');
+
+
+Route::post('/admin/users/activate/{id}', [UsersController::class, 'activate'])->name('users.activate');
+
+// Show the profile edit page
+Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+
+// Update the profile information
+Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+
+
+// Profile edit route
+Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+
+// Profile update route
+Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
+
+// Route for About Us page
+Route::get('/about', function () {
+    return view('about'); // This assumes you have an 'about.blade.php' view
+})->name('about');
+
+Route::get('/', function () {
+    return view('welcome');
+})->name('home');
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
+});
+

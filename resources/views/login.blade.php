@@ -1,6 +1,7 @@
 @extends('layout')
 @section('title', 'Login')
 @section('content')
+
 <div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
   <div class="sm:mx-auto sm:w-full sm:max-w-md"> <!-- Increased max width -->
     <!-- Card container -->
@@ -8,7 +9,16 @@
       <!-- Logo and Heading inside the card -->
       <div class="text-center">
       <img class="mx-auto h-20 w-20" src="{{ asset('images/actioncenter.png') }}" alt="ACTION Center">
+=======
+<div class="relative min-h-screen flex justify-center items-center bg-gray-100">
+  <!-- Background Image Covering Full Screen -->
+  <div class="absolute inset-0 w-full h-full">
+    <img class="w-full h-full object-cover" src="{{ asset('images/loginbg.png') }}" alt="Background Image">
+  </div>
 
+  <!-- Login Form Container (Blurred Background but Sharp Text) -->
+  <div class="relative z-10 bg-white bg-opacity-40 backdrop-blur-xl p-8 rounded-2xl shadow-lg w-96 flex flex-col items-center"
+    style="backdrop-filter: blur(10px); transform: translateX(45%);">
 
         <h2 class="mt-10 text-2xl font-bold text-gray-900">Sign in to your account</h2>
       </div>
