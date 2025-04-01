@@ -808,11 +808,31 @@
 
         <!-- Buttons to close the modal -->
         <div class="flex gap-4 mt-6">
-            <button class="px-4 py-2 bg-blue-500 text-white rounded-lg w-1/2 shadow-md hover:bg-blue-600 transition duration-200" onclick="closeReceiptModal()">Close</button>
-            <button class="px-4 py-2 bg-green-500 text-white rounded-lg w-1/2 shadow-md hover:bg-green-600 transition duration-200" onclick="confirmBorrow()">Confirm</button>
+            <button id="borrow-action-btn-{{ $request->id }}" class="borrow-btn px-2 py-1 m-1 bg-blue-500 text-white rounded 
+            hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs w-24"
+            onclick="updateStatus('{{ $request->id }}', 'Borrowed')"
+            @if(in_array($request->status, ['Approved', 'Rejected', 'Borrowed', 'Returned', 'Overdue', 'Lost', 'Damaged']))
+                disabled
+                style="opacity: 0.5;"
+                data-toggle="tooltip" data-placement="top" title="This request cannot be borrowed because it is already in a final state."
+            @endif>
+                Borrow
+            </button>
+
+            <button id="reject-action-btn-{{ $request->id }}" class="reject-btn px-2 py-1 m-1 bg-red-500 text-white rounded 
+            hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 text-xs w-24"
+            onclick="updateStatus('{{ $request->id }}', 'Rejected')"
+            @if(in_array($request->status, ['Approved', 'Rejected', 'Borrowed', 'Returned', 'Overdue', 'Lost', 'Damaged']))
+                disabled
+                style="opacity: 0.5;"
+                data-toggle="tooltip" data-placement="top" title="This request cannot be rejected because it is already in a final state."
+            @endif>
+                Reject
+            </button>
         </div>
     </div>
 </div>
+
 
 
 
@@ -882,14 +902,39 @@
         document.getElementById('receipt-modal').classList.add('hidden');
     }
 
-    // Confirm borrow action
-    function confirmBorrow() {
-        // Logic to confirm the borrow (e.g., send data to the server to mark the items as borrowed)
-        console.log("Item Borrowed");
+// Confirm borrow action
+function updateStatus(id, status) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You are about to " + status.toLowerCase() + " this request.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: status === 'Borrowed' ? '#28a745' : '#dc3545', // Change for Borrowed color
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, ' + status.toLowerCase() + ' it!'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '/admin/inventory-requests/update-status/' + id,
+                type: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    status: status
+                },
+                success: function(response) {
+                    Swal.fire('Updated!', 'The request has been ' + status.toLowerCase() + '.', 'success')
+                        .then(() => {
+                            location.reload();
+                        });
+                },
+                error: function() {
+                    Swal.fire('Error!', 'Something went wrong.', 'error');
+                }
+            });
+        }
+    });
+}
 
-        // Close the modal after confirming
-        closeReceiptModal();
-    }
 
     // Simulate scanning QR codes and adding them to the list
     function scanQRCode(qrCodeData) {
