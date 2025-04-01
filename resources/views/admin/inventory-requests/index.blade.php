@@ -774,7 +774,7 @@
     <div class="bg-white p-6 rounded-lg w-[400px] max-h-[500px] flex flex-col justify-between shadow-lg border border-gray-200">
         <div class="w-full overflow-y-auto">
             <h2 class="text-2xl font-semibold mb-4 text-center">Item Borrowed Receipt</h2>
-            
+
             <!-- Display Item Details -->
             <div id="receipt-details" class="space-y-2">
                 <div class="flex justify-between">
@@ -795,6 +795,14 @@
                 </div>
             </div>
 
+            <!-- Section for Scanned Items -->
+            <div class="mt-4">
+                <h3 class="font-medium text-lg">Scanned Items:</h3>
+                <ul id="scanned-items-list" class="space-y-1 mt-2">
+                    <!-- Scanned items will be listed here -->
+                </ul>
+            </div>
+
             <div class="my-4 border-t border-gray-300"></div>
         </div>
 
@@ -811,41 +819,85 @@
 
 
 
+
 <script>
-    // Function to handle the Approve button click
-document.getElementById('approveButton').addEventListener('click', function() {
-    // Get details for the item to be borrowed (you can use the scanned QR codes or pass the item ID)
-    const itemDetails = {
-        itemName: "Sample Item",   // Replace with actual item name
-        borrowerName: "John Doe", // Replace with actual borrower name
-        borrowedQuantity: scannedCount, // Replace with actual quantity borrowed
-        borrowedDate: new Date().toLocaleDateString() // Current date for borrowed date
-    };
+    let selectedRow = null; // Variable to store the selected row's data
 
-    // Populate the receipt modal with these details
-    document.getElementById('item-name').textContent = itemDetails.itemName;
-    document.getElementById('borrower-name').textContent = itemDetails.borrowerName;
-    document.getElementById('borrowed-quantity').textContent = itemDetails.borrowedQuantity;
-    document.getElementById('borrowed-date').textContent = itemDetails.borrowedDate;
 
-    // Show the receipt modal
-    document.getElementById('receipt-modal').classList.remove('hidden');
-});
+    // Listen for row selection (for example, by clicking a row)
+    document.querySelectorAll('#requestsTable tr').forEach(row => {
+        row.addEventListener('click', function() {
+            selectedRow = this; // Store the row that's clicked
+        });
+    });
 
-// Function to close the receipt modal
-function closeReceiptModal() {
-    document.getElementById('receipt-modal').classList.add('hidden');
-}
+    // Approve Button functionality
+    document.getElementById('approveButton').addEventListener('click', function() {
+        if (selectedRow) {
+            // Get the relevant data from the selected row
+            const itemName = selectedRow.querySelector('td:nth-child(2)').textContent; // Item name in the second column
+            const borrowerName = selectedRow.querySelector('td:nth-child(1)').textContent; // Borrower name in the first column
+            const quantityBorrowed = selectedRow.querySelector('td:nth-child(3)').textContent; // Quantity in the third column
+            const borrowDate = selectedRow.querySelector('td:nth-child(4)').textContent; // Borrow date in the fourth column
 
-// Function to confirm the borrow action (you can implement your own logic here to finalize the borrowing)
-function confirmBorrow() {
-    // Logic to confirm the borrow (e.g., send data to the server to mark the items as borrowed)
-    console.log("Item Borrowed");
+            // Now set the modal with the data
+            const itemDetails = {
+                itemName: itemName,
+                borrowerName: borrowerName,
+                borrowedQuantity: quantityBorrowed,
+                borrowedDate: borrowDate
+            };
 
-    // Close the modal after confirming
-    closeReceiptModal();
-}
+            // Populate the receipt modal with these details
+            document.getElementById('item-name').textContent = itemDetails.itemName;
+            document.getElementById('borrower-name').textContent = itemDetails.borrowerName;
+            document.getElementById('borrowed-quantity').textContent = itemDetails.borrowedQuantity;
+            document.getElementById('borrowed-date').textContent = itemDetails.borrowedDate;
 
+            // Display the scanned items list in the modal
+            const scannedItemsList = document.getElementById('scanned-items-list');
+            scannedItemsList.innerHTML = ''; // Clear the existing list
+
+            // Add each scanned item to the list
+            scannedQRCodeList.forEach(qrCode => {
+                const li = document.createElement('li');
+                li.textContent = `QR Code: ${qrCode}`;
+                scannedItemsList.appendChild(li);
+            });
+
+            // Show the receipt modal
+            document.getElementById('receipt-modal').classList.remove('hidden');
+        } else {
+            // Optionally, handle the case where no row is selected (show an error message or disable the button)
+            Swal.fire({
+                icon: 'error',
+                title: 'No row selected',
+                text: 'Please select a borrowing request to approve.',
+            });
+        }
+    });
+
+    // Close modal function
+    function closeReceiptModal() {
+        document.getElementById('receipt-modal').classList.add('hidden');
+    }
+
+    // Confirm borrow action
+    function confirmBorrow() {
+        // Logic to confirm the borrow (e.g., send data to the server to mark the items as borrowed)
+        console.log("Item Borrowed");
+
+        // Close the modal after confirming
+        closeReceiptModal();
+    }
+
+    // Simulate scanning QR codes and adding them to the list
+    function scanQRCode(qrCodeData) {
+        scannedQRCodeList.push(qrCodeData); // Add the QR code to the scanned list
+
+        // Update the scanned QR codes list in real-time (you could also handle this differently if needed)
+        console.log(`Scanned QR Code: ${qrCodeData}`);
+    }
 </script>
 
 
