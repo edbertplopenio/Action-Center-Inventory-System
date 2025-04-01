@@ -807,29 +807,30 @@
         </div>
 
         <!-- Buttons to close the modal -->
-        <div class="flex gap-4 mt-6">
-            <button id="borrow-action-btn-{{ $request->id }}" class="borrow-btn px-2 py-1 m-1 bg-blue-500 text-white rounded 
-            hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs w-24"
-            onclick="updateStatus('{{ $request->id }}', 'Borrowed')"
-            @if(in_array($request->status, ['Approved', 'Rejected', 'Borrowed', 'Returned', 'Overdue', 'Lost', 'Damaged']))
+        <div class="flex justify-center gap-4 mt-6">
+            <button id="borrow-action-btn-{{ $request->id }}" class="borrow-btn px-4 py-2 m-2 bg-blue-500 text-white rounded 
+    hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs w-24"
+                onclick="updateStatus('{{ $request->id }}', 'Borrowed')"
+                @if(in_array($request->status, ['Approved', 'Rejected', 'Borrowed', 'Returned', 'Overdue', 'Lost', 'Damaged']))
                 disabled
                 style="opacity: 0.5;"
                 data-toggle="tooltip" data-placement="top" title="This request cannot be borrowed because it is already in a final state."
-            @endif>
+                @endif>
                 Borrow
             </button>
 
-            <button id="reject-action-btn-{{ $request->id }}" class="reject-btn px-2 py-1 m-1 bg-red-500 text-white rounded 
-            hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 text-xs w-24"
-            onclick="updateStatus('{{ $request->id }}', 'Rejected')"
-            @if(in_array($request->status, ['Approved', 'Rejected', 'Borrowed', 'Returned', 'Overdue', 'Lost', 'Damaged']))
+            <button id="reject-action-btn-{{ $request->id }}" class="reject-btn px-4 py-2 m-2 bg-red-500 text-white rounded 
+    hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 text-xs w-24"
+                onclick="updateStatus('{{ $request->id }}', 'Rejected')"
+                @if(in_array($request->status, ['Approved', 'Rejected', 'Borrowed', 'Returned', 'Overdue', 'Lost', 'Damaged']))
                 disabled
                 style="opacity: 0.5;"
                 data-toggle="tooltip" data-placement="top" title="This request cannot be rejected because it is already in a final state."
-            @endif>
+                @endif>
                 Reject
             </button>
         </div>
+
     </div>
 </div>
 
@@ -902,38 +903,38 @@
         document.getElementById('receipt-modal').classList.add('hidden');
     }
 
-// Confirm borrow action
-function updateStatus(id, status) {
-    Swal.fire({
-        title: 'Are you sure?',
-        text: "You are about to " + status.toLowerCase() + " this request.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: status === 'Borrowed' ? '#28a745' : '#dc3545', // Change for Borrowed color
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Yes, ' + status.toLowerCase() + ' it!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.ajax({
-                url: '/admin/inventory-requests/update-status/' + id,
-                type: 'POST',
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                    status: status
-                },
-                success: function(response) {
-                    Swal.fire('Updated!', 'The request has been ' + status.toLowerCase() + '.', 'success')
-                        .then(() => {
-                            location.reload();
-                        });
-                },
-                error: function() {
-                    Swal.fire('Error!', 'Something went wrong.', 'error');
-                }
-            });
-        }
-    });
-}
+    // Confirm borrow action
+    function updateStatus(id, status) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to " + status.toLowerCase() + " this request.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: status === 'Borrowed' ? '#28a745' : '#dc3545', // Change for Borrowed color
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, ' + status.toLowerCase() + ' it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/admin/inventory-requests/update-status/' + id,
+                    type: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        status: status
+                    },
+                    success: function(response) {
+                        Swal.fire('Updated!', 'The request has been ' + status.toLowerCase() + '.', 'success')
+                            .then(() => {
+                                location.reload();
+                            });
+                    },
+                    error: function() {
+                        Swal.fire('Error!', 'Something went wrong.', 'error');
+                    }
+                });
+            }
+        });
+    }
 
 
     // Simulate scanning QR codes and adding them to the list
