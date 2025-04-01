@@ -273,10 +273,9 @@
 
 
 
-
                             <button class="reject-btn px-2 py-1 m-1 bg-red-500 text-white rounded 
     hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 text-xs w-24"
-                                onclick="updateStatus('{{ $request->id }}', 'Rejected')"
+                                onclick="rejectRequest('{{ $request->id }}')"
                                 @if(in_array($request->status, ['Approved', 'Rejected', 'Borrowed', 'Returned', 'Overdue', 'Lost', 'Damaged']))
                                 disabled
                                 style="opacity: 0.5;"
@@ -284,6 +283,7 @@
                                 @endif>
                                 Reject
                             </button>
+
                         </td>
 
 
@@ -819,15 +819,11 @@
                 Borrow
             </button>
 
-            <button id="reject-action-btn-{{ $request->id }}" class="reject-btn px-4 py-2 m-2 bg-red-500 text-white rounded 
-    hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 text-xs w-24"
-                onclick="updateStatus('{{ $request->id }}', 'Rejected')"
-                @if(in_array($request->status, ['Approved', 'Rejected', 'Borrowed', 'Returned', 'Overdue', 'Lost', 'Damaged']))
-                disabled
-                style="opacity: 0.5;"
-                data-toggle="tooltip" data-placement="top" title="This request cannot be rejected because it is already in a final state."
-                @endif>
-                Reject
+            <!-- Change the reject button to cancel -->
+            <button id="cancel-action-btn-{{ $request->id }}" class="cancel-btn px-4 py-2 m-2 bg-gray-500 text-white rounded 
+                hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 text-xs w-24"
+                onclick="closeReceiptModal()">
+                Cancel
             </button>
         </div>
 
@@ -903,6 +899,11 @@
         document.getElementById('receipt-modal').classList.add('hidden');
     }
 
+    // Close modal function
+    function closeReceiptModal() {
+        document.getElementById('receipt-modal').classList.add('hidden');
+    }
+
     // Confirm borrow action
     function updateStatus(id, status) {
         Swal.fire({
@@ -943,6 +944,48 @@
 
         // Update the scanned QR codes list in real-time (you could also handle this differently if needed)
         console.log(`Scanned QR Code: ${qrCodeData}`);
+    }
+
+
+
+
+
+
+
+
+
+
+    // Confirm reject action
+    function rejectRequest(id) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to reject this request.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545', // Red color for Reject
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, reject it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/admin/inventory-requests/update-status/' + id,
+                    type: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        status: 'Rejected' // Setting the status to 'Rejected'
+                    },
+                    success: function(response) {
+                        Swal.fire('Updated!', 'The request has been rejected.', 'success')
+                            .then(() => {
+                                location.reload();
+                            });
+                    },
+                    error: function() {
+                        Swal.fire('Error!', 'Something went wrong.', 'error');
+                    }
+                });
+            }
+        });
     }
 </script>
 
