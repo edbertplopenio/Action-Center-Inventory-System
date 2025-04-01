@@ -8,6 +8,7 @@ use App\Http\Controllers\BorrowingSlipController;
 use App\Http\Controllers\Admin\RecordsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\EquipmentController;
+use App\Http\Controllers\RegisterController;
 
 Route::get('/login', [AuthManager::class, 'login'])->name('login');
 Route::post('/login', [AuthManager::class, 'loginPost'])->name('login.post');
@@ -112,3 +113,4 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 });
 
+Route::post('/register', [RegisterController::class, 'store'])->name('registration.post');

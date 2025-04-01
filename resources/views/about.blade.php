@@ -33,18 +33,31 @@
     </div>
 </section>
 
-<!-- Scrolling Image & Info Section -->
+<!-- Scrolling Info Section -->
 <section class="w-full py-20 bg-gray-100">
     <div class="max-w-6xl mx-auto px-6 text-center">
         <h2 class="text-3xl font-bold text-gray-900 mb-10">More About Our System</h2>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            @foreach(['image4.JPG' => 'Our system simplifies inventory tracking, reducing human errors and improving response times.',
-                      'image5.JPG' => 'With automated alerts, users can prevent shortages and ensure resources are always available.',
-                      'image6.JPG' => 'Seamless coordination helps organizations respond faster during emergencies.'] as $image => $text)
+            @foreach([
+                'Our system simplifies inventory tracking, reducing human errors and improving response times.',
+                'With automated alerts, users can prevent shortages and ensure resources are always available.',
+                'Seamless coordination helps organizations respond faster during emergencies.'
+            ] as $text)
+                <div class="bg-white p-6 rounded-lg shadow-lg transform transition duration-500 hover:scale-105">
+                    <p class="text-gray-700">{{ $text }}</p>
+                </div>
+            @endforeach
+        </div>
+
+        <!-- Image Grid Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+            @foreach([
+                'image1.jpg', 'image2.jpg', 'image3.jpg',
+                'image4.jpg', 'image5.jpg', 'image6.jpg'
+            ] as $image)
                 <div class="bg-white p-4 rounded-lg shadow-lg transform transition duration-500 hover:scale-105">
-                    <img src="{{ asset('images/' . $image) }}" alt="System Feature" class="w-full rounded-lg">
-                    <p class="mt-4 text-gray-700">{{ $text }}</p>
+                    <img src="{{ asset('images/' . $image) }}" alt="System Image" class="w-full rounded-lg">
                 </div>
             @endforeach
         </div>
@@ -52,13 +65,15 @@
 </section>
 
 <!-- Contact Information Section -->
-<section class="w-full py-16 bg-gray-800 text-white text-center">
+<!-- Contact Information Section -->
+<section class="w-full py-16 bg-red-900 text-white text-center">
     <div class="max-w-6xl mx-auto px-6">
         <h2 class="text-3xl font-bold mb-4">Contact Us</h2>
-        <p class="text-lg mb-2">📞 Phone: (043) 980-0385 Loc. 1994</p>
-        <p class="text-lg mb-2">📧 Email: <a href="mailto:actioncenter@batstate-u.edu.ph" class="text-yellow-400 hover:underline">actioncenter@batstate-u.edu.ph</a></p>
-        <p class="text-lg">🌍 Follow us on <a href="https://facebook.com/batstateuactioncenter" target="_blank" class="text-yellow-400 hover:underline">Facebook</a></p>
+        <p class="text-lg mb-2">📍 Location: Rizal Avenue, Batangas City, Philippines</p>
+        <p class="text-lg mb-2">🌐 Website: <a href="https://batstateu.edu.ph/" target="_blank" class="text-yellow-400 hover:underline">batstateu.edu.ph</a></p>
+        <p class="text-lg mb-2">📞 Phone: (043) 980 0385</p>
+        <p class="text-lg mb-2">📧 Email: <a href="mailto:actioncenter.central@g.batstate-u.edu.ph" class="text-yellow-400 hover:underline">actioncenter.central@g.batstate-u.edu.ph</a></p>
+        <p class="text-lg">🌍 Follow us on <a href="https://www.facebook.com/batstateu.action" target="_blank" class="text-yellow-400 hover:underline">Facebook</a></p>
     </div>
 </section>
-
 @endsection

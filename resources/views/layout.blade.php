@@ -10,10 +10,10 @@
     
   </head>
   <body class="bg-gray-50">
-    @include('include.header')
     @yield('content')
 
     <!-- Include compiled JavaScript -->
     <script src="{{ mix('js/app.js') }}"></script>
+    @stack('scripts')
   </body>
 </html>
