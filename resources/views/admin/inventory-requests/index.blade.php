@@ -773,7 +773,7 @@
 <div id="receipt-modal" class="mx-auto p-4 hidden fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm bg-black bg-opacity-50 transition-all duration-300 ease-in-out" style="font-family: 'Inter', sans-serif;">
     <div class="bg-white p-6 rounded-lg w-[400px] max-h-[500px] flex flex-col justify-between shadow-lg border border-gray-200">
         <div class="w-full overflow-y-auto">
-            <h2 class="text-2xl font-semibold mb-4 text-center">Item Borrowed Receipt</h2>
+            <h2 class="text-2xl font-semibold mb-4 text-center">Item Receipt</h2>
 
             <!-- Display Item Details -->
             <div id="receipt-details" class="space-y-2">
@@ -816,7 +816,7 @@
                 style="opacity: 0.5;"
                 data-toggle="tooltip" data-placement="top" title="This request cannot be borrowed because it is already in a final state."
                 @endif>
-                Borrow
+                Approve
             </button>
 
             <!-- Change the reject button to cancel -->
@@ -878,7 +878,7 @@
             // Add each scanned item to the list
             scannedQRCodeList.forEach(qrCode => {
                 const li = document.createElement('li');
-                li.textContent = `QR Code: ${qrCode}`;
+                li.textContent = `${qrCode}`;
                 scannedItemsList.appendChild(li);
             });
 
@@ -905,37 +905,28 @@
     }
 
     // Confirm borrow action
+    // Directly update the status without confirmation
     function updateStatus(id, status) {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You are about to " + status.toLowerCase() + " this request.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: status === 'Borrowed' ? '#28a745' : '#dc3545', // Change for Borrowed color
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, ' + status.toLowerCase() + ' it!'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '/admin/inventory-requests/update-status/' + id,
-                    type: 'POST',
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        status: status
-                    },
-                    success: function(response) {
-                        Swal.fire('Updated!', 'The request has been ' + status.toLowerCase() + '.', 'success')
-                            .then(() => {
-                                location.reload();
-                            });
-                    },
-                    error: function() {
-                        Swal.fire('Error!', 'Something went wrong.', 'error');
-                    }
-                });
+        $.ajax({
+            url: '/admin/inventory-requests/update-status/' + id,
+            type: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                status: status
+            },
+            success: function(response) {
+                Swal.fire('Updated!', 'The request has been ' + status.toLowerCase() + '.', 'success')
+                    .then(() => {
+                        location.reload();
+                    });
+            },
+            error: function() {
+                Swal.fire('Error!', 'Something went wrong.', 'error');
             }
         });
     }
+
+
 
 
     // Simulate scanning QR codes and adding them to the list
