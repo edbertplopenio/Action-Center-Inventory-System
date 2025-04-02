@@ -498,30 +498,39 @@
     }
 
     function undoAction() {
-        if (scannedQRCodeList.length > 0) {
-            const lastCode = scannedQRCodeList.pop();
-            const row = Array.from(document.querySelectorAll('#codeTable tbody tr'))
-                .find(row => row.cells[0].textContent.trim() === lastCode);
+    if (scannedQRCodeList.length > 0) {
+        const lastCode = scannedQRCodeList.pop();
+        const row = Array.from(document.querySelectorAll('#codeTable tbody tr'))
+            .find(row => row.cells[0].textContent.trim() === lastCode);
 
-            if (row) row.cells[1].textContent = 'Borrowed';
+        if (row) row.cells[1].textContent = 'Borrowed';
 
-            scannedCount--;
-            $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
+        scannedCount--;
+        $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
 
-            // ✅ Reset counter color if scanning is no longer complete
-            if (scannedCount < totalRequestQuantity) {
-                document.getElementById('request-counter').style.color = '';
-            }
+        // Reset counter color if scanning is no longer complete
+        if (scannedCount < totalRequestQuantity) {
+            document.getElementById('request-counter').style.color = '';
+        }
 
-            document.getElementById('approveButton').disabled = true;
-            if (scannedQRCodeList.length === 0) {
-                document.getElementById('undoButton').disabled = true;
-            }
+        document.getElementById('approveButton').disabled = true;
+        if (scannedQRCodeList.length === 0) {
+            document.getElementById('undoButton').disabled = true;
+        }
 
-            // ✅ Remove highlight from the undone row
-            resetHighlight(lastCode);
+        // Remove highlight from the undone row
+        resetHighlight(lastCode);
+
+        // Reset scanning state after undo
+        if (scannedCount < totalRequestQuantity) {
+            // Allow scanning again if not all QR codes have been scanned
+            document.getElementById('result').textContent = 'Scanning for QR code...';
+            // Reset the scanning state
+            openQRScanner();
         }
     }
+}
+
 
 
     function closeQRScanner() {
