@@ -505,82 +505,99 @@
         });
 
         // QR code scanning function
-        function scanQRCode() {
-            // If the scanned count matches or exceeds the requested quantity, stop scanning
-            if (scannedCount >= totalRequestQuantity) {
-                resultText.textContent = 'Scanning complete. All required QR codes have been scanned.';
-                isScanning = false; // Stop scanning
+        let invalidQRCodeAlertShown = false; // Flag to prevent repeated SweetAlert for invalid QR codes
 
-                // Enable the Approve button once scanning is complete
-                document.getElementById('approveButton').disabled = false; // Enable Approve button
+function scanQRCode() {
+    // If the scanned count matches or exceeds the requested quantity, stop scanning
+    if (scannedCount >= totalRequestQuantity) {
+        resultText.textContent = 'Scanning complete. All required QR codes have been scanned.';
+        isScanning = false; // Stop scanning
 
-                return;
-            }
+        // Enable the Approve button once scanning is complete
+        document.getElementById('approveButton').disabled = false; // Enable Approve button
 
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
+        return;
+    }
 
-            const scanInterval = setInterval(() => {
-                if (!isScanning) {
-                    clearInterval(scanInterval); // Stop scanning if flag is set to false
-                    return;
-                }
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
 
-                // If scanned count is already >= total request quantity, stop scanning and do nothing
-                if (scannedCount >= totalRequestQuantity) {
-                    resultText.textContent = 'Scanning complete. All required QR codes have been scanned.';
-                    isScanning = false;
-                    clearInterval(scanInterval); // Stop the scanning interval
+    const scanInterval = setInterval(() => {
+        if (!isScanning) {
+            clearInterval(scanInterval); // Stop scanning if flag is set to false
+            return;
+        }
 
-                    // Enable the Approve button once scanning is complete
-                    document.getElementById('approveButton').disabled = false; // Enable Approve button
+        // If scanned count is already >= total request quantity, stop scanning and do nothing
+        if (scannedCount >= totalRequestQuantity) {
+            resultText.textContent = 'Scanning complete. All required QR codes have been scanned.';
+            isScanning = false;
+            clearInterval(scanInterval); // Stop the scanning interval
 
-                    return;
-                }
+            // Enable the Approve button once scanning is complete
+            document.getElementById('approveButton').disabled = false; // Enable Approve button
 
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            return;
+        }
 
-                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-                const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-                if (qrCode) {
-                    resultText.textContent = 'QR Code detected: ' + qrCode.data;
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
 
-                    // If QR code is valid and not already scanned, highlight and add it
-                    if (!scannedQRCodeList.includes(qrCode.data)) {
+        if (qrCode) {
+            resultText.textContent = 'QR Code detected: ' + qrCode.data;
+
+            // If QR code is valid and not already scanned, highlight and add it
+            if (!scannedQRCodeList.includes(qrCode.data)) {
+                // Check if the QR code exists in any of the table rows (across all pages)
+                let rowFound = false;
+
+                // Iterate through all rows in the table (even the ones on other pages)
+                const allRows = $('#codeTable').DataTable().rows().nodes(); // Get all rows from the DataTable
+                $(allRows).each(function(index, row) {
+                    const qrCodeCell = row.cells[0]; // QR Code is in the first column
+                    if (qrCodeCell && qrCodeCell.textContent === qrCode.data) {
+                        rowFound = true;
                         scannedQRCodeList.push(qrCode.data); // Add scanned QR code to the list
                         highlightAndMoveRow(qrCode.data);
                         updateItemStatus(qrCode.data); // Update status when a valid QR code is scanned
 
                         // Only update the scanned count if the QR code is valid (exists in the table)
-                        const row = Array.from(document.querySelectorAll('#codeTable tbody tr')).find(row => {
-                            const qrCodeCell = row.cells[0]; // QR Code is in the first column
-                            return qrCodeCell && qrCodeCell.textContent === qrCode.data;
-                        });
+                        scannedCount++;
+                        document.getElementById('request-counter').textContent = `${scannedCount}/${totalRequestQuantity}`;
 
-                        if (row) {
-                            // Update the scanned count and the counter
-                            scannedCount++;
-                            document.getElementById('request-counter').textContent = `${scannedCount}/${totalRequestQuantity}`;
-
-                            // Change the color of the counter text to green if the scanned count reaches or exceeds the target
-                            if (scannedCount >= totalRequestQuantity) {
-                                document.getElementById('request-counter').style.color = 'green';
-                                // Enable the Approve button once scanning is complete
-                                document.getElementById('approveButton').disabled = false; // Enable Approve button
-                            }
-
-                            // Enable Undo button once a scan is done
-                            document.getElementById('undoButton').disabled = false; // Enable Undo button
+                        // Change the color of the counter text to green if the scanned count reaches or exceeds the target
+                        if (scannedCount >= totalRequestQuantity) {
+                            document.getElementById('request-counter').style.color = 'green';
+                            // Enable the Approve button once scanning is complete
+                            document.getElementById('approveButton').disabled = false; // Enable Approve button
                         }
+
+                        // Enable Undo button once a scan is done
+                        document.getElementById('undoButton').disabled = false; // Enable Undo button
                     }
-                } else {
-                    resultText.textContent = 'Scanning for QR code...';
+                });
+
+                // If no matching row was found (invalid QR code)
+                if (!rowFound && !invalidQRCodeAlertShown) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid QR Code',
+                        text: 'The scanned QR code does not exist in the table.',
+                    });
+
+                    invalidQRCodeAlertShown = true; // Set the flag to prevent repeating the alert
                 }
-            }, 100); // Scan every 100ms
+            }
+        } else {
+            resultText.textContent = 'Scanning for QR code...';
         }
+    }, 100); // Scan every 100ms
+}
+
 
 
 
