@@ -310,7 +310,6 @@
 
 <script>
     $(document).ready(function() {
-        // Initialize DataTable for both tables
         $('#borrowedItemsTable').DataTable({
             scrollY: '420px',
             scrollCollapse: true,
@@ -323,50 +322,86 @@
             paging: true,
             searching: true,
             ordering: false,
-            pageLength: 10, // Set number of rows per page to 10
-            lengthChange: false, // Disable the entries per page dropdown
+            pageLength: 10,
+            lengthChange: false
         });
 
-        // Initialize tooltips
         $('[data-toggle="tooltip"]').tooltip();
     });
 
     let isScanning = false;
-    let scannedQRCodeList = []; // Store scanned QR codes
-    let scannedCount = 0; // Keep track of how many QR codes have been scanned
-    let totalRequestQuantity = 1; // Modify as necessary
+    let scannedQRCodeList = [];
+    let scannedCount = 0;
+    let totalRequestQuantity = 1;
+    let scanLoopId = null;
+    let highlightedRows = {}; // Store highlighted rows by QR code
 
-    // Function to return item
+    // Function to highlight the scanned row
+    function highlightRow(qrCode) {
+        // Find the row that matches the QR code
+        const row = Array.from(document.querySelectorAll('#codeTable tbody tr')).find(row => row.cells[0].textContent.trim() === qrCode);
+        if (row) {
+            // Highlight the row by changing the background color
+            row.style.backgroundColor = '#27D29C'; // Light green color for the highlight
+            row.style.color = '#000'; // Make text black for readability
+            row.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+            highlightedRows[qrCode] = row; // Save it by QR code
+        }
+    }
+
+    // Function to remove highlight from the row
+    function resetHighlight(rowOrCode = null) {
+        if (!rowOrCode) {
+            // Reset all rows
+            const rows = document.querySelectorAll('#codeTable tbody tr');
+            rows.forEach(row => {
+                row.style.backgroundColor = ''; // Reset background color
+                row.style.color = ''; // Reset text color
+            });
+        } else if (typeof rowOrCode === 'string' && highlightedRows[rowOrCode]) {
+            // Reset only the specific row associated with the QR code
+            const row = highlightedRows[rowOrCode];
+            row.style.backgroundColor = ''; // Reset background color
+            row.style.color = ''; // Reset text color
+            delete highlightedRows[rowOrCode]; // Clean up the tracked highlight
+        } else if (rowOrCode instanceof HTMLElement) {
+            // Reset specific row passed as an HTMLElement
+            rowOrCode.style.backgroundColor = '';
+            rowOrCode.style.color = '';
+        }
+    }
+
     function returnItem(id) {
-        // Show the QR code modal when the "Return" button is clicked
-        $('#qr-modal').removeClass('hidden'); // Show the modal by removing the 'hidden' class
-
-        // Optionally, disable the "Return" button to prevent multiple clicks
+        $('#qr-modal').removeClass('hidden');
         $('#borrowedItemsTable button').prop('disabled', true);
-
-        // Pass the item ID to the modal so that it can be returned once the QR code is scanned
         $('#qr-modal').data('item-id', id);
+        $('#result').text('Scanning for QR code...');
+        scannedQRCodeList = [];
+        scannedCount = 0;
+        document.getElementById('approveButton').disabled = true;
+        document.getElementById('undoButton').disabled = true;
 
-        // Fetch the list of borrowed items for the given item ID (that belong to the current request)
         $.ajax({
-            url: '/admin/borrowed-items/list/' + id, // Fetch the borrowed items for this specific borrowing request
+            url: '/admin/borrowed-items/list/' + id,
             method: 'GET',
             success: function(response) {
-                // Clear previous data in the table before adding new rows
                 const tableBody = $('#codeTable tbody');
                 tableBody.empty();
-
-                // Populate the table with the borrowed items' QR codes and statuses
                 response.borrowedItems.forEach(item => {
                     const row = `<tr>
-                <td>${item.qr_code}</td>
-                <td>${item.status}</td>
-            </tr>`;
+                        <td>${item.qr_code}</td>
+                        <td>${item.status}</td>
+                    </tr>`;
                     tableBody.append(row);
                 });
 
-                // Now open the QR scanner
-                openQRScanner(id); // Call the function that will handle QR scanning and item return
+                totalRequestQuantity = response.borrowedItems.length;
+                $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
+
+                openQRScanner();
             },
             error: function(err) {
                 console.error('Error fetching borrowed items:', err);
@@ -375,13 +410,11 @@
         });
     }
 
-    // Start QR code scanning process
-    function startQRScanning() {
+    function openQRScanner() {
         const video = document.getElementById('video');
         const resultText = document.getElementById('result');
 
-        isScanning = true; // Set scanning flag to true
-
+        isScanning = true;
         navigator.mediaDevices.getUserMedia({
                 video: {
                     facingMode: "environment"
@@ -389,120 +422,137 @@
             })
             .then(stream => {
                 video.srcObject = stream;
-                video.setAttribute('playsinline', true); // For iOS
+                video.setAttribute('playsinline', true);
                 video.play();
-
-                // Ensure video is ready before starting scan
-                video.addEventListener('playing', function() {
-                    scanQRCode(); // Start scanning when video starts playing
+                video.addEventListener('playing', () => {
+                    if (!scanLoopId) scanQRCode();
                 });
-            }).catch(err => {
+            })
+            .catch(err => {
                 resultText.textContent = "Error accessing camera: " + err;
             });
     }
 
-    // Scan the QR code and check if it's valid
     function scanQRCode() {
         const video = document.getElementById('video');
         const resultText = document.getElementById('result');
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
 
-        if (video.videoWidth > 0 && video.videoHeight > 0) {
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
+        scanLoopId = setInterval(() => {
+            if (!isScanning || !video.videoWidth || !video.videoHeight) return;
 
-            // Set the canvas size to match the video size
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-
-            // Draw the current frame from the video
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // Get image data for QR scanning
             const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
             const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
 
             if (qrCode) {
-                resultText.textContent = 'QR Code detected: ' + qrCode.data;
+                const code = qrCode.data.trim();
+                resultText.textContent = 'QR Code detected: ' + code;
 
-                if (!scannedQRCodeList.includes(qrCode.data)) {
-                    scannedQRCodeList.push(qrCode.data); // Add the scanned QR code to the list
-                    updateItemStatus(qrCode.data); // Update the item status
-                    scannedCount++; // Increment the scanned count
-                    document.getElementById('request-counter').textContent = `${scannedCount}/${totalRequestQuantity}`;
+                if (!scannedQRCodeList.includes(code)) {
+                    const matchedRow = Array.from(document.querySelectorAll('#codeTable tbody tr'))
+                        .find(row => row.cells[0].textContent.trim() === code);
 
-                    // Enable the approve button when scanning is complete
-                    if (scannedCount >= totalRequestQuantity) {
-                        document.getElementById('approveButton').disabled = false;
+                    if (matchedRow) {
+                        scannedQRCodeList.push(code);
+                        matchedRow.cells[1].textContent = 'Returned';
+                        scannedCount++;
+                        $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
+
+                        // Change counter color to green when all required QR codes are scanned
+                        if (scannedCount >= totalRequestQuantity) {
+                            document.getElementById('request-counter').style.color = 'green';
+                            resultText.textContent = 'Scanning complete. All required QR codes have been scanned.';
+                            stopScanning();
+                        }
+
+                        // Enable Approve button when scanning is complete
+                        if (scannedCount >= totalRequestQuantity) {
+                            document.getElementById('approveButton').disabled = false;
+                        }
+
+                        document.getElementById('undoButton').disabled = false;
+
+                        // Highlight the row for this QR code
+                        highlightRow(code);
+                    } else {
+                        resultText.textContent = 'Invalid QR Code: Not in list.';
                     }
                 }
             } else {
                 resultText.textContent = 'Scanning for QR code...';
             }
-        } else {
-            // Video isn't ready yet, try again after a short delay
-            setTimeout(scanQRCode, 100); // Retry scanning after 100ms
+        }, 300); // scan every 300ms
+    }
+
+    function stopScanning() {
+        isScanning = false;
+        if (scanLoopId) {
+            clearInterval(scanLoopId);
+            scanLoopId = null;
         }
     }
 
-    // Update item status (you can modify this as needed)
-    function updateItemStatus(qrCode) {
-        // Update the item status in the table (for example, change status to "Returned")
-        const row = Array.from(document.querySelectorAll('#codeTable tbody tr')).find(row => row.cells[0].textContent === qrCode);
-        if (row) {
-            row.cells[1].textContent = 'Returned'; // Update the status in the table
-        }
-    }
-
-    // Handle Undo Action
     function undoAction() {
         if (scannedQRCodeList.length > 0) {
-            const lastScanned = scannedQRCodeList.pop(); // Remove the last scanned QR code
-            // Reset the item status and other changes (implement as needed)
-            updateItemStatus(lastScanned);
+            const lastCode = scannedQRCodeList.pop();
+            const row = Array.from(document.querySelectorAll('#codeTable tbody tr'))
+                .find(row => row.cells[0].textContent.trim() === lastCode);
+
+            if (row) row.cells[1].textContent = 'Borrowed';
+
             scannedCount--;
-            document.getElementById('request-counter').textContent = `${scannedCount}/${totalRequestQuantity}`;
+            $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
+
+            // ✅ Reset counter color if scanning is no longer complete
+            if (scannedCount < totalRequestQuantity) {
+                document.getElementById('request-counter').style.color = '';
+            }
+
+            document.getElementById('approveButton').disabled = true;
+            if (scannedQRCodeList.length === 0) {
+                document.getElementById('undoButton').disabled = true;
+            }
+
+            // ✅ Remove highlight from the undone row
+            resetHighlight(lastCode);
         }
     }
 
-    // Function to close the QR modal
-    function closeQRScanner() {
-        $('#qr-modal').addClass('hidden'); // Hide the modal
 
+    function closeQRScanner() {
+        $('#qr-modal').addClass('hidden');
         const video = document.getElementById('video');
         const stream = video.srcObject;
 
         if (stream) {
-            const tracks = stream.getTracks();
-            tracks.forEach(track => track.stop()); // Stop all media tracks (video, audio)
-            video.srcObject = null; // Reset the video element's source
+            stream.getTracks().forEach(track => track.stop());
+            video.srcObject = null;
         }
 
-        isScanning = false; // Stop scanning
+        isScanning = false;
+        if (scanLoopId) {
+            clearInterval(scanLoopId);
+            scanLoopId = null;
+        }
 
-        // Re-enable the "Return" button when the QR modal is closed
-        $('#borrowedItemsTable button').prop('disabled', false); // Re-enable all buttons
-    }
-
-    // Open the QR scanner to start the scanning process
-    function openQRScanner(itemId) {
-        // Show the QR code modal
-        $('#qr-modal').removeClass('hidden');
-
-        // Dynamically set totalRequestQuantity based on the number of rows in the table
-        const totalItems = $('#codeTable tbody').children().length; // Get the number of rows in the table
-        totalRequestQuantity = totalItems;
-
-        // Initialize scanned count to 0
+        $('#borrowedItemsTable button').prop('disabled', false);
+        $('#result').text('Scanning for QR code...');
+        scannedQRCodeList = [];
         scannedCount = 0;
+        document.getElementById('approveButton').disabled = true;
+        document.getElementById('undoButton').disabled = true;
 
-        // Update the counter initially as 0/totalRequestQuantity (e.g., 0/3)
-        document.getElementById('request-counter').textContent = `${scannedCount}/${totalRequestQuantity}`;
-
-        // Start the scanning process
-        startQRScanning();
+        // Reset counter color if scanning is incomplete
+        if (scannedCount < totalRequestQuantity) {
+            document.getElementById('request-counter').style.color = ''; // Reset color
+        }
     }
 
-    // Approve action (mark as returned)
     document.getElementById('approveButton').addEventListener('click', function() {
         const itemId = $('#qr-modal').data('item-id');
         $.ajax({
@@ -513,18 +563,20 @@
             },
             success: function(response) {
                 Swal.fire('Returned!', 'The item has been returned.', 'success')
-                    .then(() => {
-                        location.reload(); // Reload the page after success
-                    });
+                    .then(() => location.reload());
             },
             error: function() {
                 Swal.fire('Error!', 'Something went wrong.', 'error');
             }
         });
 
-        $('#qr-modal').addClass('hidden'); // Close the modal after approval
+        closeQRScanner();
     });
 </script>
+
+
+
+
 
 
 @endsection
