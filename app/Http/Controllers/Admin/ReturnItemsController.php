@@ -1,8 +1,5 @@
 <?php
 
-// app/Http/Controllers/Admin/ReturnItemsController.php
-// app/Http/Controllers/Admin/ReturnItemsController.php
-
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -35,4 +32,21 @@ class ReturnItemsController extends Controller
 
         return redirect()->route('admin.return-items.index')->with('success', 'Item marked as returned!');
     }
+
+    // Fetch borrowed items for a specific item ID (for QR modal)
+    public function getBorrowedItemsForReturn($id)
+    {
+        // Fetch the borrowed items' QR codes linked to this borrowing request
+        $borrowedItem = BorrowedItem::findOrFail($id);
+    
+        // Fetch associated individual items (QR codes) using the pivot table
+        $borrowedIndividualItems = \App\Models\IndividualItem::join('borrowed_item_individual_items', 'individual_items.id', '=', 'borrowed_item_individual_items.individual_item_id')
+            ->where('borrowed_item_individual_items.borrowed_item_id', $borrowedItem->id)
+            ->get(['individual_items.qr_code', 'individual_items.status']);
+    
+        return response()->json([
+            'borrowedItems' => $borrowedIndividualItems
+        ]);
+    }
+    
 }
