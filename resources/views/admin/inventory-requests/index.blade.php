@@ -673,17 +673,35 @@ function scanQRCode() {
 
         // Update Item Status when a QR code is successfully scanned
         function updateItemStatus(scannedQRCode) {
-            // Find the item with the matching QR code
-            const row = Array.from(document.querySelectorAll('#codeTable tbody tr')).find(row => {
-                const qrCodeCell = row.cells[0]; // QR Code is in the first column
-                return qrCodeCell && qrCodeCell.textContent === scannedQRCode;
-            });
+    // Find the item with the matching QR code
+    const row = Array.from(document.querySelectorAll('#codeTable tbody tr')).find(row => {
+        const qrCodeCell = row.cells[0]; // QR Code is in the first column
+        return qrCodeCell && qrCodeCell.textContent === scannedQRCode;
+    });
 
-            if (row) {
-                const statusCell = row.cells[1]; // Status is in the second column
-                statusCell.textContent = 'Borrowed'; // Update status to 'Borrowed'
+    if (row) {
+        const statusCell = row.cells[1]; // Status is in the second column
+        statusCell.textContent = 'Borrowed'; // Update status to 'Borrowed'
+
+        // Now, make an AJAX request to update the status in the backend
+        $.ajax({
+            url: '/admin/inventory-requests/update-item-status', // Endpoint to handle the item status update
+            type: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                qr_code: scannedQRCode,
+                status: 'Borrowed'
+            },
+            success: function(response) {
+                console.log('Item status updated successfully');
+            },
+            error: function() {
+                console.log('Error updating item status');
             }
-        }
+        });
+    }
+}
+
 
         window.undoAction = function() {
             if (scannedRows.length > 0) {

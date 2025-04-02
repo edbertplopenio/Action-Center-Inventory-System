@@ -173,3 +173,4 @@ Route::get('/admin/borrowing-request', [InventoryRequestController::class, 'inde
 Route::get('/admin/get-item-qr-codes/{itemId}', [InventoryRequestController::class, 'getItemQRCodes']);
 
 
+Route::post('/admin/inventory-requests/update-item-status', [InventoryRequestController::class, 'updateItemStatus']);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\BorrowedItem;
 use App\Models\Item; // Import the Item model
+use App\Models\IndividualItem; // Add this import for IndividualItem model
 use Illuminate\Http\Request;
 
 class InventoryRequestController extends Controller
@@ -44,7 +45,6 @@ class InventoryRequestController extends Controller
         ]);
     }
 
-
     public function getItemQRCodes($itemId)
     {
         // Fetch the item with its associated individual items (QR codes)
@@ -61,7 +61,33 @@ class InventoryRequestController extends Controller
             'total_quantity_requested' => $totalQuantityRequested, // Add this line
         ]);
     }
-    
-    
 
+    public function updateItemStatus(Request $request)
+    {
+        // Validate the QR code and status
+        $request->validate([
+            'qr_code' => 'required|string',
+            'status' => 'required|in:Available,Borrowed,Damaged,Reserved,Retired',
+        ]);
+
+        // Find the individual item by QR code
+        $individualItem = IndividualItem::where('qr_code', $request->qr_code)->first();
+
+        // Check if the item was found
+        if ($individualItem) {
+            // Update the status of the item
+            $individualItem->status = $request->status;
+            $individualItem->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Item status updated successfully!'
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Item not found!'
+            ]);
+        }
+    }
 }
