@@ -737,29 +737,33 @@
 
 
 <script>
-    function closeQRScanner() {
-        // Hide the QR modal
-        document.getElementById('qr-modal').classList.add('hidden');
+function closeQRScanner() {
+    // Hide the QR modal
+    document.getElementById('qr-modal').classList.add('hidden');
 
-        // Stop the camera stream (if it's being used)
-        const video = document.getElementById('video');
-        const stream = video.srcObject;
+    // Stop the camera stream (if it's being used)
+    const video = document.getElementById('video');
+    const stream = video.srcObject;
 
-        if (stream) {
-            const tracks = stream.getTracks();
-            tracks.forEach(track => track.stop()); // Stop all media tracks (video, audio)
-            video.srcObject = null; // Reset the video element's source
-        }
-
-        // Stop the scanning process
-        isScanning = false;
-
-        // Clear any previously scanned QR codes
-        scannedQRCodeList = [];
-
-        // Reset the undo action button to disabled
-        document.getElementById('undoButton').disabled = true;
+    if (stream) {
+        const tracks = stream.getTracks();
+        tracks.forEach(track => track.stop()); // Stop all media tracks (video, audio)
+        video.srcObject = null; // Reset the video element's source
     }
+
+    // Stop the scanning process
+    isScanning = false;
+
+    // Clear any previously scanned QR codes
+    scannedQRCodeList = [];
+
+    // Reset the undo action button to disabled
+    document.getElementById('undoButton').disabled = true;
+
+    // Reset the Approve button to disabled as well
+    document.getElementById('approveButton').disabled = true;
+}
+
 </script>
 
 
