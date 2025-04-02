@@ -9,29 +9,34 @@
 
     <!-- Add Google Fonts link for Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
     <!-- Include DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
+
     <!-- Include jQuery (required for DataTables) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+    <!-- Include DataTables JS -->
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
-
-
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
 
     <!-- Include SweetAlert Library -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
+    <script src="https://unpkg.com/jsqr/dist/jsQR.min.js"></script>
+
+    <link href="https://unpkg.com/phosphor-icons@1.4.2/css/phosphor.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
 
 
     <!-- Added scrollbar in the tbody -->
     <style>
         /* Apply font size and font family */
         body,
-        #borrowedItemsTable {
+        #myTable {
             font-family: 'Inter', Arial, sans-serif;
             font-size: 11px;
             margin: 0;
@@ -45,7 +50,7 @@
 
 
         /* Table Header Styling */
-        #borrowedItemsTable th {
+        #myTable th {
             background-color: #EBF8FD;
             color: #4a5568;
             font-weight: 600;
@@ -55,7 +60,7 @@
         }
 
         /* Table Data Styling */
-        #borrowedItemsTable td {
+        #myTable td {
             background-color: #ffffff;
             color: #2d3748;
             text-align: center;
@@ -64,7 +69,7 @@
         }
 
         /* Add hover effect for rows */
-        #borrowedItemsTable tr:hover {
+        #myTable tr:hover {
             background-color: #b3eaff;
         }
 
@@ -75,22 +80,6 @@
             overflow-y: auto;
         }
     </style>
-
-
-
-    <!-- <script>
-    $(document).ready(function() {
-        $('#myTable').DataTable({
-            "scrollY": false,  // Disable vertical scrolling
-            "scrollX": false,  // Disable horizontal scrolling
-            "paging": true,    // Enable pagination (optional)
-            "searching": true, // Enable search (optional)
-            "ordering": true   // Enable sorting (optional)
-        });
-    });
-</script> -->
-
-
 
     <!-- CSS for Pagination -->
     <style>
@@ -193,6 +182,13 @@
         }
     </style>
 
+    <style>
+        /* Center table header and body content */
+        #requestsTable th,
+        #requestsTable td {
+            text-align: center;
+        }
+    </style>
 
     <style>
         button:disabled {
@@ -202,6 +198,15 @@
     </style>
 
 
+
+
+    <style>
+        .highlight {
+            background-color: #90ee90;
+            /* Light green for highlight */
+            color: #000;
+        }
+    </style>
 
 
 </head>
