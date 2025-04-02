@@ -845,28 +845,90 @@ table.dataTable tbody td {
 
 <!-- Add item JavaScript for Modal Control -->
 <script>
-    $(document).ready(function () {
-    // Event listener for Add Item button
+$(document).ready(function () {
     $("#add-item-btn").click(function () {
         $("#addItemModal").removeClass("hidden");
     });
 
-    // Close modal actions
-    $("#closeModal, #cancelModal").click(function () {
-        $("#addItemModal").addClass("hidden");
-    });
-
-    // Add validation before saving the form
+    // On form submission, submit the data to save both items and individual items
     $("#itemForm").submit(function (e) {
-        var quantity = $("#quantity").val(); // Get the quantity value
+        e.preventDefault(); // Prevent default form submission
 
-        // Check if quantity is 0
-        if (parseInt(quantity) === 0) {
-            e.preventDefault();  // Prevent the form from submitting
-            alert("Quantity cannot be zero! Please enter a valid quantity.");
+        var formData = new FormData(this); // Capture all form data
+        $.ajax({
+            url: "{{ route('items.store') }}",  // Change this URL to the correct route
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                alert('Item saved successfully!');
+                $("#addItemModal").addClass("hidden");
+                location.reload();  // Reload the page to see the new items
+            },
+            error: function(xhr, status, error) {
+                alert('There was an error saving the item.');
+            }
+        });
+    });
+});
+
+
+$(document).ready(function () {
+    $('#search-item').on('input', function () {
+        var itemName = $(this).val();
+        if (itemName.length > 0) {
+            $.ajax({
+                url: '/search-item/' + itemName,  // Replace with your search route
+                method: 'GET',
+                success: function (data) {
+                    if (data) {
+                        // Fill in the form with the existing item data
+                        $('#name').val(data.name).prop('disabled', true);
+                        $('#category').val(data.category).prop('disabled', true);
+                        $('#unit').val(data.unit).prop('disabled', true);
+                        $('#description').val(data.description).prop('disabled', true);
+                        $('#image_url').prop('disabled', true);
+
+                        // Make editable fields available
+                        $('#quantity').val('').prop('disabled', false);
+                        $('#storage_location').val('').prop('disabled', false);
+                        $('#arrival_date').val('').prop('disabled', false);
+                        $('#date_purchased').val('').prop('disabled', false);
+                        $('#status').val('Available').prop('disabled', false);
+                    } else {
+                        // Reset the form if no item found
+                        $('#name').val('').prop('disabled', false);
+                        $('#category').val('').prop('disabled', false);
+                        $('#unit').val('').prop('disabled', false);
+                        $('#description').val('').prop('disabled', false);
+                        $('#image_url').prop('disabled', false);
+
+                        $('#quantity').val('').prop('disabled', false);
+                        $('#storage_location').val('').prop('disabled', false);
+                        $('#arrival_date').val('').prop('disabled', false);
+                        $('#date_purchased').val('').prop('disabled', false);
+                        $('#status').val('Available').prop('disabled', false);
+                    }
+                }
+            });
+        } else {
+            // If the input is empty, reset the form
+            $('#name').val('').prop('disabled', false);
+            $('#category').val('').prop('disabled', false);
+            $('#unit').val('').prop('disabled', false);
+            $('#description').val('').prop('disabled', false);
+            $('#image_url').prop('disabled', false);
+
+            $('#quantity').val('').prop('disabled', false);
+            $('#storage_location').val('').prop('disabled', false);
+            $('#arrival_date').val('').prop('disabled', false);
+            $('#date_purchased').val('').prop('disabled', false);
+            $('#status').val('Available').prop('disabled', false);
         }
     });
 });
+
 
 </script>
 
@@ -975,6 +1037,12 @@ $(document).ready(function () {
             <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Item</h3>
 
+                <!-- Search for Item -->
+                <div class="mb-4">
+                    <label for="search-item" class="block text-xs font-medium text-gray-900">Search Item by Name</label>
+                    <input type="text" id="search-item" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Search Item Name">
+                </div>
+
                 <form id="itemForm" action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="space-y-6">
@@ -1039,9 +1107,9 @@ $(document).ready(function () {
                         </div>
 
                         <div class="mt-6 flex items-center justify-end gap-x-6">
-                            <button type="button" id="cancelModal" class="text-xs font-semibold text-gray-900 px-4 py-2 bg-gray-400 rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
-                                Cancel
-                            </button>
+                        <button type="button" id="cancelModal" class="text-xs font-semibold text-gray-900 px-4 py-2 bg-gray-400 rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
+                            Cancel
+                        </button>
                             <button type="submit" class="rounded-md bg-green-400 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-green-600 hover:text-white">
                                 Save
                             </button>
@@ -1052,6 +1120,7 @@ $(document).ready(function () {
         </div>
     </div>
 </div>
+
 
 <!-- Edit Item Modal -->
 <div id="editItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
@@ -1069,7 +1138,7 @@ $(document).ready(function () {
                             <div>
                                 <label for="edit_item_name" class="block text-xs font-medium text-gray-900">Item Name</label>
                                 <input type="text" id="edit_item_name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
-                            </div>
+                            </div
 
                             <div>
                                 <label for="edit_category" class="block text-xs font-medium text-gray-900">Category</label>

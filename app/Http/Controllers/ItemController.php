@@ -119,7 +119,7 @@ class ItemController extends Controller
             $item->save();
 
             // Generate individual items based on quantity
-            for ($i = 1; $i <= $item->quantity; $i++) {
+            for ($i = 1; $i <= $request->quantity; $i++) {
                 // Generate the item code based on the quantity
                 $individualItemCode = $itemCode . '-' . str_pad($i, 2, '0', STR_PAD_LEFT);
 
@@ -136,14 +136,16 @@ class ItemController extends Controller
     }
 
     /**
-     * Fetch and return item details for editing.
+     * Fetch and return item details for editing or populating the form.
      */
-    public function editItem($id)
+    public function searchItem($name)
     {
-        $item = Item::find($id);
+        $item = Item::where('name', 'like', '%' . $name . '%')->first();
+
         if ($item) {
             return response()->json($item);
         }
+
         return response()->json(['error' => 'Item not found.'], 404);
     }
 

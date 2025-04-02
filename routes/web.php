@@ -34,6 +34,7 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::get('/admin/inventory', [AdminInventoryController::class, 'index'])->name('admin.inventory.index')->middleware('auth');
 // Borrower Inventory Route
 Route::get('/borrower/inventory', [BorrowerInventoryController::class, 'index'])->name('borrower.inventory.index')->middleware('auth');
+
 // ===========================
 // Inventory Routes (ItemController)
 // ===========================
@@ -42,7 +43,7 @@ Route::controller(ItemController::class)->group(function () {
     // Display all items in the inventory
     Route::get('/inventory', 'index')->name('inventory'); 
 
-    // Store a new item
+    // Store a new item (this is the route to save both the `items` and `individual_items`)
     Route::post('/items/store', 'store')->name('items.store'); // Explicitly define post for storing items
 
     // Show edit form for an item
@@ -61,6 +62,9 @@ Route::controller(ItemController::class)->group(function () {
 
     // Route for fetching item data for editing
     Route::get('/get-item/{id}', 'editItem')->name('get.item.data'); // Fetch item data for editing
+    
+    // Route for searching an item by its name
+    Route::get('/search-item/{name}', 'searchItem')->name('search.item'); // Search item by name
 });
 
 // ===========================
@@ -104,7 +108,6 @@ Route::prefix('borrower')->middleware(['auth'])->group(function () {
     Route::get('/borrow-equipment/{borrowedItem}/edit', [BorrowedItemsController::class, 'edit'])->name('borrower.borrow-equipment.edit');
     Route::put('/borrow-equipment/{borrowedItem}', [BorrowedItemsController::class, 'update'])->name('borrower.borrow-equipment.update');
     Route::delete('/borrow-equipment/{borrowedItem}', [BorrowedItemsController::class, 'destroy'])->name('borrower.borrow-equipment.destroy');
-
 });
 
 // ===========================
@@ -119,3 +122,4 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/return-items', [ReturnItemsController::class, 'index'])->name('admin.return-items.index');
     Route::post('/return-items/mark/{id}', [ReturnItemsController::class, 'markAsReturned'])->name('admin.return-items.mark');
 });
+
