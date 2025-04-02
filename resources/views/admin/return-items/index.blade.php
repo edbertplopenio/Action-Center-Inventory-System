@@ -498,38 +498,38 @@
     }
 
     function undoAction() {
-    if (scannedQRCodeList.length > 0) {
-        const lastCode = scannedQRCodeList.pop();
-        const row = Array.from(document.querySelectorAll('#codeTable tbody tr'))
-            .find(row => row.cells[0].textContent.trim() === lastCode);
+        if (scannedQRCodeList.length > 0) {
+            const lastCode = scannedQRCodeList.pop();
+            const row = Array.from(document.querySelectorAll('#codeTable tbody tr'))
+                .find(row => row.cells[0].textContent.trim() === lastCode);
 
-        if (row) row.cells[1].textContent = 'Borrowed';
+            if (row) row.cells[1].textContent = 'Borrowed';
 
-        scannedCount--;
-        $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
+            scannedCount--;
+            $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
 
-        // Reset counter color if scanning is no longer complete
-        if (scannedCount < totalRequestQuantity) {
-            document.getElementById('request-counter').style.color = '';
-        }
+            // Reset counter color if scanning is no longer complete
+            if (scannedCount < totalRequestQuantity) {
+                document.getElementById('request-counter').style.color = '';
+            }
 
-        document.getElementById('approveButton').disabled = true;
-        if (scannedQRCodeList.length === 0) {
-            document.getElementById('undoButton').disabled = true;
-        }
+            document.getElementById('approveButton').disabled = true;
+            if (scannedQRCodeList.length === 0) {
+                document.getElementById('undoButton').disabled = true;
+            }
 
-        // Remove highlight from the undone row
-        resetHighlight(lastCode);
+            // Remove highlight from the undone row
+            resetHighlight(lastCode);
 
-        // Reset scanning state after undo
-        if (scannedCount < totalRequestQuantity) {
-            // Allow scanning again if not all QR codes have been scanned
-            document.getElementById('result').textContent = 'Scanning for QR code...';
-            // Reset the scanning state
-            openQRScanner();
+            // Reset scanning state after undo
+            if (scannedCount < totalRequestQuantity) {
+                // Allow scanning again if not all QR codes have been scanned
+                document.getElementById('result').textContent = 'Scanning for QR code...';
+                // Reset the scanning state
+                openQRScanner();
+            }
         }
     }
-}
 
 
 
@@ -564,22 +564,37 @@
 
     document.getElementById('approveButton').addEventListener('click', function() {
         const itemId = $('#qr-modal').data('item-id');
-        $.ajax({
-            url: '/admin/return-items/mark/' + itemId,
-            type: 'POST',
-            data: {
-                _token: $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(response) {
-                Swal.fire('Returned!', 'The item has been returned.', 'success')
-                    .then(() => location.reload());
-            },
-            error: function() {
-                Swal.fire('Error!', 'Something went wrong.', 'error');
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to return this item.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#A855F7',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, return it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '/admin/return-items/mark/' + itemId,
+                    type: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        Swal.fire('Returned!', 'The item has been returned.', 'success')
+                            .then(() => {
+                                // Only close the modal after the success message is shown
+                                closeQRScanner();
+                                location.reload();
+                            });
+                    },
+                    error: function() {
+                        Swal.fire('Error!', 'Something went wrong.', 'error');
+                    }
+                });
             }
         });
-
-        closeQRScanner();
     });
 </script>
 
