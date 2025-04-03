@@ -405,70 +405,64 @@
 
         // Borrow Item Form Submission
         borrowForm.addEventListener("submit", function(event) {
-            event.preventDefault();
-            console.log("Form submission triggered"); // Debug line: Check if form submission is triggered
+    event.preventDefault();
+    console.log("Form submission triggered");
 
-            errorMessageDiv.innerHTML = ""; // Clear previous errors
+    errorMessageDiv.innerHTML = ""; // Clear previous errors
 
-            const borrowDate = borrowDateInput.value.trim();
-            const dueDate = dueDateInput.value.trim();
-            const borrowQuantity = quantityInput.value.trim();
+    const borrowDate = borrowDateInput.value.trim();
+    const dueDate = dueDateInput.value.trim();
+    const borrowQuantity = quantityInput.value.trim();
 
-            let errors = [];
+    let errors = [];
 
-            // Field Validation
-            if (!borrowDate) errors.push("Borrow Date is required.");
-            if (!dueDate) errors.push("Due Date is required.");
-            if (!borrowQuantity) errors.push("Quantity is required.");
+    // Field Validation
+    if (!borrowDate) errors.push("Borrow Date is required.");
+    if (!dueDate) errors.push("Due Date is required.");
+    if (!borrowQuantity) errors.push("Quantity is required.");
 
-            // Show Errors if any
-            if (errors.length > 0) {
-                console.log("Validation errors: ", errors); // Debug line: Log validation errors
-                errorMessageDiv.innerHTML = errors.map(error => `<p style="color:red;">${error}</p>`).join("");
-                return;
+    // Show Errors if any
+    if (errors.length > 0) {
+        console.log("Validation errors: ", errors);
+        errorMessageDiv.innerHTML = errors.map(error => `<p style="color:red;">${error}</p>`).join("");
+        return;
+    }
+
+    // Debugging the values before submitting
+    console.log("Borrow Date:", borrowDate);
+    console.log("Due Date:", dueDate);
+    console.log("Borrow Quantity:", borrowQuantity);
+    console.log("Item ID:", selectedItemId);
+
+    // Proceed with Submission if No Errors (without reducing quantity)
+    fetch("{{ route('borrow.item') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+            },
+            body: JSON.stringify({
+                item_id: selectedItemId,
+                borrow_date: borrowDate,
+                due_date: dueDate,
+                quantity: borrowQuantity  // Do not modify the quantity on inventory
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Item borrowed successfully!");
+                borrowModal.style.display = "none"; // Close modal
+            } else {
+                alert(data.error || "Error borrowing item.");
             }
-
-            // Debugging the values before submitting
-            console.log("Borrow Date:", borrowDate);
-            console.log("Due Date:", dueDate);
-            console.log("Borrow Quantity:", borrowQuantity);
-            console.log("Item ID:", selectedItemId);
-
-            // Proceed with Submission if No Errors
-            console.log("Submitting data..."); // Debug line: Check if we are proceeding to the fetch request
-
-            fetch("{{ route('borrow.item') }}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
-                    },
-                    body: JSON.stringify({
-                        item_id: selectedItemId,
-                        borrow_date: borrowDate,
-                        due_date: dueDate,
-                        quantity: borrowQuantity
-                    })
-                })
-                .then(response => {
-                    console.log("Response received:", response); // Debug line: Check response status
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("Response data:", data); // Debug line: Check the response body
-
-                    if (data.success) {
-                        alert("Item borrowed successfully!");
-                        borrowModal.style.display = "none"; // Close modal
-                    } else {
-                        alert(data.error || "Error borrowing item.");
-                    }
-                })
-                .catch(error => {
-                    console.error("Error:", error); // Debug line: Check any errors in the fetch request
-                    alert("Something went wrong.");
-                });
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("Something went wrong.");
         });
+});
+
 
     });
 

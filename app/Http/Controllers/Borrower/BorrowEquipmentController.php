@@ -24,12 +24,12 @@ class BorrowEquipmentController extends Controller
 
         $item = Item::findOrFail($request->item_id);
 
-        // Check if enough quantity is available
+        // Check if enough quantity is available (optional - if you don't want this check, you can remove it)
         if ($item->quantity < $request->quantity) {
             return response()->json(['error' => 'Not enough stock available.'], 400);
         }
 
-        // Create the borrowed item record
+        // Create the borrowed item record without modifying the item quantity
         $borrowedItem = BorrowedItem::create([
             'borrower_id' => Auth::id(),
             'item_id' => $item->id,
@@ -40,12 +40,11 @@ class BorrowEquipmentController extends Controller
             'status' => 'Pending',
         ]);
 
-        // Update the item's quantity
-        $item->quantity -= $request->quantity;
-        $item->save();
+        // No need to update the item's quantity
 
         return response()->json(['success' => 'Item successfully borrowed.'], 200);
     }
+
 
     // Get borrowed items for the logged-in user
     public function index()
