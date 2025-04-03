@@ -847,16 +847,16 @@ function closeQRScanner() {
 
         <!-- Buttons to close the modal -->
         <div class="flex justify-center gap-4 mt-6">
-            <button id="borrow-action-btn-{{ $request->id }}" class="borrow-btn px-4 py-2 m-2 bg-blue-500 text-white rounded 
+        <button id="approveButton" class="borrow-btn px-4 py-2 m-2 bg-blue-500 text-white rounded 
     hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs w-24"
-                onclick="updateStatus('{{ $request->id }}', 'Borrowed')"
-                @if(in_array($request->status, ['Approved', 'Rejected', 'Borrowed', 'Returned', 'Overdue', 'Lost', 'Damaged']))
-                disabled
-                style="opacity: 0.5;"
-                data-toggle="tooltip" data-placement="top" title="This request cannot be borrowed because it is already in a final state."
-                @endif>
-                Approve
-            </button>
+    onclick="approveRequest('{{ $request->id }}')" 
+    @if(in_array($request->status, ['Approved', 'Rejected', 'Borrowed', 'Returned', 'Overdue', 'Lost', 'Damaged']))
+        disabled style="opacity: 0.5;"
+        data-toggle="tooltip" data-placement="top" title="This request cannot be approved because it is already in a final state."
+    @endif>
+    Approve
+</button>
+
 
             <!-- Change the reject button to cancel -->
             <button id="cancel-action-btn-{{ $request->id }}" class="cancel-btn px-4 py-2 m-2 bg-gray-500 text-white rounded 
@@ -932,6 +932,34 @@ function closeQRScanner() {
             });
         }
     });
+
+    // Function to handle request approval
+    function approveRequest(borrowedItemId) {
+    const individualItemIds = scannedQRCodeList; // This is the array of QR codes/individual item IDs
+
+    $.ajax({
+        url: '/admin/inventory-requests/update-status/' + borrowedItemId,
+        method: 'POST',
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            status: 'Borrowed',  // The new status is 'Borrowed'
+            individual_item_ids: individualItemIds, // Pass the list of individual item IDs
+        },
+        success: function(response) {
+            if (response.success) {
+                Swal.fire('Success', response.message, 'success').then(() => {
+                    location.reload(); // Reload the page to reflect the changes
+                });
+            } else {
+                Swal.fire('Error', response.message, 'error');
+            }
+        },
+        error: function() {
+            Swal.fire('Error', 'Something went wrong during approval', 'error');
+        }
+    });
+}
+
 
     // Close modal function
     function closeReceiptModal() {

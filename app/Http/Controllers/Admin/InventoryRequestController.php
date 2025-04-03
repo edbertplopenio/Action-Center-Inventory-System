@@ -28,22 +28,50 @@ class InventoryRequestController extends Controller
     {
         // Validate the status input
         $request->validate([
-            'status' => 'required|in:Pending,Approved,Rejected,Borrowed,Returned,Overdue,Lost,Damaged',
+            'status' => 'required|in:Pending,Borrowed,Approved,Rejected,Returned,Overdue,Lost,Damaged',
         ]);
-
+    
         // Find the borrowing request by ID
         $borrowedItem = BorrowedItem::findOrFail($id);
-
-        // Update the status
-        $borrowedItem->status = $request->status;
+    
+        // If the status is "Borrowed", we need to attach individual items to the borrowed item
+        if ($request->status == 'Borrowed') {
+            // Ensure that individual items (QR codes) are provided
+            $qrCodes = $request->input('individual_item_ids'); // This should be an array of QR codes
+    
+            if (empty($qrCodes)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No individual items selected for borrowing.',
+                ]);
+            }
+    
+            // Find individual item IDs by qr_code
+            $individualItemIds = IndividualItem::whereIn('qr_code', $qrCodes)->pluck('id')->toArray();
+    
+            // Check if we got valid individual item ids
+            if (empty($individualItemIds)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No valid individual items found for the given QR codes.',
+                ]);
+            }
+    
+            // Attach the individual items to the borrowed item (insert into pivot table)
+            $borrowedItem->individualItems()->attach($individualItemIds);
+        }
+    
+        // Update the status of the borrowed item to 'Borrowed'
+        $borrowedItem->status = 'Borrowed';  // Set the status to 'Borrowed'
         $borrowedItem->save();
-
+    
         // Return a response
         return response()->json([
             'success' => true,
-            'message' => 'Status updated successfully!',
+            'message' => 'Status updated to Borrowed successfully!',
         ]);
     }
+    
 
     public function getItemQRCodes($itemId)
     {

@@ -45,5 +45,11 @@ class BorrowedItem extends Model
     {
         return $this->belongsTo(User::class, 'borrower_id');
     }
+
+    public function individualItems()
+{
+    return $this->belongsToMany(IndividualItem::class, 'borrowed_item_individual_items', 'borrowed_item_id', 'individual_item_id');
+}
+
 }
 
