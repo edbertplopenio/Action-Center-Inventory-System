@@ -24,14 +24,25 @@ class ReturnItemsController extends Controller
     {
         // Find the borrowed item by ID
         $borrowedItem = BorrowedItem::findOrFail($id);
-
-        // Update the status to 'Returned' and set return_date to now
+    
+        // Update the borrowed item status to 'Returned'
         $borrowedItem->status = 'Returned';
         $borrowedItem->return_date = now();  // Set the return date to the current timestamp
         $borrowedItem->save();
-
-        return redirect()->route('admin.return-items.index')->with('success', 'Item marked as returned!');
+    
+        // Get all individual items associated with this borrowed item
+        $individualItems = $borrowedItem->individualItems;
+    
+        // Update the status of each individual item to 'Available'
+        foreach ($individualItems as $individualItem) {
+            $individualItem->status = 'Available';
+            $individualItem->save();  // Save the updated status
+        }
+    
+        // Redirect back to the return items page with a success message
+        return redirect()->route('admin.return-items.index')->with('success', 'Item(s) marked as returned!');
     }
+    
 
     // Fetch borrowed items for a specific item ID (for QR modal)
     public function getBorrowedItemsForReturn($id)
