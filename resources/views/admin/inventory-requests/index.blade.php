@@ -218,7 +218,7 @@
         </div>
 
         <div style="height: 550px; overflow-y: auto;">
-            <table id="requestsTable" class="display" style="width:100%">
+            <table id="requestsTable" class="display" style="width: 100%">
                 <thead>
                     <tr>
                         <th>Borrower</th>
@@ -232,7 +232,16 @@
                 </thead>
                 <tbody>
                     @forelse($borrowing_requests as $request)
-                    <tr>
+                    <tr class="record-row cursor-pointer"
+                        data-id="{{ $request->id }}"
+                        data-borrower="{{ $request->borrower->first_name }} {{ $request->borrower->last_name }}"
+                        data-item-name="{{ $request->item->name }}"
+                        data-quantity="{{ $request->quantity_borrowed }}"
+                        data-borrow-date="{{ \Carbon\Carbon::parse($request->borrow_date)->format('Y-m-d') }}"
+                        data-due-date="{{ \Carbon\Carbon::parse($request->due_date)->format('Y-m-d') }}"
+                        data-status="{{ $request->status }}">
+
+                        <!-- Borrower -->
                         <td>
                             @if($request->borrower)
                             {{ $request->borrower->first_name }} {{ $request->borrower->last_name }}
@@ -241,26 +250,37 @@
                             @endif
                         </td>
 
+                        <!-- Item Name -->
                         <td>{{ $request->item->name }}</td>
+
+                        <!-- Quantity -->
                         <td>{{ $request->quantity_borrowed }}</td>
+
+                        <!-- Borrow Date -->
                         <td>{{ \Carbon\Carbon::parse($request->borrow_date)->format('Y-m-d') }}</td>
+
+                        <!-- Due Date -->
                         <td>{{ \Carbon\Carbon::parse($request->due_date)->format('Y-m-d') }}</td>
+
+                        <!-- Status -->
                         <td>
                             <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-                {{ $request->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
-                {{ $request->status == 'Approved' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
-                {{ $request->status == 'Rejected' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
-                {{ $request->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-                {{ $request->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
-                {{ $request->status == 'Overdue' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}
-                {{ $request->status == 'Lost' ? 'bg-gray-500/10 text-gray-500 border border-gray-500' : '' }}
-                {{ $request->status == 'Damaged' ? 'bg-pink-500/10 text-pink-500 border border-pink-500' : '' }}">
+                                {{ $request->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                                {{ $request->status == 'Approved' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                                {{ $request->status == 'Rejected' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                                {{ $request->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                                {{ $request->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
+                                {{ $request->status == 'Overdue' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}
+                                {{ $request->status == 'Lost' ? 'bg-gray-500/10 text-gray-500 border border-gray-500' : '' }}
+                                {{ $request->status == 'Damaged' ? 'bg-pink-500/10 text-pink-500 border border-pink-500' : '' }}">
                                 {{ $request->status }}
                             </span>
                         </td>
+
+                        <!-- Action Buttons -->
                         <td>
                             <button class="approve-btn px-2 py-1 m-1 bg-green-500 text-white rounded 
-    hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-xs w-24"
+                                    hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-xs w-24"
                                 onclick="openQRScanner('{{ $request->item->id }}', '{{ $request->quantity_borrowed }}')"
                                 @if(in_array($request->status, ['Approved', 'Rejected', 'Borrowed', 'Returned', 'Overdue', 'Lost', 'Damaged']))
                                 disabled
@@ -270,11 +290,8 @@
                                 Approve
                             </button>
 
-
-
-
                             <button class="reject-btn px-2 py-1 m-1 bg-red-500 text-white rounded 
-    hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 text-xs w-24"
+                                    hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 text-xs w-24"
                                 onclick="rejectRequest('{{ $request->id }}')"
                                 @if(in_array($request->status, ['Approved', 'Rejected', 'Borrowed', 'Returned', 'Overdue', 'Lost', 'Damaged']))
                                 disabled
@@ -283,39 +300,48 @@
                                 @endif>
                                 Reject
                             </button>
-
                         </td>
-
-
                     </tr>
                     @empty
-                    <tr>
+                    <tr id="noRecordsRow">
                         <td colspan="7" class="text-center">No borrowing requests found.</td>
                     </tr>
                     @endforelse
                 </tbody>
-
             </table>
         </div>
     </div>
 </div>
 
 
+
 <script>
     $(document).ready(function() {
-        // Initialize DataTable
-        $('#requestsTable').DataTable({
+        let table = $('#requestsTable');
+
+        // Remove "No records found" row if there's only one row
+        if (table.find("tbody tr").length === 1 && table.find("#noRecordsRow").length === 1) {
+            table.find("#noRecordsRow").remove(); // Remove the "No records found" row
+        }
+
+        // Initialize DataTable with additional settings
+        table.DataTable({
             scrollY: '420px',
             scrollCollapse: true,
             paging: true,
             searching: true,
-            ordering: true
+            ordering: true,
+            columnDefs: [{
+                orderable: false,
+                targets: -1 // Disable ordering for the last column (usually the action column)
+            }]
         });
 
         // Initialize tooltips
         $('[data-toggle="tooltip"]').tooltip();
     });
 </script>
+
 
 
 
@@ -846,8 +872,10 @@
 
         <!-- Buttons to close the modal -->
         <div class="flex justify-center gap-4 mt-6">
+            @isset($request)
+            <!-- Approve Button -->
             <button id="approveButton" class="borrow-btn px-4 py-2 m-2 bg-blue-500 text-white rounded 
-    hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs w-24"
+            hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs w-24"
                 onclick="approveRequest('{{ $request->id }}')"
                 @if(in_array($request->status, ['Approved', 'Rejected', 'Borrowed', 'Returned', 'Overdue', 'Lost', 'Damaged']))
                 disabled style="opacity: 0.5;"
@@ -856,14 +884,15 @@
                 Approve
             </button>
 
-
-            <!-- Change the reject button to cancel -->
+            <!-- Cancel Button -->
             <button id="cancel-action-btn-{{ $request->id }}" class="cancel-btn px-4 py-2 m-2 bg-gray-500 text-white rounded 
-                hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 text-xs w-24"
+            hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 text-xs w-24"
                 onclick="closeReceiptModal()">
                 Cancel
             </button>
+            @endisset
         </div>
+
 
     </div>
 </div>
