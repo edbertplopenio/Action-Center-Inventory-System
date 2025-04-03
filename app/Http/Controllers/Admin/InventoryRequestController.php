@@ -12,17 +12,19 @@ class InventoryRequestController extends Controller
 {
     public function index()
     {
-        // Fetch all borrowing requests with related item and borrower details
+        // Fetch all borrowing requests with related item and borrower details, where the status is 'Pending'
         $borrowing_requests = BorrowedItem::with(['item', 'borrower'])
+            ->where('status', 'Pending')  // Add the filter for Pending status
             ->orderBy('created_at', 'desc')
             ->get();
-
+    
         // Fetch all items along with their associated individual items and their QR codes
         $items = Item::with('individualItems')->get();
-
+    
         // Pass the items to the view
         return view('admin.inventory-requests.index', compact('borrowing_requests', 'items'));
     }
+    
 
     public function updateStatus(Request $request, $id)
     {
