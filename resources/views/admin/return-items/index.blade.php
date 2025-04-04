@@ -227,6 +227,7 @@
                         <th>Quantity</th>
                         <th>Borrow Date</th>
                         <th>Due Date</th>
+                        <th>Return Date</th> <!-- Added Return Date column -->
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -247,10 +248,11 @@
                         <td>{{ $borrowedItem->quantity_borrowed }}</td>
                         <td>{{ $borrowedItem->borrow_date->format('Y-m-d') }}</td>
                         <td>{{ $borrowedItem->due_date->format('Y-m-d') }}</td>
+                        <td>{{ $borrowedItem->return_date ? $borrowedItem->return_date->format('Y-m-d') : 'N/A' }}</td> <!-- Display Return Date -->
                         <td>
                             <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-                                {{ $borrowedItem->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-                                {{ $borrowedItem->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}">
+                        {{ $borrowedItem->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                        {{ $borrowedItem->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}">
                                 {{ $borrowedItem->status }}
                             </span>
                         </td>
@@ -270,6 +272,7 @@
                 </tbody>
             </table>
         </div>
+
     </div>
 </div>
 
