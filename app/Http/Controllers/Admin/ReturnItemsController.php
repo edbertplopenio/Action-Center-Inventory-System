@@ -9,15 +9,18 @@ use Illuminate\Http\Request;
 class ReturnItemsController extends Controller
 {
     // Display the list of borrowed and returned items
-    public function index()
-    {
-        // Eager load the borrower relationship along with the item details
-        $borrowedItems = BorrowedItem::with('borrower', 'item')  // Eager loading both borrower and item
-            ->whereIn('status', ['Borrowed', 'Returned'])  // Show items with Borrowed or Returned status
-            ->get();
+// ReturnItemsController.php
 
-        return view('admin.return-items.index', compact('borrowedItems'));
-    }
+public function index()
+{
+    // Eager load borrower, item, and individualItems relationships
+    $borrowedItems = BorrowedItem::with('borrower', 'item', 'individualItems')  // Eager load individualItems
+        ->whereIn('status', ['Borrowed', 'Returned'])  // Show items with Borrowed or Returned status
+        ->get();
+
+    return view('admin.return-items.index', compact('borrowedItems'));
+}
+
 
     // Mark an item as returned
     public function markAsReturned($id)

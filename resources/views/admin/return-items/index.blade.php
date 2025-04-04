@@ -223,6 +223,7 @@
                     <tr>
                         <th>Borrower</th>
                         <th>Item Name</th>
+                        <th>QR Code(s)</th> <!-- New column for QR codes -->
                         <th>Quantity</th>
                         <th>Borrow Date</th>
                         <th>Due Date</th>
@@ -235,6 +236,14 @@
                     <tr>
                         <td>{{ $borrowedItem->borrower->first_name }} {{ $borrowedItem->borrower->last_name }}</td>
                         <td>{{ $borrowedItem->item->name }}</td>
+
+                        <!-- Display all QR codes for the borrowed item -->
+                        <td>
+                            @foreach($borrowedItem->individualItems as $individualItem)
+                            <span>{{ $individualItem->qr_code }}</span><br>
+                            @endforeach
+                        </td>
+
                         <td>{{ $borrowedItem->quantity_borrowed }}</td>
                         <td>{{ $borrowedItem->borrow_date->format('Y-m-d') }}</td>
                         <td>{{ $borrowedItem->due_date->format('Y-m-d') }}</td>
@@ -263,6 +272,7 @@
         </div>
     </div>
 </div>
+
 
 
 <!-- Modal for QR Code Scanner -->
