@@ -483,8 +483,8 @@
                             stopScanning();
                         }
 
-                        // Enable Approve button when scanning is complete
-                        if (scannedCount >= totalRequestQuantity) {
+                        // Enable Approve button as soon as 1 item is scanned
+                        if (scannedQRCodeList.length === 1) {
                             document.getElementById('approveButton').disabled = false;
                         }
 
@@ -501,6 +501,7 @@
             }
         }, 300); // scan every 300ms
     }
+
 
     function stopScanning() {
         isScanning = false;

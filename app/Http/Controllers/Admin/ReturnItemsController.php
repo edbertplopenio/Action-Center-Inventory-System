@@ -23,35 +23,38 @@ public function index()
 
 
     // Mark an item as returned
-    public function markAsReturned($id)
+    public function markAsReturned($id, Request $request)
     {
         // Find the borrowed item by ID
         $borrowedItem = BorrowedItem::findOrFail($id);
-
-        // Update the borrowed item status to 'Returned'
-        $borrowedItem->status = 'Returned';
-        $borrowedItem->return_date = now();  // Set the return date to the current timestamp
-        $borrowedItem->save();
-
-        // Get the associated item
-        $item = $borrowedItem->item;  // Access the item model directly from the borrowed item
-
-        // Add the borrowed quantity back to the item stock
-        $item->quantity += $borrowedItem->quantity_borrowed;
-        $item->save();  // Save the updated item quantity
-
-        // Get all individual items associated with this borrowed item
-        $individualItems = $borrowedItem->individualItems;
-
-        // Update the status of each individual item to 'Available'
-        foreach ($individualItems as $individualItem) {
+    
+        // Get the scanned QR code from the request
+        $scannedQRCode = $request->input('qr_code'); // Get the scanned QR code
+    
+        // Find the individual item that matches the scanned QR code
+        $individualItem = $borrowedItem->individualItems()->where('qr_code', $scannedQRCode)->first();
+    
+        if ($individualItem) {
+            // Mark only the scanned individual item as 'Available'
             $individualItem->status = 'Available';
-            $individualItem->save();  // Save the updated status
+            $individualItem->save();
+    
+            // Update the borrowed item status to 'Returned'
+            $borrowedItem->status = 'Returned';
+            $borrowedItem->return_date = now();  // Set the return date to the current timestamp
+            $borrowedItem->save();
+    
+            // Add the borrowed quantity back to the item stock
+            $item = $borrowedItem->item;
+            $item->quantity += 1;
+            $item->save();
+    
+            return response()->json(['message' => 'Item marked as returned and stock updated!'], 200);
+        } else {
+            return response()->json(['message' => 'Invalid QR code.'], 400);
         }
-
-        // Redirect back to the return items page with a success message
-        return redirect()->route('admin.return-items.index')->with('success', 'Item(s) marked as returned and stock updated!');
     }
+    
 
 
 
