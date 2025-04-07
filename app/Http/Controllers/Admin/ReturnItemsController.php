@@ -27,22 +27,22 @@ public function index()
     {
         // Find the borrowed item by ID
         $borrowedItem = BorrowedItem::findOrFail($id);
-    
+        
         // Get the scanned QR codes from the request
         $scannedQRCodes = $request->input('qr_codes'); // This should be an array of QR codes
         $returnDates = $request->input('return_dates'); // This should be an array of return dates (optional for partial returns)
-    
+        
         if (!is_array($scannedQRCodes)) {
             return response()->json(['message' => 'Invalid or missing QR codes.'], 400);
         }
-    
+        
         $returnedItems = [];
         $totalItemsToReturn = $borrowedItem->quantity_borrowed; // Total items originally borrowed
-    
+        
         foreach ($scannedQRCodes as $index => $scannedQRCode) {
             // Find the individual item that matches the scanned QR code
             $individualItem = $borrowedItem->individualItems()->where('qr_code', $scannedQRCode)->first();
-    
+        
             if ($individualItem) {
                 // Mark the individual item as 'Available'
                 $individualItem->status = 'Available';
@@ -50,7 +50,7 @@ public function index()
                 // Set the return date for the individual item
                 $individualItem->return_date = $returnDates[$index] ?? now(); // Use provided date or current date if not given
                 $individualItem->save();
-    
+        
                 // Add to the returned items list
                 $returnedItems[] = $individualItem;
             } else {
@@ -58,21 +58,25 @@ public function index()
                 return response()->json(['message' => "Invalid QR code: $scannedQRCode."], 400);
             }
         }
-    
-        // Update the status of the borrowed item if all items have been returned
-        if (count($returnedItems) === $totalItemsToReturn) {
+        
+        // Check if all individual items are now available
+        $unreturnedItemsCount = $borrowedItem->individualItems()->where('status', '!=', 'Available')->count();
+        
+        if ($unreturnedItemsCount == 0) {
+            // If all items are marked as Available, update the borrowed item's status to 'Returned'
             $borrowedItem->status = 'Returned';
             $borrowedItem->return_date = now(); // Set the return date for the whole borrowing record when all items are returned
             $borrowedItem->save();
         }
-    
+        
         // Update the item stock
         $item = $borrowedItem->item;
         $item->quantity += count($returnedItems);
         $item->save();
-    
+        
         return response()->json(['message' => 'Items marked as returned and stock updated!', 'returnedItems' => $returnedItems], 200);
     }
+    
     
     
     
