@@ -86,20 +86,6 @@ Route::get('/admin/users/deactivated', [UsersController::class, 'deactivatedInde
 
 Route::post('/admin/users/activate/{id}', [UsersController::class, 'activate'])->name('users.activate');
 
-// Show the profile edit page
-Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
-
-// Update the profile information
-Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-
-
-
-// Profile edit route
-Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-
-// Profile update route
-Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
-
 // Route for About Us page
 Route::get('/about', function () {
     return view('about'); // This assumes you have an 'about.blade.php' view
@@ -114,3 +100,11 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::post('/register', [RegisterController::class, 'store'])->name('registration.post');
+
+use App\Http\Controllers\DashboardController;
+
+Route::get('/api/equipment-by-category', [DashboardController::class, 'getEquipmentByCategory']);
+
+Route::get('/api/most-borrowed-equipment', [EquipmentController::class, 'mostBorrowedEquipment']);
+
+
