@@ -30,6 +30,7 @@ public function index()
     
         // Get the scanned QR codes from the request
         $scannedQRCodes = $request->input('qr_codes'); // This should be an array of QR codes
+        $returnDates = $request->input('return_dates'); // This should be an array of return dates (optional for partial returns)
     
         if (!is_array($scannedQRCodes)) {
             return response()->json(['message' => 'Invalid or missing QR codes.'], 400);
@@ -38,13 +39,16 @@ public function index()
         $returnedItems = [];
         $totalItemsToReturn = $borrowedItem->quantity_borrowed; // Total items originally borrowed
     
-        foreach ($scannedQRCodes as $scannedQRCode) {
+        foreach ($scannedQRCodes as $index => $scannedQRCode) {
             // Find the individual item that matches the scanned QR code
             $individualItem = $borrowedItem->individualItems()->where('qr_code', $scannedQRCode)->first();
     
             if ($individualItem) {
                 // Mark the individual item as 'Available'
                 $individualItem->status = 'Available';
+                
+                // Set the return date for the individual item
+                $individualItem->return_date = $returnDates[$index] ?? now(); // Use provided date or current date if not given
                 $individualItem->save();
     
                 // Add to the returned items list
@@ -55,10 +59,10 @@ public function index()
             }
         }
     
-        // Only update the status of the borrowed item if all items have been returned
+        // Update the status of the borrowed item if all items have been returned
         if (count($returnedItems) === $totalItemsToReturn) {
             $borrowedItem->status = 'Returned';
-            $borrowedItem->return_date = now(); // Set the return date to the current timestamp
+            $borrowedItem->return_date = now(); // Set the return date for the whole borrowing record when all items are returned
             $borrowedItem->save();
         }
     
@@ -69,6 +73,7 @@ public function index()
     
         return response()->json(['message' => 'Items marked as returned and stock updated!', 'returnedItems' => $returnedItems], 200);
     }
+    
     
     
     

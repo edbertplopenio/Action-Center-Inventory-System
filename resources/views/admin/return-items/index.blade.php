@@ -248,11 +248,27 @@
                         <td>{{ $borrowedItem->quantity_borrowed }}</td>
                         <td>{{ $borrowedItem->borrow_date->format('Y-m-d') }}</td>
                         <td>{{ $borrowedItem->due_date->format('Y-m-d') }}</td>
-                        <td>{{ $borrowedItem->return_date ? $borrowedItem->return_date->format('Y-m-d') : 'N/A' }}</td> <!-- Display Return Date -->
+                        <td>
+                            @php
+                            // Collect unique return dates for this borrowed item
+                            $returnDates = $borrowedItem->individualItems->pluck('return_date')->filter()->unique()->sort()->values();
+                            @endphp
+
+                            @if ($returnDates->count() == 1)
+                            <!-- If all return dates are the same, display only that date -->
+                            {{ \Carbon\Carbon::parse($returnDates->first())->format('Y-m-d') }}
+                            @else
+                            <!-- If return dates are different, display all return dates -->
+                            @foreach($returnDates as $date)
+                            {{ \Carbon\Carbon::parse($date)->format('Y-m-d') }}<br>
+                            @endforeach
+                            @endif
+                        </td> <!-- Display Return Date(s) -->
+
                         <td>
                             <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-                        {{ $borrowedItem->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-                        {{ $borrowedItem->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}">
+                    {{ $borrowedItem->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                    {{ $borrowedItem->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}">
                                 {{ $borrowedItem->status }}
                             </span>
                         </td>
@@ -271,6 +287,7 @@
                     @endforeach
                 </tbody>
             </table>
+
         </div>
 
     </div>
@@ -348,6 +365,8 @@
     let totalRequestQuantity = 1;
     let scanLoopId = null;
     let highlightedRows = {}; // Store highlighted rows by QR code
+    let returnDates = []; // Store return dates for each scanned QR code
+
 
     // Function to highlight the scanned row
     function highlightRow(qrCode) {
@@ -387,53 +406,53 @@
         }
     }
 
-// Function to populate the table in the QR modal
-function returnItem(id) {
-    $('#qr-modal').removeClass('hidden');
-    $('#borrowedItemsTable button').prop('disabled', true);
-    $('#qr-modal').data('item-id', id);
-    $('#result').text('Scanning for QR code...');
-    scannedQRCodeList = [];
-    scannedCount = 0;
-    document.getElementById('approveButton').disabled = true;
-    document.getElementById('undoButton').disabled = true;
+    // Function to populate the table in the QR modal
+    function returnItem(id) {
+        $('#qr-modal').removeClass('hidden');
+        $('#borrowedItemsTable button').prop('disabled', true);
+        $('#qr-modal').data('item-id', id);
+        $('#result').text('Scanning for QR code...');
+        scannedQRCodeList = [];
+        scannedCount = 0;
+        document.getElementById('approveButton').disabled = true;
+        document.getElementById('undoButton').disabled = true;
 
-    $.ajax({
-        url: '/admin/borrowed-items/list/' + id,
-        method: 'GET',
-        success: function(response) {
-            const tableBody = $('#codeTable tbody');
-            tableBody.empty();
-            
-            // Iterate over the borrowed items and populate the table
-            response.borrowedItems.forEach(item => {
-                let statusText = item.status; // Default status from the database
-                let rowStyle = ''; // Default row style
+        $.ajax({
+            url: '/admin/borrowed-items/list/' + id,
+            method: 'GET',
+            success: function(response) {
+                const tableBody = $('#codeTable tbody');
+                tableBody.empty();
 
-                // Check if the item has been returned and display 'Returned' in the table instead of 'Available'
-                if (item.status === 'Available') {
-                    statusText = 'Returned'; // Change display text to 'Returned'
-                    rowStyle = 'background-color: #90ee90; color: #000;'; // Inline style for highlighting (light green background)
-                }
+                // Iterate over the borrowed items and populate the table
+                response.borrowedItems.forEach(item => {
+                    let statusText = item.status; // Default status from the database
+                    let rowStyle = ''; // Default row style
 
-                const row = `<tr style="${rowStyle}">
+                    // Check if the item has been returned and display 'Returned' in the table instead of 'Available'
+                    if (item.status === 'Available') {
+                        statusText = 'Returned'; // Change display text to 'Returned'
+                        rowStyle = 'background-color: #90ee90; color: #000;'; // Inline style for highlighting (light green background)
+                    }
+
+                    const row = `<tr style="${rowStyle}">
                     <td>${item.qr_code}</td>
                     <td>${statusText}</td> <!-- Show 'Returned' instead of 'Available' -->
                 </tr>`;
-                tableBody.append(row);
-            });
+                    tableBody.append(row);
+                });
 
-            totalRequestQuantity = response.borrowedItems.length;
-            $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
+                totalRequestQuantity = response.borrowedItems.length;
+                $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
 
-            openQRScanner();
-        },
-        error: function(err) {
-            console.error('Error fetching borrowed items:', err);
-            Swal.fire('Error!', 'Unable to load borrowed items.', 'error');
-        }
-    });
-}
+                openQRScanner();
+            },
+            error: function(err) {
+                console.error('Error fetching borrowed items:', err);
+                Swal.fire('Error!', 'Unable to load borrowed items.', 'error');
+            }
+        });
+    }
 
 
 
@@ -462,79 +481,75 @@ function returnItem(id) {
 
     let alertedQRCodeList = []; // Store QR codes that have already triggered an alert
 
-function scanQRCode() {
-    const video = document.getElementById('video');
-    const resultText = document.getElementById('result');
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
+    function scanQRCode() {
+        const video = document.getElementById('video');
+        const resultText = document.getElementById('result');
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
 
-    scanLoopId = setInterval(() => {
-        if (!isScanning || !video.videoWidth || !video.videoHeight) return;
+        scanLoopId = setInterval(() => {
+            if (!isScanning || !video.videoWidth || !video.videoHeight) return;
 
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-        const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
 
-        if (qrCode) {
-            const code = qrCode.data.trim();
-            resultText.textContent = 'QR Code detected: ' + code;
+            if (qrCode) {
+                const code = qrCode.data.trim();
+                resultText.textContent = 'QR Code detected: ' + code;
 
-            if (!scannedQRCodeList.includes(code)) {
-                const matchedRow = Array.from(document.querySelectorAll('#codeTable tbody tr'))
-                    .find(row => row.cells[0].textContent.trim() === code);
+                if (!scannedQRCodeList.includes(code)) {
+                    const matchedRow = Array.from(document.querySelectorAll('#codeTable tbody tr'))
+                        .find(row => row.cells[0].textContent.trim() === code);
 
-                if (matchedRow) {
-                    // Check if the item is already returned
-                    const statusCell = matchedRow.cells[1]; // The status column
-                    const status = statusCell.textContent.trim();
+                    if (matchedRow) {
+                        const statusCell = matchedRow.cells[1];
+                        const status = statusCell.textContent.trim();
 
-                    if (status === 'Returned') {
-                        // Check if an alert has already been shown for this QR code
-                        if (!alertedQRCodeList.includes(code)) {
-                            // Show SweetAlert if item is already returned
-                            Swal.fire({
-                                icon: 'info',
-                                title: 'Item Already Returned',
-                                text: `The item with QR code ${code} has already been returned.`,
-                            });
-                            alertedQRCodeList.push(code); // Add to the list of alerted QR codes
+                        if (status === 'Returned') {
+                            if (!alertedQRCodeList.includes(code)) {
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'Item Already Returned',
+                                    text: `The item with QR code ${code} has already been returned.`,
+                                });
+                                alertedQRCodeList.push(code);
+                            }
+                        } else {
+                            // Automatically set the return date to the current date
+                            const returnDate = new Date().toISOString().split('T')[0]; // Get current date (YYYY-MM-DD format)
+                            returnDates.push(returnDate); // Save the return date for each scanned item
+
+                            scannedQRCodeList.push(code);
+                            statusCell.textContent = 'Returned';
+                            scannedCount++;
+                            $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
+
+                            if (scannedCount >= totalRequestQuantity) {
+                                document.getElementById('request-counter').style.color = 'green';
+                                resultText.textContent = 'Scanning complete. All required QR codes have been scanned.';
+                                stopScanning();
+                            }
+
+                            if (scannedQRCodeList.length === 1) {
+                                document.getElementById('approveButton').disabled = false;
+                            }
+
+                            document.getElementById('undoButton').disabled = false;
+                            highlightRow(code);
                         }
                     } else {
-                        // Mark the item as returned and update the table
-                        scannedQRCodeList.push(code);
-                        statusCell.textContent = 'Returned';
-                        scannedCount++;
-                        $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
-
-                        // Change counter color to green when all required QR codes are scanned
-                        if (scannedCount >= totalRequestQuantity) {
-                            document.getElementById('request-counter').style.color = 'green';
-                            resultText.textContent = 'Scanning complete. All required QR codes have been scanned.';
-                            stopScanning();
-                        }
-
-                        // Enable Approve button as soon as 1 item is scanned
-                        if (scannedQRCodeList.length === 1) {
-                            document.getElementById('approveButton').disabled = false;
-                        }
-
-                        document.getElementById('undoButton').disabled = false;
-
-                        // Highlight the row for this QR code
-                        highlightRow(code);
+                        resultText.textContent = 'Invalid QR Code: Not in list.';
                     }
-                } else {
-                    resultText.textContent = 'Invalid QR Code: Not in list.';
                 }
+            } else {
+                resultText.textContent = 'Scanning for QR code...';
             }
-        } else {
-            resultText.textContent = 'Scanning for QR code...';
-        }
-    }, 300); // scan every 300ms
-}
+        }, 300); // scan every 300ms
+    }
 
 
 
@@ -629,8 +644,10 @@ function scanQRCode() {
                     type: 'POST',
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content'),
-                        qr_codes: scannedQRCodeList // Send the list of scanned QR codes
+                        qr_codes: scannedQRCodeList, // Send the list of scanned QR codes
+                        return_dates: returnDates // Send the list of return dates for each item
                     },
+
                     success: function(response) {
                         Swal.fire('Returned!', 'The items have been returned.', 'success')
                             .then(() => {
