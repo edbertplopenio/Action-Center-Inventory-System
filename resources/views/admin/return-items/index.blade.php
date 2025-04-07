@@ -460,33 +460,52 @@ function returnItem(id) {
             });
     }
 
-    function scanQRCode() {
-        const video = document.getElementById('video');
-        const resultText = document.getElementById('result');
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
+    let alertedQRCodeList = []; // Store QR codes that have already triggered an alert
 
-        scanLoopId = setInterval(() => {
-            if (!isScanning || !video.videoWidth || !video.videoHeight) return;
+function scanQRCode() {
+    const video = document.getElementById('video');
+    const resultText = document.getElementById('result');
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
 
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    scanLoopId = setInterval(() => {
+        if (!isScanning || !video.videoWidth || !video.videoHeight) return;
 
-            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-            const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            if (qrCode) {
-                const code = qrCode.data.trim();
-                resultText.textContent = 'QR Code detected: ' + code;
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
 
-                if (!scannedQRCodeList.includes(code)) {
-                    const matchedRow = Array.from(document.querySelectorAll('#codeTable tbody tr'))
-                        .find(row => row.cells[0].textContent.trim() === code);
+        if (qrCode) {
+            const code = qrCode.data.trim();
+            resultText.textContent = 'QR Code detected: ' + code;
 
-                    if (matchedRow) {
+            if (!scannedQRCodeList.includes(code)) {
+                const matchedRow = Array.from(document.querySelectorAll('#codeTable tbody tr'))
+                    .find(row => row.cells[0].textContent.trim() === code);
+
+                if (matchedRow) {
+                    // Check if the item is already returned
+                    const statusCell = matchedRow.cells[1]; // The status column
+                    const status = statusCell.textContent.trim();
+
+                    if (status === 'Returned') {
+                        // Check if an alert has already been shown for this QR code
+                        if (!alertedQRCodeList.includes(code)) {
+                            // Show SweetAlert if item is already returned
+                            Swal.fire({
+                                icon: 'info',
+                                title: 'Item Already Returned',
+                                text: `The item with QR code ${code} has already been returned.`,
+                            });
+                            alertedQRCodeList.push(code); // Add to the list of alerted QR codes
+                        }
+                    } else {
+                        // Mark the item as returned and update the table
                         scannedQRCodeList.push(code);
-                        matchedRow.cells[1].textContent = 'Returned';
+                        statusCell.textContent = 'Returned';
                         scannedCount++;
                         $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
 
@@ -506,15 +525,17 @@ function returnItem(id) {
 
                         // Highlight the row for this QR code
                         highlightRow(code);
-                    } else {
-                        resultText.textContent = 'Invalid QR Code: Not in list.';
                     }
+                } else {
+                    resultText.textContent = 'Invalid QR Code: Not in list.';
                 }
-            } else {
-                resultText.textContent = 'Scanning for QR code...';
             }
-        }, 300); // scan every 300ms
-    }
+        } else {
+            resultText.textContent = 'Scanning for QR code...';
+        }
+    }, 300); // scan every 300ms
+}
+
 
 
     function stopScanning() {
