@@ -387,41 +387,55 @@
         }
     }
 
-    function returnItem(id) {
-        $('#qr-modal').removeClass('hidden');
-        $('#borrowedItemsTable button').prop('disabled', true);
-        $('#qr-modal').data('item-id', id);
-        $('#result').text('Scanning for QR code...');
-        scannedQRCodeList = [];
-        scannedCount = 0;
-        document.getElementById('approveButton').disabled = true;
-        document.getElementById('undoButton').disabled = true;
+// Function to populate the table in the QR modal
+function returnItem(id) {
+    $('#qr-modal').removeClass('hidden');
+    $('#borrowedItemsTable button').prop('disabled', true);
+    $('#qr-modal').data('item-id', id);
+    $('#result').text('Scanning for QR code...');
+    scannedQRCodeList = [];
+    scannedCount = 0;
+    document.getElementById('approveButton').disabled = true;
+    document.getElementById('undoButton').disabled = true;
 
-        $.ajax({
-            url: '/admin/borrowed-items/list/' + id,
-            method: 'GET',
-            success: function(response) {
-                const tableBody = $('#codeTable tbody');
-                tableBody.empty();
-                response.borrowedItems.forEach(item => {
-                    const row = `<tr>
-                        <td>${item.qr_code}</td>
-                        <td>${item.status}</td>
-                    </tr>`;
-                    tableBody.append(row);
-                });
+    $.ajax({
+        url: '/admin/borrowed-items/list/' + id,
+        method: 'GET',
+        success: function(response) {
+            const tableBody = $('#codeTable tbody');
+            tableBody.empty();
+            
+            // Iterate over the borrowed items and populate the table
+            response.borrowedItems.forEach(item => {
+                let statusText = item.status; // Default status from the database
+                let rowStyle = ''; // Default row style
 
-                totalRequestQuantity = response.borrowedItems.length;
-                $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
+                // Check if the item has been returned and display 'Returned' in the table instead of 'Available'
+                if (item.status === 'Available') {
+                    statusText = 'Returned'; // Change display text to 'Returned'
+                    rowStyle = 'background-color: #90ee90; color: #000;'; // Inline style for highlighting (light green background)
+                }
 
-                openQRScanner();
-            },
-            error: function(err) {
-                console.error('Error fetching borrowed items:', err);
-                Swal.fire('Error!', 'Unable to load borrowed items.', 'error');
-            }
-        });
-    }
+                const row = `<tr style="${rowStyle}">
+                    <td>${item.qr_code}</td>
+                    <td>${statusText}</td> <!-- Show 'Returned' instead of 'Available' -->
+                </tr>`;
+                tableBody.append(row);
+            });
+
+            totalRequestQuantity = response.borrowedItems.length;
+            $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
+
+            openQRScanner();
+        },
+        error: function(err) {
+            console.error('Error fetching borrowed items:', err);
+            Swal.fire('Error!', 'Unable to load borrowed items.', 'error');
+        }
+    });
+}
+
+
 
     function openQRScanner() {
         const video = document.getElementById('video');
@@ -593,18 +607,18 @@
                     url: '/admin/return-items/mark/' + itemId,
                     type: 'POST',
                     data: {
-                        _token: $('meta[name="csrf-token"]').attr('content')
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        qr_codes: scannedQRCodeList // Send the list of scanned QR codes
                     },
                     success: function(response) {
-                        Swal.fire('Returned!', 'The item has been returned.', 'success')
+                        Swal.fire('Returned!', 'The items have been returned.', 'success')
                             .then(() => {
-                                // Only close the modal after the success message is shown
                                 closeQRScanner();
-                                location.reload();
+                                location.reload(); // Reload the page to reflect changes
                             });
                     },
-                    error: function() {
-                        Swal.fire('Error!', 'Something went wrong.', 'error');
+                    error: function(err) {
+                        Swal.fire('Error!', err.responseJSON.message, 'error');
                     }
                 });
             }

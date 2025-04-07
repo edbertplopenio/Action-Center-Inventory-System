@@ -28,32 +28,49 @@ public function index()
         // Find the borrowed item by ID
         $borrowedItem = BorrowedItem::findOrFail($id);
     
-        // Get the scanned QR code from the request
-        $scannedQRCode = $request->input('qr_code'); // Get the scanned QR code
+        // Get the scanned QR codes from the request
+        $scannedQRCodes = $request->input('qr_codes'); // This should be an array of QR codes
     
-        // Find the individual item that matches the scanned QR code
-        $individualItem = $borrowedItem->individualItems()->where('qr_code', $scannedQRCode)->first();
-    
-        if ($individualItem) {
-            // Mark only the scanned individual item as 'Available'
-            $individualItem->status = 'Available';
-            $individualItem->save();
-    
-            // Update the borrowed item status to 'Returned'
-            $borrowedItem->status = 'Returned';
-            $borrowedItem->return_date = now();  // Set the return date to the current timestamp
-            $borrowedItem->save();
-    
-            // Add the borrowed quantity back to the item stock
-            $item = $borrowedItem->item;
-            $item->quantity += 1;
-            $item->save();
-    
-            return response()->json(['message' => 'Item marked as returned and stock updated!'], 200);
-        } else {
-            return response()->json(['message' => 'Invalid QR code.'], 400);
+        if (!is_array($scannedQRCodes)) {
+            return response()->json(['message' => 'Invalid or missing QR codes.'], 400);
         }
+    
+        $returnedItems = [];
+        $totalItemsToReturn = $borrowedItem->quantity_borrowed; // Total items originally borrowed
+    
+        foreach ($scannedQRCodes as $scannedQRCode) {
+            // Find the individual item that matches the scanned QR code
+            $individualItem = $borrowedItem->individualItems()->where('qr_code', $scannedQRCode)->first();
+    
+            if ($individualItem) {
+                // Mark the individual item as 'Available'
+                $individualItem->status = 'Available';
+                $individualItem->save();
+    
+                // Add to the returned items list
+                $returnedItems[] = $individualItem;
+            } else {
+                // If an invalid QR code is found, return an error
+                return response()->json(['message' => "Invalid QR code: $scannedQRCode."], 400);
+            }
+        }
+    
+        // Only update the status of the borrowed item if all items have been returned
+        if (count($returnedItems) === $totalItemsToReturn) {
+            $borrowedItem->status = 'Returned';
+            $borrowedItem->return_date = now(); // Set the return date to the current timestamp
+            $borrowedItem->save();
+        }
+    
+        // Update the item stock
+        $item = $borrowedItem->item;
+        $item->quantity += count($returnedItems);
+        $item->save();
+    
+        return response()->json(['message' => 'Items marked as returned and stock updated!', 'returnedItems' => $returnedItems], 200);
     }
+    
+    
     
 
 
