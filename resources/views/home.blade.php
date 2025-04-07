@@ -132,22 +132,36 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 w-full">
 
 
-
-<div class="bg-white p-4 shadow-lg rounded-lg h-[32vh] w-full relative">
+ <!-- Equipment Usage -->
+ <div class="bg-white p-4 shadow-lg rounded-lg h-[32vh] w-full relative">
     <h2 class="text-lg font-semibold text-gray-800 mb-2">Equipment Usage Rate</h2>
 
     <!-- Drop-down list with centered text -->
     <div class="absolute top-4 right-4">
-    <label for="usageRateSelect" class="text-sm text-gray-600">Select Equipment:</label>
-    <select id="usageRateSelect" class="mt-2 block w-55 h-7 p-2 border rounded-md bg-gray-50 text-gray-800 text-center">
-        @foreach($equipment as $item)
-            <option value="{{ $item->id }}">{{ $item->name }}</option>
-        @endforeach
-    </select>
-</div>
+        <label for="usageRateSelect" class="text-sm text-gray-600">Select Equipment:</label>
+        <select id="usageRateSelect" class="mt-2 block w-full max-w-md h-10 p-2 border rounded-md bg-gray-50 text-gray-800">
+            @foreach($equipment as $item)
+                <option value="{{ $item->id }}">{{ $item->name }}</option>
+            @endforeach
+        </select>
+    </div>
 
     <canvas id="usageRateChart" style="width: 80%; height: 70%;"></canvas>
 </div>
+
+<style>
+    #usageRateSelect {
+        width: 100%; /* Make the select element span the available width */
+        max-width: 200px; /* Set a max-width if needed */
+        text-align: left; /* Align the text inside the select element */
+    }
+    .absolute {
+        right: 0; /* Ensure it is aligned to the right of the parent container */
+        top: 4%; /* You can adjust the top percentage as needed */
+    }
+</style>
+
+
 
 
 
