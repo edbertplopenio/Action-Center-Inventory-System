@@ -248,27 +248,28 @@
                         <td>{{ $borrowedItem->quantity_borrowed }}</td>
                         <td>{{ $borrowedItem->borrow_date->format('Y-m-d') }}</td>
                         <td>{{ $borrowedItem->due_date->format('Y-m-d') }}</td>
+
+                        <!-- Display return dates and corresponding items -->
                         <td>
                             @php
-                            // Collect unique return dates for this borrowed item
-                            $returnDates = $borrowedItem->individualItems->pluck('return_date')->filter()->unique()->sort()->values();
+                            // Group items by return date
+                            $groupedByReturnDate = $borrowedItem->individualItems->groupBy('return_date');
                             @endphp
 
-                            @if ($returnDates->count() == 1)
-                            <!-- If all return dates are the same, display only that date -->
-                            {{ \Carbon\Carbon::parse($returnDates->first())->format('Y-m-d') }}
-                            @else
-                            <!-- If return dates are different, display all return dates -->
-                            @foreach($returnDates as $date)
-                            {{ \Carbon\Carbon::parse($date)->format('Y-m-d') }}<br>
+                            @foreach($groupedByReturnDate as $date => $items)
+                            @if($date)
+                            <strong>{{ \Carbon\Carbon::parse($date)->format('Y-m-d') }}</strong><br>
+                            @foreach($items as $item)
+                            {{ $item->qr_code }}<br> <!-- Display QR Code for each item returned on that date -->
                             @endforeach
                             @endif
+                            @endforeach
                         </td> <!-- Display Return Date(s) -->
 
                         <td>
                             <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-                    {{ $borrowedItem->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-                    {{ $borrowedItem->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}">
+                {{ $borrowedItem->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                {{ $borrowedItem->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}">
                                 {{ $borrowedItem->status }}
                             </span>
                         </td>
@@ -287,6 +288,7 @@
                     @endforeach
                 </tbody>
             </table>
+
 
         </div>
 
