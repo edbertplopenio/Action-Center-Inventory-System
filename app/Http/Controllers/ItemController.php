@@ -55,10 +55,13 @@ class ItemController extends Controller
 
         if ($item) {
             // If item exists, update quantity and dates
-            $item->quantity += $request->quantity; 
+            $item->quantity += $request->quantity;  // Add the new quantity
             $item->arrival_date = $request->arrival_date; 
             $item->date_purchased = $request->date_purchased;
             $item->save();
+
+            // Generate individual items for the new quantity added
+            $this->generateIndividualItems($item, $request->quantity);
         } else {
             // Create new item
             $item = new Item();
@@ -119,20 +122,32 @@ class ItemController extends Controller
             $item->save();
 
             // Generate individual items based on quantity
-            for ($i = 1; $i <= $request->quantity; $i++) {
-                // Generate the item code based on the quantity
-                $individualItemCode = $itemCode . '-' . str_pad($i, 2, '0', STR_PAD_LEFT);
-
-                // Create individual items
-                $individualItem = new IndividualItem();
-                $individualItem->item_id = $item->id;
-                $individualItem->qr_code = $individualItemCode;  // Store the QR code string
-                $individualItem->status = $item->status;
-                $individualItem->save();
-            }
+            $this->generateIndividualItems($item, $request->quantity);
         }
 
-        return redirect()->back()->with('success', 'Item added successfully!');
+        return redirect()->back()->with('success', 'Item added/updated successfully!');
+    }
+
+    /**
+     * Generate individual items for the added quantity.
+     */
+    private function generateIndividualItems($item, $quantity)
+    {
+        // Generate individual items based on the added quantity
+        $itemCode = $item->item_code;
+        $currentQuantity = $item->quantity;
+
+        // Generate new individual item codes for the new quantity
+        for ($i = $currentQuantity - $quantity + 1; $i <= $currentQuantity; $i++) {
+            $individualItemCode = $itemCode . '-' . str_pad($i, 2, '0', STR_PAD_LEFT);
+
+            // Create individual item entry
+            $individualItem = new IndividualItem();
+            $individualItem->item_id = $item->id;
+            $individualItem->qr_code = $individualItemCode;  // Store the QR code string
+            $individualItem->status = $item->status;
+            $individualItem->save();
+        }
     }
 
     /**

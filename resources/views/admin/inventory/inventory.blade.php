@@ -9,6 +9,8 @@
     <title>Inventory System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/phosphor-icons@1.4.2/dist/phosphor-icons.css">
+
     <style>
 
         html, body {
@@ -737,6 +739,8 @@ table.dataTable tbody td {
 
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+<script src="https://unpkg.com/phosphor-icons@1.4.2/dist/index.js"></script>
+
 
 <script>
     $(document).ready(function() {
@@ -846,35 +850,69 @@ table.dataTable tbody td {
 <!-- Add item JavaScript for Modal Control -->
 <script>
 $(document).ready(function () {
+    // Show the Add Item Modal when the button is clicked
     $("#add-item-btn").click(function () {
         $("#addItemModal").removeClass("hidden");
     });
 
+    // Validate quantity to ensure it is not 0 or empty
+    $('#quantity').on('input', function () {
+        var quantity = $(this).val();
+        if (quantity == 0 || quantity == "") {
+            $("#saveButton").prop('disabled', true); // Disable save button if quantity is 0 or empty
+        } else {
+            $("#saveButton").prop('disabled', false); // Enable save button
+        }
+    });
+
+    // Storage location dropdown logic
+    $('#storage_location').on('change', function () {
+        if ($(this).val() == 'Other') {
+            $('#other_storage_location').removeClass('hidden'); // Show input if "Other" is selected
+        } else {
+            $('#other_storage_location').addClass('hidden'); // Hide input if not "Other"
+        }
+    });
+
+    // Ensure no future dates can be selected for Arrival Date and Date Purchased
+    const today = new Date().toISOString().split('T')[0];
+    $('#arrival_date, #date_purchased').attr('max', today);
+
     // On form submission, submit the data to save both items and individual items
     $("#itemForm").submit(function (e) {
-        e.preventDefault(); // Prevent default form submission
+        e.preventDefault();  // Prevent default form submission
 
-        var formData = new FormData(this); // Capture all form data
+        // Grabs the form data and explicitly append required fields
+        var formData = new FormData(this);  // Grabs the form data
+        
+        // Explicitly append required fields if they aren't automatically added
+        formData.append('name', $('#name').val());  // Add 'name' field
+        formData.append('unit', $('#unit').val());  // Add 'unit' field
+        formData.append('category', $('#category').val());  // Add 'category' field
+
+        // Optional: Log the FormData to check what is being sent
+        console.log(formData);  // This will print the form data in the browser console
+
+        // Proceed with the AJAX request to submit the form data
         $.ajax({
-            url: "{{ route('items.store') }}",  // Change this URL to the correct route
+            url: "{{ route('items.store') }}",  // Your URL for item saving
             method: 'POST',
             data: formData,
-            processData: false,
-            contentType: false,
+            processData: false,  // Don't process the data (since it's FormData)
+            contentType: false,  // Set content type to false to let FormData handle it
             success: function(response) {
                 alert('Item saved successfully!');
                 $("#addItemModal").addClass("hidden");
                 location.reload();  // Reload the page to see the new items
             },
             error: function(xhr, status, error) {
+                console.log(xhr.responseJSON);  // Log the error to the console for debugging
                 alert('There was an error saving the item.');
             }
         });
     });
-});
 
-
-$(document).ready(function () {
+    // Search functionality for existing items
     $('#search-item').on('input', function () {
         var itemName = $(this).val();
         if (itemName.length > 0) {
@@ -927,10 +965,14 @@ $(document).ready(function () {
             $('#status').val('Available').prop('disabled', false);
         }
     });
+
+    // Cancel button functionality for Add Item modal
+    $("#cancelModal").click(function () {
+        $("#addItemModal").addClass("hidden");  // Hide the modal when cancel is clicked
+    });
 });
-
-
 </script>
+
 
 <SCRIPT>
     //ARCHIVES
@@ -1030,6 +1072,9 @@ $(document).ready(function () {
 });
 </script>
 
+
+html
+Copy
 <!-- Modal Overlay for Adding Item -->
 <div id="addItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
     <div class="relative z-10 flex items-center justify-center">
@@ -1069,17 +1114,27 @@ $(document).ready(function () {
 
                             <div>
                                 <label for="unit" class="block text-xs font-medium text-gray-900">Unit</label>
-                                <input type="text" id="unit" name="unit" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                <select id="unit" name="unit" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                    <option value="Piece">Piece</option>
+                                    <option value="Set">Set</option>
+                                    <option value="Box">Box</option>
+                                </select>
                             </div>
 
                             <div>
                                 <label for="description" class="block text-xs font-medium text-gray-900">Description</label>
-                                <textarea id="description" name="description" rows="3" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs"></textarea>
+                                <textarea id="description" name="description" rows="3" maxlength="50" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs"></textarea>
                             </div>
 
                             <div>
                                 <label for="storage_location" class="block text-xs font-medium text-gray-900">Storage Location</label>
-                                <input type="text" id="storage_location" name="storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                <select id="storage_location" name="storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                    <option value="Shelf A">Shelf A</option>
+                                    <option value="Shelf B">Shelf B</option>
+                                    <option value="Shelf C">Shelf C</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <input type="text" id="other_storage_location" name="other_storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs hidden" maxlength="12" placeholder="Type other location here">
                             </div>
 
                             <div>
@@ -1096,7 +1151,13 @@ $(document).ready(function () {
                                 <label for="status" class="block text-xs font-medium text-gray-900">Status</label>
                                 <select id="status" name="status" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
                                     <option value="Available">Available</option>
-                                    <option value="Unavailable">Unavailable</option>
+                                    <option value="Borrowed">Borrowed</option>
+                                    <option value="Reserved">Reserved</option>
+                                    <option value="Out of Stock">Out of Stock</option>
+                                    <option value="Needs Repair">Needs Repair</option>
+                                    <option value="Damaged">Damaged</option>
+                                    <option value="Lost">Lost</option>
+                                    <option value="Retired">Retired</option>
                                 </select>
                             </div>
 
@@ -1110,7 +1171,7 @@ $(document).ready(function () {
                         <button type="button" id="cancelModal" class="text-xs font-semibold text-gray-900 px-4 py-2 bg-gray-400 rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
                             Cancel
                         </button>
-                            <button type="submit" class="rounded-md bg-green-400 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-green-600 hover:text-white">
+                            <button type="submit" id="saveButton" class="rounded-md bg-green-400 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-green-600 hover:text-white">
                                 Save
                             </button>
                         </div>
