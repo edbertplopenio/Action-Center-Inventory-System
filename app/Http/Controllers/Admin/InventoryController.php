@@ -1,15 +1,15 @@
 <?php
 
-// app/Http/Controllers/InventoryController.php
+namespace App\Http\Controllers\Admin;
 
-namespace App\Http\Controllers;
-
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 class InventoryController extends Controller
 {
     public function index()
     {
-        return view('inventory.index'); // Make sure the 'inventory.index' view exists
+        // Return the admin inventory view
+        return view('admin.inventory.index');  // Path to the Admin Inventory view
     }
 }

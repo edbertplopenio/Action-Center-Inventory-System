@@ -6,9 +6,15 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Borrower\InventoryController as BorrowerInventoryController;  // Import Borrower Inventory Controller
 use App\Http\Controllers\Admin\InventoryController as AdminInventoryController;  // Import Admin Inventory Controller
 use App\Http\Controllers\Borrower\BorrowEquipmentController; 
+use App\Http\Controllers\Borrower\BorrowedEquipmentController;
+use App\Http\Controllers\Borrower\InventoryController;
 use App\Http\Controllers\Admin\RecordsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Borrower\ProfileController;  // Import the ProfileController
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\InventoryRequestController;
+use App\Http\Controllers\ItemController;
+
 
 
 // ===================
@@ -106,15 +112,74 @@ Route::post('/admin/users/activate/{id}', [UsersController::class, 'activate'])-
 
 // Show the profile edit page
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
-
 // Update the profile information
 Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-
-
-
 // Profile edit route
 Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-
 // Profile update route
 Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
+
+
+Route::get('/borrower/inventory', [InventoryController::class, 'index'])->name('borrower.inventory.index');
+
+// Borrowing Request
+Route::get('/borrowing-request', [InventoryRequestController::class, 'index'])->name('admin.borrowing-request.index');
+
+use App\Http\Controllers\Borrower\BorrowedItemsController;
+
+// Borrowed Equipment Routes (Borrowers)
+Route::prefix('borrower')->middleware(['auth'])->group(function () {
+    Route::get('/borrow-equipment', [BorrowedItemsController::class, 'index'])->name('borrower.borrow-equipment.index');
+    Route::get('/borrow-equipment/create', [BorrowedItemsController::class, 'create'])->name('borrower.borrow-equipment.create');
+    Route::post('/borrow-equipment', [BorrowedItemsController::class, 'store'])->name('borrower.borrow-equipment.store');
+    Route::get('/borrow-equipment/{borrowedItem}/edit', [BorrowedItemsController::class, 'edit'])->name('borrower.borrow-equipment.edit');
+    Route::put('/borrow-equipment/{borrowedItem}', [BorrowedItemsController::class, 'update'])->name('borrower.borrow-equipment.update');
+    Route::delete('/borrow-equipment/{borrowedItem}', [BorrowedItemsController::class, 'destroy'])->name('borrower.borrow-equipment.destroy');
+});
+
+
+
+
+
+// Borrowed Items Routes
+Route::middleware('auth')->group(function() {
+    // Store a new borrow request
+    Route::post('/borrow-item', [BorrowEquipmentController::class, 'store'])->name('borrow.item');
+
+    // Get borrowed items for the logged-in user
+    Route::get('/borrowed-items', [BorrowEquipmentController::class, 'index'])->name('borrowed.items');
+});
+
+
+
+// routes/web.php
+Route::post('/admin/inventory-requests/update-status/{id}', [InventoryRequestController::class, 'updateStatus'])->name('admin.updateStatus');
+
+
+
+
+// routes/web.php
+
+use App\Http\Controllers\Admin\ReturnItemsController;
+
+// Admin Returning Items Routes
+Route::prefix('admin')->middleware(['auth'])->group(function () {
+    // Show list of borrowed items to be returned
+    Route::get('/return-items', [ReturnItemsController::class, 'index'])->name('admin.return-items.index');
+
+    // Mark an item as returned
+    Route::post('/return-items/mark/{id}', [ReturnItemsController::class, 'markAsReturned'])->name('admin.return-items.mark');
+});
+
+
+Route::get('/admin/borrowing-request', [InventoryRequestController::class, 'index'])->name('admin.borrowing-request.index');
+
+
+Route::get('/admin/get-item-qr-codes/{itemId}', [InventoryRequestController::class, 'getItemQRCodes']);
+
+Route::get('/home', [ItemController::class, 'index'])->name('home');
+
+Route::get('/api/items', [ItemController::class, 'getItems']);
+Route::get('/api/usage-rate/{itemId}', [ItemController::class, 'getUsageRateData']);
+
 

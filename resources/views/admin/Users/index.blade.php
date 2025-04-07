@@ -245,52 +245,47 @@
 
 
         <div style="height: 625px; overflow-y: auto;"> <!-- Added overflow-y-auto -->
-            <table id="userTable" class="display" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Role</th>
-                        <th>Department</th>
-                        <th>Cellphone Number</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($users as $user)
-                    <tr class="user-row cursor-pointer"
-                        data-id="{{ $user->id }}"
-                        data-first_name="{{ $user->first_name }}"
-                        data-last_name="{{ $user->last_name }}"
-                        data-email="{{ $user->email }}"
-                        data-role="{{ $user->user_role }}"
-                        data-department="{{ $user->department ?? 'N/A' }}"
-                        data-contact_number="{{ $user->contact_number ?? 'N/A' }}"
-                        data-profile_picture="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : '' }}"
-                        data-created_at="{{ $user->created_at }}"
-                        data-last_login="{{ $user->last_login ?? 'N/A' }}"
-                        data-created_by="{{ $user->created_by ?? 'N/A' }}"
-                        data-updated_at="{{ $user->updated_at }}">
+    <table id="userTable" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Department</th>
+                <th>Action</th> <!-- Removed Cellphone Number column -->
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($users as $user)
+            <tr class="user-row cursor-pointer"
+                data-id="{{ $user->id }}"
+                data-first_name="{{ $user->first_name }}"
+                data-last_name="{{ $user->last_name }}"
+                data-email="{{ $user->email }}"
+                data-role="{{ $user->user_role }}"
+                data-department="{{ $user->department ?? 'N/A' }}"
+                data-profile_picture="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : '' }}"
+                data-created_at="{{ $user->created_at }}"
+                data-last_login="{{ $user->last_login ?? 'N/A' }}"
+                data-created_by="{{ $user->created_by ?? 'N/A' }}"
+                data-updated_at="{{ $user->updated_at }}">
 
-                        <td>{{ $user->first_name }} {{ $user->last_name }}</td>
-                        <td>{{ $user->email }}</td>
-                        <td>{{ $user->user_role }}</td>
-                        <td>{{ $user->department ?? 'N/A' }}</td>
-                        <td>{{ $user->contact_number ?? 'N/A' }}</td>
-                        <td>
-                            <button class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24"
-                                data-id="{{ $user->id }}">Edit</button>
-                                <button class="deactivate-btn px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24"
-    data-id="{{ $user->id }}">Deactivate</button>
+                <td>{{ $user->first_name }} {{ $user->last_name }}</td>
+                <td>{{ $user->email }}</td>
+                <td>{{ $user->user_role }}</td>
+                <td>{{ $user->department ?? 'N/A' }}</td>
+                <td>
+                    <button class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24"
+                        data-id="{{ $user->id }}">Edit</button>
+                    <button class="deactivate-btn px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24"
+                        data-id="{{ $user->id }}">Deactivate</button>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
 
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-
-
-            </table>
-        </div>
     </div>
 </div>
 
@@ -355,13 +350,6 @@
                                         </div>
                                     </div>
 
-
-                                    <!-- Cellphone Number -->
-                                    <div class="sm:col-span-1">
-                                        <label for="edit_contact_number" class="block text-xs font-medium text-gray-900">Cellphone Number</label>
-                                        <input type="text" name="contact_number" id="edit_contact_number" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter cellphone number">
-                                    </div>
-
                                     <!-- Password -->
                                     <div class="sm:col-span-1">
                                         <label for="edit_password" class="block text-xs font-medium text-gray-900"> New Password</label>
@@ -399,7 +387,6 @@
                                         </div>
                                     </div>
 
-
                                 </div>
                             </div>
 
@@ -415,6 +402,7 @@
         </div>
     </div>
 </div>
+
 
 
 <!-- Edit JS -->
@@ -433,7 +421,6 @@
         const editEmail = document.getElementById("edit_email");
         const editRole = document.getElementById("edit_role");
         const editDepartment = document.getElementById("edit_department");
-        const editContactNumber = document.getElementById("edit_contact_number");
         const editPassword = document.getElementById("edit_password");
         const editPasswordConfirmation = document.getElementById("edit_password_confirmation");
 
@@ -464,7 +451,6 @@
                 editEmail.value = row.dataset.email || "";
                 editRole.value = row.dataset.role || "Borrower";
                 editDepartment.value = row.dataset.department || "";
-                editContactNumber.value = row.dataset.contact_number || "";
 
                 // Reset password fields
                 editPassword.value = "";
@@ -495,7 +481,6 @@
                     email: editEmail.value,
                     role: editRole.value,
                     department: editDepartment.value,
-                    contact_number: editContactNumber.value,
                     profile_picture: profilePicture,
                     password: "",
                 };
@@ -560,7 +545,6 @@
             formData.append("email", editEmail.value.trim());
             formData.append("user_role", editRole.value);
             formData.append("department", editDepartment.value.trim());
-            formData.append("contact_number", editContactNumber.value.trim());
 
             // Include password fields only if a new password is entered
             if (editPassword.value.length > 0) {
@@ -575,7 +559,7 @@
 
             // **Check if data has changed**
             let isChanged = photoChanged; // If a new photo is uploaded, mark as changed
-            const fieldsToCheck = ["first_name", "last_name", "email", "role", "department", "contact_number", "password"];
+            const fieldsToCheck = ["first_name", "last_name", "email", "role", "department", "password"];
 
             fieldsToCheck.forEach((field) => {
                 const element = document.getElementById(`edit_${field}`);
@@ -644,6 +628,7 @@
         });
     });
 </script>
+
 
 
 
@@ -935,10 +920,11 @@
                                     <p class="text-gray-600 show-department"></p>
                                 </div>
 
-                                <div>
+                                <!-- Removed Contact Number Section -->
+                                <!-- <div>
                                     <p class="font-semibold text-gray-800">Contact Number:</p>
                                     <p class="text-gray-600 show-contact-number"></p>
-                                </div>
+                                </div> -->
 
                                 <div>
                                     <p class="font-semibold text-gray-800">Created At:</p>
@@ -975,6 +961,7 @@
 
 
 
+
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         console.log("✅ Script Loaded: Event listeners added");
@@ -988,7 +975,8 @@
             document.querySelector('.show-email').textContent = userData.email;
             document.querySelector('.show-role').textContent = userData.role;
             document.querySelector('.show-department').textContent = userData.department;
-            document.querySelector('.show-contact-number').textContent = userData.contactNumber;
+            // Removed contact number line
+            // document.querySelector('.show-contact-number').textContent = userData.contactNumber; 
             document.querySelector('.show-created-at').textContent = userData.createdAt;
             document.querySelector('.show-last-login').textContent = userData.lastLogin;
             document.querySelector('.show-created-by').textContent = userData.createdBy;
@@ -1025,7 +1013,8 @@
                     email: this.dataset.email,
                     role: this.dataset.role,
                     department: this.dataset.department,
-                    contactNumber: this.dataset.contact_number,
+                    // Removed contact number line
+                    // contactNumber: this.dataset.contact_number,
                     createdAt: this.dataset.created_at,
                     lastLogin: this.dataset.last_login,
                     createdBy: this.dataset.created_by,
@@ -1045,6 +1034,7 @@
 
     });
 </script>
+
 
 
 
@@ -1146,18 +1136,17 @@
                                         </select>
                                     </div>
 
-
                                     <!-- Department -->
                                     <div class="sm:col-span-1">
                                         <label for="department" class="block text-xs font-medium text-gray-900">Department</label>
                                         <input type="text" name="department" id="department" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter department">
                                     </div>
 
-                                    <!-- Cellphone Number -->
-                                    <div class="sm:col-span-1">
+                                    <!-- Removed Cellphone Number Section -->
+                                    <!-- <div class="sm:col-span-1">
                                         <label for="contact_number" class="block text-xs font-medium text-gray-900">Cellphone Number</label>
                                         <input type="text" name="contact_number" id="contact_number" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter cellphone number">
-                                    </div>
+                                    </div> -->
 
                                     <!-- Password -->
                                     <div class="sm:col-span-1">
@@ -1173,7 +1162,6 @@
                                 </div>
                             </div>
 
-
                             <!-- Action Buttons -->
                             <div class="mt-6 flex items-center justify-end gap-x-6">
                                 <button type="button" class="text-xs font-semibold text-gray-900" id="closeUserModal">Cancel</button>
@@ -1186,6 +1174,7 @@
         </div>
     </div>
 </div>
+
 
 
 
@@ -1231,8 +1220,8 @@
             let formData = new FormData(form);
             let errorMessages = [];
 
-            // Validate required fields
-            const requiredFields = ["first_name", "last_name", "email", "user_role", "department", "contact_number", "password", "password_confirmation"];
+            // Validate required fields (removed contact_number)
+            const requiredFields = ["first_name", "last_name", "email", "user_role", "department", "password", "password_confirmation"];
             requiredFields.forEach(field => {
                 const input = document.getElementById(field);
                 if (input.value.trim() === "") {
@@ -1287,7 +1276,8 @@
                             result.user.email,
                             result.user.user_role,
                             result.user.department || 'N/A',
-                            result.user.contact_number || 'N/A',
+                            // Removed contact_number
+                            // result.user.contact_number || 'N/A',
                             `<button class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24">Edit</button>
                              <button class="px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24">Deactivate</button>`
                         ]).draw(false);
@@ -1315,6 +1305,7 @@
 
     });
 </script>
+
 
 
 

@@ -47,6 +47,8 @@
 
     <link rel="stylesheet" href="https://unpkg.com/phosphor-icons@latest/dist/phosphor-icons.min.css">
 
+    <link href="https://unpkg.com/phosphor-icons" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
 
 
     <!-- Custom Styles (Ensures Sidebar Does Not Overlap Content) -->
@@ -125,94 +127,119 @@
 
 
 
-<!-- Navigation Menu -->
-<div class="flex-1 mt-5">
-    <ul class="space-y-2">
-        <!-- Dashboard: Visible only to Admin -->
-        @if(Auth::user()->user_role == 'Admin')
-        <li class="{{ Request::routeIs('home') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
-            <a href="{{ route('home') }}" class="flex items-center gap-3 p-3 rounded-xl">
-                <i class="ph-bold ph-house-simple text-xl"></i>
-                <span class="text-sm">Dashboard</span>
-            </a>
-        </li>
-        @endif
+            <!-- Navigation Menu -->
+            <div class="flex-1 mt-5">
+                <ul class="space-y-2">
+                    <!-- Dashboard: Visible only to Admin -->
+                    @if(Auth::user()->user_role == 'Admin')
+                    <li class="{{ Request::routeIs('home') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
+                        <a href="{{ route('home') }}" class="flex items-center gap-3 p-3 rounded-xl">
+                            <i class="ph-bold ph-house-simple text-xl"></i>
+                            <span class="text-sm">Dashboard</span>
+                        </a>
+                    </li>
+                    @endif
 
-        <!-- Admin Inventory Management: Visible only to Admin -->
-        @if(Auth::user()->user_role == 'Admin')
-        <li class="{{ Request::routeIs('admin.inventory.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
-            <a href="{{ route('admin.inventory.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
-                <i class="ph-bold ph-archive text-xl"></i>
-                <span class="text-sm">Inventory Management</span>
-            </a>
-        </li>
+                    <!-- Admin Inventory Management: Visible only to Admin -->
+                    @if(Auth::user()->user_role == 'Admin')
+                    <li class="{{ Request::routeIs('admin.inventory.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
+                        <a href="{{ route('admin.inventory.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
+                            <i class="ph-bold ph-archive text-xl"></i>
+                            <span class="text-sm">Inventory Management</span>
+                        </a>
+                    </li>
 
-        <!-- Records: Visible only to Admin -->
-        <li class="{{ Request::routeIs('records.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
-            <a href="{{ route('records.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
-                <i class="ph-bold ph-file-text text-xl"></i>
-                <span class="text-sm">Records</span>
-            </a>
-        </li>
-        @endif
+                    <!-- Records: Visible only to Admin -->
+                    <li class="{{ Request::routeIs('records.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
+                        <a href="{{ route('records.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
+                            <i class="ph-bold ph-file-text text-xl"></i>
+                            <span class="text-sm">Records</span>
+                        </a>
+                    </li>
 
-        <!-- Borrower Inventory Management: Visible only to Borrower -->
-        @if(Auth::user()->user_role == 'Borrower')
-        <li class="{{ Request::routeIs('borrower.inventory.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
-            <a href="{{ route('borrower.inventory.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
-                <i class="ph-bold ph-archive text-xl"></i>
-                <span class="text-sm">Equipment Inventory</span>
-            </a>
-        </li>
+                    @endif
 
-        <!-- Borrow Equipment: Visible only to Borrower -->
-        <li class="{{ Request::routeIs('borrower.borrow-equipment.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
-            <a href="{{ route('borrower.borrow-equipment.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
-                <i class="ph-bold ph-file-text text-xl"></i> <!-- Borrow Equipment Icon -->
-                <span class="text-sm">Borrow Equipment</span>
-            </a>
-        </li>
-        @endif
-    </ul>
-</div>
+                    <!-- Borrower Inventory Management: Visible only to Borrower -->
+                    @if(Auth::user()->user_role == 'Borrower')
+                    <li class="{{ Request::routeIs('borrower.inventory.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
+                        <a href="{{ route('borrower.inventory.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
+                            <i class="ph-bold ph-archive text-xl"></i>
+                            <span class="text-sm">Equipment Inventory</span>
+                        </a>
+                    </li>
+
+                    <!-- Borrow Equipment: Visible only to Borrower -->
+                    <li class="{{ Request::routeIs('borrower.borrow-equipment.index') ? 'bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 text-white rounded-xl' : 'text-gray-600' }}">
+                        <a href="{{ route('borrower.borrow-equipment.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
+                            <i class="ph-bold ph-file-text text-xl"></i> <!-- Borrow Equipment Icon -->
+                            <span class="text-sm">Borrowed Equipment</span>
+                        </a>
+                    </li>
+
+                    @endif
+
+                    <!-- Borrowing Request: Visible only to Admin -->
+                    @if(Auth::user()->user_role == 'Admin')
+                    <li class="{{ Request::routeIs('admin.borrowing-request.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
+                        <a href="{{ route('admin.borrowing-request.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
+                            <i class="ph-bold ph-clipboard text-xl"></i>
+                            <span class="text-sm">Borrowing Request</span>
+                        </a>
+                    </li>
+
+
+                    <!-- Returning Items: Visible only to Admin -->
+                    <li class="{{ Request::routeIs('admin.return-items.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
+                        <a href="{{ route('admin.return-items.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
+                        <i class="ph-bold ph-arrow-u-down-left text-xl"></i> <!-- Example class name -->
+
+                            <span class="text-sm">Return Items</span>
+                        </a>
+                    </li>
+
+
+                    @endif
+                </ul>
+            </div>
+
 
 
 
             <!-- Account Management -->
             <div class="mt-auto">
-    <p class="text-sm font-medium text-gray-500 uppercase mb-3">Account</p>
-    <ul class="space-y-2">
-        <!-- Show 'Users Management' only for Admin -->
-        @if(Auth::user()->user_role == 'Admin')
-        <li class="{{ Request::routeIs('users.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
-            <a href="{{ route('users.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
-                <i class="ph-bold ph-users text-xl"></i>
-                <span class="text-sm">Users Management</span>
-            </a>
-        </li>
-        @endif
+                <p class="text-sm font-medium text-gray-500 uppercase mb-3">Account</p>
+                <ul class="space-y-2">
+                    <!-- Show 'Users Management' only for Admin -->
+                    @if(Auth::user()->user_role == 'Admin')
+                    <li class="{{ Request::routeIs('users.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
+                        <a href="{{ route('users.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
+                            <i class="ph-bold ph-users text-xl"></i>
+                            <span class="text-sm">Users Management</span>
+                        </a>
+                    </li>
+                    @endif
 
-        <!-- Show 'Profile' only for Borrowers -->
-        @if(Auth::user()->user_role == 'Borrower')
-        <li class="{{ Request::routeIs('profile.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
-            <a href="{{ route('profile.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
-                <i class="ph-bold ph-user text-xl"></i>
-                <span class="text-sm">Profile</span>
-            </a>
-        </li>
-        @endif
+                    <!-- Show 'Profile' only for Borrowers -->
+                    @if(Auth::user()->user_role == 'Borrower')
+                    <li class="{{ Request::routeIs('profile.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
+                        <a href="{{ route('profile.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
+                            <i class="ph-bold ph-user text-xl"></i>
+                            <span class="text-sm">Profile</span>
+                        </a>
+                    </li>
+                    @endif
 
-        <li>
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                @csrf
-            </form>
-            <button id="logout-btn" class="w-full flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-xl">
-                <i class="ph-bold ph-sign-out text-xl"></i>
-                <span class="text-sm">Logout</span>
-            </button>
-        </li>
-    </ul>
-</div>
+                    <li>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
+                        <button id="logout-btn" class="w-full flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-xl">
+                            <i class="ph-bold ph-sign-out text-xl"></i>
+                            <span class="text-sm">Logout</span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
 
 
         </div>
