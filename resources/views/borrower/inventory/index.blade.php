@@ -451,17 +451,33 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert("Item borrowed successfully!");
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Item borrowed successfully!',
+                    confirmButtonText: 'OK'
+                });
                 borrowModal.style.display = "none"; // Close modal
             } else {
-                alert(data.error || "Error borrowing item.");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops!',
+                    text: data.error || "Error borrowing item.",
+                    confirmButtonText: 'OK'
+                });
             }
         })
         .catch(error => {
             console.error("Error:", error);
-            alert("Something went wrong.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: 'Something went wrong.',
+                confirmButtonText: 'OK'
+            });
         });
 });
+
 
 
     });

@@ -231,9 +231,9 @@
                         <td>{{ $borrowed->item->category }}</td>
                         <td>{{ $borrowed->quantity_borrowed }}</td>
                         <td>{{ $borrowed->item->unit }}</td>
-                        <td>{{ $borrowed->borrow_date }}</td>
-                        <td>{{ $borrowed->due_date }}</td>
-                        <td>{{ $borrowed->return_date ?? 'Not Returned' }}</td>
+                        <td>{{ \Carbon\Carbon::parse($borrowed->borrow_date)->format('Y-m-d') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($borrowed->due_date)->format('Y-m-d') }}</td>
+                        <td>{{ $borrowed->return_date ? \Carbon\Carbon::parse($borrowed->return_date)->format('Y-m-d') : 'Not Returned' }}</td>
                         <td>
                             <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
                 {{ $borrowed->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
