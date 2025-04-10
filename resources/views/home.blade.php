@@ -4,6 +4,10 @@
 
 @section('content')
 
+@php
+    use Illuminate\Support\Js;
+@endphp
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -50,7 +54,7 @@
 
     <!-- Chart Section -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 w-full">
-        <!-- Most Borrowed Equipment -->
+        <!-- Most Borrowed Equipment (Blade-based) -->
         <div class="bg-white p-4 shadow-lg rounded-lg h-[35vh] w-full">
             <h2 class="text-lg font-semibold text-gray-800 mb-2">Most Borrowed Equipment</h2>
             <canvas id="mostBorrowedChart" style="width: 80%; height: 70%;"></canvas>
@@ -62,7 +66,7 @@
             <canvas id="lowStockChart" style="width: 80%; height: 70%;"></canvas>
         </div>
 
-        <!-- Real-time Equipment Quantity by Category -->
+        <!-- Equipment Quantity by Category -->
         <div class="bg-white p-4 shadow-lg rounded-lg h-[35vh] w-full">
             <h2 class="text-lg font-semibold text-gray-800 mb-2">Equipment Quantity by Category</h2>
             <canvas id="quantityByCategoryChart" style="width: 80%; height: 70%;"></canvas>
@@ -79,14 +83,18 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Real-time Most Borrowed Equipment
+        // Most Borrowed Equipment (Blade-based data)
+        const mostBorrowedLabels = {!! Js::from($mostBorrowed->pluck('item_name')) !!};
+        const mostBorrowedData = {!! Js::from($mostBorrowed->pluck('borrow_count')) !!};
+
+
         const mostBorrowedChart = new Chart(document.getElementById('mostBorrowedChart'), {
             type: 'bar',
             data: {
-                labels: [],
+                labels: mostBorrowedLabels,
                 datasets: [{
                     label: 'Borrow Count',
-                    data: [],
+                    data: mostBorrowedData,
                     backgroundColor: '#A78BFA',
                     borderColor: '#A78BFA',
                     borderWidth: 1
@@ -100,23 +108,6 @@
                 }
             }
         });
-
-        function loadMostBorrowedChart() {
-            fetch('/api/most-borrowed-equipment') // adjust this if using web.php instead
-                .then(response => response.json())
-                .then(data => {
-                    const labels = Object.keys(data);
-                    const values = Object.values(data);
-
-                    mostBorrowedChart.data.labels = labels.length ? labels : ['No Data'];
-                    mostBorrowedChart.data.datasets[0].data = labels.length ? values : [0];
-                    mostBorrowedChart.update();
-                })
-                .catch(error => console.error("Error fetching most borrowed data:", error));
-        }
-
-        loadMostBorrowedChart();
-        setInterval(loadMostBorrowedChart, 30000); // Update every 30 seconds
 
         // Low Stock (Static Dummy Data)
         new Chart(document.getElementById('lowStockChart'), {
@@ -142,14 +133,14 @@
             }
         });
 
-        // Equipment Quantity by Category (Real-time)
+        // Equipment Quantity by Category (already working)
         const quantityByCategoryChart = new Chart(document.getElementById('quantityByCategoryChart').getContext('2d'), {
             type: 'pie',
             data: {
-                labels: [],
+                labels: {!! Js::from($equipmentByCategory->pluck('category')) !!},
                 datasets: [{
                     label: 'Equipment by Category',
-                    data: [],
+                    data: {!! Js::from($equipmentByCategory->pluck('total_quantity')) !!},
                     backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#B79CED'],
                     borderWidth: 1
                 }]
@@ -167,20 +158,6 @@
                 layout: { padding: 10 }
             }
         });
-
-        function loadEquipmentCategoryChart() {
-            fetch('/api/equipment-by-category')
-                .then(response => response.json())
-                .then(data => {
-                    quantityByCategoryChart.data.labels = Object.keys(data);
-                    quantityByCategoryChart.data.datasets[0].data = Object.values(data);
-                    quantityByCategoryChart.update();
-                })
-                .catch(error => console.error('Error loading category data:', error));
-        }
-
-        loadEquipmentCategoryChart();
-        setInterval(loadEquipmentCategoryChart, 30000);
 
         // Usage Rate Chart (Static)
         new Chart(document.getElementById('usageRateChart'), {
@@ -202,4 +179,5 @@
         });
     </script>
 </div>
+
 @endsection

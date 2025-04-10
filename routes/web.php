@@ -101,10 +101,10 @@ Route::middleware(['auth'])->group(function () {
 
 Route::post('/register', [RegisterController::class, 'store'])->name('registration.post');
 
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DashboardController; // or HomeController, depending
 
 Route::get('/api/equipment-by-category', [DashboardController::class, 'getEquipmentByCategory']);
 
-Route::get('/api/most-borrowed-equipment', [EquipmentController::class, 'mostBorrowedEquipment']);
+Route::get('/api/most-borrowed-equipment', [DashboardController::class, 'getMostBorrowedEquipment']);
 
-
+Route::get('/home', [DashboardController::class, 'index'])->name('home');
