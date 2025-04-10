@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -30,8 +31,10 @@ Route::get('/', function () {
 })->name('home');
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
+
 // Admin Inventory Route
 Route::get('/admin/inventory', [AdminInventoryController::class, 'index'])->name('admin.inventory.index')->middleware('auth');
+
 // Borrower Inventory Route
 Route::get('/borrower/inventory', [BorrowerInventoryController::class, 'index'])->name('borrower.inventory.index')->middleware('auth');
 
@@ -122,4 +125,4 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/return-items', [ReturnItemsController::class, 'index'])->name('admin.return-items.index');
     Route::post('/return-items/mark/{id}', [ReturnItemsController::class, 'markAsReturned'])->name('admin.return-items.mark');
 });
-
+ 

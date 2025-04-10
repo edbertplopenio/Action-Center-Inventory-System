@@ -874,6 +874,15 @@ $(document).ready(function () {
         }
     });
 
+    // Unit dropdown logic: Show input field inline next to "Other"
+    $('#unit').on('change', function () {
+        if ($(this).val() == 'Other') {
+            $('#other_unit').removeClass('hidden'); // Show inline input if "Other" is selected
+        } else {
+            $('#other_unit').addClass('hidden'); // Hide inline input if not "Other"
+        }
+    });
+
     // Ensure no future dates can be selected for Arrival Date and Date Purchased
     const today = new Date().toISOString().split('T')[0];
     $('#arrival_date, #date_purchased').attr('max', today);
@@ -889,6 +898,11 @@ $(document).ready(function () {
         formData.append('name', $('#name').val());  // Add 'name' field
         formData.append('unit', $('#unit').val());  // Add 'unit' field
         formData.append('category', $('#category').val());  // Add 'category' field
+
+        // If "Other" is selected for unit, append the value from other_unit field
+        if ($('#unit').val() === 'Other') {
+            formData.append('unit', $('#other_unit').val());  // Add custom unit if "Other" is selected
+        }
 
         // Optional: Log the FormData to check what is being sent
         console.log(formData);  // This will print the form data in the browser console
@@ -970,9 +984,25 @@ $(document).ready(function () {
     $("#cancelModal").click(function () {
         $("#addItemModal").addClass("hidden");  // Hide the modal when cancel is clicked
     });
+
+    // Clear button functionality for the Add Item modal
+    $("#clearForm").click(function () {
+        // Clear all input fields and reset the dropdowns to their default value
+        $('#itemForm').find('input[type="text"], input[type="number"], input[type="date"], input[type="file"], textarea').val('');
+        $('#itemForm').find('select').prop('selectedIndex', 0); // Reset all dropdowns to the first option
+
+        // If you have a field for "Other" input (for unit or storage location), hide them and clear their values
+        $('#other_unit').addClass('hidden').val('');
+        $('#other_storage_location').addClass('hidden').val('');
+
+        // Clear the search bar field and reset it to an empty state
+        $('#search-item').val('');
+
+        // Re-enable the input fields to make them editable again
+        $('#itemForm').find('input, select, textarea').prop('disabled', false);
+    });
 });
 </script>
-
 
 <SCRIPT>
     //ARCHIVES
@@ -1064,8 +1094,8 @@ $('#editItemForm').submit(function(e) {
     });
 });
 
+// Close the Edit Item Modal when clicking the "Cancel" button or the "Close" button (×)
 $(document).ready(function () {
-    // Close the Edit Item Modal when clicking the "Cancel" button or the "Close" button (×)
     $("#cancelEditModal, #closeEditModal").click(function () {
         $("#editItemModal").addClass("hidden");  // Hide the modal
     });
@@ -1073,8 +1103,6 @@ $(document).ready(function () {
 </script>
 
 
-html
-Copy
 <!-- Modal Overlay for Adding Item -->
 <div id="addItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
     <div class="relative z-10 flex items-center justify-center">
@@ -1114,11 +1142,16 @@ Copy
 
                             <div>
                                 <label for="unit" class="block text-xs font-medium text-gray-900">Unit</label>
-                                <select id="unit" name="unit" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
-                                    <option value="Piece">Piece</option>
-                                    <option value="Set">Set</option>
-                                    <option value="Box">Box</option>
-                                </select>
+                                <div class="flex items-center">
+                                    <select id="unit" name="unit" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                        <option value="Piece">Piece</option>
+                                        <option value="Set">Set</option>
+                                        <option value="Box">Box</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <!-- Inline input field next to 'Other' -->
+                                    <input type="text" id="other_unit" name="other_unit" class="mt-1 ml-2 hidden py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs w-20" maxlength="12" placeholder="Type unit">
+                                </div>
                             </div>
 
                             <div>
@@ -1168,11 +1201,15 @@ Copy
                         </div>
 
                         <div class="mt-6 flex items-center justify-end gap-x-6">
-                        <button type="button" id="cancelModal" class="text-xs font-semibold text-gray-900 px-4 py-2 bg-gray-400 rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
-                            Cancel
-                        </button>
+                            <button type="button" id="cancelModal" class="text-xs font-semibold text-gray-900 px-4 py-2 bg-gray-400 rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
+                                Cancel
+                            </button>
                             <button type="submit" id="saveButton" class="rounded-md bg-green-400 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-green-600 hover:text-white">
                                 Save
+                            </button>
+                            <!-- Clear Button -->
+                            <button type="button" id="clearForm" class="text-xs font-semibold text-gray-900 px-4 py-2 bg-gray-400 rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
+                                Clear
                             </button>
                         </div>
                     </div>
@@ -1183,6 +1220,7 @@ Copy
 </div>
 
 
+<!-- Modal for Editing Item -->
 <!-- Edit Item Modal -->
 <div id="editItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
     <div class="relative z-10 flex items-center justify-center">
@@ -1194,12 +1232,13 @@ Copy
                     @csrf
                     @method('PUT')  <!-- Use PUT method for updates -->
                     <input type="hidden" id="edit_item_id" name="item_id">
+
                     <div class="space-y-6">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label for="edit_item_name" class="block text-xs font-medium text-gray-900">Item Name</label>
                                 <input type="text" id="edit_item_name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
-                            </div
+                            </div>
 
                             <div>
                                 <label for="edit_category" class="block text-xs font-medium text-gray-900">Category</label>

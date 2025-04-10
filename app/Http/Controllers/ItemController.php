@@ -165,6 +165,20 @@ class ItemController extends Controller
     }
 
     /**
+     * Fetch item details for editing.
+     */
+    public function editItem($id)
+    {
+        $item = Item::find($id);
+
+        if (!$item) {
+            return response()->json(['error' => 'Item not found.'], 404);
+        }
+
+        return response()->json($item);
+    }
+
+    /**
      * Update the specified item in the database.
      */
     public function update(Request $request, $id)
