@@ -5,24 +5,24 @@
 @section('content')
 
 <head>
-<meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
-<!-- Add Google Fonts link for Inter -->
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-<!-- Include DataTables CSS -->
-<link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
-<!-- Include jQuery (required for DataTables) -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Add Google Fonts link for Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Include DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
+    <!-- Include jQuery (required for DataTables) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
 
 
-<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
 
-<!-- Include SweetAlert Library -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Include SweetAlert Library -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Include SweetAlert Library -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -96,7 +96,7 @@
 
 
 
-<!-- 
+    <!-- 
 <script>
     $(document).ready(function() {
         $('#userTable').DataTable({
@@ -245,46 +245,57 @@
 
 
         <div style="height: 625px; overflow-y: auto;"> <!-- Added overflow-y-auto -->
-    <table id="userTable" class="display" style="width:100%">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Department</th>
-                <th>Action</th> <!-- Removed Cellphone Number column -->
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($users as $user)
-            <tr class="user-row cursor-pointer"
-                data-id="{{ $user->id }}"
-                data-first_name="{{ $user->first_name }}"
-                data-last_name="{{ $user->last_name }}"
-                data-email="{{ $user->email }}"
-                data-role="{{ $user->user_role }}"
-                data-department="{{ $user->department ?? 'N/A' }}"
-                data-profile_picture="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : '' }}"
-                data-created_at="{{ $user->created_at }}"
-                data-last_login="{{ $user->last_login ?? 'N/A' }}"
-                data-created_by="{{ $user->created_by ?? 'N/A' }}"
-                data-updated_at="{{ $user->updated_at }}">
+            <table id="userTable" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Department</th>
+                        <th>Status</th> <!-- Added Status column -->
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($users as $user)
+                    <tr class="user-row cursor-pointer"
+                        data-id="{{ $user->id }}"
+                        data-first_name="{{ $user->first_name }}"
+                        data-last_name="{{ $user->last_name }}"
+                        data-email="{{ $user->email }}"
+                        data-role="{{ $user->user_role }}"
+                        data-department="{{ $user->department ?? 'N/A' }}"
+                        data-profile_picture="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : '' }}"
+                        data-created_at="{{ $user->created_at }}"
+                        data-last_login="{{ $user->last_login ?? 'N/A' }}"
+                        data-created_by="{{ $user->created_by ?? 'N/A' }}"
+                        data-updated_at="{{ $user->updated_at }}">
 
-                <td>{{ $user->first_name }} {{ $user->last_name }}</td>
-                <td>{{ $user->email }}</td>
-                <td>{{ $user->user_role }}</td>
-                <td>{{ $user->department ?? 'N/A' }}</td>
-                <td>
-                    <button class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24"
-                        data-id="{{ $user->id }}">Edit</button>
-                    <button class="deactivate-btn px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24"
-                        data-id="{{ $user->id }}">Deactivate</button>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-</div>
+                        <td>{{ $user->first_name }} {{ $user->last_name }}</td>
+                        <td>{{ $user->email }}</td>
+                        <td>{{ $user->user_role }}</td>
+                        <td>{{ $user->department ?? 'N/A' }}</td>
+                        <td>{{ ucfirst($user->status) }}</td> <!-- Display status (active/inactive) -->
+                        <td>
+                            <!-- Edit button -->
+                            <button class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24"
+                                data-id="{{ $user->id }}">Edit</button>
+
+                            <!-- Conditionally render Deactivate/Activate button based on status -->
+                            @if($user->status === 'active')
+                            <button class="deactivate-btn px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24"
+                                data-id="{{ $user->id }}">Deactivate</button>
+                            @else
+                            <button class="activate-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24"
+                                data-id="{{ $user->id }}">Activate</button>
+                            @endif
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+        </div>
 
     </div>
 </div>
@@ -700,7 +711,107 @@
 
 
 
+<!-- Activate Confirmation Modal -->
+<div class="relative z-10" id="activateModal" aria-labelledby="activateModal-title" role="dialog" aria-modal="true" style="display: none;">
+    <div class="fixed inset-0 bg-gray-500/75 transition-opacity" aria-hidden="true"></div>
+    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+        <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex size-12 shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:size-10">
+                            <svg class="size-6 text-blue-600" id="activateModalIcon" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" id="activateModalIconPath" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-base font-semibold text-gray-900" id="activateModal-title">Confirm Activation</h3>
+                            <p class="text-sm text-gray-500" id="activateModal-message">Are you sure you want to activate this user? This action cannot be undone.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <button type="button" class="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-blue-500 sm:ml-3 sm:w-auto" id="confirmActivateBtn">Confirm Activate</button>
+                    <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 ring-1 shadow-xs ring-gray-300 ring-inset hover:bg-gray-50 sm:mt-0 sm:w-auto" id="cancelActivateBtn">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Attach event listeners to all Activate buttons
+        document.querySelectorAll('.activate-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const userId = this.getAttribute('data-id');
+                console.log('Activate button clicked for User ID:', userId);
+
+                // Show the activation confirmation modal
+                document.getElementById('activateModal').style.display = 'block';
+
+                // Set the Confirm button's data-id attribute
+                document.getElementById('confirmActivateBtn').setAttribute('data-id', userId);
+            });
+        });
+
+        // Handle Confirm Activate action
+        document.getElementById('confirmActivateBtn').addEventListener('click', function() {
+            const userId = this.getAttribute('data-id');
+            console.log('Confirm activation for User ID:', userId);
+
+            // Send AJAX request to activate the user
+            fetch(`/admin/users/activate/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Activation response:', data);
+
+                    if (data.success) {
+                        // Show SweetAlert success message
+                        Swal.fire({
+                            title: 'Success!',
+                            text: data.message,
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            // Reload the page after clicking OK in SweetAlert
+                            window.location.reload();
+                        });
+                    } else {
+                        // Show SweetAlert error message
+                        Swal.fire({
+                            title: 'Error!',
+                            text: data.message,
+                            icon: 'error',
+                            confirmButtonText: 'Try Again'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error activating user:', error);
+                    // Show SweetAlert error message
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'An error occurred while activating.',
+                        icon: 'error',
+                        confirmButtonText: 'Try Again'
+                    });
+                });
+        });
+
+        // Handle Cancel button (close modal without action)
+        document.getElementById('cancelActivateBtn').addEventListener('click', function() {
+            document.getElementById('activateModal').style.display = 'none';
+            console.log('Activation canceled.');
+        });
+    });
+</script>
 
 
 
@@ -742,95 +853,102 @@
 </div>
 
 
+<!-- SweetAlert2 CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    // Attach event listeners to all Deactivate buttons
-    document.querySelectorAll('.deactivate-btn').forEach(button => {
-        button.addEventListener('click', function () {
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.deactivate-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const userId = this.getAttribute('data-id');
+                console.log('Deactivate button clicked for User ID:', userId);
+
+                document.getElementById('deactivateModal').style.display = 'block';
+                document.getElementById('confirmDeactivateBtn').setAttribute('data-id', userId);
+            });
+        });
+
+        document.getElementById('confirmDeactivateBtn').addEventListener('click', function() {
             const userId = this.getAttribute('data-id');
-            console.log('Deactivate button clicked for User ID:', userId);
+            console.log('Confirm deactivation for User ID:', userId);
 
-            // Show the deactivation confirmation modal
-            document.getElementById('deactivateModal').style.display = 'block';
+            fetch(`/admin/users/deactivate/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Deactivation response:', data);
 
-            // Set the Confirm button's data-id attribute
-            document.getElementById('confirmDeactivateBtn').setAttribute('data-id', userId);
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: data.message,
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            // Close the deactivation modal
+                            document.getElementById('deactivateModal').style.display = 'none';
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 500); // Add a short delay to allow the modal to close before reloading
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: data.message,
+                            icon: 'error',
+                            confirmButtonText: 'Try Again'
+                        }).then(() => {
+                            document.getElementById('deactivateModal').style.display = 'none';
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deactivating user:', error);
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'An error occurred while deactivating.',
+                        icon: 'error',
+                        confirmButtonText: 'Try Again'
+                    }).then(() => {
+                        document.getElementById('deactivateModal').style.display = 'none';
+                    });
+                });
+        });
+
+        document.getElementById('cancelDeactivateBtn').addEventListener('click', function() {
+            document.getElementById('deactivateModal').style.display = 'none';
+            console.log('Deactivation canceled.');
         });
     });
+</script>
 
-    // Handle Confirm Deactivate action
-    document.getElementById('confirmDeactivateBtn').addEventListener('click', function () {
-        const userId = this.getAttribute('data-id');
-        console.log('Confirm deactivation for User ID:', userId);
 
-        // Send AJAX request to deactivate user
-        fetch(`/admin/users/deactivate/${userId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Deactivation response:', data);
-
-            if (data.success) {
-                // Remove the row from the table
-                removeUserRow(userId);
-                showResultModal('success', 'User has been successfully deactivated.');
-            } else {
-                showResultModal('error', 'Failed to deactivate user. Please try again.');
-            }
-        })
-        .catch(error => {
-            console.error('Error deactivating user:', error);
-            showResultModal('error', 'An error occurred while deactivating.');
-        });
-
-        // Close the confirmation modal
-        document.getElementById('deactivateModal').style.display = 'none';
-    });
-
-    // Handle Cancel button (close modal without action)
-    document.getElementById('cancelDeactivateBtn').addEventListener('click', function () {
-        document.getElementById('deactivateModal').style.display = 'none';
-        console.log('Deactivation canceled.');
-    });
-
-    // Function to remove the user row from the table
-    function removeUserRow(userId) {
-        const row = document.querySelector(`.user-row[data-id="${userId}"]`);
-        if (row) {
-            row.remove();
-            console.log(`User with ID ${userId} has been removed from the table.`);
-        }
-    }
-
-    // Function to show success or error messages
+<script>
     function showResultModal(status, message) {
         const resultModal = document.getElementById('resultModal');
         const resultMessage = document.getElementById('resultModal-message');
         const resultTitle = document.getElementById('resultModal-title');
         const resultIcon = document.getElementById('resultModalIcon');
         const resultIconPath = document.getElementById('resultModalIconPath');
-        const resultIconContainer = document.getElementById('resultModalIconContainer');
 
         if (status === 'success') {
             resultIcon.classList.replace('text-red-600', 'text-green-600');
             resultIconPath.setAttribute('d', 'M9 12l2 2l4 -4m-5 0a7 7 0 1 1 7 7a7 7 0 0 1 -7 -7Z'); // Success checkmark icon
             resultTitle.textContent = 'Action Successful';
             resultMessage.textContent = message;
-            resultIconContainer.classList.replace('bg-red-100', 'bg-green-100');
         } else {
             resultIcon.classList.replace('text-green-600', 'text-red-600');
             resultIconPath.setAttribute('d', 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z'); // Error icon
             resultTitle.textContent = 'Action Failed';
             resultMessage.textContent = message;
-            resultIconContainer.classList.replace('bg-green-100', 'bg-red-100');
         }
 
-        // Show the result modal
+        // Show the modal
         resultModal.style.display = 'block';
 
         // Close the result modal when clicking the close button
@@ -838,39 +956,6 @@
             resultModal.style.display = 'none';
         });
     }
-});
-
-</script>
-
-<script>
-    function showResultModal(status, message) {
-    const resultModal = document.getElementById('resultModal');
-    const resultMessage = document.getElementById('resultModal-message');
-    const resultTitle = document.getElementById('resultModal-title');
-    const resultIcon = document.getElementById('resultModalIcon');
-    const resultIconPath = document.getElementById('resultModalIconPath');
-
-    if (status === 'success') {
-        resultIcon.classList.replace('text-red-600', 'text-green-600');
-        resultIconPath.setAttribute('d', 'M9 12l2 2l4 -4m-5 0a7 7 0 1 1 7 7a7 7 0 0 1 -7 -7Z'); // Success checkmark icon
-        resultTitle.textContent = 'Action Successful';
-        resultMessage.textContent = message;
-    } else {
-        resultIcon.classList.replace('text-green-600', 'text-red-600');
-        resultIconPath.setAttribute('d', 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z'); // Error icon
-        resultTitle.textContent = 'Action Failed';
-        resultMessage.textContent = message;
-    }
-
-    // Show the modal
-    resultModal.style.display = 'block';
-
-    // Close the result modal when clicking the close button
-    document.getElementById('resultModalCloseBtn').addEventListener('click', function() {
-        resultModal.style.display = 'none';
-    });
-}
-
 </script>
 
 
@@ -1192,25 +1277,25 @@
 
         // Table DataTable initialization
         const userTable = $('#userTable').DataTable({
-            "scrollY": "425px",  // Enable vertical scrolling with a fixed height
+            "scrollY": "425px", // Enable vertical scrolling with a fixed height
             "scrollCollapse": true, // Collapse height when content is less
-            "scrollX": false,  // Disable horizontal scrolling
-            "paging": true,    // Enable pagination
+            "scrollX": false, // Disable horizontal scrolling
+            "paging": true, // Enable pagination
             "searching": true, // Enable search
-            "ordering": true   // Enable sorting
+            "ordering": true // Enable sorting
         });
 
         // Open modal when the "Add Record" button is clicked
         openModalBtn.addEventListener("click", function() {
             console.log("Opening modal...");
-            modal.style.display = "block";  // Show the modal
+            modal.style.display = "block"; // Show the modal
         });
 
         // Close modal when "Cancel" button is clicked
         closeUserModal.addEventListener("click", function() {
             console.log("Closing modal...");
-            modal.style.display = "none";  // Hide the modal
-            form.reset();  // Reset form inputs
+            modal.style.display = "none"; // Hide the modal
+            form.reset(); // Reset form inputs
         });
 
         // Submit the form for adding new user
