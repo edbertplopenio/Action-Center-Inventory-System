@@ -1103,6 +1103,7 @@ $(document).ready(function () {
 </script>
 
 
+
 <!-- Modal Overlay for Adding Item -->
 <div id="addItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
     <div class="relative z-10 flex items-center justify-center">
@@ -1221,7 +1222,6 @@ $(document).ready(function () {
 
 
 <!-- Modal for Editing Item -->
-<!-- Edit Item Modal -->
 <div id="editItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
     <div class="relative z-10 flex items-center justify-center">
         <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full" style="max-width: 90%; height: auto;">

@@ -1,4 +1,3 @@
-
 <?php
 
 use Illuminate\Support\Facades\Route;
@@ -125,4 +124,3 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/return-items', [ReturnItemsController::class, 'index'])->name('admin.return-items.index');
     Route::post('/return-items/mark/{id}', [ReturnItemsController::class, 'markAsReturned'])->name('admin.return-items.mark');
 });
- 

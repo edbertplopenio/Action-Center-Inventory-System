@@ -14,7 +14,7 @@ class ItemController extends Controller
     public function index()
     {
         // Fetch only active (non-archived) items
-        $allItems = Item::where('is_archived', false)->get(); 
+        $allItems = Item::where('is_archived', false)->get();
 
         // Fetch categorized items
         $drrmItems = Item::where('is_archived', false)->where('category', 'DRRM Equipment')->get();
@@ -56,7 +56,7 @@ class ItemController extends Controller
         if ($item) {
             // If item exists, update quantity and dates
             $item->quantity += $request->quantity;  // Add the new quantity
-            $item->arrival_date = $request->arrival_date; 
+            $item->arrival_date = $request->arrival_date;
             $item->date_purchased = $request->date_purchased;
             $item->save();
 
@@ -188,6 +188,16 @@ class ItemController extends Controller
         if (!$item) {
             return redirect()->back()->with('error', 'Item not found.');
         }
+
+        // Validate input fields for update
+        $request->validate([
+            'quantity' => 'required|integer|min:1',
+            'storage_location' => 'required|string|max:255',
+            'arrival_date' => 'required|date',
+            'date_purchased' => 'required|date',
+            'status' => 'required|string|max:255',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
 
         // Only update editable fields
         $item->quantity = $request->quantity;
