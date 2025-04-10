@@ -136,4 +136,14 @@ class InventoryRequestController extends Controller
             ]);
         }
     }
+
+
+    public function getPendingRequestsCount()
+    {
+        $pendingRequestsCount = cache()->remember('pending_requests_count', 60, function () {
+            return BorrowedItem::where('status', 'Pending')->count();
+        });
+
+        return response()->json(['pendingRequestsCount' => $pendingRequestsCount]);
+    }
 }

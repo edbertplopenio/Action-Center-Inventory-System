@@ -177,3 +177,10 @@ Route::post('/admin/inventory-requests/update-item-status', [InventoryRequestCon
 
 Route::get('/admin/borrowed-items/list/{id}', [ReturnItemsController::class, 'getBorrowedItemsForReturn']);
 Route::post('/admin/inventory-requests/update-status/{id}', [InventoryRequestController::class, 'updateStatus']);
+
+
+
+
+
+// Route for notification badge
+Route::get('/admin/borrowing-requests/count', [InventoryRequestController::class, 'getPendingRequestsCount'])->name('admin.borrowing-requests.count');
