@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Item;
 use App\Models\IndividualItem;
 use App\Models\BorrowedItem;
+use DB;
 
 class ItemController extends Controller
 {
@@ -66,7 +67,22 @@ class ItemController extends Controller
     $equipment = Item::where('is_archived', false)
     ->distinct('name')
     ->get(['id', 'name']);  // Select only the id and name columns
+
+
+        // Join 'borrowed_items' with 'items' to fetch item names along with the borrowed quantities
+        $mostBorrowedItems = DB::table('borrowed_items')
+            ->join('items', 'borrowed_items.item_id', '=', 'items.id')  // Join on item_id
+            ->select('items.name as item_name', DB::raw('SUM(borrowed_items.quantity_borrowed) as total_borrowed'))
+            ->groupBy('items.name')  // Group by item_name
+            ->orderBy('total_borrowed', 'desc')  // Order by total borrowed quantity
+            ->get();
     
+        // Fetch the sum of quantities grouped by category
+        $categoryCounts = DB::table('items')
+            ->select('category', DB::raw('SUM(quantity) as total_quantity'))
+            ->groupBy('category')
+            ->get();
+
         // Pass all variables to the view
         return view('home', compact(
             'allItems', 
@@ -81,7 +97,9 @@ class ItemController extends Controller
             'lowStockItems',
             'itemsNeedingRepair',
             'recentDeploymentsNext',
-            'equipment'  // Ensure equipment is passed to the view
+            'equipment', // Ensure equipment is passed to the view
+            'mostBorrowedItems',
+            'categoryCounts'
         ));
     
     }
@@ -310,5 +328,4 @@ public function getUsageRateData($itemId)
         return response()->json(['success' => false, 'message' => 'Item not found.'], 404);
     }
 }
-
 

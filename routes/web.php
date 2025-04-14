@@ -11,9 +11,9 @@ use App\Http\Controllers\Borrower\InventoryController;
 use App\Http\Controllers\Admin\RecordsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Borrower\ProfileController;  // Import the ProfileController
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\InventoryRequestController;
 use App\Http\Controllers\ItemController;
+
 
 
 
@@ -182,4 +182,6 @@ Route::get('/home', [ItemController::class, 'index'])->name('home');
 Route::get('/api/items', [ItemController::class, 'getItems']);
 Route::get('/api/usage-rate/{itemId}', [ItemController::class, 'getUsageRateData']);
 
-
+// routes/web.php
+Route::get('/most-borrowed-items', [ItemController::class, 'mostBorrowedItems']);
+Route::get('/equipment-quantity-by-category', [ItemController::class, 'quantityByCategory']);

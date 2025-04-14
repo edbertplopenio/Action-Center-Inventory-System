@@ -103,15 +103,12 @@
 
 
 
-
-
-
     <!-- Three-Column Layout for Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 w-full">
-        <!-- Equipment Age Distribution -->
+        <!-- Most Borrowed Items -->
         <div class="bg-white p-4 shadow-lg rounded-lg h-[35vh] w-full">
-            <h2 class="text-lg font-semibold text-gray-800 mb-2">Equipment Age Distribution</h2>
-            <canvas id="ageDistributionChart" style="width: 80%; height: 70%;">"></canvas>
+            <h2 class="text-lg font-semibold text-gray-800 mb-2">Most Borrowed Items</h2>
+            <canvas id="mostborroweditemsChart" style="width: 80%; height: 70%;">"></canvas>
         </div>
 
         <!-- Low Stock -->
@@ -134,7 +131,7 @@
 
  <!-- Equipment Usage -->
  <div class="bg-white p-4 shadow-lg rounded-lg h-[32vh] w-full relative">
-    <h2 class="text-lg font-semibold text-gray-800 mb-2">Equipment Usage Rate</h2>
+    <h2 class="text-lg font-semibold text-gray-800 mb-2">Monthly Equipment Utilization</h2>
 
     <!-- Drop-down list with centered text -->
     <div class="absolute top-4 right-4">
@@ -160,9 +157,6 @@
         top: 4%; /* You can adjust the top percentage as needed */
     }
 </style>
-
-
-
 
 
 <!-- Recent Deployments by Category -->
@@ -211,42 +205,56 @@
     
 
     <!-- Initialize Charts -->
-    <script>
-        // Dummy Data for Equipment Age Distribution (Bar Chart)
-        var ctx1 = document.getElementById('ageDistributionChart').getContext('2d');
-        var ageDistributionChart = new Chart(ctx1, {
-            type: 'bar',
-            data: {
-                labels: ['0-1 Years', '1-5 Years', '5+ Years'],
-                datasets: [{
-                    label: 'Equipment Age Distribution',
-                    data: [50, 120, 30], // Dummy data for each age group
-                    backgroundColor: '#B79CED', // Solid color for bars
-                    borderColor: '#B79CED', // Solid color for borders
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
+    <script> 
+
+ // most borrowed items Chart 
+
+// Pass PHP data to JavaScript
+var mostBorrowedItems = @json($mostBorrowedItems);
+
+// Extract item names and borrowed quantities
+var itemNames = mostBorrowedItems.map(item => item.item_name);  // Using item_name from the query result
+var quantities = mostBorrowedItems.map(item => item.total_borrowed);  // Using total_borrowed from the query result
+
+// Create the chart
+var ctx1 = document.getElementById('mostborroweditemsChart').getContext('2d');
+var mostborroweditemsChart = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+        labels: itemNames, // Using item names as labels
+        datasets: [{
+            label: 'Most Borrowed Items',
+            data: quantities, // Using the quantities of borrowed items
+            backgroundColor: '#B79CED', // Solid color for bars
+            borderColor: '#B79CED', // Solid color for borders
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+            y: {
+                beginAtZero: true
             }
-        });
+        }
+    }
+});
+
 
  // Low Stock Chart
- var ctx2 = document.getElementById('lowStockChart').getContext('2d');
+ var lowStockItemsNames = <?php echo json_encode($lowStockItems->pluck('name')->toArray()); ?>;
+    var lowStockItemsQuantities = <?php echo json_encode($lowStockItems->pluck('quantity')->toArray()); ?>;
+
+    var ctx2 = document.getElementById('lowStockChart').getContext('2d');
     var lowStockChart = new Chart(ctx2, {
         type: 'bar', // Bar chart type
         data: {
-            labels: @json($lowStockItems->pluck('name')), // Get item names
+            labels: lowStockItemsNames, // Get item names
             datasets: [{
                 label: 'Low Stock Items',
-                data: @json($lowStockItems->pluck('quantity')), // Get item quantities
-                backgroundColor: 'rgba(255, 99, 132, 0.8)', // Pink color for the bars
+                data: lowStockItemsQuantities, // Get item quantities
+                backgroundColor: 'rgba(255, 99, 132, 0.😎', // Pink color for the bars
                 borderColor: 'rgba(255, 99, 132, 1)',
                 borderWidth: 1
             }]
@@ -267,40 +275,48 @@
     });
 
 
-        // Dummy Data for Equipment Quantity by Category (Pie Chart)
-        var ctx3 = document.getElementById('quantityByCategoryChart').getContext('2d');
-        var quantityByCategoryChart = new Chart(ctx3, {
-            type: 'pie',
-            data: {
-                labels: ['Safety Equipment', 'Rescue Equipment', 'Office Equipment', 'Other Equipment'],
-                datasets: [{
-                    label: 'Equipment by Category',
-                    data: [80, 150, 50, 60], // Dummy data for each category
-                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#B79CED', ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true, // Ensures chart is responsive
-                maintainAspectRatio: false, // Allows resizing of the chart to fit the container
-                plugins: {
-                    legend: {
-                        position: 'right', // This places the legend to the right
-                        labels: {
-                            boxWidth: 20, // Size of the legend boxes
-                            padding: 15 // Space between the legend boxes and labels
-                        }
-                    }
-                },
-                // Set explicit width and height of the chart
-                aspectRatio: 1, // 1 is a square, adjust it as needed (less than 1 makes the chart more wide)
-                layout: {
-                    padding: 10
+ // Quantity By Category Chart
+
+  // Pass PHP data to JavaScript
+  var categoryCounts = @json($categoryCounts);
+
+// Extract category names and their corresponding total quantities
+var categories = categoryCounts.map(item => item.category);
+var quantities = categoryCounts.map(item => item.total_quantity);  // Use total quantity for each category
+
+// Create the pie chart
+var ctx3 = document.getElementById('quantityByCategoryChart').getContext('2d');
+var quantityByCategoryChart = new Chart(ctx3, {
+    type: 'pie',
+    data: {
+        labels: categories, // Equipment categories
+        datasets: [{
+            label: 'Equipment by Category',
+            data: quantities, // Quantities of items in each category
+            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#B79CED'],  // You can add more colors if needed
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true, // Ensures chart is responsive
+        maintainAspectRatio: false, // Allows resizing of the chart to fit the container
+        plugins: {
+            legend: {
+                position: 'right', // This places the legend to the right
+                labels: {
+                    boxWidth: 20, // Size of the legend boxes
+                    padding: 15 // Space between the legend boxes and labels
                 }
             }
-        });
+        },
+        aspectRatio: 1, // 1 is a square, adjust it as needed
+        layout: {
+            padding: 10
+        }
+    }
+});
 
-
+ // Usage Rate Chart
 
   // Load equipment list dynamically when the page is ready
   document.addEventListener("DOMContentLoaded", function() {
