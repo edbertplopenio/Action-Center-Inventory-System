@@ -1190,13 +1190,6 @@ $(document).ready(function () {
                                 <label for="status" class="block text-xs font-medium text-gray-900">Status</label>
                                 <select id="status" name="status" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
                                     <option value="Available">Available</option>
-                                    <option value="Borrowed">Borrowed</option>
-                                    <option value="Reserved">Reserved</option>
-                                    <option value="Out of Stock">Out of Stock</option>
-                                    <option value="Needs Repair">Needs Repair</option>
-                                    <option value="Damaged">Damaged</option>
-                                    <option value="Lost">Lost</option>
-                                    <option value="Retired">Retired</option>
                                 </select>
                             </div>
 
