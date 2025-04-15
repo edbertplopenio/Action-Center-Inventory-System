@@ -46,10 +46,17 @@ class BorrowedItem extends Model
         return $this->belongsTo(User::class, 'borrower_id');
     }
 
+    // Relationship with IndividualItems (QR codes)
     public function individualItems()
-{
-    return $this->belongsToMany(IndividualItem::class, 'borrowed_item_individual_items', 'borrowed_item_id', 'individual_item_id');
+    {
+        return $this->belongsToMany(IndividualItem::class, 'borrowed_item_individual_items', 'borrowed_item_id', 'individual_item_id');
+    }
+
+    // Add the relationship with IndividualItemReturn
+    public function individualItemReturns()
+    {
+        return $this->hasMany(IndividualItemReturn::class, 'borrowed_item_id');
+    }
 }
 
-}
 

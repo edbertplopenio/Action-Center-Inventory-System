@@ -252,15 +252,16 @@
 
         <td>
             @php
-                $groupedByReturnDate = $borrowedItem->individualItems->groupBy('return_date');
+                // Get the return dates from the individual_item_returns relationship
+                $returnDates = $borrowedItem->individualItemReturns->groupBy('return_date');
             @endphp
-            @foreach($groupedByReturnDate as $date => $items)
-            @if($date)
-            <strong>{{ \Carbon\Carbon::parse($date)->format('Y-m-d') }}</strong><br>
-            @foreach($items as $item)
-            {{ $item->qr_code }}<br>
-            @endforeach
-            @endif
+            @foreach($returnDates as $date => $returns)
+                @if($date)
+                    <strong>{{ \Carbon\Carbon::parse($date)->format('Y-m-d') }}</strong><br>
+                    @foreach($returns as $return)
+                        {{ $return->individualItem->qr_code }}<br>
+                    @endforeach
+                @endif
             @endforeach
         </td>
 
@@ -275,7 +276,7 @@
         <td>
             @php
                 // Count how many individual items have been returned (i.e., have a non-null return date)
-                $returnedItemsCount = $borrowedItem->individualItems->whereNotNull('return_date')->count();
+                $returnedItemsCount = $borrowedItem->individualItemReturns->whereNotNull('return_date')->count();
             @endphp
             {{ $returnedItemsCount }}/{{ $borrowedItem->quantity_borrowed }}
         </td>
@@ -294,6 +295,7 @@
     </tr>
     @endforeach
 </tbody>
+
 
             </table>
 

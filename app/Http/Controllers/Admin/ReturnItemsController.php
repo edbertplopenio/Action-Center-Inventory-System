@@ -13,13 +13,14 @@ class ReturnItemsController extends Controller
 
 public function index()
 {
-    // Eager load borrower, item, and individualItems relationships
-    $borrowedItems = BorrowedItem::with('borrower', 'item', 'individualItems')  // Eager load individualItems
+    // Eager load borrower, item, individualItems relationships, along with their return dates
+    $borrowedItems = BorrowedItem::with('borrower', 'item', 'individualItems', 'individualItemReturns')  
         ->whereIn('status', ['Borrowed', 'Returned'])  // Show items with Borrowed or Returned status
         ->get();
 
     return view('admin.return-items.index', compact('borrowedItems'));
 }
+
 
 
     // Mark an item as returned
@@ -46,10 +47,15 @@ public function index()
             if ($individualItem) {
                 // Mark the individual item as 'Available'
                 $individualItem->status = 'Available';
-                
-                // Set the return date for the individual item
-                $individualItem->return_date = $returnDates[$index] ?? now(); // Use provided date or current date if not given
                 $individualItem->save();
+        
+                // Insert a record into the individual_item_returns table for this return
+                \App\Models\IndividualItemReturn::create([
+                    'individual_item_id' => $individualItem->id,
+                    'borrowed_item_id' => $borrowedItem->id,
+                    'return_date' => $returnDates[$index] ?? now(), // Use provided date or current date if not given
+                ]);
+                
         
                 // Add to the returned items list
                 $returnedItems[] = $individualItem;
@@ -76,6 +82,7 @@ public function index()
         
         return response()->json(['message' => 'Items marked as returned and stock updated!', 'returnedItems' => $returnedItems], 200);
     }
+    
     
     
     
