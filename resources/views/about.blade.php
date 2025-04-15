@@ -5,7 +5,15 @@
 @section('content')
 
 <!-- Hero Section with Background Image and Overlay -->
-<section class="relative w-screen h-screen bg-cover bg-center flex items-center justify-center" style="background-image: url('{{ asset('images/about.png') }}');">
+<section class="relative w-screen h-screen bg-cover bg-center flex items-center justify-center bg-about">
+
+<style>
+    /* In your CSS file */
+.bg-about {
+    background-image: url('/images/about.png');
+}
+
+</style>
     
     <!-- Navigation Links -->
     <div class="absolute top-10 right-20 flex gap-12 z-10">

@@ -4,7 +4,7 @@
 <div class="relative min-h-screen flex justify-center items-center bg-gray-100">
   <!-- Background Image Covering Full Screen -->
   <div class="absolute inset-0 w-full h-full">
-    <img class="w-full h-full object-cover" src="{{ asset('images/loginbg.png') }}" alt="Background Image">
+    <img class="w-full h-full object-cover" src="{{ asset('images/BG.png') }}" alt="Background Image">
   </div>
 
   <!-- Login Form Container (Blurred Background but Sharp Text) -->

@@ -4,7 +4,7 @@
 
 <div class="relative min-h-screen flex justify-center items-center px-6">
   <!-- Background image -->
-  <img class="absolute w-full h-full object-cover" src="{{ asset('images/bgs.png') }}" alt="Background Image">
+  <img class="absolute w-full h-full object-cover" src="{{ asset('images/REGBG.png') }}" alt="Background Image">
 
   <div class="relative z-10 bg-white bg-opacity-40 backdrop-blur-xl p-3 rounded-2xl shadow-lg min-h-[80px] flex flex-col items-center justify-center"
      style="width: calc(33.33% + 192px); transform: translateX(35%);">
