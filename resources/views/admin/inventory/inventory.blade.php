@@ -198,6 +198,12 @@ table th:hover {
     width: 180px !important;  /* Set a fixed width for the action column */
     padding: 0.6rem;  /* Ensure padding is consistent */
     }
+    table td:nth-child(6), table th:nth-child(6) {
+    max-width: 200px; /* Set the maximum width of the description column */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
     table td .action-buttons {
         display: flex;
         justify-content: center;
