@@ -417,52 +417,60 @@
     }
 
     // Function to populate the table in the QR modal
-    function returnItem(id) {
-        $('#qr-modal').removeClass('hidden');
-        $('#borrowedItemsTable button').prop('disabled', true);
-        $('#qr-modal').data('item-id', id);
-        $('#result').text('Scanning for QR code...');
-        scannedQRCodeList = [];
-        scannedCount = 0;
-        document.getElementById('approveButton').disabled = true;
-        document.getElementById('undoButton').disabled = true;
+ // Modify the returnItem function to pass the current returned count
+function returnItem(id) {
+    $('#qr-modal').removeClass('hidden');
+    $('#borrowedItemsTable button').prop('disabled', true);
+    $('#qr-modal').data('item-id', id);
+    $('#result').text('Scanning for QR code...');
 
-        $.ajax({
-            url: '/admin/borrowed-items/list/' + id,
-            method: 'GET',
-            success: function(response) {
-                const tableBody = $('#codeTable tbody');
-                tableBody.empty();
+    scannedQRCodeList = [];
+    scannedCount = 0;
+    document.getElementById('approveButton').disabled = true;
+    document.getElementById('undoButton').disabled = true;
 
-                // Iterate over the borrowed items and populate the table
-                response.borrowedItems.forEach(item => {
-                    let statusText = item.status; // Default status from the database
-                    let rowStyle = ''; // Default row style
+    // Fetch the list of borrowed items, including the count of already returned items
+    $.ajax({
+        url: '/admin/borrowed-items/list/' + id,
+        method: 'GET',
+        success: function(response) {
+            const tableBody = $('#codeTable tbody');
+            tableBody.empty();
 
-                    // Check if the item has been returned and display 'Returned' in the table instead of 'Available'
-                    if (item.status === 'Available') {
-                        statusText = 'Returned'; // Change display text to 'Returned'
-                        rowStyle = 'background-color: #90ee90; color: #000;'; // Inline style for highlighting (light green background)
-                    }
+            let alreadyReturnedCount = 0;
 
-                    const row = `<tr style="${rowStyle}">
+            // Iterate over the borrowed items and populate the table
+            response.borrowedItems.forEach(item => {
+                let statusText = item.status;
+                let rowStyle = '';
+
+                // Check if the item has been returned and display 'Returned' in the table
+                if (item.status === 'Available') {
+                    statusText = 'Returned';
+                    rowStyle = 'background-color: #90ee90; color: #000;';
+                    alreadyReturnedCount++; // Increment the returned items count
+                }
+
+                const row = `<tr style="${rowStyle}">
                     <td>${item.qr_code}</td>
-                    <td>${statusText}</td> <!-- Show 'Returned' instead of 'Available' -->
+                    <td>${statusText}</td>
                 </tr>`;
-                    tableBody.append(row);
-                });
+                tableBody.append(row);
+            });
 
-                totalRequestQuantity = response.borrowedItems.length;
-                $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
+            totalRequestQuantity = response.borrowedItems.length;
+            scannedCount = alreadyReturnedCount;  // Set scannedCount to the already returned count
+            $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`); // Update counter
 
-                openQRScanner();
-            },
-            error: function(err) {
-                console.error('Error fetching borrowed items:', err);
-                Swal.fire('Error!', 'Unable to load borrowed items.', 'error');
-            }
-        });
-    }
+            openQRScanner();
+        },
+        error: function(err) {
+            console.error('Error fetching borrowed items:', err);
+            Swal.fire('Error!', 'Unable to load borrowed items.', 'error');
+        }
+    });
+}
+
 
 
 
