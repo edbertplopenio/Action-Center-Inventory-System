@@ -184,3 +184,92 @@ Route::post('/admin/inventory-requests/update-status/{id}', [InventoryRequestCon
 
 // Route for notification badge
 Route::get('/admin/borrowing-requests/count', [InventoryRequestController::class, 'getPendingRequestsCount'])->name('admin.borrowing-requests.count');
+
+
+
+// Inventory Routes (ItemController)
+// ===========================
+use App\Http\Controllers\ItemController;
+Route::controller(ItemController::class)->group(function () {
+    // Display all items in the inventory
+    Route::get('/inventory', 'index')->name('inventory'); 
+    
+
+    // Store a new item (this is the route to save both the `items` and `individual_items`)
+    Route::post('/items/store', 'store')->name('items.store'); // Explicitly define post for storing items
+
+    // Show edit form for an item
+    Route::get('/items/{id}/edit', 'editItem')->name('items.edit'); 
+
+    // Update item details
+    Route::put('/items/{id}', 'update')->name('items.update'); 
+
+    // Permanently delete item
+    Route::delete('/items/{id}', 'deletePermanently')->name('items.destroy'); 
+
+    // Routes for Archiving (Soft Delete), Restoring, and Permanently Deleting Items
+    Route::post('/archive-item/{id}', 'archiveItem')->name('archive.item');    // Archive (soft delete)
+    Route::post('/restore-item/{id}', 'restoreItem')->name('restore.item');    // Restore (unarchive)
+    Route::delete('/delete-item/{id}', 'deletePermanently')->name('delete.item'); // Permanently delete an archived item
+
+    // Route for fetching item data for editing
+    Route::get('/get-item/{id}', 'editItem')->name('get.item.data'); // Fetch item data for editing
+    
+    // Route for searching an item by its name
+    Route::get('/search-item/{name}', 'searchItem')->name('search.item'); // Search item by name
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    Route::get('/home', [ItemController::class, 'index'])->name('home');
+
+Route::get('/api/items', [ItemController::class, 'getItems']);
+Route::get('/api/usage-rate/{itemId}', [ItemController::class, 'getUsageRateData']);
+
+// routes/web.php
+Route::get('/most-borrowed-items', [ItemController::class, 'mostBorrowedItems']);
+Route::get('/equipment-quantity-by-category', [ItemController::class, 'quantityByCategory']);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Route for About Us page
+Route::get('/about', function () {
+    return view('about'); // This assumes you have an 'about.blade.php' view
+})->name('about');
+
+});
