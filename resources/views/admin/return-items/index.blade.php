@@ -219,74 +219,82 @@
 
         <div style="height: 550px; overflow-y: auto;">
             <table id="borrowedItemsTable" class="display" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Borrower</th>
-                        <th>Item Name</th>
-                        <th>QR Code(s)</th> <!-- New column for QR codes -->
-                        <th>Quantity</th>
-                        <th>Borrow Date</th>
-                        <th>Due Date</th>
-                        <th>Return Date</th> <!-- Added Return Date column -->
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($borrowedItems as $borrowedItem)
-                    <tr>
-                        <td>{{ $borrowedItem->borrower->first_name }} {{ $borrowedItem->borrower->last_name }}</td>
-                        <td>{{ $borrowedItem->item->name }}</td>
+            <thead>
+    <tr>
+        <th>Borrower</th>
+        <th>Item Name</th>
+        <th>QR Code(s)</th>
+        <th>Quantity</th>
+        <th>Borrow Date</th>
+        <th>Due Date</th>
+        <th>Return Date</th>
+        <th>Status</th>
+        <th>Returned Items</th> <!-- New column -->
+        <th>Action</th>
+    </tr>
+</thead>
+<tbody>
+    @foreach($borrowedItems as $borrowedItem)
+    <tr>
+        <td>{{ $borrowedItem->borrower->first_name }} {{ $borrowedItem->borrower->last_name }}</td>
+        <td>{{ $borrowedItem->item->name }}</td>
 
-                        <!-- Display all QR codes for the borrowed item -->
-                        <td>
-                            @foreach($borrowedItem->individualItems as $individualItem)
-                            <span>{{ $individualItem->qr_code }}</span><br>
-                            @endforeach
-                        </td>
+        <!-- Display all QR codes for the borrowed item -->
+        <td>
+            @foreach($borrowedItem->individualItems as $individualItem)
+            <span>{{ $individualItem->qr_code }}</span><br>
+            @endforeach
+        </td>
 
-                        <td>{{ $borrowedItem->quantity_borrowed }}</td>
-                        <td>{{ $borrowedItem->borrow_date->format('Y-m-d') }}</td>
-                        <td>{{ $borrowedItem->due_date->format('Y-m-d') }}</td>
+        <td>{{ $borrowedItem->quantity_borrowed }}</td>
+        <td>{{ $borrowedItem->borrow_date->format('Y-m-d') }}</td>
+        <td>{{ $borrowedItem->due_date->format('Y-m-d') }}</td>
 
-                        <!-- Display return dates and corresponding items -->
-                        <td>
-                            @php
-                            // Group items by return date
-                            $groupedByReturnDate = $borrowedItem->individualItems->groupBy('return_date');
-                            @endphp
+        <td>
+            @php
+                $groupedByReturnDate = $borrowedItem->individualItems->groupBy('return_date');
+            @endphp
+            @foreach($groupedByReturnDate as $date => $items)
+            @if($date)
+            <strong>{{ \Carbon\Carbon::parse($date)->format('Y-m-d') }}</strong><br>
+            @foreach($items as $item)
+            {{ $item->qr_code }}<br>
+            @endforeach
+            @endif
+            @endforeach
+        </td>
 
-                            @foreach($groupedByReturnDate as $date => $items)
-                            @if($date)
-                            <strong>{{ \Carbon\Carbon::parse($date)->format('Y-m-d') }}</strong><br>
-                            @foreach($items as $item)
-                            {{ $item->qr_code }}<br> <!-- Display QR Code for each item returned on that date -->
-                            @endforeach
-                            @endif
-                            @endforeach
-                        </td> <!-- Display Return Date(s) -->
+        <td>
+            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+            {{ $borrowedItem->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+            {{ $borrowedItem->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}">
+                {{ $borrowedItem->status }}
+            </span>
+        </td>
 
-                        <td>
-                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-                {{ $borrowedItem->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-                {{ $borrowedItem->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}">
-                                {{ $borrowedItem->status }}
-                            </span>
-                        </td>
-                        <td>
-                            <button class="return-btn px-2 py-1 m-1 bg-[#A855F7] text-white rounded hover:bg-[#7038A4] focus:outline-none focus:ring-2 focus:ring-[#A855F7] text-xs w-24"
-                                onclick="returnItem('{{ $borrowedItem->id }}')"
-                                @if($borrowedItem->status == 'Returned')
-                                disabled
-                                style="opacity: 0.5;"
-                                data-toggle="tooltip" data-placement="top" title="This item has already been returned."
-                                @endif>
-                                Return
-                            </button>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
+        <td>
+            @php
+                // Count how many individual items have been returned (i.e., have a non-null return date)
+                $returnedItemsCount = $borrowedItem->individualItems->whereNotNull('return_date')->count();
+            @endphp
+            {{ $returnedItemsCount }}/{{ $borrowedItem->quantity_borrowed }}
+        </td>
+
+        <td>
+            <button class="return-btn px-2 py-1 m-1 bg-[#A855F7] text-white rounded hover:bg-[#7038A4] focus:outline-none focus:ring-2 focus:ring-[#A855F7] text-xs w-24"
+                onclick="returnItem('{{ $borrowedItem->id }}')"
+                @if($borrowedItem->status == 'Returned')
+                disabled
+                style="opacity: 0.5;"
+                data-toggle="tooltip" data-placement="top" title="This item has already been returned."
+                @endif>
+                Return
+            </button>
+        </td>
+    </tr>
+    @endforeach
+</tbody>
+
             </table>
 
 
