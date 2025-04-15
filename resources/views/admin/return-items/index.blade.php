@@ -219,85 +219,96 @@
 
         <div style="height: 550px; overflow-y: auto;">
             <table id="borrowedItemsTable" class="display" style="width:100%">
-            <thead>
-    <tr>
-        <th>Borrower</th>
-        <th>Item Name</th>
-        <th>QR Code(s)</th>
-        <th>Quantity</th>
-        <th>Borrow Date</th>
-        <th>Due Date</th>
-        <th>Return Date</th>
-        <th>Status</th>
-        <th>Returned Items</th> <!-- New column -->
-        <th>Action</th>
-    </tr>
-</thead>
-<tbody>
-    @foreach($borrowedItems as $borrowedItem)
-    <tr>
-        <td>{{ $borrowedItem->borrower->first_name }} {{ $borrowedItem->borrower->last_name }}</td>
-        <td>{{ $borrowedItem->item->name }}</td>
+                <thead>
+                    <tr>
+                        <th>Borrower</th>
+                        <th>Item Name</th>
+                        <th>QR Code(s)</th>
+                        <th>Quantity</th>
+                        <th>Borrow Date</th>
+                        <th>Due Date</th>
+                        <th>Return Date</th>
+                        <th>Status</th>
+                        <th>Returned Items</th>
+                        <th>Remarks</th> <!-- New Remarks Column -->
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($borrowedItems as $borrowedItem)
+                    <tr>
+                        <td>{{ $borrowedItem->borrower->first_name }} {{ $borrowedItem->borrower->last_name }}</td>
+                        <td>{{ $borrowedItem->item->name }}</td>
 
-        <!-- Display all QR codes for the borrowed item -->
-        <td>
-            @foreach($borrowedItem->individualItems as $individualItem)
-            <span>{{ $individualItem->qr_code }}</span><br>
-            @endforeach
-        </td>
+                        <!-- Display all QR codes for the borrowed item -->
+                        <td>
+                            @foreach($borrowedItem->individualItems as $individualItem)
+                            <span>{{ $individualItem->qr_code }}</span><br>
+                            @endforeach
+                        </td>
 
-        <td>{{ $borrowedItem->quantity_borrowed }}</td>
-        <td>{{ $borrowedItem->borrow_date->format('Y-m-d') }}</td>
-        <td>{{ $borrowedItem->due_date->format('Y-m-d') }}</td>
+                        <td>{{ $borrowedItem->quantity_borrowed }}</td>
+                        <td>{{ $borrowedItem->borrow_date->format('Y-m-d') }}</td>
+                        <td>{{ $borrowedItem->due_date->format('Y-m-d') }}</td>
 
-        <td>
-            @php
-                // Get the return dates from the individual_item_returns relationship
-                $returnDates = $borrowedItem->individualItemReturns->groupBy('return_date');
-            @endphp
-            @foreach($returnDates as $date => $returns)
-                @if($date)
-                    <strong>{{ \Carbon\Carbon::parse($date)->format('Y-m-d') }}</strong><br>
-                    @foreach($returns as $return)
-                        {{ $return->individualItem->qr_code }}<br>
+                        <td>
+                            @php
+                            // Get the return dates from the individual_item_returns relationship
+                            $returnDates = $borrowedItem->individualItemReturns->groupBy('return_date');
+                            @endphp
+                            @foreach($returnDates as $date => $returns)
+                            @if($date)
+                            <strong>{{ \Carbon\Carbon::parse($date)->format('Y-m-d') }}</strong><br>
+                            @foreach($returns as $return)
+                            {{ $return->individualItem->qr_code }}<br>
+                            @endforeach
+                            @endif
+                            @endforeach
+                        </td>
+
+                        <td>
+                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                {{ $borrowedItem->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                {{ $borrowedItem->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}">
+                                {{ $borrowedItem->status }}
+                            </span>
+                        </td>
+
+                        <td>
+                            @php
+                            // Count how many individual items have been returned (i.e., have a non-null return date)
+                            $returnedItemsCount = $borrowedItem->individualItemReturns->whereNotNull('return_date')->count();
+                            @endphp
+                            {{ $returnedItemsCount }}/{{ $borrowedItem->quantity_borrowed }}
+                        </td>
+
+                        <!-- New Remarks Column -->
+                        <td>
+                            @foreach($borrowedItem->individualItemReturns as $return)
+                            @if($return->remarks)
+                            <strong>{{ $return->individualItem->qr_code }}</strong> - {{ $return->remarks }}<br>
+                            @else
+                            <strong>{{ $return->individualItem->qr_code }}</strong> - <span>Not Checked</span><br> <!-- Default text if no remarks -->
+                            @endif
+                            @endforeach
+                        </td>
+
+                        <td>
+                            <button class="return-btn px-2 py-1 m-1 bg-[#A855F7] text-white rounded hover:bg-[#7038A4] focus:outline-none focus:ring-2 focus:ring-[#A855F7] text-xs w-24"
+                                onclick="returnItem('{{ $borrowedItem->id }}')"
+                                @if($borrowedItem->status == 'Returned')
+                                disabled
+                                style="opacity: 0.5;"
+                                data-toggle="tooltip" data-placement="top" title="This item has already been returned."
+                                @endif>
+                                Return
+                            </button>
+                        </td>
+                    </tr>
                     @endforeach
-                @endif
-            @endforeach
-        </td>
-
-        <td>
-            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-            {{ $borrowedItem->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-            {{ $borrowedItem->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}">
-                {{ $borrowedItem->status }}
-            </span>
-        </td>
-
-        <td>
-            @php
-                // Count how many individual items have been returned (i.e., have a non-null return date)
-                $returnedItemsCount = $borrowedItem->individualItemReturns->whereNotNull('return_date')->count();
-            @endphp
-            {{ $returnedItemsCount }}/{{ $borrowedItem->quantity_borrowed }}
-        </td>
-
-        <td>
-            <button class="return-btn px-2 py-1 m-1 bg-[#A855F7] text-white rounded hover:bg-[#7038A4] focus:outline-none focus:ring-2 focus:ring-[#A855F7] text-xs w-24"
-                onclick="returnItem('{{ $borrowedItem->id }}')"
-                @if($borrowedItem->status == 'Returned')
-                disabled
-                style="opacity: 0.5;"
-                data-toggle="tooltip" data-placement="top" title="This item has already been returned."
-                @endif>
-                Return
-            </button>
-        </td>
-    </tr>
-    @endforeach
-</tbody>
-
-
+                </tbody>
             </table>
+
 
 
         </div>
@@ -315,10 +326,12 @@
             <table id="codeTable" class="display" style="width: 100%; height: 100%; border: 2px solid #ccc; border-collapse: collapse; table-layout: fixed;">
                 <thead>
                     <tr>
-                        <th style="text-align: center; width: 50%;">QR Code</th>
-                        <th style="text-align: center; width: 50%;">Status</th>
+                        <th style="text-align: center; width: 40%;">QR Code</th>
+                        <th style="text-align: center; width: 40%;">Status</th>
+                        <th style="text-align: center; width: 20%;">Remarks</th> <!-- New column for Remarks -->
                     </tr>
                 </thead>
+
                 <tbody style="text-align: center;">
                     <!-- QR code data will be populated here dynamically -->
                 </tbody>
@@ -419,59 +432,72 @@
     }
 
     // Function to populate the table in the QR modal
- // Modify the returnItem function to pass the current returned count
-function returnItem(id) {
-    $('#qr-modal').removeClass('hidden');
-    $('#borrowedItemsTable button').prop('disabled', true);
-    $('#qr-modal').data('item-id', id);
-    $('#result').text('Scanning for QR code...');
+    // Modify the returnItem function to pass the current returned count
+    // Function to populate the table in the QR modal
+    function returnItem(id) {
+        $('#qr-modal').removeClass('hidden');
+        $('#borrowedItemsTable button').prop('disabled', true);
+        $('#qr-modal').data('item-id', id);
+        $('#result').text('Scanning for QR code...');
 
-    scannedQRCodeList = [];
-    scannedCount = 0;
-    document.getElementById('approveButton').disabled = true;
-    document.getElementById('undoButton').disabled = true;
+        scannedQRCodeList = [];
+        scannedCount = 0;
+        document.getElementById('approveButton').disabled = true;
+        document.getElementById('undoButton').disabled = true;
 
-    // Fetch the list of borrowed items, including the count of already returned items
-    $.ajax({
-        url: '/admin/borrowed-items/list/' + id,
-        method: 'GET',
-        success: function(response) {
-            const tableBody = $('#codeTable tbody');
-            tableBody.empty();
+        // Fetch the list of borrowed items, including the count of already returned items
+        $.ajax({
+            url: '/admin/borrowed-items/list/' + id,
+            method: 'GET',
+            success: function(response) {
+                const tableBody = $('#codeTable tbody');
+                tableBody.empty();
 
-            let alreadyReturnedCount = 0;
+                let alreadyReturnedCount = 0;
 
-            // Iterate over the borrowed items and populate the table
-            response.borrowedItems.forEach(item => {
-                let statusText = item.status;
-                let rowStyle = '';
+                // Iterate over the borrowed items and populate the table
+                response.borrowedItems.forEach(item => {
+                    let statusText = item.status;
+                    let rowStyle = '';
+                    let remarksDisabled = ''; // Default to not disabled
 
-                // Check if the item has been returned and display 'Returned' in the table
-                if (item.status === 'Available') {
-                    statusText = 'Returned';
-                    rowStyle = 'background-color: #90ee90; color: #000;';
-                    alreadyReturnedCount++; // Increment the returned items count
-                }
+                    // Check if the item has been returned and display 'Returned' in the table
+                    if (item.status === 'Available') {
+                        statusText = 'Returned';
+                        rowStyle = 'background-color: #90ee90; color: #000;';
+                        alreadyReturnedCount++; // Increment the returned items count
+                        remarksDisabled = 'disabled'; // Disable remarks dropdown for returned items
+                    }
 
-                const row = `<tr style="${rowStyle}">
+                    // Create the row with the dropdown for remarks
+                    const row = `<tr style="${rowStyle}">
                     <td>${item.qr_code}</td>
                     <td>${statusText}</td>
+                    <td>
+                        <select class="remarks-dropdown" data-qr="${item.qr_code}" ${remarksDisabled}>
+                            <option value="Good">Good</option>
+                            <option value="Damaged">Damaged</option>
+                            <option value="Missing">Missing</option>
+                            <option value="Not Checked">Not Checked</option>
+                        </select>
+                    </td>
                 </tr>`;
-                tableBody.append(row);
-            });
+                    tableBody.append(row);
+                });
 
-            totalRequestQuantity = response.borrowedItems.length;
-            scannedCount = alreadyReturnedCount;  // Set scannedCount to the already returned count
-            $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`); // Update counter
+                totalRequestQuantity = response.borrowedItems.length;
+                scannedCount = alreadyReturnedCount; // Set scannedCount to the already returned count
+                $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`); // Update counter
 
-            openQRScanner();
-        },
-        error: function(err) {
-            console.error('Error fetching borrowed items:', err);
-            Swal.fire('Error!', 'Unable to load borrowed items.', 'error');
-        }
-    });
-}
+                openQRScanner();
+            },
+            error: function(err) {
+                console.error('Error fetching borrowed items:', err);
+                Swal.fire('Error!', 'Unable to load borrowed items.', 'error');
+            }
+        });
+    }
+
 
 
 
