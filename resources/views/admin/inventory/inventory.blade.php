@@ -456,11 +456,11 @@ table.dataTable tbody td {
                         <td>{{ $item->status }}</td>
                         <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
                         <td class="action-buttons">
-                            <button onclick="openEditModal({{ $item->id }})" class="edit-btn"> 
-                                Edit
-                            </button>
+                        <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+
                             <!-- Archive Button: AJAX for archiving -->
-                            <button type="button" class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
+                            <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+
                         </td>
                     </tr>
                 @endforeach
@@ -503,11 +503,10 @@ table.dataTable tbody td {
                         <td>{{ $item->status }}</td>
                         <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
                         <td class="action-buttons">
-                            <button onclick="openEditModal({{ $item->id }})" class="edit-btn"> 
-                                Edit
-                            </button>
-                            <!-- Archive Button: AJAX for archiving -->
-                            <button type="button" class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
+                        <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+<!-- Archive Button: AJAX for archiving -->
+<button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+
                         </td>
                     </tr>
                 @endforeach
@@ -551,11 +550,10 @@ table.dataTable tbody td {
                         <td>{{ $item->status }}</td>
                         <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
                         <td class="action-buttons">
-                            <button onclick="openEditModal({{ $item->id }})" class="edit-btn"> 
-                                Edit
-                            </button>
-                            <!-- Archive Button: AJAX for archiving -->
-                            <button type="button" class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
+                        <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+<!-- Archive Button: AJAX for archiving -->
+<button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+
                         </td>
                     </tr>
                 @endforeach
@@ -599,11 +597,10 @@ table.dataTable tbody td {
                         <td>{{ $item->status }}</td>
                         <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
                         <td class="action-buttons">
-                            <button onclick="openEditModal({{ $item->id }})" class="edit-btn"> 
-                                Edit
-                            </button>
-                            <!-- Archive Button: AJAX for archiving -->
-                            <button type="button" class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
+                        <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+<!-- Archive Button: AJAX for archiving -->
+<button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+
                         </td>
                     </tr>
                 @endforeach
@@ -646,11 +643,10 @@ table.dataTable tbody td {
                         <td>{{ $item->status }}</td>
                         <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
                         <td class="action-buttons">
-                            <button onclick="openEditModal({{ $item->id }})" class="edit-btn"> 
-                                Edit
-                            </button>
-                            <!-- Archive Button: AJAX for archiving -->
-                            <button type="button" class="archive-btn" onclick="archiveItem({{ $item->id }})">Archive</button>
+                        <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+<!-- Archive Button: AJAX for archiving -->
+<button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+
                         </td>
                     </tr>
                 @endforeach
