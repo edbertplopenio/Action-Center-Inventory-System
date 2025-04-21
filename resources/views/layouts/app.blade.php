@@ -156,29 +156,10 @@
                             <span class="text-sm">Records</span>
                         </a>
                     </li>
-
                     @endif
 
-                    <!-- Borrower Inventory Management: Visible only to Borrower -->
-                    @if(Auth::user()->user_role == 'Borrower')
-                    <li class="{{ Request::routeIs('borrower.inventory.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
-                        <a href="{{ route('borrower.inventory.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
-                            <i class="ph-bold ph-archive text-xl"></i>
-                            <span class="text-sm">Equipment Inventory</span>
-                        </a>
-                    </li>
 
-                    <!-- Borrow Equipment: Visible only to Borrower -->
-                    <li class="{{ Request::routeIs('borrower.borrow-equipment.index') ? 'bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 text-white rounded-xl' : 'text-gray-600' }}">
-                        <a href="{{ route('borrower.borrow-equipment.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
-                            <i class="ph-bold ph-file-text text-xl"></i> <!-- Borrow Equipment Icon -->
-                            <span class="text-sm">Borrowed Equipment</span>
-                        </a>
-                    </li>
 
-                    @endif
-
-                    <!-- Borrowing Request: Visible only to Admin -->
                     <!-- Borrowing Request: Visible only to Admin -->
                     @if(Auth::user()->user_role == 'Admin')
                     <li class="{{ Request::routeIs('admin.borrowing-request.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
@@ -190,22 +171,40 @@
                             </span>
                         </a>
                     </li>
-
-
+                    @endif
 
                     <!-- Returning Items: Visible only to Admin -->
                     <li class="{{ Request::routeIs('admin.return-items.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                         <a href="{{ route('admin.return-items.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
-                            <i class="ph-bold ph-arrow-u-down-left text-xl"></i> <!-- Example class name -->
-
+                            <i class="ph-bold ph-arrow-u-down-left text-xl"></i>
                             <span class="text-sm">Item Return</span>
                         </a>
                     </li>
 
 
+                    <!-- Borrower Inventory Management: Visible only to Borrower -->
+                    @if(Auth::user()->user_role == 'Borrower' || Auth::user()->user_role == 'Admin')
+                    <li class="{{ Request::routeIs('borrower.inventory.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
+                        <a href="{{ route('borrower.inventory.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
+                            <i class="ph-bold ph-archive text-xl"></i>
+                            <span class="text-sm">Equipment Inventory</span>
+                        </a>
+                    </li>
                     @endif
+
+                    <!-- Borrow Equipment: Visible only to Borrower -->
+                    @if(Auth::user()->user_role == 'Borrower' || Auth::user()->user_role == 'Admin')
+                    <li class="{{ Request::routeIs('borrower.borrow-equipment.index') ? 'bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 text-white rounded-xl' : 'text-gray-600' }}">
+                        <a href="{{ route('borrower.borrow-equipment.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
+                            <i class="ph-bold ph-file-text text-xl"></i>
+                            <span class="text-sm">Borrowed Equipment</span>
+                        </a>
+                    </li>
+                    @endif
+
                 </ul>
             </div>
+
 
             <script>
                 // Function to fetch the pending borrowing requests count and update the badge
