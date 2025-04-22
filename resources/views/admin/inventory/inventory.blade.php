@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
@@ -63,35 +64,21 @@
             margin-left: 0.4rem; /* Reduced margin between tabs */
         }
 
-        #add-item-btn {
-            padding: 0.4rem 0.8rem; /* Reduced padding */
-            font-size: 0.9rem; /* Slightly smaller font */
-        }
 
         /* Position the Add Item button to the right side of the tabs */
         #add-item-btn {
+            font-size: 0.9rem; /* Slightly smaller font */
             margin-left: auto; /* Push the button to the far right */
-            background-color:rgb(21, 183, 75); /* Green */
+            background-color: #4cc9f0;; /* Green */
             color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 60px 60px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
 
-        #add-item-btn {
-            margin-left: auto; /* Push the button to the far right */
-            background-color: rgb(21, 183, 75); /* Green */
-            color: white;
-            padding: 0.3rem 0.6rem; /* Reduced padding */
-            font-size: 0.8rem; /* Slightly smaller font */
-            border-radius: 0.375rem; /* Consistent border radius with tabs */
-            cursor: pointer;
-            transition: background-color 0.3s, opacity 0.3s ease;
-        }
-
         #add-item-btn:hover {
-            background-color: #2F9C5A; /* Darker green for hover effect */
+            background-color: #3fb3d1; /* Darker green for hover effect */
             opacity: 0.8; /* Slight opacity change on hover */
         }
 
@@ -117,8 +104,8 @@
         }
 
         table th, table td {
-            padding: 0.5rem; /* Reduced padding for better alignment */
-            text-align: left;
+            padding: 0.3rem 0.6rem;; /* Reduced padding for better alignment */
+            text-align: center;
             border-bottom: 1px solid #E5E5E5;
             font-size: 0.8rem; /* Reduced font size */
             text-align: center;
@@ -162,7 +149,7 @@ table th:hover {
         }
 
         .restore-btn {
-        background-color: rgb(21, 183, 75);  /* Purple */
+        background-color: #45a17e;  /* Purple */
         color: white;
         border-radius: 4px;
         font-size: 14px;
@@ -194,10 +181,6 @@ table th:hover {
         background-color: #F90000; /* Yellow */
     }
 
-    table th:nth-child(11), table td:nth-child(11) {
-    width: 180px !important;  /* Set a fixed width for the action column */
-    padding: 0.6rem;  /* Ensure padding is consistent */
-    }
     table td .action-buttons {
         display: flex;
         justify-content: center;
@@ -213,11 +196,9 @@ table th:hover {
         gap: 4px; /* Smaller gap between buttons */
     }
 
-
-
     /* Edit Button Style */
     .edit-btn {
-    background-color: rgb(21, 183, 75);
+    background-color: #4cc9f0;
     color: white;
     padding: 3px 8px; /* Smaller padding */
     border-radius: 3px; /* Slightly smaller rounded corners */
@@ -230,13 +211,13 @@ table th:hover {
 }
 
 .edit-btn:hover {
-    background-color: #38a169; /* Darker green on hover */
+    background-color: #36a9c1; /* Darker green on hover */
     transform: scale(1.05); /* Slight scaling effect */
 }
 
     /* Archive button style */
     .archive-btn {
-    background-color: #f56565; /* Red background */
+    background-color: #45a17e; /* Red background */
     color: white;
     padding: 3px 8px; /* Smaller padding */
     border-radius: 3px; /* Slightly smaller rounded corners */
@@ -249,7 +230,7 @@ table th:hover {
 }
 
 .archive-btn:hover {
-    background-color: #e53e3e; /* Darker red on hover */
+    background-color: #45a17e; /* Darker red on hover */
     transform: scale(1.05); /* Slight scaling effect */
 }
 
@@ -285,9 +266,6 @@ table.dataTable tbody td {
     text-align: center; 
 }
 
-/**/ 
-/**/
-/* Style the container */
  /* Entries per page Dropdown */
  .dataTables_length {
         display: flex;
@@ -390,6 +368,52 @@ table.dataTable tbody td {
     font-size: 10px !important;
     padding: 2px 5px !important;
 }
+
+    table th:nth-child(1), table td:nth-child(1) {
+    width: 50px !important;  /* Set a fixed width for the action column */
+    padding: 0.5rem;  /* Ensure padding is consistent */
+    }
+
+    table th:nth-child(2), table td:nth-child(2) {
+    width: 50px !important;  /* Set a fixed width for the action column */
+    padding: 0.5rem;  /* Ensure padding is consistent */
+    }
+    table th:nth-child(3), table td:nth-child(3) {
+    width: 50px !important;  /* Set a fixed width for the action column */
+    padding: 0.5rem;  /* Ensure padding is consistent */
+    }
+    table th:nth-child(4), table td:nth-child(4) {
+    width: 80px !important;  /* Set a fixed width for the action column */
+    padding: 0.5rem;  /* Ensure padding is consistent */
+    }
+    table th:nth-child(5), table td:nth-child(5) {
+    width: 150px !important;  /* Set a fixed width for the action column */
+    padding: 0.5rem;  /* Ensure padding is consistent */
+    }
+    table th:nth-child(6), table td:nth-child(6) {
+    width: 180px !important;  /* Set a fixed width for the action column */
+    padding: 0.5rem;  /* Ensure padding is consistent */
+    }
+    table th:nth-child(7), table td:nth-child(7) {
+    width: 150px !important;  /* Set a fixed width for the action column */
+    padding: 0.5rem;  /* Ensure padding is consistent */
+    }
+    table th:nth-child(8), table td:nth-child(8) {
+    width: 140px !important;  /* Set a fixed width for the action column */
+    padding: 0.5rem;  /* Ensure padding is consistent */
+    }
+    table th:nth-child(9), table td:nth-child(9) {
+    width: 150px !important;  /* Set a fixed width for the action column */
+    padding: 0.5rem;  /* Ensure padding is consistent */
+    }
+    table th:nth-child(10), table td:nth-child(10) {
+    width: 180px !important;  /* Set a fixed width for the action column */
+    padding: 0.5rem;  /* Ensure padding is consistent */
+    }
+    table th:nth-child(11), table td:nth-child(11) {
+    width: 200px !important;  /* Set a fixed width for the action column */
+    padding: 0.5rem;  /* Ensure padding is consistent */
+    }
 
 </style>
 
@@ -735,11 +759,27 @@ table.dataTable tbody td {
         }
     }
 
-
-    // Ensure DataTables is initialized when the page loads
     $(document).ready(function () {
-        initializeDataTables();
-    });
+    initializeDataTables();
+
+    $('tr').each(function() {
+    var category = $(this).find('td').eq(4).text(); // Assuming category is in the 5th column (index 4)
+
+    // Check if category is one of the specified ones
+    if (category === "DRRM Equipment") {
+        $('#equipment-content').append(this); // Append item row to DRRM Equipment tab
+    } else if (category === "Office Supplies") {
+        $('#office-supplies-content').append(this); // Append item row to Office Supplies tab
+    } else if (category === "Emergency Kits") {
+        $('#emergency-kits-content').append(this); // Append item row to Emergency Kits tab
+    } else {
+        // For any other category, move to "Other Items" tab
+        $('#other-items-content').append(this); // Append item row to Other Items tab
+    }
+});
+
+
+});
 </script>
 
 <!-- DataTables JS -->
@@ -888,6 +928,15 @@ $(document).ready(function () {
         }
     });
 
+    // Category dropdown logic: Show input field inline next to "Other Items"
+    $('#category').on('change', function () {
+    if ($(this).val() == 'Other Items') {
+        $('#other_category').removeClass('hidden'); // Show input if "Other Items" is selected
+    } else {
+        $('#other_category').addClass('hidden'); // Hide input if not "Other Items"
+    }
+    });
+
     // Ensure no future dates can be selected for Arrival Date and Date Purchased
     const today = new Date().toISOString().split('T')[0];
     $('#arrival_date, #date_purchased').attr('max', today);
@@ -909,8 +958,21 @@ $(document).ready(function () {
             formData.append('unit', $('#other_unit').val());  // Add custom unit if "Other" is selected
         }
 
-        // Optional: Log the FormData to check what is being sent
-        console.log(formData);  // This will print the form data in the browser console
+        // If "Other Items" is selected for category, append the value from other_category field
+        if ($('#category').val() === 'Other Items') {
+            formData.append('category', $('#other_category').val());  // Add custom category if "Other Items" is selected
+        }
+
+        // Show SweetAlert loading spinner before submitting the form
+        const swalLoading = Swal.fire({
+            title: 'Saving item...',
+            text: 'Please wait while the item is being saved.',
+            icon: 'info',
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading(); // Show loading spinner
+            }
+        });
 
         // Proceed with the AJAX request to submit the form data
         $.ajax({
@@ -920,13 +982,24 @@ $(document).ready(function () {
             processData: false,  // Don't process the data (since it's FormData)
             contentType: false,  // Set content type to false to let FormData handle it
             success: function(response) {
-                alert('Item saved successfully!');
+                swalLoading.close();  // Close loading spinner
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Item Added',
+                    text: 'The item was added successfully!',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
                 $("#addItemModal").addClass("hidden");
                 location.reload();  // Reload the page to see the new items
             },
             error: function(xhr, status, error) {
-                console.log(xhr.responseJSON);  // Log the error to the console for debugging
-                alert('There was an error saving the item.');
+                swalLoading.close();  // Close loading spinner
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'There was an error saving the item.',
+                });
             }
         });
     });
@@ -996,9 +1069,10 @@ $(document).ready(function () {
         $('#itemForm').find('input[type="text"], input[type="number"], input[type="date"], input[type="file"], textarea').val('');
         $('#itemForm').find('select').prop('selectedIndex', 0); // Reset all dropdowns to the first option
 
-        // If you have a field for "Other" input (for unit or storage location), hide them and clear their values
+        // If you have a field for "Other" input (for unit, storage location, or category), hide them and clear their values
         $('#other_unit').addClass('hidden').val('');
         $('#other_storage_location').addClass('hidden').val('');
+        $('#other_category').addClass('hidden').val('');
 
         // Clear the search bar field and reset it to an empty state
         $('#search-item').val('');
@@ -1009,43 +1083,95 @@ $(document).ready(function () {
 });
 </script>
 
-<SCRIPT>
+
+<script>
     //ARCHIVES
     function archiveItem(itemId) {
-    $.ajax({
-        url: '/archive-item/' + itemId,
-        type: 'POST',
-        data: {
-            _token: $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function(response) {
-            alert('Item archived successfully.');
-            $('#item-' + itemId).remove(); // Remove the item row from the table
-        },
-        error: function(xhr) {
-            alert('Error archiving item.');
-        }
-    });
-}
+        // Show the loading spinner while the AJAX request is in progress
+        const swalLoading = Swal.fire({
+            title: 'Archiving item...',
+            text: 'Please wait while the item is being archived.',
+            icon: 'info',
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading(); // Display the loading spinner
+            }
+        });
 
-function restoreItem(itemId) {
-    $.ajax({
-        url: '/restore-item/' + itemId,
-        type: 'POST',
-        data: {
-            _token: $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function(response) {
-            alert('Item restored successfully.');
-            location.reload(); // Reload the page to update the table
-        },
-        error: function(xhr) {
-            alert('Error restoring item.');
-        }
-    });
-}
+        $.ajax({
+            url: '/archive-item/' + itemId,
+            type: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                // Close the loading spinner and show success message
+                swalLoading.close();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Item Archived',
+                    text: 'The item has been successfully archived.',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                $('#item-' + itemId).remove(); // Remove the item row from the table
+            },
+            error: function(xhr) {
+                // Close the loading spinner and show error message
+                swalLoading.close();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'There was an error archiving the item.',
+                });
+            }
+        });
+    }
 
+    // Function to restore an archived item
+    function restoreItem(itemId) {
+        // Show the loading spinner while the AJAX request is in progress
+        const swalLoading = Swal.fire({
+            title: 'Restoring item...',
+            text: 'Please wait while the item is being restored.',
+            icon: 'info',
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading(); // Display the loading spinner
+            }
+        });
+
+        $.ajax({
+            url: '/restore-item/' + itemId,
+            type: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                // Close the loading spinner and show success message
+                swalLoading.close();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Item Restored',
+                    text: 'The item has been successfully restored.',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                location.reload(); // Reload the page to update the table
+            },
+            error: function(xhr) {
+                // Close the loading spinner and show error message
+                swalLoading.close();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'There was an error restoring the item.',
+                });
+            }
+        });
+    }
 </script>
+
 
 <script>
 // Open the Edit Modal and populate fields with item data
@@ -1133,12 +1259,16 @@ $(document).ready(function () {
 
                             <div>
                                 <label for="category" class="block text-xs font-medium text-gray-900">Category</label>
-                                <select id="category" name="category" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
-                                    <option value="DRRM Equipment">DRRM Equipment</option>
-                                    <option value="Office Supplies">Office Supplies</option>
-                                    <option value="Emergency Kits">Emergency Kits</option>
-                                    <option value="Other Items">Other Items</option>
-                                </select>
+                                <div class="flex items-center">
+                                    <select id="category" name="category" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                        <option value="DRRM Equipment">DRRM Equipment</option>
+                                        <option value="Office Supplies">Office Supplies</option>
+                                        <option value="Emergency Kits">Emergency Kits</option>
+                                        <option value="Other Items">Other Items</option>
+                                    </select>
+                                    <!-- Inline input field for 'Other Items' -->
+                                    <input type="text" id="other_category" name="other_category" class="mt-1 ml-2 hidden py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs w-20" maxlength="12" placeholder="Other Items: ______">
+                                </div>
                             </div>
 
                             <div>
