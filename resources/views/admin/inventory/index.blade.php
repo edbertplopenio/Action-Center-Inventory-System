@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Records')
+@section('title', 'Inventory Management')
 
 @section('content')
 
@@ -18,7 +18,6 @@
 
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
 
-
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
 
 <!-- Include SweetAlert Library -->
@@ -26,8 +25,6 @@
 
     <!-- Include SweetAlert Library -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
 
 </head>
 
@@ -37,22 +34,22 @@
     <div class="bg-white p-6 shadow-lg rounded-lg h-full">
         <!-- Title and Button inside this div -->
         <div class="flex justify-between items-center mb-1 pt-0">
-            <h1 class="text-3xl text-left">Inventory Management</h1>
-            
+        <h1 class="text-3xl text-left" style="margin-top: -1rem;">Inventory Management</h1>
         </div>
 
-
-
+        <!-- Include Inventory Content and pass the required data -->
+        @include('admin.inventory.inventory', 
+            [
+                'allItems' => $allItems,
+                'drrmItems' => $drrmItems,
+                'officeItems' => $officeItems,
+                'emergencyItems' => $emergencyItems,
+                'otherItems' => $otherItems,
+                'archivedItems' => $archivedItems
+            ]
+        )
 
     </div>
 </div>
-
-
-
-
-
-
-
-
 
 @endsection

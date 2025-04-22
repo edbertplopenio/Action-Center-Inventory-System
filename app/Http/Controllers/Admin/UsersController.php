@@ -14,14 +14,18 @@ class UsersController extends Controller
     /**
      * Display a listing of users.
      */
-    public function index()
-    {
-        // Fetch only active users
-        $users = User::where('status', 'active')->get();
+/**
+ * Display a listing of all users (active and inactive).
+ */
+public function index()
+{
+    // Fetch all users regardless of their status
+    $users = User::all();
     
-        // Pass active users to the Blade view
-        return view('admin.users.index', compact('users'));
-    }
+    // Pass all users to the Blade view
+    return view('admin.users.index', compact('users'));
+}
+
 
     /**
      * Store a new user.
@@ -196,28 +200,29 @@ class UsersController extends Controller
     public function deactivate($id)
     {
         $user = User::find($id);
-
+    
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'User not found.']);
         }
-
-        // Update status to 'deactivated'
-        $user->update(['status' => 'deactivated']);
-
+    
+        // Update status to 'inactive' (or 'deactivated' if you prefer)
+        $user->update(['status' => 'inactive']);
+    
         return response()->json(['success' => true, 'message' => 'User successfully deactivated.']);
     }
-
+    
     public function activate($id)
     {
         $user = User::find($id);
-
+    
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'User not found.'], 404);
         }
-
+    
         // Update the status to 'active'
         $user->update(['status' => 'active']);
-
+    
         return response()->json(['success' => true, 'message' => 'User successfully activated.']);
     }
+    
 }

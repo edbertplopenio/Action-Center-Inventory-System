@@ -28,9 +28,42 @@ class Item extends Model
         'is_archived',
     ];
 
-    // Define the relationship to individual items
+    // Specify timestamps (if your table uses 'created_at' and 'updated_at' fields)
+    public $timestamps = true;
+
+    // Define relationship with IndividualItem
     public function individualItems()
     {
-        return $this->hasMany(IndividualItem::class, 'item_id');
+        return $this->hasMany(IndividualItem::class);
+    }
+
+    /**
+     * Update the item attributes.
+     *
+     * @param array $data
+     * @return bool
+     */
+    public function updateItem(array $data)
+    {
+        // Validate the data before saving
+        $this->validateUpdateData($data);
+
+        // Update the item's attributes
+        return $this->update($data);
+    }
+
+    /**
+     * Validate the update data before updating the record.
+     *
+     * @param array $data
+     * @return void
+     */
+    protected function validateUpdateData(array $data)
+    {
+        // You can include custom validation here before updating the item
+        // Example validation: Ensure quantity is a positive number
+        if (isset($data['quantity']) && $data['quantity'] < 0) {
+            throw new \Exception('Quantity cannot be negative');
+        }
     }
 }

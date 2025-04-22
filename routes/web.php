@@ -3,17 +3,17 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthManager;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Borrower\InventoryController as BorrowerInventoryController;  // Import Borrower Inventory Controller
 use App\Http\Controllers\Admin\InventoryController as AdminInventoryController;  // Import Admin Inventory Controller
-use App\Http\Controllers\Borrower\BorrowEquipmentController; 
-use App\Http\Controllers\Borrower\BorrowedEquipmentController;
 use App\Http\Controllers\Borrower\InventoryController;
+use App\Http\Controllers\Borrower\BorrowedEquipmentController;
+use App\Http\Controllers\Borrower\BorrowEquipmentController; 
 use App\Http\Controllers\Admin\RecordsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Borrower\ProfileController;  // Import the ProfileController
-use App\Http\Controllers\Admin\InventoryRequestController;
-use App\Http\Controllers\ItemController;
 
+use App\Http\Controllers\Admin\InventoryRequestController;
 
 
 
@@ -43,8 +43,7 @@ Route::get('/admin/inventory', [AdminInventoryController::class, 'index'])->name
 Route::get('/borrower/inventory', [BorrowerInventoryController::class, 'index'])->name('borrower.inventory.index')->middleware('auth');
 
 
-// Borrower Borrow Equipment Route
-Route::get('/borrower/borrow-equipment', [BorrowEquipmentController::class, 'index'])->name('borrower.borrow-equipment.index')->middleware('auth');
+
 
 
 // ===================
@@ -110,14 +109,11 @@ Route::get('/admin/users/deactivated', [UsersController::class, 'deactivatedInde
 
 Route::post('/admin/users/activate/{id}', [UsersController::class, 'activate'])->name('users.activate');
 
-// Show the profile edit page
-Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
-// Update the profile information
-Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-// Profile edit route
-Route::get('profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-// Profile update route
-Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');
+
+
+// Profile Route for Borrowers
+Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index')->middleware('auth');
+
 
 
 Route::get('/borrower/inventory', [InventoryController::class, 'index'])->name('borrower.inventory.index');
@@ -177,11 +173,106 @@ Route::get('/admin/borrowing-request', [InventoryRequestController::class, 'inde
 
 Route::get('/admin/get-item-qr-codes/{itemId}', [InventoryRequestController::class, 'getItemQRCodes']);
 
-Route::get('/home', [ItemController::class, 'index'])->name('home');
 
-Route::get('/api/items', [ItemController::class, 'getItems']);
-Route::get('/api/usage-rate/{itemId}', [ItemController::class, 'getUsageRateData']);
+Route::post('/admin/inventory-requests/update-item-status', [InventoryRequestController::class, 'updateItemStatus']);
+
+Route::get('/admin/borrowed-items/list/{id}', [ReturnItemsController::class, 'getBorrowedItemsForReturn']);
+Route::post('/admin/inventory-requests/update-status/{id}', [InventoryRequestController::class, 'updateStatus']);
+
+
+
+
+
+// Route for notification badge
+Route::get('/admin/borrowing-requests/count', [InventoryRequestController::class, 'getPendingRequestsCount'])->name('admin.borrowing-requests.count');
+
+
+
+// Inventory Routes (ItemController)
+// ===========================
+use App\Http\Controllers\ItemController;
+Route::controller(ItemController::class)->group(function () {
+    // Display all items in the inventory
+    Route::get('/inventory', 'index')->name('inventory'); 
+    
+
+    // Store a new item (this is the route to save both the `items` and `individual_items`)
+    Route::post('/items/store', 'store')->name('items.store'); // Explicitly define post for storing items
+
+    // Show edit form for an item
+    Route::get('/items/{id}/edit', 'editItem')->name('items.edit'); 
+
+    // Update item details
+    Route::put('/items/{id}', 'update')->name('items.update'); 
+
+    // Permanently delete item
+    Route::delete('/items/{id}', 'deletePermanently')->name('items.destroy'); 
+
+    // Routes for Archiving (Soft Delete), Restoring, and Permanently Deleting Items
+    Route::post('/archive-item/{id}', 'archiveItem')->name('archive.item');    // Archive (soft delete)
+    Route::post('/restore-item/{id}', 'restoreItem')->name('restore.item');    // Restore (unarchive)
+    Route::delete('/delete-item/{id}', 'deletePermanently')->name('delete.item'); // Permanently delete an archived item
+
+    // Route for fetching item data for editing
+    Route::get('/get-item/{id}', 'editItem')->name('get.item.data'); // Fetch item data for editing
+    
+    // Route for searching an item by its name
+    Route::get('/search-item/{name}', 'searchItem')->name('search.item'); // Search item by name
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Route::get('/home', [DashboardController::class, 'index'])->name('home');
+
+Route::get('/api/items', [DashboardController::class, 'getItems']);
+Route::get('/api/usage-rate/{itemId}', [DashboardController::class, 'getUsageRateData']);
 
 // routes/web.php
-Route::get('/most-borrowed-items', [ItemController::class, 'mostBorrowedItems']);
-Route::get('/equipment-quantity-by-category', [ItemController::class, 'quantityByCategory']);
+Route::get('/most-borrowed-items', [DashboardController::class, 'mostBorrowedItems']);
+Route::get('/equipment-quantity-by-category', [DashboardController::class, 'quantityByCategory']);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Route for About Us page
+Route::get('/about', function () {
+    return view('about'); // This assumes you have an 'about.blade.php' view
+})->name('about');
+
+});
+
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');

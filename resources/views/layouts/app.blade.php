@@ -179,21 +179,26 @@
                     @endif
 
                     <!-- Borrowing Request: Visible only to Admin -->
+                    <!-- Borrowing Request: Visible only to Admin -->
                     @if(Auth::user()->user_role == 'Admin')
                     <li class="{{ Request::routeIs('admin.borrowing-request.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                         <a href="{{ route('admin.borrowing-request.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
                             <i class="ph-bold ph-clipboard text-xl"></i>
-                            <span class="text-sm">Borrowing Request</span>
+                            <span class="text-sm">Borrowing <br> Request</span>
+                            <span id="pending-badge" class="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-red-500 rounded-full" style="display: none;">
+                                0
+                            </span>
                         </a>
                     </li>
+
 
 
                     <!-- Returning Items: Visible only to Admin -->
                     <li class="{{ Request::routeIs('admin.return-items.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                         <a href="{{ route('admin.return-items.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
-                        <i class="ph-bold ph-arrow-u-down-left text-xl"></i> <!-- Example class name -->
+                            <i class="ph-bold ph-arrow-u-down-left text-xl"></i> <!-- Example class name -->
 
-                            <span class="text-sm">Return Items</span>
+                            <span class="text-sm">Item Return</span>
                         </a>
                     </li>
 
@@ -202,6 +207,36 @@
                 </ul>
             </div>
 
+            <script>
+                // Function to fetch the pending borrowing requests count and update the badge
+                function updatePendingRequestsCount() {
+                    // Send an AJAX request to get the count of pending requests
+                    fetch("{{ route('admin.borrowing-requests.count') }}")
+                        .then(response => response.json())
+                        .then(data => {
+                            const pendingCount = data.pendingRequestsCount;
+                            const badge = document.getElementById('pending-badge');
+
+                            // If there are pending requests, show the badge and update the count
+                            if (pendingCount > 0) {
+                                badge.style.display = 'inline-flex'; // Show the badge
+                                badge.innerText = pendingCount; // Set the count
+                            } else {
+                                badge.style.display = 'none'; // Hide the badge if there are no pending requests
+                            }
+                        })
+                        .catch(error => console.error('Error fetching pending requests count:', error));
+                }
+
+                // Wait for the DOM content to load completely before executing the function
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Call the function to update the badge immediately when the page loads
+                    updatePendingRequestsCount();
+
+                    // Optionally, you can set an interval to update the count every 30 seconds
+                    setInterval(updatePendingRequestsCount, 30000); // Update every 30 seconds
+                });
+            </script>
 
 
 
