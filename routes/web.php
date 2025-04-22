@@ -273,3 +273,6 @@ Route::get('/about', function () {
 })->name('about');
 
 });
+
+
+Route::post('/validate-email', [AuthManager::class, 'validateEmail']);

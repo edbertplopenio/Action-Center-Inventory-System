@@ -93,4 +93,33 @@ public function loginPost(Request $request)
         // Redirect to login page after logout
         return redirect()->route('login');
     }
+
+
+
+
+    // app/Http/Controllers/AuthManager.php
+
+
+    // Other methods...
+
+    public function validateEmail(Request $request)
+    {
+        // Validate the email format
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        // Check if the email exists in the database
+        $user = User::where('email', $request->email)->first();
+
+        if ($user) {
+            // If user exists, send success response
+            return response()->json(['success' => true]);
+        }
+
+        // If user does not exist, send failure response
+        return response()->json(['success' => false]);
+    }
+
+
 }

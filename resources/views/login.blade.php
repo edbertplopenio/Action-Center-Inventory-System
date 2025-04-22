@@ -1,6 +1,9 @@
 @extends('layout')
 @section('title', 'Login')
 @section('content')
+
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
 <div class="relative min-h-screen flex justify-center items-center bg-gray-100">
   <!-- Background Image Covering Full Screen -->
   <div class="absolute inset-0 w-full h-full">
@@ -130,14 +133,17 @@
     </div>
   </div>
 </div>
+<!-- SweetAlert2 Library -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
-<!-- JavaScript to toggle the modal visibility -->
 <script>
   // Get modal and buttons
   const forgotPasswordLink = document.getElementById('forgotPasswordLink'); // Ensure this is defined in your HTML
   const forgotPasswordModal = document.getElementById('forgotPasswordModal');
   const cancelModalBtn = document.getElementById('cancelModalBtn');
+  const resetPasswordBtn = document.getElementById('resetPasswordBtn');
+  const resetEmail = document.getElementById('resetEmail');
 
   // Open modal when forgot password link is clicked
   forgotPasswordLink.addEventListener('click', function(event) {
@@ -162,10 +168,71 @@
       forgotPasswordModal.classList.remove('show'); // Remove 'show' class for fade-out transition
       setTimeout(function() {
         forgotPasswordModal.style.display = 'none'; // Hide modal after fade-out
-      }, 300);
+      }, 300); // Time matches the transition duration (0.3s)
+    }
+  });
+
+  // Handle the reset password button click
+  resetPasswordBtn.addEventListener('click', function() {
+    const emailValue = resetEmail.value.trim(); // Get the trimmed email input value
+
+    if (emailValue === "") {
+      // If email is empty, show SweetAlert
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Please enter your email address!',
+      });
+    } else {
+      // Send email to the server for validation (check if the email exists)
+      fetch('/validate-email', { // Replace with the correct URL for email validation
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'), // CSRF token for security
+          },
+          body: JSON.stringify({
+            email: emailValue
+          }),
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // If email is valid, show success alert
+            Swal.fire({
+              icon: 'success',
+              title: 'Password reset link sent!',
+              text: 'Check your email for the reset link.',
+            }).then(() => {
+              // Close the modal after success
+              forgotPasswordModal.classList.remove('show'); // Remove 'show' class for fade-out transition
+              setTimeout(function() {
+                forgotPasswordModal.style.display = 'none'; // Hide modal after fade-out
+              }, 300); // Time matches the transition duration (0.3s)
+            });
+          } else {
+            // If email does not exist or is invalid, show error alert
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: 'This email is not registered or is invalid. Please try again.',
+            });
+          }
+        })
+        .catch(error => {
+          // Handle error if the server fails to respond
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred while processing your request. Please try again later.',
+          });
+        });
     }
   });
 </script>
+
+
+
 
 <style>
   /* Backdrop - apply blur and darken the background */
