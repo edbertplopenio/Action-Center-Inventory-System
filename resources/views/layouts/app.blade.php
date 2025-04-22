@@ -135,7 +135,7 @@
                     <li class="{{ Request::routeIs('home') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                         <a href="{{ route('home') }}" class="flex items-center gap-3 p-3 rounded-xl">
                             <i class="ph-bold ph-house-simple text-xl"></i>
-                            <span class="text-sm">Dashboard</span>
+                            <span style="font-size: 11px;">Dashboard</span>
                         </a>
                     </li>
                     @endif
@@ -145,7 +145,7 @@
                     <li class="{{ Request::routeIs('admin.inventory.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                         <a href="{{ route('admin.inventory.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
                             <i class="ph-bold ph-archive text-xl"></i>
-                            <span class="text-sm">Inventory Management</span>
+                            <span style="font-size: 11px;">Inventory Management</span>
                         </a>
                     </li>
 
@@ -153,7 +153,7 @@
                     <li class="{{ Request::routeIs('records.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                         <a href="{{ route('records.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
                             <i class="ph-bold ph-file-text text-xl"></i>
-                            <span class="text-sm">Records</span>
+                            <span style="font-size: 11px;">Records</span>
                         </a>
                     </li>
                     @endif
@@ -165,7 +165,7 @@
                     <li class="{{ Request::routeIs('admin.borrowing-request.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                         <a href="{{ route('admin.borrowing-request.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
                             <i class="ph-bold ph-clipboard text-xl"></i>
-                            <span class="text-sm">Borrowing <br> Request</span>
+                            <span style="font-size: 11px;">Borrowing <br> Request</span>
                             <span id="pending-badge" class="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-semibold text-white bg-red-500 rounded-full" style="display: none;">
                                 0
                             </span>
@@ -173,11 +173,11 @@
                     </li>
 
 
-                                        <!-- Returning Items: Visible only to Admin -->
-                                        <li class="{{ Request::routeIs('admin.return-items.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
+                    <!-- Returning Items: Visible only to Admin -->
+                    <li class="{{ Request::routeIs('admin.return-items.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                         <a href="{{ route('admin.return-items.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
                             <i class="ph-bold ph-arrow-u-down-left text-xl"></i>
-                            <span class="text-sm">Item Return</span>
+                            <span style="font-size: 11px;">Item Return</span>
                         </a>
                     </li>
                     @endif
@@ -185,25 +185,36 @@
 
 
 
-                    <!-- Borrower Inventory Management: Visible only to Borrower -->
-                    @if(Auth::user()->user_role == 'Borrower' || Auth::user()->user_role == 'Admin')
-                    <li class="{{ Request::routeIs('borrower.inventory.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
-                        <a href="{{ route('borrower.inventory.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
-                            <i class="ph-bold ph-archive text-xl"></i>
-                            <span class="text-sm">Equipment Inventory</span>
-                        </a>
-                    </li>
-                    @endif
+                    <!-- Borrowing Sections -->
+                    <div class="mt-auto">
+                        @if(Auth::user()->user_role == 'Admin')
+                        <p class="mt-4 mb-3" style="font-size: 9px; text-transform: uppercase; color: #6b7280;">Borrowing</p>
+                        @endif
 
-                    <!-- Borrow Equipment: Visible only to Borrower -->
-                    @if(Auth::user()->user_role == 'Borrower' || Auth::user()->user_role == 'Admin')
-                    <li class="{{ Request::routeIs('borrower.borrow-equipment.index') ? 'bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 text-white rounded-xl' : 'text-gray-600' }}">
-                        <a href="{{ route('borrower.borrow-equipment.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
-                            <i class="ph-bold ph-file-text text-xl"></i>
-                            <span class="text-sm">Borrowed Equipment</span>
-                        </a>
-                    </li>
-                    @endif
+
+                        <ul class="space-y-2">
+                            <!-- Borrower Inventory Management: Visible only to Borrower and Admin -->
+                            @if(Auth::user()->user_role == 'Borrower' || Auth::user()->user_role == 'Admin')
+                            <li class="{{ Request::routeIs('borrower.inventory.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
+                                <a href="{{ route('borrower.inventory.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
+                                    <i class="ph-bold ph-archive text-xl"></i>
+                                    <span style="font-size: 11px;">Equipment Inventory</span>
+                                </a>
+                            </li>
+                            @endif
+
+                            <!-- Borrow Equipment: Visible only to Borrower and Admin -->
+                            @if(Auth::user()->user_role == 'Borrower' || Auth::user()->user_role == 'Admin')
+                            <li class="{{ Request::routeIs('borrower.borrow-equipment.index') ? 'bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 text-white rounded-xl' : 'text-gray-600' }}">
+                                <a href="{{ route('borrower.borrow-equipment.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
+                                    <i class="ph-bold ph-file-text text-xl"></i>
+                                    <span style="font-size: 11px;">Borrowed Equipment</span>
+                                </a>
+                            </li>
+                            @endif
+                        </ul>
+                    </div>
+
 
                 </ul>
             </div>
@@ -244,14 +255,14 @@
 
             <!-- Account Management -->
             <div class="mt-auto">
-                <p class="text-sm font-medium text-gray-500 uppercase mb-3">Account</p>
+                <p class="mt-4 mb-3" style="font-size: 9px; text-transform: uppercase; color: #6b7280;">Account</p>
                 <ul class="space-y-2">
                     <!-- Show 'Users Management' only for Admin -->
                     @if(Auth::user()->user_role == 'Admin')
                     <li class="{{ Request::routeIs('users.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                         <a href="{{ route('users.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
                             <i class="ph-bold ph-users text-xl"></i>
-                            <span class="text-sm">Users Management</span>
+                            <span style="font-size: 10px;">Users Management</span>
                         </a>
                     </li>
                     @endif
@@ -261,7 +272,7 @@
                     <li class="{{ Request::routeIs('profile.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                         <a href="{{ route('profile.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
                             <i class="ph-bold ph-user text-xl"></i>
-                            <span class="text-sm">Profile</span>
+                            <span style="font-size: 10px;">Profile</span>
                         </a>
                     </li>
                     @endif
@@ -272,7 +283,7 @@
                         </form>
                         <button id="logout-btn" class="w-full flex items-center gap-3 p-3 text-gray-600 hover:bg-gray-100 hover:text-black rounded-xl">
                             <i class="ph-bold ph-sign-out text-xl"></i>
-                            <span class="text-sm">Logout</span>
+                            <span style="font-size: 10px;">Logout</span>
                         </button>
                     </li>
                 </ul>
