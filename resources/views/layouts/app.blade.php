@@ -171,15 +171,18 @@
                             </span>
                         </a>
                     </li>
-                    @endif
 
-                    <!-- Returning Items: Visible only to Admin -->
-                    <li class="{{ Request::routeIs('admin.return-items.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
+
+                                        <!-- Returning Items: Visible only to Admin -->
+                                        <li class="{{ Request::routeIs('admin.return-items.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                         <a href="{{ route('admin.return-items.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
                             <i class="ph-bold ph-arrow-u-down-left text-xl"></i>
                             <span class="text-sm">Item Return</span>
                         </a>
                     </li>
+                    @endif
+
+
 
 
                     <!-- Borrower Inventory Management: Visible only to Borrower -->
