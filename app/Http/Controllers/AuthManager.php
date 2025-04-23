@@ -23,25 +23,30 @@ class AuthManager extends Controller
     }
 
    // Handle login request
-public function loginPost(Request $request)
-{
-    // Validate login data using array format for regex rule
-    $request->validate([
-        'email'    => ['required', 'email', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/'],
-        'password' => 'required'
-    ]);
-
-    // Attempt to log in with credentials
-    $credentials = $request->only('email', 'password');
-
-    if (Auth::attempt($credentials)) {
-        // Redirect to home page on successful login
-        return redirect()->route('home')->with("status", "login_success");
-    }
-
-    // Redirect back with error if login fails
-    return redirect()->route('login')->with("status", "login_error");
-}
+   public function loginPost(Request $request)
+   {
+       $request->validate([
+           'email'    => ['required', 'email', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/'],
+           'password' => 'required'
+       ]);
+   
+       $credentials = $request->only('email', 'password');
+   
+       if (Auth::attempt($credentials)) {
+           $user = Auth::user();
+   
+           // Redirect borrowers to Equipment Inventory
+           if ($user->user_role === 'Borrower') {
+               return redirect()->route('borrower.inventory.index')->with("status", "login_success");
+           }
+   
+           // Other roles go to dashboard/home
+           return redirect()->route('home')->with("status", "login_success");
+       }
+   
+       return redirect()->route('login')->with("status", "login_error");
+   }
+   
 
 
     // Handle registration request

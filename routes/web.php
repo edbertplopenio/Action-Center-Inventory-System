@@ -11,7 +11,7 @@ use App\Http\Controllers\Borrower\BorrowEquipmentController;
 use App\Http\Controllers\Admin\RecordsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Borrower\ProfileController;  // Import the ProfileController
-
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\InventoryRequestController;
 
 
@@ -276,3 +276,14 @@ Route::get('/about', function () {
 
 
 Route::post('/validate-email', [AuthManager::class, 'validateEmail']);
+
+
+Route::get('/home', [DashboardController::class, 'index'])->name('home');
+
+Route::get('/api/items', [DashboardController::class, 'getItems']);
+Route::get('/api/usage-rate/{itemId}', [DashboardController::class, 'getUsageRateData']);
+
+// routes/web.php
+Route::get('/most-borrowed-items', [DashboardController::class, 'mostBorrowedItems']);
+Route::get('/equipment-quantity-by-category', [DashboardController::class, 'quantityByCategory']);
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
