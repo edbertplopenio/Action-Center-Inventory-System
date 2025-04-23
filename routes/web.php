@@ -249,6 +249,9 @@ Route::get('/api/usage-rate/{itemId}', [DashboardController::class, 'getUsageRat
 Route::get('/most-borrowed-items', [DashboardController::class, 'mostBorrowedItems']);
 Route::get('/equipment-quantity-by-category', [DashboardController::class, 'quantityByCategory']);
 
+//eto ulit
+
+
 
 
 

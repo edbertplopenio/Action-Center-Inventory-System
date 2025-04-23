@@ -43,7 +43,7 @@
     @endif
 </div>
 
-
+        <!-- ulit -->
         <!-- Most Available Equipment -->
         <div class="bg-[#57cc99] p-4 shadow-lg rounded-lg border-l-4 border-[#57cc99] relative font-inter">
             <h2 class="text-sm font-semibold text-gray-200 leading-none">Most Available<br>Equipment</h2>
