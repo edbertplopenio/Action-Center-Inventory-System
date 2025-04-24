@@ -219,27 +219,6 @@ Route::controller(ItemController::class)->group(function () {
     // Route for searching an item by its name
     Route::get('/search-item/{name}', 'searchItem')->name('search.item'); // Search item by name
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Route::get('/home', [DashboardController::class, 'index'])->name('home');
 
 Route::get('/api/items', [DashboardController::class, 'getItems']);
