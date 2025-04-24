@@ -474,7 +474,7 @@
                     <td>${item.qr_code}</td>
                     <td>${statusText}</td>
                     <td>
-                        <select class="remarks-dropdown" data-qr="${item.qr_code}" ${remarksDisabled}>
+                        <select class="remarks-dropdown" data-qr="${item.qr_code}" disabled ${remarksDisabled}>
                             <option value="Good">Good</option>
                             <option value="Damaged">Damaged</option>
                             <option value="Missing">Missing</option>
@@ -483,6 +483,13 @@
                     </td>
                 </tr>`;
                     tableBody.append(row);
+                    // Disable remarks dropdown for all unscanned items
+                    const lastRow = tableBody.find('tr').last()[0];
+                    const dropdown = lastRow.querySelector('.remarks-dropdown');
+                    if (dropdown && statusText !== 'Returned') {
+                        dropdown.disabled = true;
+                    }
+
                 });
 
                 totalRequestQuantity = response.borrowedItems.length;
@@ -573,6 +580,13 @@
                             statusCell.textContent = 'Returned';
                             scannedCount++;
                             $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
+
+                            // ✅ Enable the remarks dropdown for the scanned QR
+                            const remarksDropdown = matchedRow.querySelector('.remarks-dropdown');
+                            if (remarksDropdown) {
+                                remarksDropdown.disabled = false;
+                            }
+
 
                             if (scannedCount >= totalRequestQuantity) {
                                 document.getElementById('request-counter').style.color = 'green';
