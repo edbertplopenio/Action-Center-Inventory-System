@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/phosphor-icons@1.4.2/dist/phosphor-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
 
     <style>
 
@@ -387,6 +388,27 @@ table.dataTable tbody td {
             text-align: center;
         }
     </style>
+
+<style>
+.new-indicator {
+    position: absolute; /* Position it absolutely */
+    top: -10px; /* Adjust distance from the top of the row */
+    left: 5px; /* Adjust distance from the left of the row */
+    background-color: #4CAF50;
+    color: white;
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.new-item {
+    position: relative; /* Ensure the row can hold the absolute positioned label */
+}
+
+</style>
+
+
 </head>
 <body class="bg-gray-100">
 <!-- Main Content -->
@@ -727,6 +749,66 @@ table.dataTable tbody td {
         initializeDataTables();
     });
 </script>
+
+<script>
+$(document).ready(function () {
+    var currentDate = new Date();  // Get the current date
+
+    // Loop through all items in the table
+    $('#allItemsTable tbody tr').each(function () {
+        var createdDate = $(this).find('td:nth-child(9)').text(); // Assuming the 9th column is "created_at"
+        
+        // Convert the created_at value to a JavaScript Date object
+        var createdDateObj = new Date(createdDate);  // Try to directly convert the string
+
+        // If the time is not correctly parsed and defaults to 12:00 AM, check if it’s just a date and no time
+        if (createdDateObj.getHours() === 0 && createdDateObj.getMinutes() === 0 && createdDateObj.getSeconds() === 0) {
+            // If no time is provided, set it to a default time (e.g., current time or a fixed time)
+            createdDateObj.setHours(12);  // Default to 12:00 PM (or choose another time)
+            createdDateObj.setMinutes(0);
+            createdDateObj.setSeconds(0);
+        }
+
+        // Strip time and only compare the date part (remove time from both current date and created date)
+        var currentDateOnly = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()); // Get current date without time
+        var createdDateOnly = new Date(createdDateObj.getFullYear(), createdDateObj.getMonth(), createdDateObj.getDate()); // Strip time from created_at
+
+        // Check if the item was created within the last 5 days
+        var timeDiff = currentDateOnly - createdDateOnly; // Calculate the time difference based only on the date
+        var daysDiff = timeDiff / (1000 * 3600 * 24); // Convert time difference to days
+
+        // If the item was created within the last 5 days, add the "New!" indicator
+        if (daysDiff <= 5) {
+            $(this).addClass('new-item');  // Add the "new-item" class
+
+            // Add the "New!" indicator in the first column (or adjust as needed)
+            var indicator = '<span class="new-indicator">New!</span>';
+            $(this).find('td:first').append(indicator);  // Append "New!" next to the Item Code column
+        }
+    });
+
+    // Add hover effect to show the created_at value (including date and time) when hovering over the "New!" label
+    $('.new-item .new-indicator').hover(function() {
+        var createdDate = $(this).closest('tr').find('td:nth-child(9)').text(); // Get the created_at date
+        
+        // Calculate the time difference in milliseconds
+        var createdDateObj = new Date(createdDate);
+        var timeDiff = currentDate - createdDateObj;
+
+        // Convert the difference into hours and minutes
+        var hoursDiff = Math.floor(timeDiff / (1000 * 60 * 60));  // Calculate hours
+        var minutesDiff = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));  // Calculate remaining minutes
+
+        // Format the time difference for display
+        var elapsedTime = hoursDiff + " hours and " + minutesDiff + " minutes ago";
+
+        // Set the "created_at" value as the tooltip text (this will show the elapsed time)
+        $(this).attr('title', 'Item created: ' + elapsedTime);  // Show the time difference on hover
+    });
+});
+
+</script>
+
 
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
