@@ -68,7 +68,7 @@ class DashboardController extends Controller
          ->get();
 
         // Retrieve all borrowed items with status 'pending' to show pending requests
-        $borrowedItems = BorrowedItem::where('status', 'pending')->get(); //eto sya
+        $borrowedItems = BorrowedItem::where('status', 'pending')->get();
         
 
      // Pass all variables to the view

@@ -5,7 +5,6 @@
 @section('content')
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
@@ -18,32 +17,43 @@
 
     <!-- Grid Layout for Dashboard Items with 5 items in one row -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <!-- Borrowing Request Section -->
+        <div class="bg-[#e57373] p-4 shadow-lg rounded-lg border-l-4 border-[#e57373] relative font-inter">
+            <h2 class="text-sm font-semibold text-gray-200 leading-none">Borrowing Request</h2>
+            <!-- Display Pending Borrowing Requests -->
+            @php
+                $pendingRequests = $borrowedItems->where('status', 'Pending');
+            @endphp
 
-<!-- Notifications -->
-<div class="bg-[#e57373] p-4 shadow-lg rounded-lg border-l-4 border-[#e57373] relative font-inter">
-    <h2 class="text-sm font-semibold text-gray-200 leading-none">Borrowing Request</h2>
-    
-    <!-- Display Pending Borrowing Requests -->
-    @php
-        $pendingRequests = $borrowedItems->where('status', 'Pending');
-    @endphp
+            @if($pendingRequests->count() > 0)
+                <div class="mb-4">
+                    <!-- Display number of pending requests -->
+                    <p class="text-1xl font-bold text-white leading-tight">
+                         {{ $pendingRequests->count() }} pending request(s)
+                    </p>
+                    <div class="icon bg-[#FAE7C3] text-white text-3xl flex items-center justify-center w-10 h-10 rounded-full absolute bottom-2 right-2">
+                        ⏳
+                    </div>
+                </div>
 
-    @if($pendingRequests->count() > 0)
-        <div class="mb-4">
-            <!-- Display number of pending requests -->
-            <p class="text-xl font-bold text-white leading-tight">
-                {{ $pendingRequests->count() }} pending request(s)
+<!-- Display only 1 pending equipment -->
+<div class="mt-4">
+        @php
+            $firstPendingRequest = $pendingRequests->first(); // Get the first pending request
+        @endphp
+
+        @if($firstPendingRequest && $firstPendingRequest->item) <!-- Check if the first request has an item -->
+            <p class="text-white">
+                <strong>Equipment:</strong> {{ $firstPendingRequest->item->name }}<br>
+                <strong>Quantity:</strong> {{ $firstPendingRequest->quantity_borrowed }}<br>
             </p>
-            <div class="icon bg-[#FAE7C3] text-white text-3xl flex items-center justify-center w-14 h-14 rounded-full absolute bottom-2 right-2">
-                ⏳
-            </div>
+        @endif
+    </div>
+@else
+    <p class="text-white">No pending borrowing requests.</p>
+@endif
         </div>
-    @else
-        <p class="text-white">No pending borrowing requests.</p>
-    @endif
-</div>
 
-        <!-- ulit -->
         <!-- Most Available Equipment -->
         <div class="bg-[#57cc99] p-4 shadow-lg rounded-lg border-l-4 border-[#57cc99] relative font-inter">
             <h2 class="text-sm font-semibold text-gray-200 leading-none">Most Available<br>Equipment</h2>
@@ -52,7 +62,7 @@
                     <div class="mb-4">
                         <p class="text-2xl font-bold text-white leading-tight">{{ $item->name }}</p>
                         <span class="text-xs text-gray-200 mt-1">⬆️ {{ $item->quantity }} units available</span>
-                        <div class="icon bg-[#C7EEDD] text-white text-3xl flex items-center justify-center w-14 h-14 rounded-full absolute bottom-2 right-2">
+                        <div class="icon bg-[#C7EEDD] text-white text-3xl flex items-center justify-center w-10 h-10 rounded-full absolute bottom-2 right-2">
                             📦
                         </div>
                     </div>
@@ -70,7 +80,7 @@
                     <div class="mb-4">
                         <p class="text-2xl font-bold text-white leading-tight">{{ $item->name }}</p>
                         <span class="text-xs text-gray-200 mt-1">⚠️ {{ $item->quantity }} units left</span>
-                        <div class="icon bg-[#C3EDFA] text-white text-3xl flex items-center justify-center w-14 h-14 rounded-full absolute bottom-2 right-2">
+                        <div class="icon bg-[#C3EDFA] text-white text-3xl flex items-center justify-center w-10 h-10 rounded-full absolute bottom-2 right-2">
                             ⚠️
                         </div>
                     </div>
@@ -88,7 +98,7 @@
                     <div class="mb-4">
                         <p class="text-2xl font-bold text-white leading-tight">{{ $item->name }}</p>
                         <span class="text-xs text-gray-200 mt-1">🔧 {{ $item->quantity }} units under maintenance</span>
-                        <div class="icon bg-[#FAE7C3] text-white text-3xl flex items-center justify-center w-14 h-14 rounded-full absolute bottom-2 right-2">
+                        <div class="icon bg-[#FAE7C3] text-white text-3xl flex items-center justify-center w-10 h-10 rounded-full absolute bottom-2 right-2">
                             🛠️
                         </div>
                     </div>
@@ -106,7 +116,7 @@
                     <div class="mb-4">
                         <p class="text-2xl font-bold text-white leading-tight">{{ $deployment->item->name }}</p>
                         <span class="text-xs text-gray-200 mt-1">🚛 {{ $deployment->quantity_borrowed }} units deployed</span>
-                        <div class="icon bg-[#E7DEF9] text-white text-3xl flex items-center justify-center w-14 h-14 rounded-full absolute bottom-2 right-2">
+                        <div class="icon bg-[#E7DEF9] text-white text-3xl flex items-center justify-center w-10 h-10 rounded-full absolute bottom-2 right-2">
                             🚚
                         </div>
                     </div>
@@ -115,7 +125,6 @@
                 <p class="text-white">No recent deployments.</p>
             @endif
         </div>
-
     </div>
 </div>
 
