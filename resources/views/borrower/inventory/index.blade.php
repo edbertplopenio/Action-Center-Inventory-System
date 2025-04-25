@@ -186,6 +186,7 @@
             <table id="myTable" class="display" style="width:100%">
                 <thead>
                     <tr>
+                        <th style="display:none;">ID</th> <!-- Hidden ID column -->
                         <th>Item Name</th>
                         <th>Category</th>
                         <th>Quantity</th>
@@ -199,6 +200,7 @@
                 <tbody>
                     @forelse($items as $item)
                     <tr>
+                        <td style="display:none;">{{ $item->id }}</td> <!-- Hidden ID column -->
                         <td>{{ $item->name }}</td>
                         <td>{{ $item->category }}</td>
                         <td>{{ $item->quantity }}</td>
@@ -483,12 +485,27 @@
     });
 
     $(document).ready(function() {
-        $('#myTable').DataTable({
+        let table = $('#myTable');
+
+        // Remove "No records found" row if present
+        if (table.find("tbody tr").length === 1 && table.find("#noRecordsRow").length === 1) {
+            table.find("#noRecordsRow").remove(); // Remove "No records found" row
+        }
+
+        // Initialize DataTables with additional settings
+        table.DataTable({
             scrollY: '425px',
             scrollCollapse: true,
             paging: true,
             searching: true,
-            ordering: true
+            ordering: true,
+            "order": [
+                [0, "desc"] // Sort by hidden ID column (index 0)
+            ],
+            "columnDefs": [{
+                "targets": 0,
+                "visible": false // Hide ID column
+            }]
         });
     });
 </script>
