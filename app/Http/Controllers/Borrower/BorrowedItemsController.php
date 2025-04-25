@@ -14,12 +14,10 @@ class BorrowedItemsController extends Controller
     {
         $borrowed_items = BorrowedItem::with(['item', 'borrower'])
             ->where('borrower_id', Auth::id()) // Only show the logged-in user's borrowed items
-            ->orderBy('created_at', 'desc')  // Order by the created_at field in descending order
             ->get();
-    
+
         return view('borrower.borrow-equipment.index', compact('borrowed_items'));
     }
-    
 
     public function create()
     {

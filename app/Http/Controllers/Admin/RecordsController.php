@@ -14,14 +14,10 @@ class RecordsController extends Controller
      */
     public function index()
     {
-        // Fetch all records where status is not 'archived' and order by creation date (newest first)
-        $records = Record::where('status', '!=', 'archived')
-                         ->orderBy('created_at', 'desc')
-                         ->get();
-    
-        return view('admin.records.index', compact('records'));
+        // Fetch all records where status is not 'archived'
+    $records = Record::where('status', '!=', 'archived')->get();
+    return view('admin.records.index', compact('records'));
     }
-    
 
     /**
      * Store a newly created record in storage.

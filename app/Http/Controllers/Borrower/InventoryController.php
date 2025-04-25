@@ -11,11 +11,10 @@ class InventoryController extends Controller
 {
     public function index()
     {
-        // Fetch all items from the database, ordered by created_at in descending order
-        $items = Item::orderBy('created_at', 'desc')->get();  // Adjust the field to order by as needed
-    
+        // Fetch all items from the database
+        $items = Item::all();  // You can customize this query as needed (e.g., pagination, filters)
+
         // Pass the items data to the view
         return view('borrower.inventory.index', compact('items'));  // Points to the Borrower Inventory view
     }
-    
 }

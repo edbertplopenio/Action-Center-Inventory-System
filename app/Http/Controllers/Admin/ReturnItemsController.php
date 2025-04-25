@@ -16,12 +16,10 @@ public function index()
     // Eager load borrower, item, individualItems relationships, along with their return dates
     $borrowedItems = BorrowedItem::with('borrower', 'item', 'individualItems', 'individualItemReturns')  
         ->whereIn('status', ['Borrowed', 'Returned'])  // Show items with Borrowed or Returned status
-        ->orderBy('created_at', 'desc')  // Sort by the creation date in descending order (newest first)
         ->get();
 
     return view('admin.return-items.index', compact('borrowedItems'));
 }
-
 
 
 
