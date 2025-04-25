@@ -200,6 +200,7 @@
             <table id="borrowedTable" class="display" style="width:100%">
                 <thead>
                     <tr>
+                    <th style="display:none;">ID</th> <!-- Hidden ID column -->
                         <th>Item Name</th>
                         <th>Category</th>
                         <th>Quantity Borrowed</th>
@@ -226,6 +227,8 @@
                         data-status="{{ $borrowed->status }}"
                         data-responsible-person="{{ $borrowed->responsible_person }}"
                         data-image-url="{{ $borrowed->item->image_url }}">
+
+                        <td style="display:none;">{{ $borrowed->id }}</td> <!-- Hidden ID column -->
 
                         <td>{{ $borrowed->item->name }}</td>
                         <td>{{ $borrowed->item->category }}</td>
@@ -345,25 +348,32 @@
 
 
 <script>
-    $(document).ready(function() {
-        let table = $('#borrowedTable');
+$(document).ready(function() {
+    let table = $('#borrowedTable');
 
-        // Remove "No records found" row if present
-        if (table.find("tbody tr").length === 1 && table.find("#noRecordsRow").length === 1) {
-            table.find("#noRecordsRow").remove(); // Remove "No records found" row
-        }
+    // Remove "No records found" row if present
+    if (table.find("tbody tr").length === 1 && table.find("#noRecordsRow").length === 1) {
+        table.find("#noRecordsRow").remove(); // Remove "No records found" row
+    }
 
-        // Initialize DataTables with additional settings
-        table.DataTable({
-            scrollY: '425px',
-            scrollCollapse: true,
-            scrollX: false,
-            paging: true,
-            searching: true,
-            ordering: true,
-
-        });
+    // Initialize DataTables with additional settings
+    table.DataTable({
+        scrollY: '425px',
+        scrollCollapse: true,
+        scrollX: false,
+        paging: true,
+        searching: true,
+        ordering: true,
+        "order": [
+            [0, "desc"] // Sort by hidden ID column (index 0)
+        ],
+        "columnDefs": [{
+            "targets": 0,
+            "visible": false // Hide ID column
+        }]
     });
+});
+
 </script>
 
 @endsection
