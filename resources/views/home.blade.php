@@ -14,119 +14,118 @@
     <div class="flex justify-between items-center mb-4">
         <h1 class="text-3xl font-semibold text-gray-800 leading-tight">Dashboard</h1>
     </div>
-
-    <!-- Grid Layout for Dashboard Items with 5 items in one row -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        <!-- Borrowing Request Section -->
-        <div class="bg-[#e57373] p-4 shadow-lg rounded-lg border-l-4 border-[#e57373] relative font-inter">
-            <h2 class="text-sm font-semibold text-gray-200 leading-none">Borrowing Request</h2>
-            <!-- Display Pending Borrowing Requests -->
-            @php
-                $pendingRequests = $borrowedItems->where('status', 'Pending');
-            @endphp
-
-            @if($pendingRequests->count() > 0)
-                <div class="mb-4">
-                    <!-- Display number of pending requests -->
-                    <p class="text-1xl font-bold text-white leading-tight">
-                         {{ $pendingRequests->count() }} pending request(s)
-                    </p>
-                    <div class="icon bg-[#FAE7C3] text-white text-3xl flex items-center justify-center w-10 h-10 rounded-full absolute bottom-2 right-2">
-                        ⏳
-                    </div>
-                </div>
-
-<!-- Display only 1 pending equipment -->
-<div class="mt-4">
+<!-- Grid Layout for Dashboard Items with 5 items in one row -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+    <!-- Borrowing Request Section -->
+    <div class="bg-[#e57373] p-4 shadow-lg rounded-lg border-l-4 border-[#e57373] relative font-inter">
+        <h2 class="text-sm font-semibold text-gray-200 leading-none">Borrowing Request</h2>
+        <!-- Display Pending Borrowing Requests -->
         @php
-            $firstPendingRequest = $pendingRequests->first(); // Get the first pending request
+            $pendingRequests = $borrowedItems->where('status', 'Pending');
         @endphp
 
-        @if($firstPendingRequest && $firstPendingRequest->item) <!-- Check if the first request has an item -->
-            <p class="text-white">
-                <strong>Equipment:</strong> {{ $firstPendingRequest->item->name }}<br>
-                <strong>Quantity:</strong> {{ $firstPendingRequest->quantity_borrowed }}<br>
-            </p>
+        @if($pendingRequests->count() > 0)
+            <div class="mb-4">
+                <!-- Display number of pending requests -->
+                <p class="text-1xl font-bold text-white leading-tight">
+                    {{ $pendingRequests->count() }} pending request(s)
+                </p>
+                <div class="icon bg-[#FAE7C3] text-white text-3xl flex items-center justify-center w-10 h-10 rounded-full absolute bottom-2 right-2"> <!-- Adjusted width and height -->
+                    ⏳
+                </div>
+            </div>
+
+            <!-- Display only 1 pending equipment -->
+            <div class="mt-4">
+                @php
+                    $firstPendingRequest = $pendingRequests->first(); // Get the first pending request
+                @endphp
+
+                @if($firstPendingRequest && $firstPendingRequest->item) <!-- Check if the first request has an item -->
+                    <p class="text-white">
+                        <strong>Equipment:</strong> {{ $firstPendingRequest->item->name }}<br>
+                        <strong>Quantity:</strong> {{ $firstPendingRequest->quantity_borrowed }}<br>
+                    </p>
+                @endif
+            </div>
+        @else
+            <p class="text-white">No pending borrowing requests.</p>
         @endif
     </div>
-@else
-    <p class="text-white">No pending borrowing requests.</p>
-@endif
-        </div>
 
-        <!-- Most Available Equipment -->
-        <div class="bg-[#57cc99] p-4 shadow-lg rounded-lg border-l-4 border-[#57cc99] relative font-inter">
-            <h2 class="text-sm font-semibold text-gray-200 leading-none">Most Available<br>Equipment</h2>
-            @if($mostAvailableItems->count() > 0)
-                @foreach($mostAvailableItems as $item)
-                    <div class="mb-4">
-                        <p class="text-2xl font-bold text-white leading-tight">{{ $item->name }}</p>
-                        <span class="text-xs text-gray-200 mt-1">⬆️ {{ $item->quantity }} units available</span>
-                        <div class="icon bg-[#C7EEDD] text-white text-3xl flex items-center justify-center w-10 h-10 rounded-full absolute bottom-2 right-2">
-                            📦
-                        </div>
+    <!-- Most Available Equipment -->
+    <div class="bg-[#57cc99] p-4 shadow-lg rounded-lg border-l-4 border-[#57cc99] relative font-inter">
+        <h2 class="text-sm font-semibold text-gray-200 leading-none">Most Available<br>Equipment</h2>
+        @if($mostAvailableItems->count() > 0)
+            @foreach($mostAvailableItems as $item)
+                <div class="mb-4">
+                    <p class="text-2xl font-bold text-white leading-tight">{{ $item->name }}</p>
+                    <span class="text-xs text-gray-200 mt-1">⬆️ {{ $item->quantity }} units available</span>
+                    <div class="icon bg-[#C7EEDD] text-white text-3xl flex items-center justify-center w-10 h-10 rounded-full absolute bottom-2 right-2"> <!-- Adjusted width and height -->
+                        📦
                     </div>
-                @endforeach
-            @else
-                <p class="text-white">No equipment available.</p>
-            @endif
-        </div>
+                </div>
+            @endforeach
+        @else
+            <p class="text-white">No equipment available.</p>
+        @endif
+    </div>
 
-        <!-- Critical Stock (Low Inventory) -->
-        <div class="bg-[#4cc9f0] p-4 shadow-lg rounded-lg border-l-4 border-[#4cc9f0] relative font-inter">
-            <h2 class="text-sm font-semibold text-gray-200 leading-none">Critical Stock</h2>
-            @if($criticalStockItems->count() > 0)
-                @foreach($criticalStockItems as $item)
-                    <div class="mb-4">
-                        <p class="text-2xl font-bold text-white leading-tight">{{ $item->name }}</p>
-                        <span class="text-xs text-gray-200 mt-1">⚠️ {{ $item->quantity }} units left</span>
-                        <div class="icon bg-[#C3EDFA] text-white text-3xl flex items-center justify-center w-10 h-10 rounded-full absolute bottom-2 right-2">
-                            ⚠️
-                        </div>
+    <!-- Critical Stock (Low Inventory) -->
+    <div class="bg-[#4cc9f0] p-4 shadow-lg rounded-lg border-l-4 border-[#4cc9f0] relative font-inter">
+        <h2 class="text-sm font-semibold text-gray-200 leading-none">Critical Stock</h2>
+        @if($criticalStockItems->count() > 0)
+            @foreach($criticalStockItems as $item)
+                <div class="mb-4">
+                    <p class="text-2xl font-bold text-white leading-tight">{{ $item->name }}</p>
+                    <span class="text-xs text-gray-200 mt-1">⚠️ {{ $item->quantity }} units left</span>
+                    <div class="icon bg-[#C3EDFA] text-white text-3xl flex items-center justify-center w-10 h-10 rounded-full absolute bottom-2 right-2"> <!-- Adjusted width and height -->
+                        ⚠️
                     </div>
-                @endforeach
-            @else
-                <p class="text-white">No critical stock available.</p>
-            @endif
-        </div>
+                </div>
+            @endforeach
+        @else
+            <p class="text-white">No critical stock available.</p>
+        @endif
+    </div>
 
-        <!-- Equipment Needing Repair -->
-        <div class="bg-[#f0b84c] p-4 shadow-lg rounded-lg border-l-4 border-[#f0b84c] relative font-inter">
-            <h2 class="text-sm font-semibold text-gray-200 leading-none">Equipment Needing<br>Repair</h2>
-            @if($itemsNeedingRepair->count() > 0)
-                @foreach($itemsNeedingRepair as $item)
-                    <div class="mb-4">
-                        <p class="text-2xl font-bold text-white leading-tight">{{ $item->name }}</p>
-                        <span class="text-xs text-gray-200 mt-1">🔧 {{ $item->quantity }} units under maintenance</span>
-                        <div class="icon bg-[#FAE7C3] text-white text-3xl flex items-center justify-center w-10 h-10 rounded-full absolute bottom-2 right-2">
-                            🛠️
-                        </div>
+    <!-- Equipment Needing Repair -->
+    <div class="bg-[#f0b84c] p-4 shadow-lg rounded-lg border-l-4 border-[#f0b84c] relative font-inter">
+        <h2 class="text-sm font-semibold text-gray-200 leading-none">Equipment Needing<br>Repair</h2>
+        @if($itemsNeedingRepair->count() > 0)
+            @foreach($itemsNeedingRepair as $item)
+                <div class="mb-4">
+                    <p class="text-2xl font-bold text-white leading-tight">{{ $item->name }}</p>
+                    <span class="text-xs text-gray-200 mt-1">🔧 {{ $item->quantity }} units under maintenance</span>
+                    <div class="icon bg-[#FAE7C3] text-white text-3xl flex items-center justify-center w-10 h-10 rounded-full absolute bottom-2 right-2"> <!-- Adjusted width and height -->
+                        🛠️
                     </div>
-                @endforeach
-            @else
-                <p class="text-white">No equipment needing repair.</p>
-            @endif
-        </div>
+                </div>
+            @endforeach
+        @else
+            <p class="text-white">No equipment needing repair.</p>
+        @endif
+    </div>
 
-        <!-- Recent Deployments -->
-        <div class="bg-[#b79ced] p-4 shadow-lg rounded-lg border-l-4 border-[#b79ced] relative font-inter">
-            <h2 class="text-sm font-semibold text-gray-200 leading-none">Recent Deployments</h2>
-            @if($recentDeploymentFirst->count() > 0)
-                @foreach($recentDeploymentFirst as $deployment)
-                    <div class="mb-4">
-                        <p class="text-2xl font-bold text-white leading-tight">{{ $deployment->item->name }}</p>
-                        <span class="text-xs text-gray-200 mt-1">🚛 {{ $deployment->quantity_borrowed }} units deployed</span>
-                        <div class="icon bg-[#E7DEF9] text-white text-3xl flex items-center justify-center w-10 h-10 rounded-full absolute bottom-2 right-2">
-                            🚚
-                        </div>
+    <!-- Recent Deployments -->
+    <div class="bg-[#b79ced] p-4 shadow-lg rounded-lg border-l-4 border-[#b79ced] relative font-inter">
+        <h2 class="text-sm font-semibold text-gray-200 leading-none">Recent Deployments</h2>
+        @if($recentDeploymentFirst->count() > 0)
+            @foreach($recentDeploymentFirst as $deployment)
+                <div class="mb-4">
+                    <p class="text-2xl font-bold text-white leading-tight">{{ $deployment->item->name }}</p>
+                    <span class="text-xs text-gray-200 mt-1">🚛 {{ $deployment->quantity_borrowed }} units deployed</span>
+                    <div class="icon bg-[#E7DEF9] text-white text-3xl flex items-center justify-center w-10 h-10 rounded-full absolute bottom-2 right-2"> <!-- Adjusted width and height -->
+                        🚚
                     </div>
-                @endforeach
-            @else
-                <p class="text-white">No recent deployments.</p>
-            @endif
-        </div>
+                </div>
+            @endforeach
+        @else
+            <p class="text-white">No recent deployments.</p>
+        @endif
     </div>
 </div>
+
 
 
 
