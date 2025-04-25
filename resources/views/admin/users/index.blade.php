@@ -257,44 +257,44 @@
                     </tr>
                 </thead>
                 <tbody>
-                @foreach ($users as $user)
-<tr class="user-row cursor-pointer"
-    data-id="{{ $user->id }}"
-    data-first_name="{{ $user->first_name }}"
-    data-last_name="{{ $user->last_name }}"
-    data-email="{{ $user->email }}"
-    data-role="{{ $user->user_role }}"
-    data-department="{{ $user->department ?? 'N/A' }}"
-    data-profile_picture="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : '' }}"
-    data-created_at="{{ $user->created_at }}"
-    data-last_login="{{ $user->last_login ?? 'N/A' }}"
-    data-created_by="{{ $user->created_by ?? 'N/A' }}"
-    data-updated_at="{{ $user->updated_at }}">
+                    @foreach ($users as $user)
+                    <tr class="user-row cursor-pointer"
+                        data-id="{{ $user->id }}"
+                        data-first_name="{{ $user->first_name }}"
+                        data-last_name="{{ $user->last_name }}"
+                        data-email="{{ $user->email }}"
+                        data-role="{{ $user->user_role }}"
+                        data-department="{{ $user->department ?? 'N/A' }}"
+                        data-profile_picture="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : '' }}"
+                        data-created_at="{{ $user->created_at }}"
+                        data-last_login="{{ $user->last_login ?? 'N/A' }}"
+                        data-created_by="{{ $user->created_by ?? 'N/A' }}"
+                        data-updated_at="{{ $user->updated_at }}">
 
-    <td>{{ $user->first_name }} {{ $user->last_name }}</td>
-    <td>{{ $user->email }}</td>
-    <td>{{ $user->user_role }}</td>
-    <td>{{ $user->department ?? 'N/A' }}</td>
-    <td>{{ ucfirst($user->status) }}</td>
-    <td>
-        <!-- Edit button, disabled if not the logged-in user -->
-        <button class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24"
-            data-id="{{ $user->id }}"
-            {{ $user->id !== $loggedInUserId ? 'disabled' : '' }}
-            @if($user->id !== $loggedInUserId) style="opacity: 0.5; cursor: not-allowed;" @endif> Edit
-        </button>
+                        <td>{{ $user->first_name }} {{ $user->last_name }}</td>
+                        <td>{{ $user->email }}</td>
+                        <td>{{ $user->user_role }}</td>
+                        <td>{{ $user->department ?? 'N/A' }}</td>
+                        <td>{{ ucfirst($user->status) }}</td>
+                        <td>
+                            <!-- Edit button, disabled if not the logged-in user -->
+                            <button class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24"
+                                data-id="{{ $user->id }}"
+                                {{ $user->id !== $loggedInUserId ? 'disabled' : '' }}
+                                @if($user->id !== $loggedInUserId) style="opacity: 0.5; cursor: not-allowed;" @endif> Edit
+                            </button>
 
-        <!-- Deactivate/Activate buttons -->
-        @if($user->status === 'active')
-        <button class="deactivate-btn px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24"
-            data-id="{{ $user->id }}">Deactivate</button>
-        @else
-        <button class="activate-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24"
-            data-id="{{ $user->id }}">Activate</button>
-        @endif
-    </td>
-</tr>
-@endforeach
+                            <!-- Deactivate/Activate buttons -->
+                            @if($user->status === 'active')
+                            <button class="deactivate-btn px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24"
+                                data-id="{{ $user->id }}">Deactivate</button>
+                            @else
+                            <button class="activate-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24"
+                                data-id="{{ $user->id }}">Activate</button>
+                            @endif
+                        </td>
+                    </tr>
+                    @endforeach
 
                 </tbody>
             </table>
@@ -1365,11 +1365,11 @@
                             result.user.email,
                             result.user.user_role,
                             result.user.department || 'N/A',
-                            // Removed contact_number
-                            // result.user.contact_number || 'N/A',
+                            result.user.status || 'N/A', // Ensure this matches your column data
                             `<button class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24">Edit</button>
-                             <button class="px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24">Deactivate</button>`
+     <button class="px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24">Deactivate</button>`
                         ]).draw(false);
+
                     });
                 } else {
                     // Show error notification using SweetAlert
