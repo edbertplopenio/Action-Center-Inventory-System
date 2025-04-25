@@ -227,6 +227,7 @@
             <table id="myTable" class="display" style="width:100%">
                 <thead>
                     <tr>
+                        <th style="display:none;">ID</th> <!-- Hidden ID column for sorting -->
                         <th>Records Series Title</th>
                         <th>Related Documents</th>
                         <th>Period Covered</th>
@@ -272,6 +273,8 @@
                         data-utility="{{ is_array($record->utility_value) ? implode(', ', $record->utility_value) : ($record->utility_value ?? 'N/A') }}"
                         data-duplication="{{ $record->duplication ?? 'N/A' }}"
                         data-frequency="{{ $record->frequency ?? 'N/A' }}">
+
+                        <td style="display:none;">{{ $record->id }}</td> <!-- Hidden ID value for sorting -->
 
                         <!-- Records Series Title -->
                         <td>{{ $record->title }}</td>
@@ -790,7 +793,7 @@
 
 <!-- Edit JS -->
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
         let initialFormData = {};
 
         // Function to populate the form fields dynamically
@@ -876,7 +879,7 @@
 
         // Open edit modal and populate form
         document.querySelectorAll(".edit-record-btn").forEach(button => {
-            button.addEventListener("click", function (event) {
+            button.addEventListener("click", function(event) {
                 event.stopPropagation();
                 const row = this.closest(".record-row");
                 const recordData = row.dataset;
@@ -889,12 +892,12 @@
         });
 
         // Close edit modal
-        document.getElementById("closeEditRecordModalBtn").addEventListener("click", function () {
+        document.getElementById("closeEditRecordModalBtn").addEventListener("click", function() {
             document.getElementById("editRecordModal").style.display = "none";
         });
 
         // Handle form submission with AJAX
-        $("#editRecordForm").on("submit", function (event) {
+        $("#editRecordForm").on("submit", function(event) {
             event.preventDefault();
 
             if (!hasChanges()) {
@@ -916,7 +919,7 @@
                 url: form.attr("action"),
                 type: "POST",
                 data: formData,
-                success: function (response) {
+                success: function(response) {
                     console.log("AJAX Success, Updated Record:", response.updatedRecord); // Debugging
 
                     if (response.success) {
@@ -948,7 +951,7 @@
                         showErrorModal("Update failed.");
                     }
                 },
-                error: function (xhr) {
+                error: function(xhr) {
                     console.log("AJAX Error:", xhr.responseText);
                     let errorMessage = "An error occurred while updating the record.";
                     if (xhr.responseJSON && xhr.responseJSON.message) {
@@ -964,7 +967,7 @@
             $("#successModal").removeClass("hidden");
 
             // Close modal on button click
-            $("#closeSuccessModalBtn").on("click", function () {
+            $("#closeSuccessModalBtn").on("click", function() {
                 $("#successModal").addClass("hidden");
             });
         }
@@ -975,7 +978,7 @@
             $("#errorModal").removeClass("hidden");
 
             // Close modal on button click
-            $("#closeErrorModalBtn").on("click", function () {
+            $("#closeErrorModalBtn").on("click", function() {
                 $("#errorModal").addClass("hidden");
             });
         }
@@ -1914,10 +1917,12 @@
         $(document).ready(function() {
             let table = $('#myTable');
 
+            // Remove "No records found" row if only one record is present
             if (table.find("tbody tr").length === 1 && table.find("#noRecordsRow").length === 1) {
                 table.find("#noRecordsRow").remove(); // Remove "No records found" row
             }
 
+            // DataTable initialization with sorting by hidden ID column
             table.DataTable({
                 scrollY: '425px',
                 scrollCollapse: true,
@@ -1925,12 +1930,21 @@
                 paging: true,
                 searching: true,
                 ordering: true,
+                order: [
+                    [0, "desc"] // Sort by the hidden ID column (index 0)
+                ],
                 columnDefs: [{
-                    orderable: false,
-                    targets: -1
-                }]
+                        orderable: false,
+                        targets: -1 // The Action column will not be sortable
+                    },
+                    {
+                        targets: 0, // Hide the ID column
+                        visible: false
+                    }
+                ]
             });
         });
+
 
         // Open modal
         document.getElementById('openModalBtn').addEventListener('click', function() {
@@ -2105,6 +2119,7 @@
                     }
 
                     $('#myTable').DataTable().row.add([
+                        r.id, // This is your hidden ID column
                         capitalizeWords(r.title),
                         capitalizeWords(r.related_documents),
                         capitalizeWords(periodCovered),
