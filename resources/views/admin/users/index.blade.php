@@ -248,6 +248,7 @@
             <table id="userTable" class="display" style="width:100%">
                 <thead>
                     <tr>
+                        <th style="display:none;">ID</th> <!-- Hidden ID column -->
                         <th>Name</th>
                         <th>Email</th>
                         <th>Role</th>
@@ -270,6 +271,8 @@
                         data-last_login="{{ $user->last_login ?? 'N/A' }}"
                         data-created_by="{{ $user->created_by ?? 'N/A' }}"
                         data-updated_at="{{ $user->updated_at }}">
+
+                        <td style="display:none;">{{ $user->id }}</td> <!-- Hidden ID value -->
 
                         <td>{{ $user->first_name }} {{ $user->last_name }}</td>
                         <td>{{ $user->email }}</td>
@@ -1281,13 +1284,22 @@
 
         // Table DataTable initialization
         const userTable = $('#userTable').DataTable({
-            "scrollY": "425px", // Enable vertical scrolling with a fixed height
-            "scrollCollapse": true, // Collapse height when content is less
-            "scrollX": false, // Disable horizontal scrolling
-            "paging": true, // Enable pagination
-            "searching": true, // Enable search
-            "ordering": true // Enable sorting
+            "scrollY": "425px",
+            "scrollCollapse": true,
+            "scrollX": false,
+            "paging": true,
+            "searching": true,
+            "ordering": true,
+            "order": [
+                [0, "desc"]
+            ], // Sort by hidden ID column (index 0)
+            "columnDefs": [{
+                    "targets": 0,
+                    "visible": false
+                } // Hide ID column
+            ]
         });
+
 
         // Open modal when the "Add Record" button is clicked
         openModalBtn.addEventListener("click", function() {
@@ -1360,15 +1372,24 @@
                     }).then(() => {
                         modal.style.display = "none";
                         form.reset();
+
+                        // Add new row with ID as the first hidden column
                         userTable.row.add([
+                            result.user.id, // Hidden ID column for sorting
                             `${result.user.first_name} ${result.user.last_name}`,
                             result.user.email,
                             result.user.user_role,
                             result.user.department || 'N/A',
-                            result.user.status || 'N/A', // Ensure this matches your column data
-                            `<button class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24">Edit</button>
-     <button class="px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24">Deactivate</button>`
-                        ]).draw(false);
+                            result.user.status || 'N/A',
+                            `<button class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24"
+                 data-id="${result.user.id}">Edit</button>
+         <button class="deactivate-btn px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24"
+                 data-id="${result.user.id}">Deactivate</button>`
+                        ]).draw();
+
+                        // Reapply sorting so new user appears at the top
+                        userTable.order([0, 'desc']).draw();
+
 
                     });
                 } else {
