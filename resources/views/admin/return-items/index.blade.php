@@ -221,6 +221,7 @@
             <table id="borrowedItemsTable" class="display" style="width:100%">
                 <thead>
                     <tr>
+                        <th style="display:none;">ID</th> <!-- Hidden ID column -->
                         <th>Borrower</th>
                         <th>Item Name</th>
                         <th>QR Code(s)</th>
@@ -237,6 +238,7 @@
                 <tbody>
                     @foreach($borrowedItems as $borrowedItem)
                     <tr>
+                        <td style="display:none;">{{ $borrowedItem->id }}</td> <!-- Hidden ID value -->
                         <td>{{ $borrowedItem->borrower->first_name }} {{ $borrowedItem->borrower->last_name }}</td>
                         <td>{{ $borrowedItem->item->name }}</td>
 
@@ -370,8 +372,16 @@
             scrollCollapse: true,
             paging: true,
             searching: true,
-            ordering: true
+            ordering: true,
+            "order": [
+                [0, "desc"] // Sort by hidden ID column (index 0)
+            ],
+            "columnDefs": [{
+                "targets": 0,
+                "visible": false // Hide ID column
+            }]
         });
+
 
         $('#codeTable').DataTable({
             paging: true,
