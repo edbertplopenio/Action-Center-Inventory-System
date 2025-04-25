@@ -49,8 +49,12 @@ class BorrowEquipmentController extends Controller
     // Get borrowed items for the logged-in user
     public function index()
     {
-        $borrowedItems = BorrowedItem::where('borrower_id', Auth::id())->get();
-
+        // Fetch borrowed items for the logged-in borrower, ordered by created_at in descending order
+        $borrowedItems = BorrowedItem::where('borrower_id', Auth::id())
+            ->orderBy('created_at', 'desc')  // Order by the created_at field in descending order
+            ->get();
+    
         return view('borrower.inventory.index', compact('borrowedItems'));
     }
+    
 }

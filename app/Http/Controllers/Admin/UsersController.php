@@ -20,15 +20,11 @@ class UsersController extends Controller
  */
 public function index()
 {
-    // Fetch all users regardless of their status
-    $users = User::all();
-    
-    // Get the logged-in user's ID
-    $loggedInUserId = Auth::id(); // You can directly use Auth::id()
-
-    // Pass all users and the logged-in user's ID to the Blade view
+    $users = User::orderBy('created_at', 'desc')->get();
+    $loggedInUserId = Auth::id();
     return view('admin.users.index', compact('users', 'loggedInUserId'));
 }
+
 
 
 
