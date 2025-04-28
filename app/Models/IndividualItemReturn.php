@@ -14,6 +14,7 @@ class IndividualItemReturn extends Model
         'individual_item_id',
         'borrowed_item_id',
         'return_date',
+        'remarks', // Add remarks to the fillable array
     ];
 
     // Define the relationship with the IndividualItem model
@@ -21,5 +22,6 @@ class IndividualItemReturn extends Model
     {
         return $this->belongsTo(IndividualItem::class, 'individual_item_id');
     }
-}
 
+    // Optionally, you can add a method to format remarks or handle them before saving if needed
+}
