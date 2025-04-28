@@ -7,6 +7,7 @@ use App\Models\Item;
 use App\Models\IndividualItem;
 use App\Models\BorrowedItem;
 use DB;
+use Carbon\Carbon;
 
 class ItemController extends Controller
 {
@@ -15,19 +16,58 @@ class ItemController extends Controller
      */
     public function index()
     {
-        // Fetch all items that are not archived
-        $allItems = Item::where('is_archived', false)->get();
-    
-        // Fetch categorized items
-        $drrmItems = Item::where('is_archived', false)->where('category', 'DRRM Equipment')->get();
-        $officeItems = Item::where('is_archived', false)->where('category', 'Office Supplies')->get();
-        $emergencyItems = Item::where('is_archived', false)->where('category', 'Emergency Kits')->get();
-        $otherItems = Item::where('is_archived', false)->where('category', 'Other Items')->get();
-    
+        $currentTime = Carbon::now();  // Get current time
+
+        // Fetch all items, sorted by the added_at field in descending order (most recent first)
+        $allItems = Item::where('is_archived', false)
+                        ->orderBy('added_at', 'desc')
+                        ->get()
+                        ->map(function($item) use ($currentTime) {
+                            // Calculate the time difference in days and check if it's within 5 days
+                            $item->is_new = $currentTime->diffInDays($item->added_at) <= 5;
+                            return $item;
+                        });
+
+        // Fetch categorized items in descending order by added_at
+        $drrmItems = Item::where('is_archived', false)
+                         ->where('category', 'DRRM Equipment')
+                         ->orderBy('added_at', 'desc')
+                         ->get()
+                         ->map(function($item) use ($currentTime) {
+                             $item->is_new = $currentTime->diffInDays($item->added_at) <= 5;
+                             return $item;
+                         });
+
+        $officeItems = Item::where('is_archived', false)
+                           ->where('category', 'Office Supplies')
+                           ->orderBy('added_at', 'desc')
+                           ->get()
+                           ->map(function($item) use ($currentTime) {
+                               $item->is_new = $currentTime->diffInDays($item->added_at) <= 5;
+                               return $item;
+                           });
+
+        $emergencyItems = Item::where('is_archived', false)
+                              ->where('category', 'Emergency Kits')
+                              ->orderBy('added_at', 'desc')
+                              ->get()
+                              ->map(function($item) use ($currentTime) {
+                                  $item->is_new = $currentTime->diffInDays($item->added_at) <= 5;
+                                  return $item;
+                              });
+
+        $otherItems = Item::where('is_archived', false)
+                          ->where('category', 'Other Items')
+                          ->orderBy('added_at', 'desc')
+                          ->get()
+                          ->map(function($item) use ($currentTime) {
+                              $item->is_new = $currentTime->diffInDays($item->added_at) <= 5;
+                              return $item;
+                          });
+
         // Fetch archived items
         $archivedItems = Item::where('is_archived', true)->get();
-    
-        // Fetch the most available item(s) based on quantity
+ // Fetch the most available item(s) based on quantity
         $mostAvailableItems = Item::where('is_archived', false)
             ->orderBy('quantity', 'desc')
             ->take(1)
@@ -120,7 +160,7 @@ class ItemController extends Controller
             ->get();
 
         // Prepare the response data
-        $labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July','August', 'September', 'October', 'November','December']; // Month names
+        $labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']; // Month names
         $data = array_fill(0, 12, 0); // Default to 0 for each month
 
         // Fill the data for each month from the database
@@ -134,7 +174,7 @@ class ItemController extends Controller
         ]);
     }
 
-      /**
+    /**
      * Store items in the database.
      */
     public function store(Request $request)
@@ -152,19 +192,19 @@ class ItemController extends Controller
             'status' => 'required|string|max:255',
             'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
+    
         // Check if the item already exists (same name & category)
         $item = Item::where('name', $request->name)
                     ->where('category', $request->category)
                     ->first();
-
+    
         if ($item) {
             // If item exists, update quantity and dates
             $item->quantity += $request->quantity;  // Add the new quantity
             $item->arrival_date = $request->arrival_date;
             $item->date_purchased = $request->date_purchased;
             $item->save();
-
+    
             // Generate individual items for the new quantity added
             $this->generateIndividualItems($item, $request->quantity);
         } else {
@@ -179,17 +219,18 @@ class ItemController extends Controller
             $item->arrival_date = $request->arrival_date;
             $item->date_purchased = $request->date_purchased;
             $item->status = $request->status;
-
+            $item->added_at = now();  // Set added_at to current timestamp
+    
             // Handle image upload if provided and save URL to `image_url`
             if ($request->hasFile('image_url')) {
                 $filename = time() . '.' . $request->image_url->extension();
                 $request->image_url->move(public_path('images'), $filename);
-                $item->image_url = 'images/' . $filename;
+                $item->image_url = 'images/' . $filename; // Store the relative path
             }
-
+    
             // Generate item code based on category abbreviation and count of items in that category
             $category = $request->category;
-
+    
             // Map categories to their abbreviations
             $categoryMap = [
                 'DRRM Equipment' => 'DRRM',
@@ -197,18 +238,18 @@ class ItemController extends Controller
                 'Emergency Kits' => 'Emergency',
                 'Other Items' => 'Other',
             ];
-
+    
             // Get the abbreviation for the category
             $categoryAbbreviation = isset($categoryMap[$category]) ? $categoryMap[$category] : strtoupper($category);
-
+    
             // Count how many items are in this category
             $itemCount = Item::where('category', $category)->count();
-
+    
             // Process item name to get initials if it's more than 8 characters or has more than one word
             $itemName = strtoupper($request->name); // Uppercase the item name
             $nameParts = explode(' ', $itemName); // Split the name into words
             $itemInitials = '';
-
+    
             if (count($nameParts) > 1 || strlen($itemName) > 8) {
                 // Take the first letter of each word for names with more than 1 word or > 8 chars
                 foreach ($nameParts as $part) {

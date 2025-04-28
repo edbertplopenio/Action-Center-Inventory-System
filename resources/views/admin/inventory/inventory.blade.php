@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -97,31 +98,35 @@
 
         /* Table Styles */
         table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 2rem;
-            margin-bottom: -2rem;
-        }
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 2rem;
+        margin-bottom: -2rem;
+    }
 
         table th, table td {
-            padding: 0.5rem; /* Reduced padding for better alignment */
-            text-align: left;
+            padding: 12px; /* Match the padding from the second code */
+            text-align: center; /* Center align text */
             border-bottom: 1px solid #E5E5E5;
-            font-size: 0.8rem; /* Reduced font size */
-            text-align: center;
+            font-size: 12px; /* Match the font size from the second code */
         }
         table th {
-    background-color: transparent;  /* Remove background color */
-    color: inherit;  /* Inherit text color from the parent or default styling */
-    text-align: center;
-}
+        background-color: #EBF8FD; /* Match header background color */
+        color: #4a5568; /* Match header text color */
+        font-weight: 600; /* Match header font weight */
+    }
 
 /* Hover effect on table headers */
 table th:hover {
-    background-color: #f0f0f0; /* Light grey background color on hover */
-    color: #2D3748; /* Dark text color on hover */
-    cursor: pointer; /* Pointer cursor to indicate interactivity */
-}
+        background-color: #f0f0f0; /* Light grey background color on hover */
+        color: #2D3748; /* Dark text color on hover */
+        cursor: pointer; /* Pointer cursor to indicate interactivity */
+    }
+    /* Add hover effect for rows */
+    table tr:hover {
+        background-color: #b3eaff; /* Match hover effect from the second code */
+    }
+
 
         .table-container {
             width: 100%; /* Ensure it takes full width */
@@ -193,72 +198,49 @@ table th:hover {
     }
 
     /* Styling for the Action Buttons */
-        .action-buttons {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 4px; /* Smaller gap between buttons */
-    }
+    .action-buttons {
+    position: relative;
+    display: flex; /* Changes the layout to flex */
+    justify-content: center; /* Center buttons */
+    align-items: center; /* Vertically center buttons */
+}
 
+.button-container {
+    display: flex;
+    flex-direction: column; /* Arrange buttons in a column */
+    gap: 5px; /* Space between buttons */
+}
 
+.edit-btn, .archive-btn {
+    border-radius: 5px; /* Slightly rounded corners */
+    padding: 6px 10px; /* Increased padding for better touch */
+    font-size: 12px; /* Consistent font size */
+    transition: background-color 0.3s, transform 0.2s; /* Transition effects */
+}
 
-    /* Edit Button Style */
-    .edit-btn {
-    background-color: #4cc9f0;
+.edit-btn {
+    top: -10; /* Position the Edit button at the top */
+    background-color: #4cc9f0; /* Edit button color */
     color: white;
-    padding: 3px 8px; /* Smaller padding */
-    border-radius: 3px; /* Slightly smaller rounded corners */
-    font-size: 0.7rem; /* Slightly smaller font size */
-    font-weight: normal; /* Regular font weight */
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s ease; /* Transition for color and scale */
-    margin-top: 0.6rem;
-    margin-bottom: 0.6rem;
+
 }
 
 .edit-btn:hover {
-    background-color: #36a9c1; /* Darker green on hover */
+    background-color: #36a9c1; /* Darker shade on hover */
     transform: scale(1.05); /* Slight scaling effect */
 }
 
-    /* Archive button style */
-    .archive-btn {
-    background-color: #57cc99; /* Red background */
+.archive-btn {
+    top: 40px; /* Position the Archive button below the Edit button */
+    background-color: #57cc99; /* Archive button color */
     color: white;
-    padding: 3px 8px; /* Smaller padding */
-    border-radius: 3px; /* Slightly smaller rounded corners */
-    font-size: 0.7rem; /* Slightly smaller font size */
-    font-weight: normal; /* Regular font weight */
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s ease; /* Transition for color and scale */
-    margin-top: 0.6rem;
-    margin-bottom: 0.6rem;
+    margin-bottom: 20px;
 }
 
 .archive-btn:hover {
-    background-color:rgb(45, 156, 108); /* Darker red on hover */
+    background-color: #57cc99; /* Darker shade on hover */
     transform: scale(1.05); /* Slight scaling effect */
 }
-
-    /* Restore button style for archived items */
-    .restore-btn {
-    background-color: rgb(21, 183, 75);
-    color: white;
-    padding: 3px 8px; /* Smaller padding */
-    border-radius: 3px; /* Slightly smaller rounded corners */
-    font-size: 0.7rem; /* Slightly smaller font size */
-    font-weight: normal; /* Regular font weight */
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s ease; /* Transition for color and scale */
-    margin-top: 0.6rem;
-    margin-bottom: 0.6rem;        
-    transition: background-color 0.3s, transform 0.2s;
-    }
-
-    .restore-btn:hover {
-        background-color: rgb(81, 166, 109);  /* Darker shade of green for hover effect */
-        transform: scale(1.05);  /* Slight scaling effect */
-    }
 
 /* Change font size for table headers */
 table.dataTable thead th {
@@ -451,9 +433,14 @@ table.dataTable tbody td {
             </thead>
             <tbody>
                 @foreach($allItems as $item)
-                    <tr id="item-{{ $item->id }}">
+                    <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
                         <td>{{ $item->item_code }}</td>
-                        <td>{{ $item->name }}</td>
+                        <td>
+                            {{ $item->name }}
+                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5)
+                                <span class="new-indicator">New!</span>
+                            @endif
+                        </td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->category }}</td>
@@ -462,13 +449,12 @@ table.dataTable tbody td {
                         <td>{{ $item->arrival_date }}</td>
                         <td>{{ $item->date_purchased }}</td>
                         <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 80px;"></td>
                         <td class="action-buttons">
-                        <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-
-                            <!-- Archive Button: AJAX for archiving -->
-                            <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-
+                            <div class="button-container">
+                                <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                                <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
@@ -509,12 +495,12 @@ table.dataTable tbody td {
                         <td>{{ $item->arrival_date }}</td>
                         <td>{{ $item->date_purchased }}</td>
                         <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 80px;"></td>
                         <td class="action-buttons">
-                        <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-<!-- Archive Button: AJAX for archiving -->
-<button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-
+                            <div class="button-container">
+                                <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                                <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
@@ -556,12 +542,12 @@ table.dataTable tbody td {
                         <td>{{ $item->arrival_date }}</td>
                         <td>{{ $item->date_purchased }}</td>
                         <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 80px;"></td>
                         <td class="action-buttons">
-                        <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-<!-- Archive Button: AJAX for archiving -->
-<button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-
+                            <div class="button-container">
+                                <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                                <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
@@ -603,12 +589,12 @@ table.dataTable tbody td {
                         <td>{{ $item->arrival_date }}</td>
                         <td>{{ $item->date_purchased }}</td>
                         <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 80px;"></td>
                         <td class="action-buttons">
-                        <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-<!-- Archive Button: AJAX for archiving -->
-<button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-
+                            <div class="button-container">
+                                <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                                <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
@@ -649,12 +635,12 @@ table.dataTable tbody td {
                         <td>{{ $item->arrival_date }}</td>
                         <td>{{ $item->date_purchased }}</td>
                         <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 80px;"></td>
                         <td class="action-buttons">
-                        <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-<!-- Archive Button: AJAX for archiving -->
-<button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-
+                            <div class="button-container">
+                                <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                                <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
@@ -697,7 +683,7 @@ table.dataTable tbody td {
                         <td>{{ $item->arrival_date }}</td>
                         <td>{{ $item->date_purchased }}</td>
                         <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 80px;"></td>
                         <td class="action-buttons">
                             <!-- Restore Button: Form for restoring an archived item -->
                             <form action="{{ route('restore.item', $item->id) }}" method="POST" class="inline-block">
@@ -756,40 +742,25 @@ $(document).ready(function () {
 
     // Loop through all items in the table
     $('#allItemsTable tbody tr').each(function () {
-        var createdDate = $(this).find('td:nth-child(9)').text(); // Assuming the 9th column is "created_at"
+        var addedDate = $(this).data('added-at'); // Get the 'added_at' from data attribute
 
-        // Log the raw createdDate for debugging
-        console.log("Raw createdDate:", createdDate);
-
-        // Ensure we are parsing the createdDate into a proper Date object
-        var createdDateObj = new Date(createdDate);  // Parse the string into a Date object
+        // Parse the addedDate into a proper Date object
+        var addedDateObj = new Date(addedDate);  // Parse the string into a Date object
 
         // Check if the date is invalid (NaN) after parsing
-        if (isNaN(createdDateObj.getTime())) {
-            console.log("Invalid date format: " + createdDate);
+        if (isNaN(addedDateObj.getTime())) {
+            console.log("Invalid date format: " + addedDate);
             return;  // Skip this item if the date is invalid
         }
 
-        // Log the parsed createdDate for debugging
-        console.log("Parsed createdDate:", createdDateObj);
-
-        // Calculate the time difference in milliseconds between the current time and created time
-        var timeDiff = currentDate - createdDateObj;  // This gives the difference in milliseconds
-
-        // If the timeDiff is negative, that means something went wrong with parsing
-        if (timeDiff < 0) {
-            console.log("Time difference is negative, invalid date?");
-            return;  // Skip this item if there's a negative time difference
-        }
+        // Calculate the time difference in milliseconds between the current time and added time
+        var timeDiff = currentDate - addedDateObj;  // This gives the difference in milliseconds
 
         // Calculate hours and minutes from the time difference in milliseconds
         var hoursDiff = Math.floor(timeDiff / (1000 * 60 * 60));  // Calculate the full hours
         var minutesDiff = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));  // Calculate the remaining minutes
 
-        // Log the calculated difference for debugging
-        console.log("Elapsed time (in hours and minutes):", hoursDiff, "hours", minutesDiff, "minutes");
-
-        // If the item was created within the last 5 days, add the "New!" indicator
+        // Add the "New!" indicator if the item was added within the last 5 days
         var daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));  // Convert milliseconds to days
         if (daysDiff <= 5) {
             $(this).addClass('new-item');  // Add the "new-item" class
@@ -804,8 +775,8 @@ $(document).ready(function () {
             // Format the time difference
             var elapsedTime = hoursDiff + " hours and " + minutesDiff + " minutes ago";
 
-            // Set the "created_at" value as the tooltip text (this will show the time difference on hover)
-            $(this).attr('title', 'Item created: ' + elapsedTime);  // Show the time difference on hover
+            // Set the "added_at" value as the tooltip text (this will show the time difference on hover)
+            $(this).attr('title', 'Item added: ' + elapsedTime);  // Show the time difference on hover
         });
     });
 });
@@ -1023,8 +994,33 @@ $(document).ready(function () {
                     icon: 'success',
                     confirmButtonText: 'OK'
                 });
+
+                // Prepend the new item to the top of the table (specifically to the all items table)
+                var newItemRow = `
+                    <tr id="item-${response.id}">
+                        <td>${response.item_code}</td>
+                        <td>${response.name}</td>
+                        <td>${response.quantity}</td>
+                        <td>${response.unit}</td>
+                        <td>${response.category}</td>
+                        <td>${response.description}</td>
+                        <td>${response.storage_location}</td>
+                        <td>${response.arrival_date}</td>
+                        <td>${response.date_purchased}</td>
+                        <td>${response.status}</td>
+                        <td><img src="${response.image_url}" alt="${response.name}" class="w-10 h-10"></td>
+                        <td class="action-buttons">
+                            <button onclick="openEditModal('${response.id}')" class="edit-btn">Edit</button>
+                            <button type="button" class="archive-btn" onclick="archiveItem('${response.id}')">Archive</button>
+                        </td>
+                    </tr>`;
+
+                // Prepend the new item row to the table (this will put it at the top)
+                $('#allItemsTable tbody').prepend(newItemRow);
+
+                // Optionally, reset the modal and reload the page or form
                 $("#addItemModal").addClass("hidden");
-                location.reload();  // Reload the page to see the new items
+                $('#itemForm')[0].reset();  // Reset form fields
             },
             error: function(xhr, status, error) {
                 Swal.fire({
