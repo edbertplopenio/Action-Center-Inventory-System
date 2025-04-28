@@ -23,9 +23,11 @@ class BorrowedItem extends Model
         'due_date',
         'return_date',
         'status',
-        'responsible_person',
+        'request_responsible_person',  // New field for the request responsible person
+        'return_responsible_person',   // New field for the return responsible person
         'is_archived',
     ];
+    
 
     // Cast borrow_date and due_date to Carbon instances
     protected $casts = [
