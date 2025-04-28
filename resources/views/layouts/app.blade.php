@@ -198,7 +198,7 @@
                             <li class="{{ Request::routeIs('borrower.inventory.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                                 <a href="{{ route('borrower.inventory.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
                                     <i class="ph-bold ph-treasure-chest text-xl" style="margin-right: 5px;"></i>
-                                    <span style="font-size: 11px;">Equipment Inventory</span>
+                                    <span style="font-size: 11px;">Equipment List</span>
                                 </a>
                             </li>
                             @endif
