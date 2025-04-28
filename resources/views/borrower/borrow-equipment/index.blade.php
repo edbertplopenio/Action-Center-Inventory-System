@@ -200,7 +200,7 @@
             <table id="borrowedTable" class="display" style="width:100%">
                 <thead>
                     <tr>
-                    <th style="display:none;">ID</th> <!-- Hidden ID column -->
+                        <th style="display:none;">ID</th> <!-- Hidden ID column -->
                         <th>Item Name</th>
                         <th>Category</th>
                         <th>Quantity Borrowed</th>
@@ -209,62 +209,77 @@
                         <th>Due Date</th>
                         <th>Return Date</th>
                         <th>Status</th>
-                        <th>Responsible Person</th>
+                        <th style="min-width: 150px;">
+                            Responsible Person <br>
+                            <span style="display: flex; justify-content: space-between; font-weight: normal;">
+                                <span>Request</span>
+                                <span>Return</span>
+                            </span>
+                        </th>
                         <th>Image</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($borrowed_items as $borrowed)
-                    <tr class="borrowed-row cursor-pointer"
-                        data-id="{{ $borrowed->id }}"
-                        data-item-name="{{ $borrowed->item->name }}"
-                        data-category="{{ $borrowed->item->category }}"
-                        data-quantity="{{ $borrowed->quantity_borrowed }}"
-                        data-unit="{{ $borrowed->item->unit }}"
-                        data-borrow-date="{{ $borrowed->borrow_date }}"
-                        data-due-date="{{ $borrowed->due_date }}"
-                        data-return-date="{{ $borrowed->return_date ?? 'Not Returned' }}"
-                        data-status="{{ $borrowed->status }}"
-                        data-responsible-person="{{ $borrowed->responsible_person }}"
-                        data-image-url="{{ $borrowed->item->image_url }}">
+    @forelse($borrowed_items as $borrowed)
+    <tr class="borrowed-row cursor-pointer"
+        data-id="{{ $borrowed->id }}"
+        data-item-name="{{ $borrowed->item->name }}"
+        data-category="{{ $borrowed->item->category }}"
+        data-quantity="{{ $borrowed->quantity_borrowed }}"
+        data-unit="{{ $borrowed->item->unit }}"
+        data-borrow-date="{{ $borrowed->borrow_date }}"
+        data-due-date="{{ $borrowed->due_date }}"
+        data-return-date="{{ $borrowed->return_date ?? 'Not Returned' }}"
+        data-status="{{ $borrowed->status }}"
+        data-responsible-person="{{ $borrowed->responsible_person }}"
+        data-image-url="{{ $borrowed->item->image_url }}">
 
-                        <td style="display:none;">{{ $borrowed->id }}</td> <!-- Hidden ID column -->
-
-                        <td>{{ $borrowed->item->name }}</td>
-                        <td>{{ $borrowed->item->category }}</td>
-                        <td>{{ $borrowed->quantity_borrowed }}</td>
-                        <td>{{ $borrowed->item->unit }}</td>
-                        <td>{{ $borrowed->borrow_date }}</td>
-                        <td>{{ $borrowed->due_date }}</td>
-                        <td>{{ $borrowed->return_date ?? 'Not Returned' }}</td>
-                        <td>
-                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+        <td style="display:none;">{{ $borrowed->id }}</td> <!-- Hidden ID column -->
+        <td>{{ $borrowed->item->name }}</td>
+        <td>{{ $borrowed->item->category }}</td>
+        <td>{{ $borrowed->quantity_borrowed }}</td>
+        <td>{{ $borrowed->item->unit }}</td>
+        <td>{{ $borrowed->borrow_date }}</td>
+        <td>{{ $borrowed->due_date }}</td>
+        <td>{{ $borrowed->return_date ?? 'Not Returned' }}</td>
+        <td>
+            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
                 {{ $borrowed->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
                 {{ $borrowed->status == 'Approved' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
                 {{ $borrowed->status == 'Rejected' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
                 {{ $borrowed->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
                 {{ $borrowed->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
-                {{ $borrowed->status == 'Overdue' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}
-                {{ $borrowed->status == 'Lost' ? 'bg-gray-500/10 text-gray-500 border border-gray-500' : '' }}
-                {{ $borrowed->status == 'Damaged' ? 'bg-pink-500/10 text-pink-500 border border-pink-500' : '' }}">
-                                {{ $borrowed->status }}
-                            </span>
-                        </td>
-                        <td>{{ $borrowed->responsible_person }}</td>
-                        <td>
-                            @if($borrowed->item->image_url)
-                            <img src="{{ asset($borrowed->item->image_url) }}" alt="Item Image" style="width: 50px; height: 50px;">
-                            @else
-                            No Image
-                            @endif
-                        </td>
-                    </tr>
-                    @empty
-                    <tr id="noRecordsRow">
-                        <td colspan="10" class="text-center">No borrowed items found.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
+                {{ $borrowed->status == 'Overdue' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                {{ $borrowed->status }}
+            </span>
+        </td>
+        <td>
+            <div style="display: flex; justify-content: space-between; width: 100%;">
+                <div style="flex: 1; text-align: center;">
+
+                    {{ $borrowed->request_responsible_person ?? 'N/A' }}
+                </div>
+                <div style="flex: 1; text-align: center;">
+
+                    {{ $borrowed->return_responsible_person ?? 'N/A' }}
+                </div>
+            </div>
+        </td>
+        <td>
+            @if($borrowed->item->image_url)
+                <img src="{{ asset($borrowed->item->image_url) }}" alt="Item Image" style="width: 50px; height: 50px;">
+            @else
+                No Image
+            @endif
+        </td>
+    </tr>
+    @empty
+    <tr id="noRecordsRow">
+        <td colspan="10" class="text-center">No borrowed items found.</td>
+    </tr>
+    @endforelse
+</tbody>
+
 
             </table>
         </div>
@@ -348,32 +363,31 @@
 
 
 <script>
-$(document).ready(function() {
-    let table = $('#borrowedTable');
+    $(document).ready(function() {
+        let table = $('#borrowedTable');
 
-    // Remove "No records found" row if present
-    if (table.find("tbody tr").length === 1 && table.find("#noRecordsRow").length === 1) {
-        table.find("#noRecordsRow").remove(); // Remove "No records found" row
-    }
+        // Remove "No records found" row if present
+        if (table.find("tbody tr").length === 1 && table.find("#noRecordsRow").length === 1) {
+            table.find("#noRecordsRow").remove(); // Remove "No records found" row
+        }
 
-    // Initialize DataTables with additional settings
-    table.DataTable({
-        scrollY: '425px',
-        scrollCollapse: true,
-        scrollX: false,
-        paging: true,
-        searching: true,
-        ordering: true,
-        "order": [
-            [0, "desc"] // Sort by hidden ID column (index 0)
-        ],
-        "columnDefs": [{
-            "targets": 0,
-            "visible": false // Hide ID column
-        }]
+        // Initialize DataTables with additional settings
+        table.DataTable({
+            scrollY: '425px',
+            scrollCollapse: true,
+            scrollX: false,
+            paging: true,
+            searching: true,
+            ordering: true,
+            "order": [
+                [0, "desc"] // Sort by hidden ID column (index 0)
+            ],
+            "columnDefs": [{
+                "targets": 0,
+                "visible": false // Hide ID column
+            }]
+        });
     });
-});
-
 </script>
 
 @endsection
