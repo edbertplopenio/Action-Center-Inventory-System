@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\BorrowedItem;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 class ReturnItemsController extends Controller
 {
     // Display the list of borrowed and returned items
@@ -37,6 +37,10 @@ public function index()
     
         $returnedItems = [];
     
+        // Get the logged-in user's full name
+        $user = Auth::user();
+        $responsiblePerson = $user->first_name . ' ' . $user->last_name;  // Concatenate first and last name
+    
         foreach ($scannedQRCodes as $index => $scannedQRCode) {
             $individualItem = $borrowedItem->individualItems()->where('qr_code', $scannedQRCode)->first();
     
@@ -50,7 +54,7 @@ public function index()
                     'individual_item_id' => $individualItem->id,
                     'borrowed_item_id' => $borrowedItem->id,
                     'return_date' => $returnDates[$index] ?? now(),
-                    'remarks' => $remarks[$index] ?? 'Not Checked' // Default to 'Not Checked' if no remark
+                    'remarks' => $remarks[$index] ?? 'Not Checked', // Default to 'Not Checked' if no remark
                 ]);
     
                 $returnedItems[] = $individualItem;
@@ -58,6 +62,10 @@ public function index()
                 return response()->json(['message' => "Invalid QR code: $scannedQRCode."], 400);
             }
         }
+    
+        // Update the return_responsible_person in the borrowed_items table
+        $borrowedItem->return_responsible_person = $responsiblePerson;
+        $borrowedItem->save();
     
         // Check if all individual items are now available
         $unreturnedItemsCount = $borrowedItem->individualItems()->where('status', '!=', 'Available')->count();
@@ -75,6 +83,7 @@ public function index()
     
         return response()->json(['message' => 'Items marked as returned and stock updated!', 'returnedItems' => $returnedItems], 200);
     }
+    
     
     
     
