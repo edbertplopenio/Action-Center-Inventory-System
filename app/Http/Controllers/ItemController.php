@@ -330,11 +330,11 @@ class ItemController extends Controller
     public function update(Request $request, $id)
     {
         $item = Item::find($id);
-
+    
         if (!$item) {
             return redirect()->back()->with('error', 'Item not found.');
         }
-
+    
         // Validate input fields for update
         $request->validate([
             'quantity' => 'required|integer|min:1',
@@ -344,27 +344,77 @@ class ItemController extends Controller
             'status' => 'required|string|max:255',
             'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-
+    
+        // Save the old quantity to compare later
+        $oldQuantity = $item->quantity;
+    
         // Only update editable fields
         $item->quantity = $request->quantity;
         $item->storage_location = $request->storage_location;
         $item->arrival_date = $request->arrival_date;
         $item->date_purchased = $request->date_purchased;
         $item->status = $request->status;
-
+    
         // Handle image upload if provided and save URL to `image_url`
         if ($request->hasFile('image_url')) {
             $filename = time() . '.' . $request->image_url->extension();
             $request->image_url->move(public_path('images'), $filename);
             $item->image_url = 'images/' . $filename;
         }
-
+    
+        // Save the updated item
         $item->save();
-
+    
+        // Adjust the individual items table based on the quantity change
+        if ($request->quantity < $oldQuantity) {
+            // If quantity is reduced, remove entries from individual items
+            $this->removeIndividualItems($item, $oldQuantity - $request->quantity);
+        } elseif ($request->quantity > $oldQuantity) {
+            // If quantity is increased, add entries to individual items
+            $this->addIndividualItems($item, $request->quantity - $oldQuantity);
+        }
+    
         return redirect()->back()->with('success', 'Item updated successfully!');
     }
-
+    
     /**
+     * Remove individual items based on the quantity reduction.
+     */
+    private function removeIndividualItems($item, $quantityToRemove)
+    {
+        // Get the latest individual items for this item
+        $individualItems = IndividualItem::where('item_id', $item->id)
+                                          ->orderBy('qr_code', 'desc')
+                                          ->take($quantityToRemove)
+                                          ->get();
+    
+        // Delete the specified number of individual items
+        foreach ($individualItems as $individualItem) {
+            $individualItem->delete();
+        }
+    }
+    
+    /**
+     * Add individual items based on the quantity increase.
+     */
+    private function addIndividualItems($item, $quantityToAdd)
+    {
+        $itemCode = $item->item_code;
+        $currentQuantity = $item->quantity;
+    
+        // Generate individual item codes for the new quantity
+        for ($i = $currentQuantity - $quantityToAdd + 1; $i <= $currentQuantity; $i++) {
+            $individualItemCode = $itemCode . '-' . str_pad($i, 2, '0', STR_PAD_LEFT);
+    
+            // Create individual item entry
+            $individualItem = new IndividualItem();
+            $individualItem->item_id = $item->id;
+            $individualItem->qr_code = $individualItemCode;  // Store the QR code string
+            $individualItem->status = $item->status;
+            $individualItem->save();
+        }
+    }
+        /**
      * Archive (soft delete) an item.
      */
     public function archiveItem($id)

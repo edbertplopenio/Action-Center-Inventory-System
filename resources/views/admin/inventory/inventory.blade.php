@@ -809,10 +809,11 @@ table.dataTable tbody td {
                         </td> 
                         <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
-                            <div class="button-container">
-                                <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-                                <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-                            </div>
+                            <!-- Restore Button: Form for restoring an archived item -->
+                            <form action="{{ route('restore.item', $item->id) }}" method="POST" class="inline-block">
+                                @csrf
+                                <button type="submit" class="restore-btn">Restore</button>
+                            </form>
                         </td>
                     </tr>
                 @endforeach
