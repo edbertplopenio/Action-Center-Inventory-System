@@ -450,9 +450,8 @@ table.dataTable tbody td {
             </button>
         </div>
 
-<!-- All Items Tab -->
+<!-- All Items Table -->
 <div id="all-items-content" class="tab-content active">
-    <!--<h3 class="text-xl font-semibold mb-4">All Items</h3>-->
     <div class="table-container">
         <table id="allItemsTable" class="display">
             <thead>
@@ -497,7 +496,7 @@ table.dataTable tbody td {
                                 {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
                                 {{ $item->status }}
                             </span>
-                        </td>
+                        </td> 
                         <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
                             <div class="button-container">
@@ -512,17 +511,17 @@ table.dataTable tbody td {
     </div>
 </div>
 
-<!-- DRRM Equipment Tab -->
-<div id="equipment-content" class="tab-content">
-    <!--<h3 class="text-xl font-semibold mb-4">DRRM Equipment</h3>--->
+<!-- All Items Table -->
+<div id="equipment-content" class="tab-content active"> 
     <div class="table-container">
-        <table id="equipmentTable" class="display">
+        <table id="equipmentTable" class="display"> 
             <thead>
                 <tr>
                     <th>Item Code</th>
                     <th>Item Name</th>
                     <th>Quantity</th>
                     <th>Unit</th>
+                    <th>Category</th>
                     <th>Description</th>
                     <th>Storage Location</th>
                     <th>Arrival Date</th>
@@ -533,12 +532,18 @@ table.dataTable tbody td {
                 </tr>
             </thead>
             <tbody>
-                @foreach($drrmItems as $item)
-                    <tr id="item-{{ $item->id }}">
-                    <td>{{ $item->item_code }}</td>
-                        <td>{{ $item->name }}</td>
+                @foreach($drrmItems as $item) 
+                    <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
+                        <td>{{ $item->item_code }}</td>
+                        <td>
+                            {{ $item->name }}
+                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5)
+                                <span class="new-indicator">New!</span>
+                            @endif
+                        </td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
+                        <td>{{ $item->category }}</td>
                         <td>{{ $item->description }}</td>
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
@@ -552,7 +557,7 @@ table.dataTable tbody td {
                                 {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
                                 {{ $item->status }}
                             </span>
-                        </td>
+                        </td> 
                         <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
                             <div class="button-container">
@@ -567,18 +572,17 @@ table.dataTable tbody td {
     </div>
 </div>
 
-
-<!-- Office Supplies Tab -->
 <div id="office-supplies-content" class="tab-content">
     <!--<h3 class="text-xl font-semibold mb-4">Office Supplies</h3>--->
     <div class="table-container">
         <table id="officeSuppliesTable" class="display">
-            <thead>
+            <thead> 
                 <tr>
                     <th>Item Code</th>
                     <th>Item Name</th>
                     <th>Quantity</th>
                     <th>Unit</th>
+                    <th>Category</th>
                     <th>Description</th>
                     <th>Storage Location</th>
                     <th>Arrival Date</th>
@@ -589,12 +593,18 @@ table.dataTable tbody td {
                 </tr>
             </thead>
             <tbody>
-                @foreach($officeItems as $item)
-                    <tr id="item-{{ $item->id }}">
-                    <td>{{ $item->item_code }}</td>
-                        <td>{{ $item->name }}</td>
+                @foreach($officeItems as $item) 
+                    <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
+                        <td>{{ $item->item_code }}</td>
+                        <td>
+                            {{ $item->name }}
+                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5)
+                                <span class="new-indicator">New!</span>
+                            @endif
+                        </td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
+                        <td>{{ $item->category }}</td>
                         <td>{{ $item->description }}</td>
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
@@ -608,7 +618,7 @@ table.dataTable tbody td {
                                 {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
                                 {{ $item->status }}
                             </span>
-                        </td>
+                        </td> 
                         <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
                             <div class="button-container">
@@ -622,19 +632,20 @@ table.dataTable tbody td {
         </table>
     </div>
 </div>
-
 
 <!-- Emergency Kits Tab -->
 <div id="emergency-kits-content" class="tab-content">
     <!--<h3 class="text-xl font-semibold mb-4">Emergency Kits</h3>-->
     <div class="table-container">
         <table id="emergencyKitsTable" class="display">
-            <thead>
+
+            <thead> 
                 <tr>
-                <th>Item Code</th>
+                    <th>Item Code</th>
                     <th>Item Name</th>
                     <th>Quantity</th>
                     <th>Unit</th>
+                    <th>Category</th>
                     <th>Description</th>
                     <th>Storage Location</th>
                     <th>Arrival Date</th>
@@ -645,12 +656,18 @@ table.dataTable tbody td {
                 </tr>
             </thead>
             <tbody>
-                @foreach($emergencyItems as $item)
-                    <tr id="item-{{ $item->id }}">
-                    <td>{{ $item->item_code }}</td>
-                        <td>{{ $item->name }}</td>
+                @foreach($emergencyItems as $item) 
+                    <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
+                        <td>{{ $item->item_code }}</td>
+                        <td>
+                            {{ $item->name }}
+                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5)
+                                <span class="new-indicator">New!</span>
+                            @endif
+                        </td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
+                        <td>{{ $item->category }}</td>
                         <td>{{ $item->description }}</td>
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
@@ -664,7 +681,7 @@ table.dataTable tbody td {
                                 {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
                                 {{ $item->status }}
                             </span>
-                        </td>
+                        </td> 
                         <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
                             <div class="button-container">
@@ -684,12 +701,14 @@ table.dataTable tbody td {
     <!--<h3 class="text-xl font-semibold mb-4">Other Items</h3>--->
     <div class="table-container">
         <table id="otherItemsTable" class="display">
-            <thead>
+
+            <thead> 
                 <tr>
-                <th>Item Code</th>
+                    <th>Item Code</th>
                     <th>Item Name</th>
                     <th>Quantity</th>
                     <th>Unit</th>
+                    <th>Category</th>
                     <th>Description</th>
                     <th>Storage Location</th>
                     <th>Arrival Date</th>
@@ -700,12 +719,18 @@ table.dataTable tbody td {
                 </tr>
             </thead>
             <tbody>
-                @foreach($otherItems as $item)
-                    <tr id="item-{{ $item->id }}">
-                    <td>{{ $item->item_code }}</td>
-                        <td>{{ $item->name }}</td>
+                @foreach($otherItems as $item) 
+                    <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
+                        <td>{{ $item->item_code }}</td>
+                        <td>
+                            {{ $item->name }}
+                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5)
+                                <span class="new-indicator">New!</span>
+                            @endif
+                        </td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
+                        <td>{{ $item->category }}</td>
                         <td>{{ $item->description }}</td>
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
@@ -719,7 +744,7 @@ table.dataTable tbody td {
                                 {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
                                 {{ $item->status }}
                             </span>
-                        </td>
+                        </td> 
                         <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
                             <div class="button-container">
@@ -739,13 +764,13 @@ table.dataTable tbody td {
     <!--<h3 class="text-xl font-semibold mb-4">Archives</h3>-->
     <div class="table-container">
         <table id="archivesTable" class="display">
-            <thead>
+            <thead> 
                 <tr>
-                <th>Item Code</th>
+                    <th>Item Code</th>
                     <th>Item Name</th>
-                    <th>Category</th>
                     <th>Quantity</th>
                     <th>Unit</th>
+                    <th>Category</th>
                     <th>Description</th>
                     <th>Storage Location</th>
                     <th>Arrival Date</th>
@@ -756,13 +781,18 @@ table.dataTable tbody td {
                 </tr>
             </thead>
             <tbody>
-                @foreach($archivedItems as $item)
-                    <tr id="archived-{{ $item->id }}">
-                    <td>{{ $item->item_code }}</td>
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->category }}</td>
+                @foreach($archivedItems as $item) 
+                    <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
+                        <td>{{ $item->item_code }}</td>
+                        <td>
+                            {{ $item->name }}
+                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5)
+                                <span class="new-indicator">New!</span>
+                            @endif
+                        </td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
+                        <td>{{ $item->category }}</td>
                         <td>{{ $item->description }}</td>
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
@@ -776,14 +806,13 @@ table.dataTable tbody td {
                                 {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
                                 {{ $item->status }}
                             </span>
-                        </td>
+                        </td> 
                         <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
-                            <!-- Restore Button: Form for restoring an archived item -->
-                            <form action="{{ route('restore.item', $item->id) }}" method="POST" class="inline-block">
-                                @csrf
-                                <button type="submit" class="restore-btn">Restore</button>
-                            </form>
+                            <div class="button-container">
+                                <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                                <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
@@ -893,14 +922,22 @@ $(document).ready(function () {
     });
 </script>
 
-<script> 
+<script>
     $(document).ready(function () {
+        // Initialize All Items Table with sorting by `added_at` (Descending order)
         $('#allItemsTable').DataTable({
-            scrollY: '425px', 
+            scrollY: '425px',
             scrollCollapse: true,
             paging: true,
             searching: true,
             ordering: true,
+            "order": [[8, 'desc']],  // Sort by the 'Arrival Date' column (index 8) in descending order
+            columnDefs: [
+                {
+                    targets: 8,  // Column index for the 'Arrival Date' column
+                    type: 'date',  // Ensure the column is sorted as a date
+                }
+            ],
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
             "pageLength": 10,
             "initComplete": function(settings, json) {
@@ -910,12 +947,20 @@ $(document).ready(function () {
             }
         });
 
+        // Initialize DRRM Equipment Table with sorting by `added_at` (Descending order)
         $('#equipmentTable').DataTable({
             scrollY: '425px',
             scrollCollapse: true,
             paging: true,
             searching: true,
             ordering: true,
+            "order": [[8, 'desc']],  // Sort by the 'Arrival Date' column (index 8) in descending order
+            columnDefs: [
+                {
+                    targets: 8,  // Column index for the 'Arrival Date' column
+                    type: 'date',  // Ensure the column is sorted as a date
+                }
+            ],
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
             "pageLength": 10,
             "initComplete": function(settings, json) {
@@ -925,12 +970,20 @@ $(document).ready(function () {
             }
         });
 
+        // Initialize Office Supplies Table with sorting by `added_at` (Descending order)
         $('#officeSuppliesTable').DataTable({
             scrollY: '425px',
             scrollCollapse: true,
             paging: true,
             searching: true,
             ordering: true,
+            "order": [[8, 'desc']],  // Sort by the 'Arrival Date' column (index 8) in descending order
+            columnDefs: [
+                {
+                    targets: 8,  // Column index for the 'Arrival Date' column
+                    type: 'date',  // Ensure the column is sorted as a date
+                }
+            ],
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
             "pageLength": 10,
             "initComplete": function(settings, json) {
@@ -940,12 +993,20 @@ $(document).ready(function () {
             }
         });
 
+        // Initialize Emergency Kits Table with sorting by `added_at` (Descending order)
         $('#emergencyKitsTable').DataTable({
             scrollY: '425px',
             scrollCollapse: true,
             paging: true,
             searching: true,
             ordering: true,
+            "order": [[8, 'desc']],  // Sort by the 'Arrival Date' column (index 8) in descending order
+            columnDefs: [
+                {
+                    targets: 8,  // Column index for the 'Arrival Date' column
+                    type: 'date',  // Ensure the column is sorted as a date
+                }
+            ],
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
             "pageLength": 10,
             "initComplete": function(settings, json) {
@@ -955,12 +1016,20 @@ $(document).ready(function () {
             }
         });
 
+        // Initialize Other Items Table with sorting by `added_at` (Descending order)
         $('#otherItemsTable').DataTable({
             scrollY: '425px',
             scrollCollapse: true,
             paging: true,
             searching: true,
             ordering: true,
+            "order": [[8, 'desc']],  // Sort by the 'Arrival Date' column (index 8) in descending order
+            columnDefs: [
+                {
+                    targets: 8,  // Column index for the 'Arrival Date' column
+                    type: 'date',  // Ensure the column is sorted as a date
+                }
+            ],
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
             "pageLength": 10,
             "initComplete": function(settings, json) {
@@ -970,12 +1039,20 @@ $(document).ready(function () {
             }
         });
 
+        // Initialize Archives Table with sorting by `added_at` (Descending order)
         $('#archivesTable').DataTable({
             scrollY: '425px',
             scrollCollapse: true,
             paging: true,
             searching: true,
             ordering: true,
+            "order": [[8, 'desc']],  // Sort by the 'Arrival Date' column (index 8) in descending order
+            columnDefs: [
+                {
+                    targets: 8,  // Column index for the 'Arrival Date' column
+                    type: 'date',  // Ensure the column is sorted as a date
+                }
+            ],
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
             "pageLength": 10,
             "initComplete": function(settings, json) {
