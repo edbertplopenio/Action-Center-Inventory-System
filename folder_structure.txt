@@ -19,23 +19,43 @@ C:.
 ¦   vite.config.js
 ¦   
 +---app
+¦   +---Events
+¦   ¦       BorrowingRequestCreated.php
+¦   ¦       
+¦   +---Helpers
+¦   ¦       RetentionHelper.php
+¦   ¦       
 ¦   +---Http
 ¦   ¦   +---Controllers
 ¦   ¦       ¦   AuthManager.php
 ¦   ¦       ¦   Controller.php
+¦   ¦       ¦   DashboardController.php
 ¦   ¦       ¦   HomeController.php
-¦   ¦       ¦   InventoryController.php
+¦   ¦       ¦   ItemController.php
 ¦   ¦       ¦   
 ¦   ¦       +---Admin
-¦   ¦               CategoryController.php
-¦   ¦               EquipmentController.php
-¦   ¦               LocationController.php
-¦   ¦               RecordsController.php
-¦   ¦               UsersController.php
+¦   ¦       ¦       Controller.php
+¦   ¦       ¦       InventoryController.php
+¦   ¦       ¦       InventoryRequestController.php
+¦   ¦       ¦       RecordsController.php
+¦   ¦       ¦       ReturnItemsController.php
+¦   ¦       ¦       UsersController.php
+¦   ¦       ¦       
+¦   ¦       +---Borrower
+¦   ¦               BorrowedItemsController.php
+¦   ¦               BorrowEquipmentController.php
+¦   ¦               InventoryController.php
+¦   ¦               ProfileController.php
 ¦   ¦               
+¦   +---Mail
+¦   ¦       PasswordResetMail.php
+¦   ¦       
 ¦   +---Models
-¦   ¦       Category.php
-¦   ¦       Equipment.php
+¦   ¦       Borrow.php
+¦   ¦       BorrowedItem.php
+¦   ¦       IndividualItem.php
+¦   ¦       IndividualItemReturn.php
+¦   ¦       Item.php
 ¦   ¦       Location.php
 ¦   ¦       Record.php
 ¦   ¦       User.php
@@ -49,6 +69,7 @@ C:.
 ¦   ¦   
 ¦   +---cache
 ¦           .gitignore
+¦           config.php
 ¦           packages.php
 ¦           services.php
 ¦           
@@ -77,9 +98,16 @@ C:.
 ¦   ¦       0001_01_01_000001_create_cache_table.php
 ¦   ¦       0001_01_01_000002_create_jobs_table.php
 ¦   ¦       2025_01_01_000001_create_equipment_table.php
-¦   ¦       2025_01_01_000002_create_category_table.php
-¦   ¦       2025_01_01_000003_create_location_table.php
 ¦   ¦       2025_02_19_033739_add_fields_to_users_table.php
+¦   ¦       2025_02_27_024331_create_records_table.php
+¦   ¦       2025_02_27_024744_create_categories_table.php
+¦   ¦       2025_02_28_010116_add_status_to_records_table.php
+¦   ¦       2025_02_28_022618_modify_records_table.php
+¦   ¦       2025_02_28_024602_add_related_documents_and_grds_to_records_table.php
+¦   ¦       2025_03_11_001618_remove_status_from_users_table.php
+¦   ¦       2025_03_11_080811_add_status_to_users_table.php
+¦   ¦       2025_03_14_072734_remove_contact_number_from_users_table.php
+¦   ¦       2025_04_02_054609_create_borrowed_item_individual_items_table.php
 ¦   ¦       
 ¦   +---seeders
 ¦           DatabaseSeeder.php
@@ -277,6 +305,19 @@ C:.
 ¦   ¦                   trace-mapping.d.ts
 ¦   ¦                   types.d.ts
 ¦   ¦                   
+¦   +---@kurkle
+¦   ¦   +---color
+¦   ¦       ¦   LICENSE.md
+¦   ¦       ¦   package.json
+¦   ¦       ¦   README.md
+¦   ¦       ¦   
+¦   ¦       +---dist
+¦   ¦               color.cjs
+¦   ¦               color.d.ts
+¦   ¦               color.esm.js
+¦   ¦               color.min.js
+¦   ¦               color.min.js.map
+¦   ¦               
 ¦   +---@nodelib
 ¦   ¦   +---fs.scandir
 ¦   ¦   ¦   ¦   LICENSE
@@ -1976,6 +2017,162 @@ C:.
 ¦   ¦           index.js
 ¦   ¦           templates.js
 ¦   ¦           util.js
+¦   ¦           
+¦   +---chart.js
+¦   ¦   ¦   LICENSE.md
+¦   ¦   ¦   package.json
+¦   ¦   ¦   README.md
+¦   ¦   ¦   
+¦   ¦   +---auto
+¦   ¦   ¦       auto.cjs
+¦   ¦   ¦       auto.d.ts
+¦   ¦   ¦       auto.js
+¦   ¦   ¦       package.json
+¦   ¦   ¦       
+¦   ¦   +---dist
+¦   ¦   ¦   ¦   chart.cjs
+¦   ¦   ¦   ¦   chart.cjs.map
+¦   ¦   ¦   ¦   chart.js
+¦   ¦   ¦   ¦   chart.js.map
+¦   ¦   ¦   ¦   chart.umd.js
+¦   ¦   ¦   ¦   chart.umd.js.map
+¦   ¦   ¦   ¦   helpers.cjs
+¦   ¦   ¦   ¦   helpers.cjs.map
+¦   ¦   ¦   ¦   helpers.js
+¦   ¦   ¦   ¦   helpers.js.map
+¦   ¦   ¦   ¦   index.d.ts
+¦   ¦   ¦   ¦   index.umd.d.ts
+¦   ¦   ¦   ¦   types.d.ts
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---chunks
+¦   ¦   ¦   ¦       helpers.segment.cjs
+¦   ¦   ¦   ¦       helpers.segment.cjs.map
+¦   ¦   ¦   ¦       helpers.segment.js
+¦   ¦   ¦   ¦       helpers.segment.js.map
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---controllers
+¦   ¦   ¦   ¦       controller.bar.d.ts
+¦   ¦   ¦   ¦       controller.bubble.d.ts
+¦   ¦   ¦   ¦       controller.doughnut.d.ts
+¦   ¦   ¦   ¦       controller.line.d.ts
+¦   ¦   ¦   ¦       controller.pie.d.ts
+¦   ¦   ¦   ¦       controller.polarArea.d.ts
+¦   ¦   ¦   ¦       controller.radar.d.ts
+¦   ¦   ¦   ¦       controller.scatter.d.ts
+¦   ¦   ¦   ¦       index.d.ts
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---core
+¦   ¦   ¦   ¦       core.adapters.d.ts
+¦   ¦   ¦   ¦       core.animation.d.ts
+¦   ¦   ¦   ¦       core.animations.d.ts
+¦   ¦   ¦   ¦       core.animations.defaults.d.ts
+¦   ¦   ¦   ¦       core.animator.d.ts
+¦   ¦   ¦   ¦       core.config.d.ts
+¦   ¦   ¦   ¦       core.controller.d.ts
+¦   ¦   ¦   ¦       core.datasetController.d.ts
+¦   ¦   ¦   ¦       core.defaults.d.ts
+¦   ¦   ¦   ¦       core.element.d.ts
+¦   ¦   ¦   ¦       core.interaction.d.ts
+¦   ¦   ¦   ¦       core.layouts.d.ts
+¦   ¦   ¦   ¦       core.layouts.defaults.d.ts
+¦   ¦   ¦   ¦       core.plugins.d.ts
+¦   ¦   ¦   ¦       core.registry.d.ts
+¦   ¦   ¦   ¦       core.scale.autoskip.d.ts
+¦   ¦   ¦   ¦       core.scale.d.ts
+¦   ¦   ¦   ¦       core.scale.defaults.d.ts
+¦   ¦   ¦   ¦       core.ticks.d.ts
+¦   ¦   ¦   ¦       core.typedRegistry.d.ts
+¦   ¦   ¦   ¦       index.d.ts
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---elements
+¦   ¦   ¦   ¦       element.arc.d.ts
+¦   ¦   ¦   ¦       element.bar.d.ts
+¦   ¦   ¦   ¦       element.line.d.ts
+¦   ¦   ¦   ¦       element.point.d.ts
+¦   ¦   ¦   ¦       index.d.ts
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---helpers
+¦   ¦   ¦   ¦       helpers.canvas.d.ts
+¦   ¦   ¦   ¦       helpers.collection.d.ts
+¦   ¦   ¦   ¦       helpers.color.d.ts
+¦   ¦   ¦   ¦       helpers.config.d.ts
+¦   ¦   ¦   ¦       helpers.config.types.d.ts
+¦   ¦   ¦   ¦       helpers.core.d.ts
+¦   ¦   ¦   ¦       helpers.curve.d.ts
+¦   ¦   ¦   ¦       helpers.dom.d.ts
+¦   ¦   ¦   ¦       helpers.easing.d.ts
+¦   ¦   ¦   ¦       helpers.extras.d.ts
+¦   ¦   ¦   ¦       helpers.interpolation.d.ts
+¦   ¦   ¦   ¦       helpers.intl.d.ts
+¦   ¦   ¦   ¦       helpers.math.d.ts
+¦   ¦   ¦   ¦       helpers.options.d.ts
+¦   ¦   ¦   ¦       helpers.rtl.d.ts
+¦   ¦   ¦   ¦       helpers.segment.d.ts
+¦   ¦   ¦   ¦       index.d.ts
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---platform
+¦   ¦   ¦   ¦       index.d.ts
+¦   ¦   ¦   ¦       platform.base.d.ts
+¦   ¦   ¦   ¦       platform.basic.d.ts
+¦   ¦   ¦   ¦       platform.dom.d.ts
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---plugins
+¦   ¦   ¦   ¦   ¦   index.d.ts
+¦   ¦   ¦   ¦   ¦   plugin.colors.d.ts
+¦   ¦   ¦   ¦   ¦   plugin.decimation.d.ts
+¦   ¦   ¦   ¦   ¦   plugin.legend.d.ts
+¦   ¦   ¦   ¦   ¦   plugin.subtitle.d.ts
+¦   ¦   ¦   ¦   ¦   plugin.title.d.ts
+¦   ¦   ¦   ¦   ¦   plugin.tooltip.d.ts
+¦   ¦   ¦   ¦   ¦   
+¦   ¦   ¦   ¦   +---plugin.filler
+¦   ¦   ¦   ¦           filler.drawing.d.ts
+¦   ¦   ¦   ¦           filler.helper.d.ts
+¦   ¦   ¦   ¦           filler.options.d.ts
+¦   ¦   ¦   ¦           filler.segment.d.ts
+¦   ¦   ¦   ¦           filler.target.d.ts
+¦   ¦   ¦   ¦           filler.target.stack.d.ts
+¦   ¦   ¦   ¦           index.d.ts
+¦   ¦   ¦   ¦           simpleArc.d.ts
+¦   ¦   ¦   ¦           
+¦   ¦   ¦   +---scales
+¦   ¦   ¦   ¦       index.d.ts
+¦   ¦   ¦   ¦       scale.category.d.ts
+¦   ¦   ¦   ¦       scale.linear.d.ts
+¦   ¦   ¦   ¦       scale.linearbase.d.ts
+¦   ¦   ¦   ¦       scale.logarithmic.d.ts
+¦   ¦   ¦   ¦       scale.radialLinear.d.ts
+¦   ¦   ¦   ¦       scale.time.d.ts
+¦   ¦   ¦   ¦       scale.timeseries.d.ts
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---types
+¦   ¦   ¦           animation.d.ts
+¦   ¦   ¦           basic.d.ts
+¦   ¦   ¦           color.d.ts
+¦   ¦   ¦           geometric.d.ts
+¦   ¦   ¦           index.d.ts
+¦   ¦   ¦           layout.d.ts
+¦   ¦   ¦           utils.d.ts
+¦   ¦   ¦           
+¦   ¦   +---helpers
+¦   ¦           helpers.cjs
+¦   ¦           helpers.d.ts
+¦   ¦           helpers.js
+¦   ¦           package.json
+¦   ¦           
+¦   +---chartjs-chart-treemap
+¦   ¦   ¦   LICENSE
+¦   ¦   ¦   package.json
+¦   ¦   ¦   README.md
+¦   ¦   ¦   
+¦   ¦   +---dist
+¦   ¦   ¦       chartjs-chart-treemap.cjs
+¦   ¦   ¦       chartjs-chart-treemap.esm.js
+¦   ¦   ¦       chartjs-chart-treemap.min.js
+¦   ¦   ¦       chartjs-chart-treemap.min.js.map
+¦   ¦   ¦       
+¦   ¦   +---types
+¦   ¦           index.esm.d.ts
 ¦   ¦           
 ¦   +---chokidar
 ¦   ¦   ¦   index.js
@@ -4541,6 +4738,33 @@ C:.
 ¦   ¦               index.js
 ¦   ¦               index.js.map
 ¦   ¦               package.json
+¦   ¦               
+¦   +---phosphor-icons
+¦   ¦   ¦   LICENSE
+¦   ¦   ¦   package.json
+¦   ¦   ¦   README.md
+¦   ¦   ¦   
+¦   ¦   +---src
+¦   ¦       ¦   demo.html
+¦   ¦       ¦   index.js
+¦   ¦       ¦   unicodesMap.json
+¦   ¦       ¦   
+¦   ¦       +---css
+¦   ¦       ¦       icons.css
+¦   ¦       ¦       
+¦   ¦       +---demo
+¦   ¦       ¦   ¦   favicon.svg
+¦   ¦       ¦   ¦   
+¦   ¦       ¦   +---css
+¦   ¦       ¦           style.css
+¦   ¦       ¦           
+¦   ¦       +---fonts
+¦   ¦               Phosphor.eot
+¦   ¦               Phosphor.json
+¦   ¦               Phosphor.svg
+¦   ¦               Phosphor.ttf
+¦   ¦               Phosphor.woff
+¦   ¦               Phosphor.woff2
 ¦   ¦               
 ¦   +---picocolors
 ¦   ¦       LICENSE
@@ -9235,9 +9459,46 @@ C:.
 ¦   ¦   robots.txt
 ¦   ¦   
 ¦   +---images
-¦           actioncenter.png
-¦           bsulogo.png
-¦           home.jpg
+¦   ¦       1744598807.jpg
+¦   ¦       1744612338.jpg
+¦   ¦       1744613370.jpg
+¦   ¦       1744700771.jpg
+¦   ¦       1745566437.png
+¦   ¦       1745566525.png
+¦   ¦       about.png
+¦   ¦       actioncenter.png
+¦   ¦       actioncenterlogo.png
+¦   ¦       BG.png
+¦   ¦       bgs.png
+¦   ¦       BGv1.png
+¦   ¦       bsulogo.png
+¦   ¦       home.jpg
+¦   ¦       landing.png
+¦   ¦       LandingPage.png
+¦   ¦       loginbg.png
+¦   ¦       LoginPage.png
+¦   ¦       REGBG.png
+¦   ¦       RegistrationPage.png
+¦   ¦       
+¦   +---storage
+¦   ¦   ¦   .gitignore
+¦   ¦   ¦   
+¦   ¦   +---profile_pictures
+¦   ¦           3Ii38YSCShfoESS8XYIGnlzfsZfd2yKY7RGpPkC4.png
+¦   ¦           3sqfGfkr7lJSRfDFBmbhzaXsT8SoeUGEA261HjDn.jpg
+¦   ¦           65SCD0TCjSPw4dvD5JGFsY22CnGnS9AgZTTf68eU.jpg
+¦   ¦           BDgCQebwQpEOgpk15dkEuSqUOPnzpWSl1ZQUmDV3.jpg
+¦   ¦           G6JEQFKXq9zaFe3wzTowOnqpbcTbQPObHBlMBSuC.jpg
+¦   ¦           MlAMHMeEAxA18OXaGut4BkJ87zaE5OIDfMyYVXAF.png
+¦   ¦           MlQroSuNOdwJtab9uqnc9nIqP9gqaT4vkWGITScQ.jpg
+¦   ¦           OxQgqIMvAy5qTA2DZcOmPpKqmztAmoSB6KCOvUKq.jpg
+¦   ¦           sZZVzmJmJxZYAsXOg5tznVcPxK8EfvEcheLrh4dX.jpg
+¦   ¦           XyfcteNifmeGRVrcWu2MbRCoLiSOun8wodJhTnt6.jpg
+¦   ¦           ZEe9FPsXJKOHHnUR0fHQNkfXpRd6duD8d5iFGBMC.jpg
+¦   ¦           ZXJ7XfzgGUORyQH0xr0Tp12R5VxHo24fEED6IqPj.jpg
+¦   ¦           
+¦   +---videos
+¦           0310(1).gif
 ¦           
 +---resources
 ¦   +---css
@@ -9249,7 +9510,7 @@ C:.
 ¦   ¦       bootstrap.js
 ¦   ¦       
 ¦   +---views
-¦       ¦   dashboard.blade.php
+¦       ¦   about.blade.php
 ¦       ¦   home.blade.php
 ¦       ¦   layout.blade.php
 ¦       ¦   login.blade.php
@@ -9258,30 +9519,47 @@ C:.
 ¦       ¦   welcome.blade.php
 ¦       ¦   
 ¦       +---admin
-¦       ¦   +---category
+¦       ¦   +---inventory
 ¦       ¦   ¦       index.blade.php
+¦       ¦   ¦       inventory.blade.php
 ¦       ¦   ¦       
-¦       ¦   +---equipment
+¦       ¦   +---inventory-requests
 ¦       ¦   ¦       create.blade.php
 ¦       ¦   ¦       index.blade.php
 ¦       ¦   ¦       
 ¦       ¦   +---records
+¦       ¦   ¦       archive.blade.php
 ¦       ¦   ¦       create.blade.php
 ¦       ¦   ¦       index.blade.php
 ¦       ¦   ¦       
+¦       ¦   +---return-items
+¦       ¦   ¦       index.blade.php
+¦       ¦   ¦       
 ¦       ¦   +---users
+¦       ¦           deactivated.blade.php
+¦       ¦           index.blade.php
+¦       ¦           
+¦       +---borrower
+¦       ¦   +---borrow-equipment
+¦       ¦   ¦       index.blade.php
+¦       ¦   ¦       
+¦       ¦   +---inventory
+¦       ¦   ¦       index.blade.php
+¦       ¦   ¦       
+¦       ¦   +---profile
 ¦       ¦           index.blade.php
 ¦       ¦           
 ¦       +---include
 ¦       ¦       header.blade.php
 ¦       ¦       sidebar.blade.php
 ¦       ¦       
-¦       +---inventory
-¦       ¦       index.blade.php
-¦       ¦       
 ¦       +---layouts
-¦               app.blade.php
-¦               
+¦       ¦       app.blade.php
+¦       ¦       
+¦       +---vendor
+¦           +---notifications
+¦                   email.blade.php
+¦                   
 +---routes
 ¦       console.php
 ¦       web.php
@@ -9294,8 +9572,22 @@ C:.
 ¦   ¦   ¦       .gitignore
 ¦   ¦   ¦       
 ¦   ¦   +---public
-¦   ¦           .gitignore
-¦   ¦           
+¦   ¦       ¦   .gitignore
+¦   ¦       ¦   
+¦   ¦       +---profile_pictures
+¦   ¦               3Ii38YSCShfoESS8XYIGnlzfsZfd2yKY7RGpPkC4.png
+¦   ¦               3sqfGfkr7lJSRfDFBmbhzaXsT8SoeUGEA261HjDn.jpg
+¦   ¦               65SCD0TCjSPw4dvD5JGFsY22CnGnS9AgZTTf68eU.jpg
+¦   ¦               BDgCQebwQpEOgpk15dkEuSqUOPnzpWSl1ZQUmDV3.jpg
+¦   ¦               G6JEQFKXq9zaFe3wzTowOnqpbcTbQPObHBlMBSuC.jpg
+¦   ¦               MlAMHMeEAxA18OXaGut4BkJ87zaE5OIDfMyYVXAF.png
+¦   ¦               MlQroSuNOdwJtab9uqnc9nIqP9gqaT4vkWGITScQ.jpg
+¦   ¦               OxQgqIMvAy5qTA2DZcOmPpKqmztAmoSB6KCOvUKq.jpg
+¦   ¦               sZZVzmJmJxZYAsXOg5tznVcPxK8EfvEcheLrh4dX.jpg
+¦   ¦               XyfcteNifmeGRVrcWu2MbRCoLiSOun8wodJhTnt6.jpg
+¦   ¦               ZEe9FPsXJKOHHnUR0fHQNkfXpRd6duD8d5iFGBMC.jpg
+¦   ¦               ZXJ7XfzgGUORyQH0xr0Tp12R5VxHo24fEED6IqPj.jpg
+¦   ¦               
 ¦   +---framework
 ¦   ¦   ¦   .gitignore
 ¦   ¦   ¦   
@@ -9313,57 +9605,66 @@ C:.
 ¦   ¦   ¦       
 ¦   ¦   +---views
 ¦   ¦           .gitignore
-¦   ¦           02888a6cde2dec69cde48beba1c6f29a.php
 ¦   ¦           06c32b45f2d592a91b5542669eb246e3.php
+¦   ¦           0c6f1e48bb20ed44c8cba3a58d714247.php
+¦   ¦           0f0b8c24233ec0fca95f55ed5cbab7b0.php
 ¦   ¦           16796000f6c9bf6deb9d4f6afd4650f6.php
 ¦   ¦           16bb312538ffe524d3a3764953876b99.php
 ¦   ¦           18eec67c8965aa1eed7711fe5844cf48.php
+¦   ¦           1c033db770ea5f39a403fd48daa4f1e5.php
 ¦   ¦           1d5b71fd7ce0c92660497c99a2935d51.php
 ¦   ¦           1f99ee4081242444c155dab7cec75b98.php
-¦   ¦           21d70e712d03d63788d1902d78d1b4bc.php
 ¦   ¦           25bd018d4801ca9e8bb8988ed91c6478.php
 ¦   ¦           2cc0347565d28bd9295f3399f36218e7.php
+¦   ¦           324e8b1dfdc35798b117619569e2eca6.php
 ¦   ¦           44f503fdf5075ae931865f0dbf3fb3fa.php
-¦   ¦           45452b3f11b16b76ade884abc73fc925.php
 ¦   ¦           4cd57ad1b6f370a48e1f049883336ac0.php
-¦   ¦           503d1b3925375736bf3798428d2f64c4.php
-¦   ¦           557be37c2feb450bb3585b9f79d6cbbd.php
-¦   ¦           618d7774abbbcc6ab3b88ddd51354f83.blade.php
-¦   ¦           6569801cb9963792b12a13c42e048027.php
-¦   ¦           66f29a7f72810a69c5e6e6b7dc74de1c.blade.php
-¦   ¦           674a3d733336a3c02d78c08a3b281287.php
+¦   ¦           5283fd9b9610f39f682464b3d1d407fe.php
+¦   ¦           55b5322175feed2ceeba57133cbdfc69.php
+¦   ¦           6519a58225fd8157cc7f6a5394dc1c38.php
 ¦   ¦           696a13a0bdc555f5224bc47bfe447696.php
-¦   ¦           69b0ce8af9a526a3ab98465ea75041cc.php
 ¦   ¦           6adbf6f83e273603e873933a4bb9a819.php
 ¦   ¦           6c3be3424fdc17ed30317d7e044fbdb3.php
 ¦   ¦           6c894c418bf1d7eff15e64f4a744edd7.php
+¦   ¦           6d4cf1104a5e0ddb76671715d4a7def5.php
+¦   ¦           6eafdb57eb4826c50bf46507c9bf941a.php
 ¦   ¦           729b7ddaeb25849eef3a5c0ba16e7aea.php
+¦   ¦           732e479921ab7dcbf3c20350f636dd7b.php
 ¦   ¦           84adaf082af754593b911d7984d7d1b2.php
 ¦   ¦           88b48cfa22f2c404f814f1f5cde24e9f.php
 ¦   ¦           89aa77abce92b34849850179e004401b.php
-¦   ¦           91953bd265b1463ade95c864f9ffc907.php
+¦   ¦           8a43746b0cc76ebb388e552f5928c212.php
+¦   ¦           9d40e6d1d0dec80075b3f601ba5ec1d7.php
 ¦   ¦           a28d6c5210696ddc7225e988805dc3a5.php
-¦   ¦           a6837faed83a4341d0ebfa5530086324.php
-¦   ¦           ab47eb50123d77ef44904ed502ad2bcf.php
+¦   ¦           a386117e6daa47c25303a25969e6d69a.php
+¦   ¦           aa39e2fb9f8e2a69b3bd781b0a22ea31.php
+¦   ¦           ad4782149c45bf547ecfa93166e3d7b8.php
 ¦   ¦           aeb888945edea8cd84c3e355b2d9dc0f.php
-¦   ¦           b04e68afa7a01eff2650dda69ba23e74.php
 ¦   ¦           b1372671ed359af4311ca541e9ffca86.php
-¦   ¦           c0d7bb1a0235ce44d6f853b2f0dd919f.blade.php
-¦   ¦           d54f581af62629512efeca12d7f0e7e4.blade.php
+¦   ¦           b59a3d5a7c1e20dc0bf835d4071270ac.php
+¦   ¦           bf7bc8108f9260b2a247fa5b237e5b5d.php
+¦   ¦           c411a96128d4c3ebdb585db7af38e0c5.php
+¦   ¦           e15cd714b34d5ad839a2c01081a9ea62.php
 ¦   ¦           e1cd7614fe3d64b9d209a303c8e70560.php
+¦   ¦           e453fb3f03750648cede446fe6fccb11.php
 ¦   ¦           e5f956131c051a36dc5c80711158de61.php
-¦   ¦           eb1024ba36b21cc82f4e9805e5862ede.blade.php
+¦   ¦           edc8aa4ab294e6e79d7da32342ee4cd4.php
+¦   ¦           eed6f742860146f25d8c2fc976e0e6ac.php
 ¦   ¦           efc01d4f221b329edd1c33c492ed6477.php
-¦   ¦           f6182d5fd63c4f4e300b157b1b49acad.php
+¦   ¦           f520aa88b2451f5195941ba0ae1b97c3.php
 ¦   ¦           f87000f2c57b57bbdd75cf2cb5d0f88b.php
-¦   ¦           fa9426d5d4f9e4e5a83512f7e506c5a1.php
-¦   ¦           fb9d3590d1a193c33dfcc9a6aa4d5d93.blade.php
+¦   ¦           ffbcc9b681adc2f3edfa6e73b9d9b6af.php
 ¦   ¦           
 ¦   +---logs
 ¦           .gitignore
 ¦           laravel.log
 ¦           
 +---tests
+¦   ¦   alwaystrue.html
+¦   ¦   index.html
+¦   ¦   qrcode.blade.php
+¦   ¦   qrcode.html
+¦   ¦   test.blade.php
 ¦   ¦   TestCase.php
 ¦   ¦   
 ¦   +---Feature
@@ -17126,6 +17427,85 @@ C:.
     ¦                   NoPreReleaseSuffixException.php
     ¦                   UnsupportedVersionConstraintException.php
     ¦                   
+    +---phpmailer
+    ¦   +---phpmailer
+    ¦       ¦   .editorconfig
+    ¦       ¦   COMMITMENT
+    ¦       ¦   composer.json
+    ¦       ¦   get_oauth_token.php
+    ¦       ¦   LICENSE
+    ¦       ¦   README.md
+    ¦       ¦   SECURITY.md
+    ¦       ¦   VERSION
+    ¦       ¦   
+    ¦       +---language
+    ¦       ¦       phpmailer.lang-af.php
+    ¦       ¦       phpmailer.lang-ar.php
+    ¦       ¦       phpmailer.lang-as.php
+    ¦       ¦       phpmailer.lang-az.php
+    ¦       ¦       phpmailer.lang-ba.php
+    ¦       ¦       phpmailer.lang-be.php
+    ¦       ¦       phpmailer.lang-bg.php
+    ¦       ¦       phpmailer.lang-bn.php
+    ¦       ¦       phpmailer.lang-ca.php
+    ¦       ¦       phpmailer.lang-cs.php
+    ¦       ¦       phpmailer.lang-da.php
+    ¦       ¦       phpmailer.lang-de.php
+    ¦       ¦       phpmailer.lang-el.php
+    ¦       ¦       phpmailer.lang-eo.php
+    ¦       ¦       phpmailer.lang-es.php
+    ¦       ¦       phpmailer.lang-et.php
+    ¦       ¦       phpmailer.lang-fa.php
+    ¦       ¦       phpmailer.lang-fi.php
+    ¦       ¦       phpmailer.lang-fo.php
+    ¦       ¦       phpmailer.lang-fr.php
+    ¦       ¦       phpmailer.lang-gl.php
+    ¦       ¦       phpmailer.lang-he.php
+    ¦       ¦       phpmailer.lang-hi.php
+    ¦       ¦       phpmailer.lang-hr.php
+    ¦       ¦       phpmailer.lang-hu.php
+    ¦       ¦       phpmailer.lang-hy.php
+    ¦       ¦       phpmailer.lang-id.php
+    ¦       ¦       phpmailer.lang-it.php
+    ¦       ¦       phpmailer.lang-ja.php
+    ¦       ¦       phpmailer.lang-ka.php
+    ¦       ¦       phpmailer.lang-ko.php
+    ¦       ¦       phpmailer.lang-ku.php
+    ¦       ¦       phpmailer.lang-lt.php
+    ¦       ¦       phpmailer.lang-lv.php
+    ¦       ¦       phpmailer.lang-mg.php
+    ¦       ¦       phpmailer.lang-mn.php
+    ¦       ¦       phpmailer.lang-ms.php
+    ¦       ¦       phpmailer.lang-nb.php
+    ¦       ¦       phpmailer.lang-nl.php
+    ¦       ¦       phpmailer.lang-pl.php
+    ¦       ¦       phpmailer.lang-pt.php
+    ¦       ¦       phpmailer.lang-pt_br.php
+    ¦       ¦       phpmailer.lang-ro.php
+    ¦       ¦       phpmailer.lang-ru.php
+    ¦       ¦       phpmailer.lang-si.php
+    ¦       ¦       phpmailer.lang-sk.php
+    ¦       ¦       phpmailer.lang-sl.php
+    ¦       ¦       phpmailer.lang-sr.php
+    ¦       ¦       phpmailer.lang-sr_latn.php
+    ¦       ¦       phpmailer.lang-sv.php
+    ¦       ¦       phpmailer.lang-tl.php
+    ¦       ¦       phpmailer.lang-tr.php
+    ¦       ¦       phpmailer.lang-uk.php
+    ¦       ¦       phpmailer.lang-ur.php
+    ¦       ¦       phpmailer.lang-vi.php
+    ¦       ¦       phpmailer.lang-zh.php
+    ¦       ¦       phpmailer.lang-zh_cn.php
+    ¦       ¦       
+    ¦       +---src
+    ¦               DSNConfigurator.php
+    ¦               Exception.php
+    ¦               OAuth.php
+    ¦               OAuthTokenProvider.php
+    ¦               PHPMailer.php
+    ¦               POP3.php
+    ¦               SMTP.php
+    ¦               
     +---phpoption
     ¦   +---phpoption
     ¦       ¦   composer.json
