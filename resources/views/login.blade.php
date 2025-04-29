@@ -99,6 +99,17 @@
 </script>
 @endif
 
+@if (session('status') == 'account_inactive')
+<script>
+    Swal.fire({
+        icon: 'error',
+        title: 'Account Inactive',
+        text: 'Your account is inactive. Please contact an administrator.',
+        confirmButtonText: 'OK'
+    });
+</script>
+@endif
+
 
 
 <!-- Modal HTML -->

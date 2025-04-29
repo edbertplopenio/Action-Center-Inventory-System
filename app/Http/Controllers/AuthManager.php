@@ -35,12 +35,17 @@ class AuthManager extends Controller
        if (Auth::attempt($credentials)) {
            $user = Auth::user();
    
-           // Redirect borrowers to Equipment Inventory
+           // Check if the user's account is inactive
+           if ($user->status === 'inactive') {
+               Auth::logout();
+               return redirect()->route('login')->with('status', 'account_inactive');
+           }
+   
+           // Redirect based on role
            if ($user->user_role === 'Borrower') {
                return redirect()->route('borrower.inventory.index')->with("status", "login_success");
            }
    
-           // Other roles go to dashboard/home
            return redirect()->route('home')->with("status", "login_success");
        }
    
