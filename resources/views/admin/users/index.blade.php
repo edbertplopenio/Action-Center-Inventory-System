@@ -1463,12 +1463,6 @@
     });
 </script>
 
-
-
-
-
-
-
 @endsection
 
 

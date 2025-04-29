@@ -132,10 +132,6 @@ Route::prefix('borrower')->middleware(['auth'])->group(function () {
     Route::delete('/borrow-equipment/{borrowedItem}', [BorrowedItemsController::class, 'destroy'])->name('borrower.borrow-equipment.destroy');
 });
 
-
-
-
-
 // Borrowed Items Routes
 Route::middleware('auth')->group(function() {
     // Store a new borrow request
@@ -145,13 +141,8 @@ Route::middleware('auth')->group(function() {
     Route::get('/borrowed-items', [BorrowEquipmentController::class, 'index'])->name('borrowed.items');
 });
 
-
-
 // routes/web.php
 Route::post('/admin/inventory-requests/update-status/{id}', [InventoryRequestController::class, 'updateStatus'])->name('admin.updateStatus');
-
-
-
 
 // routes/web.php
 
@@ -179,12 +170,8 @@ Route::get('/admin/borrowed-items/list/{id}', [ReturnItemsController::class, 'ge
 Route::post('/admin/inventory-requests/update-status/{id}', [InventoryRequestController::class, 'updateStatus']);
 
 
-
-
-
 // Route for notification badge
 Route::get('/admin/borrowing-requests/count', [InventoryRequestController::class, 'getPendingRequestsCount'])->name('admin.borrowing-requests.count');
-
 
 
 // Inventory Routes (ItemController)
@@ -218,27 +205,6 @@ Route::controller(ItemController::class)->group(function () {
     // Route for searching an item by its name
     Route::get('/search-item/{name}', 'searchItem')->name('search.item'); // Search item by name
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     Route::get('/home', [ItemController::class, 'index'])->name('home');
 
 Route::get('/api/items', [ItemController::class, 'getItems']);
@@ -247,25 +213,6 @@ Route::get('/api/usage-rate/{itemId}', [ItemController::class, 'getUsageRateData
 // routes/web.php
 Route::get('/most-borrowed-items', [ItemController::class, 'mostBorrowedItems']);
 Route::get('/equipment-quantity-by-category', [ItemController::class, 'quantityByCategory']);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Route for About Us page
 Route::get('/about', function () {
@@ -287,3 +234,10 @@ Route::get('/api/usage-rate/{itemId}', [DashboardController::class, 'getUsageRat
 Route::get('/most-borrowed-items', [DashboardController::class, 'mostBorrowedItems']);
 Route::get('/equipment-quantity-by-category', [DashboardController::class, 'quantityByCategory']);
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+
+// View profile
+Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+
+// Update profile
+Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+
