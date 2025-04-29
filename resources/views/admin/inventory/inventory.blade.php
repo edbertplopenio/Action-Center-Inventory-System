@@ -41,6 +41,7 @@
             transition: background-color 0.3s;
             border: none; /* Remove default button border */
             border-radius: 0.375rem; /* Consistent border radius */
+
         }
         .tab-button:hover {
             opacity: 0.8;
@@ -85,15 +86,15 @@
 
         /* Custom Tab Colors */
         .equipment-tab {
-            background-color: rgb(255 102 102); /* Blue */
+            background-color: #B79CED; /* Blue */
         }
 
         .office-supplies-tab {
-            background-color: #ff4242; /* Orange */
+            background-color: #B79CED; /* Orange */
         }
 
         .emergency-kits-tab {
-            background-color: #ff1e1e; /* Red */
+            background-color: #B79CED; /* Red */
         }
 
         /* Table Styles */
@@ -105,26 +106,33 @@
     }
 
         table th, table td {
-            padding: 12px; /* Match the padding from the second code */
+            padding: 5px; /* Match the padding from the second code */
             text-align: center; /* Center align text */
             border-bottom: 1px solid #E5E5E5;
             font-size: 12px; /* Match the font size from the second code */
+            height: 20px !important;  /* Apply height with higher priority */
+            text-align: center !important; /* Ensures the content of both header and data cells are centered */
+            vertical-align: middle; /* Vertically centers the content */
         }
-        table th {
-        background-color: #EBF8FD; /* Match header background color */
-        color: #4a5568; /* Match header text color */
-        font-weight: 600; /* Match header font weight */
-    }
+        table td{
+            height: 80px !important;  /* Apply height with higher priority */
+        }
 
-/* Hover effect on table headers */
+/* Hover effect only on the table header cell being hovered over */
+table th {
+    background-color: transparent; /* Remove background color from header */
+    color: #4a5568; /* Keep text color */
+    font-weight: bold; /* Bold text */
+}
+
 table th:hover {
-        background-color: #f0f0f0; /* Light grey background color on hover */
-        color: #2D3748; /* Dark text color on hover */
-        cursor: pointer; /* Pointer cursor to indicate interactivity */
-    }
+    background-color: #f0f0f0; /* Light grey background color when hovered */
+    color: #2D3748; /* Dark text color on hover */
+    cursor: pointer; /* Pointer cursor for hover interaction */
+}
     /* Add hover effect for rows */
     table tr:hover {
-        background-color: #b3eaff; /* Match hover effect from the second code */
+        background-color: transparent; /* Match hover effect from the second code */
     }
 
 
@@ -150,7 +158,7 @@ table th:hover {
         }
 
         .archives-tab {
-            background-color: #d60000; /* Blue color for the Archives tab */
+            background-color: #B79CED; /* Blue color for the Archives tab */
         }
 
         .restore-btn {
@@ -179,30 +187,46 @@ table th:hover {
     }
 
     .all-items-tab {
-        background-color: #ff8989; /* Gray */
+        background-color: #B79CED; /* Gray */
     }
 
     .other-items-tab {
-        background-color: #F90000; /* Yellow */
+        background-color: #B79CED; /* Yellow */
     }
 
     table th:nth-child(11), table td:nth-child(11) {
-    width: 180px !important;  /* Set a fixed width for the action column */
+    width: 140px !important;  /* Set a fixed width for the action column */
     padding: 0.6rem;  /* Ensure padding is consistent */
     }
-    table td .action-buttons {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-    }
+
+    table td img {
+    display: block; /* Ensure images are block-level elements */
+    margin-left: auto;  /* Auto margin to align left */
+    margin-right: auto; /* Auto margin to align right */
+    max-width: 50px; /* Reduced width of the image */
+    max-height: 65px;
+}
+
+table th:nth-child(12), table td:nth-child(12) {
+    width: 160px !important;  /* Increased width for the action column */
+    padding: 0.6rem;  /* Adjust padding for more space */
+}
+
+table td .action-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    gap: 5px;  /* Space between buttons */
+}
+
 
     /* Styling for the Action Buttons */
     .action-buttons {
-    position: relative;
-    display: flex; /* Changes the layout to flex */
-    justify-content: center; /* Center buttons */
-    align-items: center; /* Vertically center buttons */
+    display: flex;
+    justify-content: space-around;  /* Space between buttons */
+    align-items: center;
+    height: 100%;
 }
 
 .button-container {
@@ -213,13 +237,14 @@ table th:hover {
 
 .edit-btn, .archive-btn {
     border-radius: 5px; /* Slightly rounded corners */
-    padding: 6px 10px; /* Increased padding for better touch */
-    font-size: 12px; /* Consistent font size */
-    transition: background-color 0.3s, transform 0.2s; /* Transition effects */
+    padding: 5px 30px; /* Increased padding for better touch */
+    font-size: 12px;  /* Font size adjustment */
+    white-space: nowrap;  /* Prevent text overflow */
+    overflow: hidden;  /* Hide overflow if the button text is too long */
 }
 
 .edit-btn {
-    top: -10; /* Position the Edit button at the top */
+    top: 0; /* Position the Edit button at the top */
     background-color: #4cc9f0; /* Edit button color */
     color: white;
 
@@ -234,7 +259,7 @@ table th:hover {
     top: 40px; /* Position the Archive button below the Edit button */
     background-color: #57cc99; /* Archive button color */
     color: white;
-    margin-bottom: 20px;
+    margin-bottom: -3px;
 }
 
 .archive-btn:hover {
@@ -242,10 +267,25 @@ table th:hover {
     transform: scale(1.05); /* Slight scaling effect */
 }
 
+/* Default Styles for Table Header */
+table thead th {
+    background-color: transparent; /* No background color */
+    border: 1px solid transparent ; /* Default border color */
+    padding: 10px;
+    text-align: left;
+}
+
+
+/* Hover Effect */
+table thead th:hover {
+    border-color: gray; /* Change border to gray on hover */
+}
+
 /* Change font size for table headers */
 table.dataTable thead th {
     font-size: 11px;  /* Adjust the font size for the headers */
     text-align: center; 
+
 }
 
 /* Change font size for table cells */
@@ -448,8 +488,17 @@ table.dataTable tbody td {
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
                         <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 80px;"></td>
+                        <td>
+                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                                {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                                {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                                {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                                {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                                {{ $item->status }}
+                            </span>
+                        </td>
+                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
                             <div class="button-container">
                                 <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
@@ -494,8 +543,17 @@ table.dataTable tbody td {
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
                         <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 80px;"></td>
+                        <td>
+                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                                {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                                {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                                {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                                {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                                {{ $item->status }}
+                            </span>
+                        </td>
+                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
                             <div class="button-container">
                                 <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
@@ -541,8 +599,17 @@ table.dataTable tbody td {
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
                         <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 80px;"></td>
+                        <td>
+                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                                {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                                {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                                {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                                {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                                {{ $item->status }}
+                            </span>
+                        </td>
+                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
                             <div class="button-container">
                                 <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
@@ -588,8 +655,17 @@ table.dataTable tbody td {
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
                         <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 80px;"></td>
+                        <td>
+                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                                {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                                {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                                {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                                {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                                {{ $item->status }}
+                            </span>
+                        </td>
+                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
                             <div class="button-container">
                                 <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
@@ -634,8 +710,17 @@ table.dataTable tbody td {
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
                         <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 80px;"></td>
+                        <td>
+                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                                {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                                {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                                {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                                {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                                {{ $item->status }}
+                            </span>
+                        </td>
+                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
                             <div class="button-container">
                                 <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
@@ -682,8 +767,17 @@ table.dataTable tbody td {
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
                         <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 80px;"></td>
+                        <td>
+                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                                {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                                {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                                {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                                {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                                {{ $item->status }}
+                            </span>
+                        </td>
+                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
                             <!-- Restore Button: Form for restoring an archived item -->
                             <form action="{{ route('restore.item', $item->id) }}" method="POST" class="inline-block">
@@ -1453,7 +1547,13 @@ $(document).ready(function () {
                                 <label for="edit_status" class="block text-xs font-medium text-gray-900">Status</label>
                                 <select id="edit_status" name="status" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
                                     <option value="Available">Available</option>
-                                    <option value="Unavailable">Unavailable</option>
+                                    <option value="Borrowed">Borrowed</option>
+                                    <option value="Reserved">Reserved</option>
+                                    <option value="Out Of Stock">Out of Stock</option>
+                                    <option value="Needs Repair">Needs Repair</option>
+                                    <option value="Damage">Damage</option>
+                                    <option value="Lost">Lost</option>
+                                    <option value="Retired">Retired</option>
                                 </select>
                             </div>
 
