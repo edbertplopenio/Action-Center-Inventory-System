@@ -982,7 +982,7 @@ $(document).ready(function () {
             "ordering": true,           // Enable sorting
             "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]], // Entries per page
             "pageLength": 10,           // Default entries per page
-            "order": [[0, 'desc']],     // Default sorting by the first column (Item Code) in descending order
+            "order": [[8, 'desc']],     // Order by the 9th column (Arrival Date / Date Added), descending
             "autoWidth": false,         // Disable auto-width to prevent horizontal overflow
             "responsive": true,         // Make the table responsive (adjust to screen size)
             "initComplete": function(settings, json) {
@@ -1172,6 +1172,13 @@ $(document).ready(function () {
                 // Prepend the new item row to the table (this will put it at the top)
                 $('#allItemsTable tbody').prepend(newItemRow);
 
+                // Prepend the new item to other tables (equipment, office supplies, etc.)
+                $('#equipmentTable tbody').prepend(newItemRow);
+                $('#officeSuppliesTable tbody').prepend(newItemRow);
+                $('#emergencyKitsTable tbody').prepend(newItemRow);
+                $('#otherItemsTable tbody').prepend(newItemRow);
+                $('#archivesTable tbody').prepend(newItemRow);
+
                 // Optionally, reset the modal and reload the page or form
                 $("#addItemModal").addClass("hidden");
                 $('#itemForm')[0].reset();  // Reset form fields
@@ -1264,6 +1271,7 @@ $(document).ready(function () {
     });
 });
 </script>
+
 
 <SCRIPT>
     //ARCHIVES
