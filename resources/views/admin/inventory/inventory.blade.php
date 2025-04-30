@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -427,6 +426,55 @@ table.dataTable tbody td {
 .new-item {
     position: relative; /* Ensure the row can hold the absolute positioned label */
 }
+
+#allItemsTable th, #allItemsTable td,  {
+    font-family: 'Arial', sans-serif;  /* Set a consistent font family */
+    font-size: 12px;  /* Ensure a uniform font size */
+}
+
+/* For DRRM Equipment Table */
+#equipmentTable th, #equipmentTable td {
+    font-family: 'Arial', sans-serif;  /* Set a consistent font family */
+    font-size: 12px;  /* Ensure a uniform font size */
+}
+
+/* For Office Supplies Table */
+#officeSuppliesTable th, #officeSuppliesTable td {
+    font-family: 'Arial', sans-serif;  /* Set a consistent font family */
+    font-size: 12px;  /* Ensure a uniform font size */
+}
+
+/* For Emergency Kits Table */
+#emergencyKitsTable th, #emergencyKitsTable td {
+    font-family: 'Arial', sans-serif;  /* Set a consistent font family */
+    font-size: 12px;  /* Ensure a uniform font size */
+}
+
+/* For Other Items Table */
+#otherItemsTable th, #otherItemsTable td {
+    font-family: 'Arial', sans-serif;  /* Set a consistent font family */
+    font-size: 12px;  /* Ensure a uniform font size */
+}
+
+/* For Archives Table */
+#archivesTable th, #archivesTable td {
+    font-family: 'Arial', sans-serif;  /* Set a consistent font family */
+    font-size: 12px;  /* Ensure a uniform font size */
+}
+
+.dataTables_wrapper .dataTables_scroll {
+    overflow-x: auto !important; /* Ensure horizontal scrolling is enabled */
+    table-layout: fixed; /* Make sure columns don’t resize unnecessarily */
+}
+
+.dataTables_wrapper .dataTables_paginate {
+    font-size: 12px !important; /* Fix font size for pagination buttons */
+}
+
+table.dataTable tbody td {
+    font-size: 12px;  /* Make sure the font size remains consistent */
+}
+
 
 </style>
 
@@ -924,145 +972,79 @@ $(document).ready(function () {
 </script>
 
 <script>
-    $(document).ready(function () {
-        // Initialize All Items Table with sorting by `added_at` (Descending order)
-        $('#allItemsTable').DataTable({
-            scrollY: '425px',
-            scrollCollapse: true,
-            paging: true,
-            searching: true,
-            ordering: true,
-            "order": [[8, 'desc']],  // Sort by the 'Arrival Date' column (index 8) in descending order
-            columnDefs: [
-                {
-                    targets: 8,  // Column index for the 'Arrival Date' column
-                    type: 'date',  // Ensure the column is sorted as a date
-                }
-            ],
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            "pageLength": 10,
+$(document).ready(function () {
+    // Function to initialize DataTables with the necessary settings
+    function initializeDataTable(tableId) {
+        return $(tableId).DataTable({
+            "scrollY": '425px',         // Vertical scrolling
+            "scrollCollapse": true,     // Allow table to collapse when there is not enough content
+            "paging": true,             // Enable pagination
+            "ordering": true,           // Enable sorting
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]], // Entries per page
+            "pageLength": 10,           // Default entries per page
+            "order": [[0, 'desc']],     // Default sorting by the first column (Item Code) in descending order
+            "autoWidth": false,         // Disable auto-width to prevent horizontal overflow
+            "responsive": true,         // Make the table responsive (adjust to screen size)
             "initComplete": function(settings, json) {
-                $('#allItemsTable').css('font-size', '12px');
-                $('#allItemsTable thead th').css('font-size', '10px');
-                $('#allItemsTable tbody td').css('font-size', '10px');
+                $(tableId + ' th, ' + tableId + ' td').css('font-size', '12px');
             }
         });
+    }
 
-        // Initialize DRRM Equipment Table with sorting by `added_at` (Descending order)
-        $('#equipmentTable').DataTable({
-            scrollY: '425px',
-            scrollCollapse: true,
-            paging: true,
-            searching: true,
-            ordering: true,
-            "order": [[8, 'desc']],  // Sort by the 'Arrival Date' column (index 8) in descending order
-            columnDefs: [
-                {
-                    targets: 8,  // Column index for the 'Arrival Date' column
-                    type: 'date',  // Ensure the column is sorted as a date
-                }
-            ],
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            "pageLength": 10,
-            "initComplete": function(settings, json) {
-                $('#equipmentTable').css('font-size', '12px');
-                $('#equipmentTable thead th').css('font-size', '10px');
-                $('#equipmentTable tbody td').css('font-size', '10px');
-            }
-        });
+    // Initialize DataTables for each table
+    var allItemsTable = initializeDataTable('#allItemsTable');
+    var equipmentTable = initializeDataTable('#equipmentTable');
+    var officeSuppliesTable = initializeDataTable('#officeSuppliesTable');
+    var emergencyKitsTable = initializeDataTable('#emergencyKitsTable');
+    var otherItemsTable = initializeDataTable('#otherItemsTable');
+    var archivesTable = initializeDataTable('#archivesTable');
 
-        // Initialize Office Supplies Table with sorting by `added_at` (Descending order)
-        $('#officeSuppliesTable').DataTable({
-            scrollY: '425px',
-            scrollCollapse: true,
-            paging: true,
-            searching: true,
-            ordering: true,
-            "order": [[8, 'desc']],  // Sort by the 'Arrival Date' column (index 8) in descending order
-            columnDefs: [
-                {
-                    targets: 8,  // Column index for the 'Arrival Date' column
-                    type: 'date',  // Ensure the column is sorted as a date
-                }
-            ],
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            "pageLength": 10,
-            "initComplete": function(settings, json) {
-                $('#officeSuppliesTable').css('font-size', '12px');
-                $('#officeSuppliesTable thead th').css('font-size', '10px');
-                $('#officeSuppliesTable tbody td').css('font-size', '10px');
-            }
-        });
+    // Hide all tables initially
+    $('.tab-content').hide();
 
-        // Initialize Emergency Kits Table with sorting by `added_at` (Descending order)
-        $('#emergencyKitsTable').DataTable({
-            scrollY: '425px',
-            scrollCollapse: true,
-            paging: true,
-            searching: true,
-            ordering: true,
-            "order": [[8, 'desc']],  // Sort by the 'Arrival Date' column (index 8) in descending order
-            columnDefs: [
-                {
-                    targets: 8,  // Column index for the 'Arrival Date' column
-                    type: 'date',  // Ensure the column is sorted as a date
-                }
-            ],
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            "pageLength": 10,
-            "initComplete": function(settings, json) {
-                $('#emergencyKitsTable').css('font-size', '12px');
-                $('#emergencyKitsTable thead th').css('font-size', '10px');
-                $('#emergencyKitsTable tbody td').css('font-size', '10px');
-            }
-        });
+    // Function to switch tabs
+    function switchTab(tab) {
+        // Hide all tables
+        $('.tab-content').hide();
 
-        // Initialize Other Items Table with sorting by `added_at` (Descending order)
-        $('#otherItemsTable').DataTable({
-            scrollY: '425px',
-            scrollCollapse: true,
-            paging: true,
-            searching: true,
-            ordering: true,
-            "order": [[8, 'desc']],  // Sort by the 'Arrival Date' column (index 8) in descending order
-            columnDefs: [
-                {
-                    targets: 8,  // Column index for the 'Arrival Date' column
-                    type: 'date',  // Ensure the column is sorted as a date
-                }
-            ],
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            "pageLength": 10,
-            "initComplete": function(settings, json) {
-                $('#otherItemsTable').css('font-size', '12px');
-                $('#otherItemsTable thead th').css('font-size', '10px');
-                $('#otherItemsTable tbody td').css('font-size', '10px');
-            }
-        });
+        // Show the selected tab's table
+        $('#' + tab + '-content').show();
 
-        // Initialize Archives Table with sorting by `added_at` (Descending order)
-        $('#archivesTable').DataTable({
-            scrollY: '425px',
-            scrollCollapse: true,
-            paging: true,
-            searching: true,
-            ordering: true,
-            "order": [[8, 'desc']],  // Sort by the 'Arrival Date' column (index 8) in descending order
-            columnDefs: [
-                {
-                    targets: 8,  // Column index for the 'Arrival Date' column
-                    type: 'date',  // Ensure the column is sorted as a date
-                }
-            ],
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            "pageLength": 10,
-            "initComplete": function(settings, json) {
-                $('#archivesTable').css('font-size', '12px');
-                $('#archivesTable thead th').css('font-size', '10px');
-                $('#archivesTable tbody td').css('font-size', '10px');
-            }
-        });
-    });
+        // Reinitialize DataTable for the newly displayed table
+        switch (tab) {
+            case 'all-items':
+                allItemsTable.ajax.reload();
+                break;
+            case 'equipment':
+                equipmentTable.ajax.reload();
+                break;
+            case 'office-supplies':
+                officeSuppliesTable.ajax.reload();
+                break;
+            case 'emergency-kits':
+                emergencyKitsTable.ajax.reload();
+                break;
+            case 'other-items':
+                otherItemsTable.ajax.reload();
+                break;
+            case 'archives':
+                archivesTable.ajax.reload();
+                break;
+        }
+    }
+
+    // Initialize the first tab by default (you can change it to whichever tab you want to show first)
+    switchTab('all-items');
+
+    // Event listeners for tab switching
+    $('#all-items-tab').click(function () { switchTab('all-items'); });
+    $('#equipment-tab').click(function () { switchTab('equipment'); });
+    $('#office-supplies-tab').click(function () { switchTab('office-supplies'); });
+    $('#emergency-kits-tab').click(function () { switchTab('emergency-kits'); });
+    $('#other-items-tab').click(function () { switchTab('other-items'); });
+    $('#archives-tab').click(function () { switchTab('archives'); });
+});
+
 </script>
 
 <script>
@@ -1084,12 +1066,13 @@ $(document).ready(function () {
 
     // Storage location dropdown logic
     $('#storage_location').on('change', function () {
-        if ($(this).val() == 'Other') {
-            $('#other_storage_location').removeClass('hidden'); // Show input if "Other" is selected
-        } else {
-            $('#other_storage_location').addClass('hidden'); // Hide input if not "Other"
-        }
-    });
+    if ($(this).val() == 'Other') {
+        $('#other_storage_location').removeClass('hidden'); // Show input if "Other" is selected
+    } else {
+        $('#other_storage_location').addClass('hidden'); // Hide input if not "Other"
+    }
+});
+
 
     // Unit dropdown logic: Show input field inline next to "Other"
     $('#unit').on('change', function () {
@@ -1168,7 +1151,7 @@ $(document).ready(function () {
                 });
 
                 // Prepend the new item to the top of the table (specifically to the all items table)
-                var newItemRow = `
+                var newItemRow = 
                     <tr id="item-${response.id}">
                         <td>${response.item_code}</td>
                         <td>${response.name}</td>
@@ -1185,7 +1168,7 @@ $(document).ready(function () {
                             <button onclick="openEditModal('${response.id}')" class="edit-btn">Edit</button>
                             <button type="button" class="archive-btn" onclick="archiveItem('${response.id}')">Archive</button>
                         </td>
-                    </tr>`;
+                    </tr>;
 
                 // Prepend the new item row to the table (this will put it at the top)
                 $('#allItemsTable tbody').prepend(newItemRow);
@@ -1451,7 +1434,6 @@ $(document).ready(function () {
 </script>
 
 
-
 <!-- Modal Overlay for Adding Item -->
 <div id="addItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
     <div class="relative z-10 flex items-center justify-center">
@@ -1538,7 +1520,7 @@ $(document).ready(function () {
 
                             <div>
                                 <label for="image_url" class="block text-xs font-medium text-gray-900">Image</label>
-                                <input type="file" id="image_url" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="file" id="image_url" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" accept="image/*">
                             </div>
                         </div>
 

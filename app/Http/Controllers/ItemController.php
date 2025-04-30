@@ -178,101 +178,109 @@ class ItemController extends Controller
      * Store items in the database.
      */
     public function store(Request $request)
-    {
-        // Validate input fields
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:1',
-            'unit' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'storage_location' => 'required|string|max:255',
-            'arrival_date' => 'required|date',
-            'date_purchased' => 'required|date',
-            'status' => 'required|string|max:255',
-            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-    
-        // Check if the item already exists (same name & category)
-        $item = Item::where('name', $request->name)
-                    ->where('category', $request->category)
-                    ->first();
-    
-        if ($item) {
-            // If item exists, update quantity and dates
-            $item->quantity += $request->quantity;  // Add the new quantity
-            $item->arrival_date = $request->arrival_date;
-            $item->date_purchased = $request->date_purchased;
-            $item->save();
-    
-            // Generate individual items for the new quantity added
-            $this->generateIndividualItems($item, $request->quantity);
-        } else {
-            // Create new item
-            $item = new Item();
-            $item->name = $request->name;
-            $item->quantity = $request->quantity;
-            $item->unit = $request->unit;
-            $item->category = $request->category;
-            $item->description = $request->description;
-            $item->storage_location = $request->storage_location;
-            $item->arrival_date = $request->arrival_date;
-            $item->date_purchased = $request->date_purchased;
-            $item->status = $request->status;
-            $item->added_at = now();  // Set added_at to current timestamp
-    
-            // Handle image upload if provided and save URL to `image_url`
-            if ($request->hasFile('image_url')) {
-                $filename = time() . '.' . $request->image_url->extension();
-                $request->image_url->move(public_path('images'), $filename);
-                $item->image_url = 'images/' . $filename; // Store the relative path
-            }
-    
-            // Generate item code based on category abbreviation and count of items in that category
-            $category = $request->category;
-    
-            // Map categories to their abbreviations
-            $categoryMap = [
-                'DRRM Equipment' => 'DRRM',
-                'Office Supplies' => 'Office',
-                'Emergency Kits' => 'Emergency',
-                'Other Items' => 'Other',
-            ];
-    
-            // Get the abbreviation for the category
-            $categoryAbbreviation = isset($categoryMap[$category]) ? $categoryMap[$category] : strtoupper($category);
-    
-            // Count how many items are in this category
-            $itemCount = Item::where('category', $category)->count();
-    
-            // Process item name to get initials if it's more than 8 characters or has more than one word
-            $itemName = strtoupper($request->name); // Uppercase the item name
-            $nameParts = explode(' ', $itemName); // Split the name into words
-            $itemInitials = '';
-    
-            if (count($nameParts) > 1 || strlen($itemName) > 8) {
-                // Take the first letter of each word for names with more than 1 word or > 8 chars
-                foreach ($nameParts as $part) {
-                    $itemInitials .= strtoupper(substr($part, 0, 1)); // Take the first letter of each word
-                }
-            } else {
-                $itemInitials = strtoupper(substr($itemName, 0, 2)); // Otherwise, take first 2 letters
-            }
+{
+    // Validate input fields
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'quantity' => 'required|integer|min:1',
+        'unit' => 'required|string|max:255',
+        'category' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'storage_location' => 'required|string|max:255',
+        'other_storage_location' => 'nullable|string|max:255', // Add validation for "Other" storage location
+        'arrival_date' => 'required|date',
+        'date_purchased' => 'required|date',
+        'status' => 'required|string|max:255',
+        'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
 
-            // Generate a single item code for the new item
-            $itemCode = $categoryAbbreviation . '-' . str_pad($itemCount + 1, 2, '0', STR_PAD_LEFT) . '-' . $itemInitials;
+    // Check if the item already exists (same name & category)
+    $item = Item::where('name', $request->name)
+                ->where('category', $request->category)
+                ->first();
 
-            // Store the item code
-            $item->item_code = $itemCode;
+    // Handle the storage location: If 'Other' is selected, use the value from 'other_storage_location'
+    $storageLocation = $request->storage_location;
+    if ($storageLocation === 'Other') {
+        $storageLocation = $request->other_storage_location; // Use custom input if "Other" is selected
+    }
 
-            $item->save();
+    if ($item) {
+        // If item exists, update quantity and dates
+        $item->quantity += $request->quantity;  // Add the new quantity
+        $item->arrival_date = $request->arrival_date;
+        $item->date_purchased = $request->date_purchased;
+        $item->storage_location = $storageLocation; // Update storage location
+        $item->save();
 
-            // Generate individual items based on quantity
-            $this->generateIndividualItems($item, $request->quantity);
+        // Generate individual items for the new quantity added
+        $this->generateIndividualItems($item, $request->quantity);
+    } else {
+        // Create new item
+        $item = new Item();
+        $item->name = $request->name;
+        $item->quantity = $request->quantity;
+        $item->unit = $request->unit;
+        $item->category = $request->category;
+        $item->description = $request->description;
+        $item->storage_location = $storageLocation; // Use updated storage location
+        $item->arrival_date = $request->arrival_date;
+        $item->date_purchased = $request->date_purchased;
+        $item->status = $request->status;
+        $item->added_at = now();  // Set added_at to current timestamp
+
+        // Handle image upload if provided and save URL to `image_url`
+        if ($request->hasFile('image_url')) {
+            $filename = time() . '.' . $request->image_url->extension();
+            $request->image_url->move(public_path('images'), $filename);
+            $item->image_url = 'images/' . $filename; // Store the relative path
         }
 
-        return redirect()->back()->with('success', 'Item added/updated successfully!');
+        // Generate item code based on category abbreviation and count of items in that category
+        $category = $request->category;
+
+        // Map categories to their abbreviations
+        $categoryMap = [
+            'DRRM Equipment' => 'DRRM',
+            'Office Supplies' => 'Office',
+            'Emergency Kits' => 'Emergency',
+            'Other Items' => 'Other',
+        ];
+
+        // Get the abbreviation for the category
+        $categoryAbbreviation = isset($categoryMap[$category]) ? $categoryMap[$category] : strtoupper($category);
+
+        // Count how many items are in this category
+        $itemCount = Item::where('category', $category)->count();
+
+        // Process item name to get initials if it's more than 8 characters or has more than one word
+        $itemName = strtoupper($request->name); // Uppercase the item name
+        $nameParts = explode(' ', $itemName); // Split the name into words
+        $itemInitials = '';
+
+        if (count($nameParts) > 1 || strlen($itemName) > 8) {
+            // Take the first letter of each word for names with more than 1 word or > 8 chars
+            foreach ($nameParts as $part) {
+                $itemInitials .= strtoupper(substr($part, 0, 1)); // Take the first letter of each word
+            }
+        } else {
+            $itemInitials = strtoupper(substr($itemName, 0, 2)); // Otherwise, take first 2 letters
+        }
+
+        // Generate a single item code for the new item
+        $itemCode = $categoryAbbreviation . '-' . str_pad($itemCount + 1, 2, '0', STR_PAD_LEFT) . '-' . $itemInitials;
+
+        // Store the item code
+        $item->item_code = $itemCode;
+
+        $item->save();
+
+        // Generate individual items based on quantity
+        $this->generateIndividualItems($item, $request->quantity);
     }
+
+    return redirect()->back()->with('success', 'Item added/updated successfully!');
+}
 
     /**
      * Generate individual items for the added quantity.
