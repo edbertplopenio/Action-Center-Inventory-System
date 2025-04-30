@@ -986,7 +986,7 @@ $(document).ready(function () {
             "autoWidth": false,         // Disable auto-width to prevent horizontal overflow
             "responsive": true,         // Make the table responsive (adjust to screen size)
             "initComplete": function(settings, json) {
-                $(tableId + ' th, ' + tableId + ' td').css('font-size', '12px');
+                $(tableId + ' th, ' + tableId + ' td').css('font-size', '10px');
             }
         });
     }
