@@ -1066,13 +1066,12 @@ $(document).ready(function () {
 
     // Storage location dropdown logic
     $('#storage_location').on('change', function () {
-    if ($(this).val() == 'Other') {
-        $('#other_storage_location').removeClass('hidden'); // Show input if "Other" is selected
-    } else {
-        $('#other_storage_location').addClass('hidden'); // Hide input if not "Other"
-    }
-});
-
+        if ($(this).val() == 'Other') {
+            $('#other_storage_location').removeClass('hidden'); // Show input if "Other" is selected
+        } else {
+            $('#other_storage_location').addClass('hidden'); // Hide input if not "Other"
+        }
+    });
 
     // Unit dropdown logic: Show input field inline next to "Other"
     $('#unit').on('change', function () {
@@ -1151,7 +1150,7 @@ $(document).ready(function () {
                 });
 
                 // Prepend the new item to the top of the table (specifically to the all items table)
-                var newItemRow = 
+                var newItemRow = `
                     <tr id="item-${response.id}">
                         <td>${response.item_code}</td>
                         <td>${response.name}</td>
@@ -1168,7 +1167,7 @@ $(document).ready(function () {
                             <button onclick="openEditModal('${response.id}')" class="edit-btn">Edit</button>
                             <button type="button" class="archive-btn" onclick="archiveItem('${response.id}')">Archive</button>
                         </td>
-                    </tr>;
+                    </tr>`;
 
                 // Prepend the new item row to the table (this will put it at the top)
                 $('#allItemsTable tbody').prepend(newItemRow);
