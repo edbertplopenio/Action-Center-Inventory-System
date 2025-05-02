@@ -248,7 +248,6 @@
             <table id="userTable" class="display" style="width:100%">
                 <thead>
                     <tr>
-                        <th style="display:none;">ID</th> <!-- Hidden ID column -->
                         <th>Name</th>
                         <th>Email</th>
                         <th>Role</th>
@@ -271,8 +270,6 @@
                         data-last_login="{{ $user->last_login ?? 'N/A' }}"
                         data-created_by="{{ $user->created_by ?? 'N/A' }}"
                         data-updated_at="{{ $user->updated_at }}">
-
-                        <td style="display:none;">{{ $user->id }}</td> <!-- Hidden ID value -->
 
                         <td>{{ $user->first_name }} {{ $user->last_name }}</td>
                         <td>{{ $user->email }}</td>
@@ -1234,25 +1231,58 @@
                                         <input type="text" name="department" id="department" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter department">
                                     </div>
 
-                                    <!-- Removed Cellphone Number Section -->
-                                    <!-- <div class="sm:col-span-1">
-                                        <label for="contact_number" class="block text-xs font-medium text-gray-900">Cellphone Number</label>
-                                        <input type="text" name="contact_number" id="contact_number" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter cellphone number">
-                                    </div> -->
+                                           <!-- Password & Confirm Password -->
+                                    <div class="grid grid-cols-2 gap-3 w-full">
+                                        <!-- Password -->
+                                        <div class="flex flex-col relative">
+                                            <label for="password" class="block text-xs font-medium text-gray-900 mb-1">Password</label>
+                                            <div class="w-52 relative">
+                                                <input type="password" name="password" id="password"
+                                                    class="w-full pr-8 rounded-md border border-gray-300 px-2 py-1.5 text-xs text-gray-900 shadow-sm focus:ring-2 focus:ring-red-600 focus:outline-none"
+                                                    placeholder="Enter password" required>
+                                                <button type="button" id="togglePassword" class="absolute top-1/2 right-2 transform -translate-y-1/2">
+                                                    <i id="eyeIcon" class="ph ph-eye text-black text-lg"></i>
+                                                </button>
+                                            </div>
+                                            <div id="passwordChecklist" class="text-xs space-y-1 w-64 mt-2">
+                                                <p class="font-semibold text-red-500 mb-1">Password must contain:</p>
+                                                <div id="rule-length" class="flex items-center gap-2">
+                                                    <span class="check-icon text-red-500">•</span>
+                                                    <span class="text-red-500">At least 8 characters</span>
+                                                </div>
+                                                <div id="rule-lower" class="flex items-center gap-2">
+                                                    <span class="check-icon text-red-500">•</span>
+                                                    <span class="text-red-500">At least 1 lowercase letter (a–z)</span>
+                                                </div>
+                                                <div id="rule-upper" class="flex items-center gap-2">
+                                                    <span class="check-icon text-red-500">•</span>
+                                                    <span class="text-red-500">At least 1 uppercase letter (A–Z)</span>
+                                                </div>
+                                                <div id="rule-number" class="flex items-center gap-2">
+                                                    <span class="check-icon text-red-500">•</span>
+                                                    <span class="text-red-500">At least 1 number (0–9)</span>
+                                                </div>
+                                                <div id="rule-symbol" class="flex items-center gap-2">
+                                                    <span class="check-icon text-red-500">•</span>
+                                                    <span class="text-red-500">At least 1 special symbol (!@#$...)</span>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                    <!-- Password -->
-                                    <div class="sm:col-span-1">
-                                        <label for="password" class="block text-xs font-medium text-gray-900">Password</label>
-                                        <input type="password" name="password" id="password" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter password">
+                                        <!-- Confirm Password -->
+                                        <div class="flex flex-col relative">
+                                            <label for="password_confirmation" class="block text-xs font-medium text-gray-900 mb-1">Confirm Password</label>
+                                            <div class="w-52 relative">
+                                                <input type="password" name="password_confirmation" id="password_confirmation"
+                                                    class="w-full pr-8 rounded-md border border-gray-300 px-2 py-1.5 text-xs text-gray-900 shadow-sm focus:ring-2 focus:ring-red-600 focus:outline-none"
+                                                    placeholder="Confirm password" required>
+                                                <button type="button" id="toggleConfirmPassword" class="absolute top-1/2 right-2 transform -translate-y-1/2">
+                                                    <i id="eyeConfirmIcon" class="ph ph-eye text-black text-lg"></i>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <!-- Confirm Password -->
-                                    <div class="sm:col-span-1">
-                                        <label for="confirm_password" class="block text-xs font-medium text-gray-900">Confirm Password</label>
-                                        <input type="password" name="password_confirmation" id="password_confirmation" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Confirm password">
-                                    </div>
-                                </div>
-                            </div>
 
                             <!-- Action Buttons -->
                             <div class="mt-6 flex items-center justify-end gap-x-6">
@@ -1273,59 +1303,46 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         console.log("✅ Script Loaded");
 
-        // Modal related elements
         const modal = document.getElementById("myModal");
         const form = document.getElementById("userForm");
         const closeUserModal = document.getElementById("closeUserModal");
         const openModalBtn = document.getElementById("openModalBtn");
 
-        // Table DataTable initialization
+        // DataTable setup
         const userTable = $('#userTable').DataTable({
-            "scrollY": "425px",
-            "scrollCollapse": true,
-            "scrollX": false,
-            "paging": true,
-            "searching": true,
-            "ordering": true,
-            "order": [
-                [0, "desc"]
-            ], // Sort by hidden ID column (index 0)
-            "columnDefs": [{
-                    "targets": 0,
-                    "visible": false
-                } // Hide ID column
-            ]
+            scrollY: "425px",
+            scrollCollapse: true,
+            scrollX: false,
+            paging: true,
+            searching: true,
+            ordering: true
         });
 
-
-        // Open modal when the "Add Record" button is clicked
-        openModalBtn.addEventListener("click", function() {
+        openModalBtn.addEventListener("click", () => {
             console.log("Opening modal...");
-            modal.style.display = "block"; // Show the modal
+            modal.style.display = "block";
         });
 
-        // Close modal when "Cancel" button is clicked
-        closeUserModal.addEventListener("click", function() {
+        closeUserModal.addEventListener("click", () => {
             console.log("Closing modal...");
-            modal.style.display = "none"; // Hide the modal
-            form.reset(); // Reset form inputs
+            modal.style.display = "none";
+            form.reset();
         });
 
-        // Submit the form for adding new user
-        form.addEventListener("submit", async function(event) {
+        form.addEventListener("submit", async function (event) {
             event.preventDefault();
-            let isValid = true;
-            let formData = new FormData(form);
-            let errorMessages = [];
 
-            // Validate required fields (removed contact_number)
+            let isValid = true;
+            let errorMessages = [];
+            const formData = new FormData(form);
+
             const requiredFields = ["first_name", "last_name", "email", "user_role", "department", "password", "password_confirmation"];
             requiredFields.forEach(field => {
                 const input = document.getElementById(field);
-                if (input.value.trim() === "") {
+                if (!input.value.trim()) {
                     isValid = false;
                     input.classList.add("border-red-500");
                     errorMessages.push(`${field.replace("_", " ").toUpperCase()} is required.`);
@@ -1334,25 +1351,26 @@
                 }
             });
 
-            if (document.getElementById("password").value !== document.getElementById("password_confirmation").value) {
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("password_confirmation").value;
+            if (password !== confirmPassword) {
                 isValid = false;
                 errorMessages.push("Passwords do not match!");
             }
 
             if (!isValid) {
-                // Use SweetAlert to show error message
                 Swal.fire({
                     title: "Validation Error",
                     html: errorMessages.join("<br>"),
-                    icon: 'error',
-                    confirmButtonText: 'OK'
+                    icon: "error",
+                    confirmButtonText: "OK"
                 });
                 return;
             }
 
             try {
-                let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                let response = await fetch("/admin/users/store", {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const response = await fetch("/admin/users/store", {
                     method: "POST",
                     headers: {
                         "X-CSRF-TOKEN": csrfToken
@@ -1360,65 +1378,90 @@
                     body: formData
                 });
 
-                let result = await response.json();
+                const result = await response.json();
 
                 if (response.ok) {
-                    // Show success notification using SweetAlert
                     Swal.fire({
                         title: "Success!",
                         text: "User added successfully!",
-                        icon: 'success',
-                        confirmButtonText: 'OK'
+                        icon: "success",
+                        confirmButtonText: "OK"
                     }).then(() => {
                         modal.style.display = "none";
                         form.reset();
-
-                        // Add new row with ID as the first hidden column
                         userTable.row.add([
-                            result.user.id, // Hidden ID column for sorting
                             `${result.user.first_name} ${result.user.last_name}`,
                             result.user.email,
                             result.user.user_role,
                             result.user.department || 'N/A',
                             result.user.status || 'N/A',
-                            `<button class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24"
-                 data-id="${result.user.id}">Edit</button>
-         <button class="deactivate-btn px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24"
-                 data-id="${result.user.id}">Deactivate</button>`
-                        ]).draw();
-
-                        // Reapply sorting so new user appears at the top
-                        userTable.order([0, 'desc']).draw();
-
-
+                            `<button class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24">Edit</button>
+                             <button class="px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24">Deactivate</button>`
+                        ]).draw(false);
                     });
                 } else {
-                    // Show error notification using SweetAlert
-                    let serverErrors = Object.values(result.errors).flat().join("<br>");
+                    const serverErrors = Object.values(result.errors).flat().join("<br>");
                     Swal.fire({
                         title: "Error",
                         html: serverErrors || "Failed to add user.",
-                        icon: 'error',
-                        confirmButtonText: 'OK'
+                        icon: "error",
+                        confirmButtonText: "OK"
                     });
                 }
             } catch (error) {
-                // Show database error notification using SweetAlert
+                console.error(error);
                 Swal.fire({
                     title: "Database Error",
                     text: "Failed to add user. Please try again.",
-                    icon: 'error',
-                    confirmButtonText: 'OK'
+                    icon: "error",
+                    confirmButtonText: "OK"
                 });
             }
         });
 
+        // Toggle password visibility
+        const togglePassword = document.getElementById("togglePassword");
+        const toggleConfirm = document.getElementById("toggleConfirmPassword");
+        const passwordInput = document.getElementById("password");
+        const confirmInput = document.getElementById("password_confirmation");
+        const eyeIcon = document.getElementById("eyeIcon");
+        const eyeConfirmIcon = document.getElementById("eyeConfirmIcon");
+
+        togglePassword.addEventListener("click", () => {
+            passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+            eyeIcon.classList.toggle("ph-eye");
+            eyeIcon.classList.toggle("ph-eye-slash");
+        });
+
+        toggleConfirm.addEventListener("click", () => {
+            confirmInput.type = confirmInput.type === "password" ? "text" : "password";
+            eyeConfirmIcon.classList.toggle("ph-eye");
+            eyeConfirmIcon.classList.toggle("ph-eye-slash");
+        });
+
+        // Live password checklist
+        passwordInput.addEventListener("input", () => {
+            const val = passwordInput.value;
+
+            const updateRule = (id, isValid) => {
+                const rule = document.getElementById(id);
+                const icon = rule.querySelector("span.check-icon");
+                const text = rule.querySelectorAll("span")[1];
+
+                icon.classList.toggle("text-green-500", isValid);
+                icon.classList.toggle("text-red-500", !isValid);
+                text.classList.toggle("text-green-500", isValid);
+                text.classList.toggle("text-red-500", !isValid);
+            };
+
+            updateRule("rule-length", val.length >= 8);
+            updateRule("rule-lower", /[a-z]/.test(val));
+            updateRule("rule-upper", /[A-Z]/.test(val));
+            updateRule("rule-number", /\d/.test(val));
+            updateRule("rule-symbol", /[\W_]/.test(val));
+        });
     });
 </script>
-
-
-
-
 
 @endsection
 
