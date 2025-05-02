@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
@@ -10,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/phosphor-icons@1.4.2/dist/phosphor-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
 
     <style>
 
@@ -38,6 +40,7 @@
             transition: background-color 0.3s;
             border: none; /* Remove default button border */
             border-radius: 0.375rem; /* Consistent border radius */
+
         }
         .tab-button:hover {
             opacity: 0.8;
@@ -63,78 +66,74 @@
             margin-left: 0.4rem; /* Reduced margin between tabs */
         }
 
+    
         #add-item-btn {
-            padding: 0.4rem 0.8rem; /* Reduced padding */
             font-size: 0.9rem; /* Slightly smaller font */
-        }
-
-        /* Position the Add Item button to the right side of the tabs */
-        #add-item-btn {
             margin-left: auto; /* Push the button to the far right */
-            background-color:rgb(21, 183, 75); /* Green */
+            background-color: #4cc9f0;; /* Green */
             color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 60px 60px;
             cursor: pointer;
             transition: background-color 0.3s;
         }
 
-        #add-item-btn {
-            margin-left: auto; /* Push the button to the far right */
-            background-color: rgb(21, 183, 75); /* Green */
-            color: white;
-            padding: 0.3rem 0.6rem; /* Reduced padding */
-            font-size: 0.8rem; /* Slightly smaller font */
-            border-radius: 0.375rem; /* Consistent border radius with tabs */
-            cursor: pointer;
-            transition: background-color 0.3s, opacity 0.3s ease;
-        }
-
         #add-item-btn:hover {
-            background-color: #2F9C5A; /* Darker green for hover effect */
+            background-color: #3fb3d1; /* Darker green for hover effect */
             opacity: 0.8; /* Slight opacity change on hover */
         }
 
         /* Custom Tab Colors */
         .equipment-tab {
-            background-color: rgb(255 102 102); /* Blue */
+            background-color: #B79CED; /* Blue */
         }
 
         .office-supplies-tab {
-            background-color: #ff4242; /* Orange */
+            background-color: #B79CED; /* Orange */
         }
 
         .emergency-kits-tab {
-            background-color: #ff1e1e; /* Red */
+            background-color: #B79CED; /* Red */
         }
 
         /* Table Styles */
         table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 2rem;
-            margin-bottom: -2rem;
-        }
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 2rem;
+        margin-bottom: -2rem;
+    }
 
         table th, table td {
-            padding: 0.5rem; /* Reduced padding for better alignment */
-            text-align: left;
+            padding: 5px; /* Match the padding from the second code */
+            text-align: center; /* Center align text */
             border-bottom: 1px solid #E5E5E5;
-            font-size: 0.8rem; /* Reduced font size */
-            text-align: center;
+            font-size: 12px; /* Match the font size from the second code */
+            height: 20px !important;  /* Apply height with higher priority */
+            text-align: center !important; /* Ensures the content of both header and data cells are centered */
+            vertical-align: middle; /* Vertically centers the content */
         }
-        table th {
-    background-color: transparent;  /* Remove background color */
-    color: inherit;  /* Inherit text color from the parent or default styling */
-    text-align: center;
+        table td{
+            height: 80px !important;  /* Apply height with higher priority */
+        }
+
+/* Hover effect only on the table header cell being hovered over */
+table th {
+    background-color: transparent; /* Remove background color from header */
+    color: #4a5568; /* Keep text color */
+    font-weight: bold; /* Bold text */
 }
 
-/* Hover effect on table headers */
 table th:hover {
-    background-color: #f0f0f0; /* Light grey background color on hover */
+    background-color: #f0f0f0; /* Light grey background color when hovered */
     color: #2D3748; /* Dark text color on hover */
-    cursor: pointer; /* Pointer cursor to indicate interactivity */
+    cursor: pointer; /* Pointer cursor for hover interaction */
 }
+    /* Add hover effect for rows */
+    table tr:hover {
+        background-color: transparent; /* Match hover effect from the second code */
+    }
+
 
         .table-container {
             width: 100%; /* Ensure it takes full width */
@@ -158,7 +157,7 @@ table th:hover {
         }
 
         .archives-tab {
-            background-color: #d60000; /* Blue color for the Archives tab */
+            background-color: #B79CED; /* Blue color for the Archives tab */
         }
 
         .restore-btn {
@@ -187,96 +186,105 @@ table th:hover {
     }
 
     .all-items-tab {
-        background-color: #ff8989; /* Gray */
+        background-color: #B79CED; /* Gray */
     }
 
     .other-items-tab {
-        background-color: #F90000; /* Yellow */
+        background-color: #B79CED; /* Yellow */
     }
 
     table th:nth-child(11), table td:nth-child(11) {
-    width: 180px !important;  /* Set a fixed width for the action column */
+    width: 140px !important;  /* Set a fixed width for the action column */
     padding: 0.6rem;  /* Ensure padding is consistent */
     }
-    table td .action-buttons {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-    }
+
+    table td img {
+    display: block; /* Ensure images are block-level elements */
+    margin-left: auto;  /* Auto margin to align left */
+    margin-right: auto; /* Auto margin to align right */
+    max-width: 50px; /* Reduced width of the image */
+    max-height: 65px;
+}
+
+table th:nth-child(12), table td:nth-child(12) {
+    width: 160px !important;  /* Increased width for the action column */
+    padding: 0.6rem;  /* Adjust padding for more space */
+}
+
+table td .action-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    gap: 5px;  /* Space between buttons */
+}
+
 
     /* Styling for the Action Buttons */
-        .action-buttons {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 4px; /* Smaller gap between buttons */
-    }
+    .action-buttons {
+    display: flex;
+    justify-content: space-around;  /* Space between buttons */
+    align-items: center;
+    height: 100%;
+}
 
+.button-container {
+    display: flex;
+    flex-direction: column; /* Arrange buttons in a column */
+    gap: 5px; /* Space between buttons */
+}
 
+.edit-btn, .archive-btn {
+    border-radius: 5px; /* Slightly rounded corners */
+    padding: 5px 30px; /* Increased padding for better touch */
+    font-size: 12px;  /* Font size adjustment */
+    white-space: nowrap;  /* Prevent text overflow */
+    overflow: hidden;  /* Hide overflow if the button text is too long */
+}
 
-    /* Edit Button Style */
-    .edit-btn {
-    background-color: rgb(21, 183, 75);
+.edit-btn {
+    top: 0; /* Position the Edit button at the top */
+    background-color: #4cc9f0; /* Edit button color */
     color: white;
-    padding: 3px 8px; /* Smaller padding */
-    border-radius: 3px; /* Slightly smaller rounded corners */
-    font-size: 0.7rem; /* Slightly smaller font size */
-    font-weight: normal; /* Regular font weight */
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s ease; /* Transition for color and scale */
-    margin-top: 0.6rem;
-    margin-bottom: 0.6rem;
+
 }
 
 .edit-btn:hover {
-    background-color: #38a169; /* Darker green on hover */
+    background-color: #36a9c1; /* Darker shade on hover */
     transform: scale(1.05); /* Slight scaling effect */
 }
 
-    /* Archive button style */
-    .archive-btn {
-    background-color: #f56565; /* Red background */
+.archive-btn {
+    top: 40px; /* Position the Archive button below the Edit button */
+    background-color: #57cc99; /* Archive button color */
     color: white;
-    padding: 3px 8px; /* Smaller padding */
-    border-radius: 3px; /* Slightly smaller rounded corners */
-    font-size: 0.7rem; /* Slightly smaller font size */
-    font-weight: normal; /* Regular font weight */
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s ease; /* Transition for color and scale */
-    margin-top: 0.6rem;
-    margin-bottom: 0.6rem;
+    margin-bottom: -3px;
 }
 
 .archive-btn:hover {
-    background-color: #e53e3e; /* Darker red on hover */
+    background-color: #57cc99; /* Darker shade on hover */
     transform: scale(1.05); /* Slight scaling effect */
 }
 
-    /* Restore button style for archived items */
-    .restore-btn {
-    background-color: rgb(21, 183, 75);
-    color: white;
-    padding: 3px 8px; /* Smaller padding */
-    border-radius: 3px; /* Slightly smaller rounded corners */
-    font-size: 0.7rem; /* Slightly smaller font size */
-    font-weight: normal; /* Regular font weight */
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s ease; /* Transition for color and scale */
-    margin-top: 0.6rem;
-    margin-bottom: 0.6rem;        
-    transition: background-color 0.3s, transform 0.2s;
-    }
+/* Default Styles for Table Header */
+table thead th {
+    background-color: transparent; /* No background color */
+    border: 1px solid transparent ; /* Default border color */
+    padding: 10px;
+    text-align: left;
+}
 
-    .restore-btn:hover {
-        background-color: rgb(81, 166, 109);  /* Darker shade of green for hover effect */
-        transform: scale(1.05);  /* Slight scaling effect */
-    }
+
+/* Hover Effect */
+table thead th:hover {
+    border-color: gray; /* Change border to gray on hover */
+}
 
 /* Change font size for table headers */
 table.dataTable thead th {
     font-size: 11px;  /* Adjust the font size for the headers */
     text-align: center; 
+
 }
 
 /* Change font size for table cells */
@@ -401,6 +409,76 @@ table.dataTable tbody td {
             text-align: center;
         }
     </style>
+
+<style>
+.new-indicator {
+    position: absolute; /* Position it absolutely */
+    top: -10px; /* Adjust distance from the top of the row */
+    left: 5px; /* Adjust distance from the left of the row */
+    background-color: #4CAF50;
+    color: white;
+    font-size: 0.8rem;
+    padding: 2px 6px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.new-item {
+    position: relative; /* Ensure the row can hold the absolute positioned label */
+}
+
+#allItemsTable th, #allItemsTable td,  {
+    font-family: 'Arial', sans-serif;  /* Set a consistent font family */
+    font-size: 12px;  /* Ensure a uniform font size */
+}
+
+/* For DRRM Equipment Table */
+#equipmentTable th, #equipmentTable td {
+    font-family: 'Arial', sans-serif;  /* Set a consistent font family */
+    font-size: 12px;  /* Ensure a uniform font size */
+}
+
+/* For Office Supplies Table */
+#officeSuppliesTable th, #officeSuppliesTable td {
+    font-family: 'Arial', sans-serif;  /* Set a consistent font family */
+    font-size: 12px;  /* Ensure a uniform font size */
+}
+
+/* For Emergency Kits Table */
+#emergencyKitsTable th, #emergencyKitsTable td {
+    font-family: 'Arial', sans-serif;  /* Set a consistent font family */
+    font-size: 12px;  /* Ensure a uniform font size */
+}
+
+/* For Other Items Table */
+#otherItemsTable th, #otherItemsTable td {
+    font-family: 'Arial', sans-serif;  /* Set a consistent font family */
+    font-size: 12px;  /* Ensure a uniform font size */
+}
+
+/* For Archives Table */
+#archivesTable th, #archivesTable td {
+    font-family: 'Arial', sans-serif;  /* Set a consistent font family */
+    font-size: 12px;  /* Ensure a uniform font size */
+}
+
+.dataTables_wrapper .dataTables_scroll {
+    overflow-x: auto !important; /* Ensure horizontal scrolling is enabled */
+    table-layout: fixed; /* Make sure columns don’t resize unnecessarily */
+}
+
+.dataTables_wrapper .dataTables_paginate {
+    font-size: 12px !important; /* Fix font size for pagination buttons */
+}
+
+table.dataTable tbody td {
+    font-size: 12px;  /* Make sure the font size remains consistent */
+}
+
+
+</style>
+
+
 </head>
 <body class="bg-gray-100">
 <!-- Main Content -->
@@ -420,9 +498,8 @@ table.dataTable tbody td {
             </button>
         </div>
 
-<!-- All Items Tab -->
+<!-- All Items Table -->
 <div id="all-items-content" class="tab-content active">
-    <!--<h3 class="text-xl font-semibold mb-4">All Items</h3>-->
     <div class="table-container">
         <table id="allItemsTable" class="display">
             <thead>
@@ -443,9 +520,14 @@ table.dataTable tbody td {
             </thead>
             <tbody>
                 @foreach($allItems as $item)
-                    <tr id="item-{{ $item->id }}">
+                    <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
                         <td>{{ $item->item_code }}</td>
-                        <td>{{ $item->name }}</td>
+                        <td>
+                            {{ $item->name }}
+                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5)
+                                <span class="new-indicator">New!</span>
+                            @endif
+                        </td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->category }}</td>
@@ -453,14 +535,22 @@ table.dataTable tbody td {
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
                         <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                        <td>
+                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                                {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                                {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                                {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                                {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                                {{ $item->status }}
+                            </span>
+                        </td> 
+                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
-                        <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-
-                            <!-- Archive Button: AJAX for archiving -->
-                            <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-
+                            <div class="button-container">
+                                <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                                <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
@@ -469,17 +559,17 @@ table.dataTable tbody td {
     </div>
 </div>
 
-<!-- DRRM Equipment Tab -->
-<div id="equipment-content" class="tab-content">
-    <!--<h3 class="text-xl font-semibold mb-4">DRRM Equipment</h3>--->
+<!-- All Items Table -->
+<div id="equipment-content" class="tab-content active"> 
     <div class="table-container">
-        <table id="equipmentTable" class="display">
+        <table id="equipmentTable" class="display"> 
             <thead>
                 <tr>
                     <th>Item Code</th>
                     <th>Item Name</th>
                     <th>Quantity</th>
                     <th>Unit</th>
+                    <th>Category</th>
                     <th>Description</th>
                     <th>Storage Location</th>
                     <th>Arrival Date</th>
@@ -490,23 +580,38 @@ table.dataTable tbody td {
                 </tr>
             </thead>
             <tbody>
-                @foreach($drrmItems as $item)
-                    <tr id="item-{{ $item->id }}">
-                    <td>{{ $item->item_code }}</td>
-                        <td>{{ $item->name }}</td>
+                @foreach($drrmItems as $item) 
+                    <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
+                        <td>{{ $item->item_code }}</td>
+                        <td>
+                            {{ $item->name }}
+                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5)
+                                <span class="new-indicator">New!</span>
+                            @endif
+                        </td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
+                        <td>{{ $item->category }}</td>
                         <td>{{ $item->description }}</td>
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
                         <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                        <td>
+                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                                {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                                {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                                {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                                {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                                {{ $item->status }}
+                            </span>
+                        </td> 
+                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
-                        <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-<!-- Archive Button: AJAX for archiving -->
-<button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-
+                            <div class="button-container">
+                                <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                                <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
@@ -515,18 +620,17 @@ table.dataTable tbody td {
     </div>
 </div>
 
-
-<!-- Office Supplies Tab -->
 <div id="office-supplies-content" class="tab-content">
     <!--<h3 class="text-xl font-semibold mb-4">Office Supplies</h3>--->
     <div class="table-container">
         <table id="officeSuppliesTable" class="display">
-            <thead>
+            <thead> 
                 <tr>
                     <th>Item Code</th>
                     <th>Item Name</th>
                     <th>Quantity</th>
                     <th>Unit</th>
+                    <th>Category</th>
                     <th>Description</th>
                     <th>Storage Location</th>
                     <th>Arrival Date</th>
@@ -537,23 +641,38 @@ table.dataTable tbody td {
                 </tr>
             </thead>
             <tbody>
-                @foreach($officeItems as $item)
-                    <tr id="item-{{ $item->id }}">
-                    <td>{{ $item->item_code }}</td>
-                        <td>{{ $item->name }}</td>
+                @foreach($officeItems as $item) 
+                    <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
+                        <td>{{ $item->item_code }}</td>
+                        <td>
+                            {{ $item->name }}
+                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5)
+                                <span class="new-indicator">New!</span>
+                            @endif
+                        </td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
+                        <td>{{ $item->category }}</td>
                         <td>{{ $item->description }}</td>
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
                         <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                        <td>
+                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                                {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                                {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                                {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                                {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                                {{ $item->status }}
+                            </span>
+                        </td> 
+                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
-                        <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-<!-- Archive Button: AJAX for archiving -->
-<button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-
+                            <div class="button-container">
+                                <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                                <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
@@ -561,19 +680,20 @@ table.dataTable tbody td {
         </table>
     </div>
 </div>
-
 
 <!-- Emergency Kits Tab -->
 <div id="emergency-kits-content" class="tab-content">
     <!--<h3 class="text-xl font-semibold mb-4">Emergency Kits</h3>-->
     <div class="table-container">
         <table id="emergencyKitsTable" class="display">
-            <thead>
+
+            <thead> 
                 <tr>
-                <th>Item Code</th>
+                    <th>Item Code</th>
                     <th>Item Name</th>
                     <th>Quantity</th>
                     <th>Unit</th>
+                    <th>Category</th>
                     <th>Description</th>
                     <th>Storage Location</th>
                     <th>Arrival Date</th>
@@ -584,23 +704,38 @@ table.dataTable tbody td {
                 </tr>
             </thead>
             <tbody>
-                @foreach($emergencyItems as $item)
-                    <tr id="item-{{ $item->id }}">
-                    <td>{{ $item->item_code }}</td>
-                        <td>{{ $item->name }}</td>
+                @foreach($emergencyItems as $item) 
+                    <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
+                        <td>{{ $item->item_code }}</td>
+                        <td>
+                            {{ $item->name }}
+                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5)
+                                <span class="new-indicator">New!</span>
+                            @endif
+                        </td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
+                        <td>{{ $item->category }}</td>
                         <td>{{ $item->description }}</td>
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
                         <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                        <td>
+                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                                {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                                {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                                {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                                {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                                {{ $item->status }}
+                            </span>
+                        </td> 
+                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
-                        <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-<!-- Archive Button: AJAX for archiving -->
-<button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-
+                            <div class="button-container">
+                                <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                                <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
@@ -614,12 +749,14 @@ table.dataTable tbody td {
     <!--<h3 class="text-xl font-semibold mb-4">Other Items</h3>--->
     <div class="table-container">
         <table id="otherItemsTable" class="display">
-            <thead>
+
+            <thead> 
                 <tr>
-                <th>Item Code</th>
+                    <th>Item Code</th>
                     <th>Item Name</th>
                     <th>Quantity</th>
                     <th>Unit</th>
+                    <th>Category</th>
                     <th>Description</th>
                     <th>Storage Location</th>
                     <th>Arrival Date</th>
@@ -630,23 +767,38 @@ table.dataTable tbody td {
                 </tr>
             </thead>
             <tbody>
-                @foreach($otherItems as $item)
-                    <tr id="item-{{ $item->id }}">
-                    <td>{{ $item->item_code }}</td>
-                        <td>{{ $item->name }}</td>
+                @foreach($otherItems as $item) 
+                    <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
+                        <td>{{ $item->item_code }}</td>
+                        <td>
+                            {{ $item->name }}
+                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5)
+                                <span class="new-indicator">New!</span>
+                            @endif
+                        </td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
+                        <td>{{ $item->category }}</td>
                         <td>{{ $item->description }}</td>
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
                         <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                        <td>
+                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                                {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                                {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                                {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                                {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                                {{ $item->status }}
+                            </span>
+                        </td> 
+                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
-                        <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-<!-- Archive Button: AJAX for archiving -->
-<button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-
+                            <div class="button-container">
+                                <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                                <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
@@ -660,13 +812,13 @@ table.dataTable tbody td {
     <!--<h3 class="text-xl font-semibold mb-4">Archives</h3>-->
     <div class="table-container">
         <table id="archivesTable" class="display">
-            <thead>
+            <thead> 
                 <tr>
-                <th>Item Code</th>
+                    <th>Item Code</th>
                     <th>Item Name</th>
-                    <th>Category</th>
                     <th>Quantity</th>
                     <th>Unit</th>
+                    <th>Category</th>
                     <th>Description</th>
                     <th>Storage Location</th>
                     <th>Arrival Date</th>
@@ -677,19 +829,33 @@ table.dataTable tbody td {
                 </tr>
             </thead>
             <tbody>
-                @foreach($archivedItems as $item)
-                    <tr id="archived-{{ $item->id }}">
-                    <td>{{ $item->item_code }}</td>
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->category }}</td>
+                @foreach($archivedItems as $item) 
+                    <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
+                        <td>{{ $item->item_code }}</td>
+                        <td>
+                            {{ $item->name }}
+                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5)
+                                <span class="new-indicator">New!</span>
+                            @endif
+                        </td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
+                        <td>{{ $item->category }}</td>
                         <td>{{ $item->description }}</td>
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
                         <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
+                        <td>
+                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                                {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                                {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                                {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                                {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                                {{ $item->status }}
+                            </span>
+                        </td> 
+                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
                             <!-- Restore Button: Form for restoring an archived item -->
                             <form action="{{ route('restore.item', $item->id) }}" method="POST" class="inline-block">
@@ -742,6 +908,54 @@ table.dataTable tbody td {
     });
 </script>
 
+<script>
+$(document).ready(function () {
+    var currentDate = new Date();  // Get the current date (this is your "now")
+
+    // Loop through all items in the table
+    $('#allItemsTable tbody tr').each(function () {
+        var addedDate = $(this).data('added-at'); // Get the 'added_at' from data attribute
+
+        // Parse the addedDate into a proper Date object
+        var addedDateObj = new Date(addedDate);  // Parse the string into a Date object
+
+        // Check if the date is invalid (NaN) after parsing
+        if (isNaN(addedDateObj.getTime())) {
+            console.log("Invalid date format: " + addedDate);
+            return;  // Skip this item if the date is invalid
+        }
+
+        // Calculate the time difference in milliseconds between the current time and added time
+        var timeDiff = currentDate - addedDateObj;  // This gives the difference in milliseconds
+
+        // Calculate hours and minutes from the time difference in milliseconds
+        var hoursDiff = Math.floor(timeDiff / (1000 * 60 * 60));  // Calculate the full hours
+        var minutesDiff = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));  // Calculate the remaining minutes
+
+        // Add the "New!" indicator if the item was added within the last 5 days
+        var daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));  // Convert milliseconds to days
+        if (daysDiff <= 5) {
+            $(this).addClass('new-item');  // Add the "new-item" class
+
+            // Add the "New!" indicator in the first column (or adjust as needed)
+            var indicator = '<span class="new-indicator">New!</span>';
+            $(this).find('td:first').append(indicator);  // Append "New!" next to the Item Code column
+        }
+
+        // Add hover effect to show the time difference (including hours and minutes) when hovering over the "New!" label
+        $(this).find('.new-indicator').hover(function() {
+            // Format the time difference
+            var elapsedTime = hoursDiff + " hours and " + minutesDiff + " minutes ago";
+
+            // Set the "added_at" value as the tooltip text (this will show the time difference on hover)
+            $(this).attr('title', 'Item added: ' + elapsedTime);  // Show the time difference on hover
+        });
+    });
+});
+
+</script>
+
+
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
 <script src="https://unpkg.com/phosphor-icons@1.4.2/dist/index.js"></script>
@@ -757,102 +971,82 @@ table.dataTable tbody td {
     });
 </script>
 
-<script> 
-    $(document).ready(function () {
-        $('#allItemsTable').DataTable({
-            scrollY: '425px', 
-            scrollCollapse: true,
-            paging: true,
-            searching: true,
-            ordering: true,
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            "pageLength": 10,
+<script>
+$(document).ready(function () {
+    // Function to initialize DataTables with the necessary settings
+    function initializeDataTable(tableId) {
+        return $(tableId).DataTable({
+            "scrollY": '425px',         // Vertical scrolling
+            "scrollCollapse": true,     // Allow table to collapse when there is not enough content
+            "paging": true,             // Enable pagination
+            "ordering": true,           // Enable sorting
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]], // Entries per page
+            "pageLength": 10,           // Default entries per page
+            "order": [[8, 'desc']],     // Order by the 9th column (Arrival Date / Date Added), descending
+            "autoWidth": false,         // Disable auto-width to prevent horizontal overflow
+            "responsive": true,         // Make the table responsive (adjust to screen size)
             "initComplete": function(settings, json) {
-                $('#allItemsTable').css('font-size', '12px');
-                $('#allItemsTable thead th').css('font-size', '10px');
-                $('#allItemsTable tbody td').css('font-size', '10px');
+                $(tableId + ' th, ' + tableId + ' td').css('font-size', '10px');
             }
         });
+    }
 
-        $('#equipmentTable').DataTable({
-            scrollY: '425px',
-            scrollCollapse: true,
-            paging: true,
-            searching: true,
-            ordering: true,
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            "pageLength": 10,
-            "initComplete": function(settings, json) {
-                $('#equipmentTable').css('font-size', '12px');
-                $('#equipmentTable thead th').css('font-size', '10px');
-                $('#equipmentTable tbody td').css('font-size', '10px');
-            }
-        });
+    // Initialize DataTables for each table
+    var allItemsTable = initializeDataTable('#allItemsTable');
+    var equipmentTable = initializeDataTable('#equipmentTable');
+    var officeSuppliesTable = initializeDataTable('#officeSuppliesTable');
+    var emergencyKitsTable = initializeDataTable('#emergencyKitsTable');
+    var otherItemsTable = initializeDataTable('#otherItemsTable');
+    var archivesTable = initializeDataTable('#archivesTable');
 
-        $('#officeSuppliesTable').DataTable({
-            scrollY: '425px',
-            scrollCollapse: true,
-            paging: true,
-            searching: true,
-            ordering: true,
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            "pageLength": 10,
-            "initComplete": function(settings, json) {
-                $('#officeSuppliesTable').css('font-size', '12px');
-                $('#officeSuppliesTable thead th').css('font-size', '10px');
-                $('#officeSuppliesTable tbody td').css('font-size', '10px');
-            }
-        });
+    // Hide all tables initially
+    $('.tab-content').hide();
 
-        $('#emergencyKitsTable').DataTable({
-            scrollY: '425px',
-            scrollCollapse: true,
-            paging: true,
-            searching: true,
-            ordering: true,
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            "pageLength": 10,
-            "initComplete": function(settings, json) {
-                $('#emergencyKitsTable').css('font-size', '12px');
-                $('#emergencyKitsTable thead th').css('font-size', '10px');
-                $('#emergencyKitsTable tbody td').css('font-size', '10px');
-            }
-        });
+    // Function to switch tabs
+    function switchTab(tab) {
+        // Hide all tables
+        $('.tab-content').hide();
 
-        $('#otherItemsTable').DataTable({
-            scrollY: '425px',
-            scrollCollapse: true,
-            paging: true,
-            searching: true,
-            ordering: true,
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            "pageLength": 10,
-            "initComplete": function(settings, json) {
-                $('#otherItemsTable').css('font-size', '12px');
-                $('#otherItemsTable thead th').css('font-size', '10px');
-                $('#otherItemsTable tbody td').css('font-size', '10px');
-            }
-        });
+        // Show the selected tab's table
+        $('#' + tab + '-content').show();
 
-        $('#archivesTable').DataTable({
-            scrollY: '425px',
-            scrollCollapse: true,
-            paging: true,
-            searching: true,
-            ordering: true,
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            "pageLength": 10,
-            "initComplete": function(settings, json) {
-                $('#archivesTable').css('font-size', '12px');
-                $('#archivesTable thead th').css('font-size', '10px');
-                $('#archivesTable tbody td').css('font-size', '10px');
-            }
-        });
-    });
+        // Reinitialize DataTable for the newly displayed table
+        switch (tab) {
+            case 'all-items':
+                allItemsTable.ajax.reload();
+                break;
+            case 'equipment':
+                equipmentTable.ajax.reload();
+                break;
+            case 'office-supplies':
+                officeSuppliesTable.ajax.reload();
+                break;
+            case 'emergency-kits':
+                emergencyKitsTable.ajax.reload();
+                break;
+            case 'other-items':
+                otherItemsTable.ajax.reload();
+                break;
+            case 'archives':
+                archivesTable.ajax.reload();
+                break;
+        }
+    }
+
+    // Initialize the first tab by default (you can change it to whichever tab you want to show first)
+    switchTab('all-items');
+
+    // Event listeners for tab switching
+    $('#all-items-tab').click(function () { switchTab('all-items'); });
+    $('#equipment-tab').click(function () { switchTab('equipment'); });
+    $('#office-supplies-tab').click(function () { switchTab('office-supplies'); });
+    $('#emergency-kits-tab').click(function () { switchTab('emergency-kits'); });
+    $('#other-items-tab').click(function () { switchTab('other-items'); });
+    $('#archives-tab').click(function () { switchTab('archives'); });
+});
+
 </script>
 
-
-<!-- Add item JavaScript for Modal Control -->
 <script>
 $(document).ready(function () {
     // Show the Add Item Modal when the button is clicked
@@ -894,6 +1088,23 @@ $(document).ready(function () {
 
     // On form submission, submit the data to save both items and individual items
     $("#itemForm").submit(function (e) {
+        // Get the Arrival Date and Date Purchased
+        var arrivalDate = $("#arrival_date").val();
+        var purchasedDate = $("#date_purchased").val();
+
+        // Compare the Arrival Date with Date Purchased
+        if (new Date(arrivalDate) < new Date(purchasedDate)) {
+            // Show an alert if Arrival Date is earlier than Date Purchased
+            Swal.fire({
+                title: 'Error!',
+                text: 'Arrival Date cannot be earlier than the Date Purchased.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            e.preventDefault(); // Prevent the form from submitting
+            return false;
+        }
+
         e.preventDefault();  // Prevent default form submission
 
         // Grabs the form data and explicitly append required fields
@@ -912,6 +1123,17 @@ $(document).ready(function () {
         // Optional: Log the FormData to check what is being sent
         console.log(formData);  // This will print the form data in the browser console
 
+        // Show SweetAlert loading spinner before the request
+        Swal.fire({
+            title: 'Saving...',
+            text: 'Please wait while we save the item.',
+            icon: 'info',
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading(); // Show loading spinner
+            }
+        });
+
         // Proceed with the AJAX request to submit the form data
         $.ajax({
             url: "{{ route('items.store') }}",  // Your URL for item saving
@@ -920,13 +1142,54 @@ $(document).ready(function () {
             processData: false,  // Don't process the data (since it's FormData)
             contentType: false,  // Set content type to false to let FormData handle it
             success: function(response) {
-                alert('Item saved successfully!');
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Item saved successfully!',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+
+                // Prepend the new item to the top of the table (specifically to the all items table)
+                var newItemRow = `
+                    <tr id="item-${response.id}">
+                        <td>${response.item_code}</td>
+                        <td>${response.name}</td>
+                        <td>${response.quantity}</td>
+                        <td>${response.unit}</td>
+                        <td>${response.category}</td>
+                        <td>${response.description}</td>
+                        <td>${response.storage_location}</td>
+                        <td>${response.arrival_date}</td>
+                        <td>${response.date_purchased}</td>
+                        <td>${response.status}</td>
+                        <td><img src="${response.image_url}" alt="${response.name}" class="w-10 h-10"></td>
+                        <td class="action-buttons">
+                            <button onclick="openEditModal('${response.id}')" class="edit-btn">Edit</button>
+                            <button type="button" class="archive-btn" onclick="archiveItem('${response.id}')">Archive</button>
+                        </td>
+                    </tr>`;
+
+                // Prepend the new item row to the table (this will put it at the top)
+                $('#allItemsTable tbody').prepend(newItemRow);
+
+                // Prepend the new item to other tables (equipment, office supplies, etc.)
+                $('#equipmentTable tbody').prepend(newItemRow);
+                $('#officeSuppliesTable tbody').prepend(newItemRow);
+                $('#emergencyKitsTable tbody').prepend(newItemRow);
+                $('#otherItemsTable tbody').prepend(newItemRow);
+                $('#archivesTable tbody').prepend(newItemRow);
+
+                // Optionally, reset the modal and reload the page or form
                 $("#addItemModal").addClass("hidden");
-                location.reload();  // Reload the page to see the new items
+                $('#itemForm')[0].reset();  // Reset form fields
             },
             error: function(xhr, status, error) {
-                console.log(xhr.responseJSON);  // Log the error to the console for debugging
-                alert('There was an error saving the item.');
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'There was an error saving the item.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
             }
         });
     });
@@ -1009,42 +1272,86 @@ $(document).ready(function () {
 });
 </script>
 
+
 <SCRIPT>
     //ARCHIVES
     function archiveItem(itemId) {
-    $.ajax({
-        url: '/archive-item/' + itemId,
-        type: 'POST',
-        data: {
-            _token: $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function(response) {
-            alert('Item archived successfully.');
-            $('#item-' + itemId).remove(); // Remove the item row from the table
-        },
-        error: function(xhr) {
-            alert('Error archiving item.');
-        }
-    });
-}
+        $.ajax({
+            url: '/archive-item/' + itemId,
+            type: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            beforeSend: function() {
+                // Show SweetAlert loading spinner before archiving the item
+                Swal.fire({
+                    title: 'Archiving...',
+                    text: 'Please wait while we archive the item.',
+                    icon: 'info',
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+            },
+            success: function(response) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Item archived successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+                $('#item-' + itemId).remove(); // Remove the item row from the table
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Error archiving item.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    }
 
-function restoreItem(itemId) {
-    $.ajax({
-        url: '/restore-item/' + itemId,
-        type: 'POST',
-        data: {
-            _token: $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function(response) {
-            alert('Item restored successfully.');
-            location.reload(); // Reload the page to update the table
-        },
-        error: function(xhr) {
-            alert('Error restoring item.');
-        }
-    });
-}
-
+    function restoreItem(itemId) {
+        $.ajax({
+            url: '/restore-item/' + itemId,
+            type: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            beforeSend: function() {
+                // Show SweetAlert loading spinner before restoring the item
+                Swal.fire({
+                    title: 'Restoring...',
+                    text: 'Please wait while we restore the item.',
+                    icon: 'info',
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+            },
+            success: function(response) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Item restored successfully.',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+                location.reload(); // Reload the page to update the table
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Error restoring item.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    }
 </script>
 
 <script>
@@ -1074,7 +1381,12 @@ function openEditModal(itemId) {
             $('#editItemModal').removeClass('hidden');
         },
         error: function(xhr) {
-            alert('Error fetching item data.');
+            Swal.fire({
+                title: 'Error!',
+                text: 'Error fetching item data.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
         }
     });
 }
@@ -1082,19 +1394,40 @@ function openEditModal(itemId) {
 // Save the updated item data when the form is submitted
 $('#editItemForm').submit(function(e) {
     e.preventDefault();  // Prevent default form submission
-    
+
+    // Show SweetAlert loading spinner before the request
+    Swal.fire({
+        title: 'Updating...',
+        text: 'Please wait while we update the item.',
+        icon: 'info',
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     // Send the form data using AJAX
     $.ajax({
         url: $(this).attr('action'),  // Get the form's action URL
         method: 'POST',  // Use 'POST' for the AJAX request
         data: $(this).serialize(),   // Serialize the form data
         success: function(response) {
-            alert('Item updated successfully!');
+            Swal.fire({
+                title: 'Success!',
+                text: 'Item updated successfully!',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
             $('#editItemModal').addClass('hidden');
             location.reload();  // Refresh the page to show the updated data
         },
         error: function(xhr) {
-            alert('Error updating item.');
+            Swal.fire({
+                title: 'Error!',
+                text: 'Error updating item.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
         }
     });
 });
@@ -1106,7 +1439,6 @@ $(document).ready(function () {
     });
 });
 </script>
-
 
 
 <!-- Modal Overlay for Adding Item -->
@@ -1190,19 +1522,12 @@ $(document).ready(function () {
                                 <label for="status" class="block text-xs font-medium text-gray-900">Status</label>
                                 <select id="status" name="status" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
                                     <option value="Available">Available</option>
-                                    <option value="Borrowed">Borrowed</option>
-                                    <option value="Reserved">Reserved</option>
-                                    <option value="Out of Stock">Out of Stock</option>
-                                    <option value="Needs Repair">Needs Repair</option>
-                                    <option value="Damaged">Damaged</option>
-                                    <option value="Lost">Lost</option>
-                                    <option value="Retired">Retired</option>
                                 </select>
                             </div>
 
                             <div>
                                 <label for="image_url" class="block text-xs font-medium text-gray-900">Image</label>
-                                <input type="file" id="image_url" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="file" id="image_url" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" accept="image/*">
                             </div>
                         </div>
 
@@ -1289,7 +1614,13 @@ $(document).ready(function () {
                                 <label for="edit_status" class="block text-xs font-medium text-gray-900">Status</label>
                                 <select id="edit_status" name="status" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
                                     <option value="Available">Available</option>
-                                    <option value="Unavailable">Unavailable</option>
+                                    <option value="Borrowed">Borrowed</option>
+                                    <option value="Reserved">Reserved</option>
+                                    <option value="Out Of Stock">Out of Stock</option>
+                                    <option value="Needs Repair">Needs Repair</option>
+                                    <option value="Damage">Damage</option>
+                                    <option value="Lost">Lost</option>
+                                    <option value="Retired">Retired</option>
                                 </select>
                             </div>
 
