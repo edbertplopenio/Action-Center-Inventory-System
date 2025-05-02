@@ -248,6 +248,7 @@
             <table id="userTable" class="display" style="width:100%">
                 <thead>
                     <tr>
+                        <th style="display:none;">ID</th> <!-- Hidden ID column -->
                         <th>Name</th>
                         <th>Email</th>
                         <th>Role</th>
@@ -270,6 +271,8 @@
                         data-last_login="{{ $user->last_login ?? 'N/A' }}"
                         data-created_by="{{ $user->created_by ?? 'N/A' }}"
                         data-updated_at="{{ $user->updated_at }}">
+
+                        <td style="display:none;">{{ $user->id }}</td> <!-- Hidden ID value -->
 
                         <td>{{ $user->first_name }} {{ $user->last_name }}</td>
                         <td>{{ $user->email }}</td>
@@ -1194,6 +1197,7 @@
                             <div class="border-b border-gray-900/10 pb-6">
                                 <p class="mt-1 text-xs text-gray-600">Fill in the user details.</p>
 
+                                
                                 <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-1">
                                     <div class="grid grid-cols-2 gap-6">
                                         <!-- First Name -->
@@ -1300,49 +1304,63 @@
 
 
 
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
         console.log("✅ Script Loaded");
 
+        // Modal related elements
         const modal = document.getElementById("myModal");
         const form = document.getElementById("userForm");
         const closeUserModal = document.getElementById("closeUserModal");
         const openModalBtn = document.getElementById("openModalBtn");
 
-        // DataTable setup
+        // Table DataTable initialization
         const userTable = $('#userTable').DataTable({
-            scrollY: "425px",
-            scrollCollapse: true,
-            scrollX: false,
-            paging: true,
-            searching: true,
-            ordering: true
+            "scrollY": "425px",
+            "scrollCollapse": true,
+            "scrollX": false,
+            "paging": true,
+            "searching": true,
+            "ordering": true,
+            "order": [
+                [0, "desc"]
+            ], // Sort by hidden ID column (index 0)
+            "columnDefs": [{
+                    "targets": 0,
+                    "visible": false
+                } // Hide ID column
+            ]
         });
 
-        openModalBtn.addEventListener("click", () => {
+
+        // Open modal when the "Add Record" button is clicked
+        openModalBtn.addEventListener("click", function() {
             console.log("Opening modal...");
-            modal.style.display = "block";
+            modal.style.display = "block"; // Show the modal
         });
 
-        closeUserModal.addEventListener("click", () => {
+        // Close modal when "Cancel" button is clicked
+        closeUserModal.addEventListener("click", function() {
             console.log("Closing modal...");
-            modal.style.display = "none";
-            form.reset();
+            modal.style.display = "none"; // Hide the modal
+            form.reset(); // Reset form inputs
         });
 
-        form.addEventListener("submit", async function (event) {
+        // Submit the form for adding new user
+        form.addEventListener("submit", async function(event) {
             event.preventDefault();
-
             let isValid = true;
+            let formData = new FormData(form);
             let errorMessages = [];
-            const formData = new FormData(form);
 
+            // Validate required fields (removed contact_number)
             const requiredFields = ["first_name", "last_name", "email", "user_role", "department", "password", "password_confirmation"];
             requiredFields.forEach(field => {
                 const input = document.getElementById(field);
-                if (!input.value.trim()) {
+                if (input.value.trim() === "") {
                     isValid = false;
                     input.classList.add("border-red-500");
                     errorMessages.push(`${field.replace("_", " ").toUpperCase()} is required.`);
@@ -1351,26 +1369,25 @@
                 }
             });
 
-            const password = document.getElementById("password").value;
-            const confirmPassword = document.getElementById("password_confirmation").value;
-            if (password !== confirmPassword) {
+            if (document.getElementById("password").value !== document.getElementById("password_confirmation").value) {
                 isValid = false;
                 errorMessages.push("Passwords do not match!");
             }
 
             if (!isValid) {
+                // Use SweetAlert to show error message
                 Swal.fire({
                     title: "Validation Error",
                     html: errorMessages.join("<br>"),
-                    icon: "error",
-                    confirmButtonText: "OK"
+                    icon: 'error',
+                    confirmButtonText: 'OK'
                 });
                 return;
             }
 
             try {
-                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-                const response = await fetch("/admin/users/store", {
+                let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                let response = await fetch("/admin/users/store", {
                     method: "POST",
                     headers: {
                         "X-CSRF-TOKEN": csrfToken
@@ -1378,47 +1395,58 @@
                     body: formData
                 });
 
-                const result = await response.json();
+                let result = await response.json();
 
                 if (response.ok) {
+                    // Show success notification using SweetAlert
                     Swal.fire({
                         title: "Success!",
                         text: "User added successfully!",
-                        icon: "success",
-                        confirmButtonText: "OK"
+                        icon: 'success',
+                        confirmButtonText: 'OK'
                     }).then(() => {
                         modal.style.display = "none";
                         form.reset();
+
+                        // Add new row with ID as the first hidden column
                         userTable.row.add([
+                            result.user.id, // Hidden ID column for sorting
                             `${result.user.first_name} ${result.user.last_name}`,
                             result.user.email,
                             result.user.user_role,
                             result.user.department || 'N/A',
                             result.user.status || 'N/A',
-                            `<button class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24">Edit</button>
-                             <button class="px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24">Deactivate</button>`
-                        ]).draw(false);
+                            `<button class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24"
+                 data-id="${result.user.id}">Edit</button>
+         <button class="deactivate-btn px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24"
+                 data-id="${result.user.id}">Deactivate</button>`
+                        ]).draw();
+
+                        // Reapply sorting so new user appears at the top
+                        userTable.order([0, 'desc']).draw();
+
+
                     });
                 } else {
-                    const serverErrors = Object.values(result.errors).flat().join("<br>");
+                    // Show error notification using SweetAlert
+                    let serverErrors = Object.values(result.errors).flat().join("<br>");
                     Swal.fire({
                         title: "Error",
                         html: serverErrors || "Failed to add user.",
-                        icon: "error",
-                        confirmButtonText: "OK"
+                        icon: 'error',
+                        confirmButtonText: 'OK'
                     });
                 }
             } catch (error) {
-                console.error(error);
+                // Show database error notification using SweetAlert
                 Swal.fire({
                     title: "Database Error",
                     text: "Failed to add user. Please try again.",
-                    icon: "error",
-                    confirmButtonText: "OK"
+                    icon: 'error',
+                    confirmButtonText: 'OK'
                 });
             }
         });
-
         // Toggle password visibility
         const togglePassword = document.getElementById("togglePassword");
         const toggleConfirm = document.getElementById("toggleConfirmPassword");
@@ -1461,7 +1489,12 @@
             updateRule("rule-symbol", /[\W_]/.test(val));
         });
     });
+
 </script>
+
+
+
+
 
 @endsection
 
