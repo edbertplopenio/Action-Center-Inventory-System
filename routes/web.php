@@ -287,3 +287,10 @@ Route::get('/api/usage-rate/{itemId}', [DashboardController::class, 'getUsageRat
 Route::get('/most-borrowed-items', [DashboardController::class, 'mostBorrowedItems']);
 Route::get('/equipment-quantity-by-category', [DashboardController::class, 'quantityByCategory']);
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+
+
+// View profile
+Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+
+// Update profile
+Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
