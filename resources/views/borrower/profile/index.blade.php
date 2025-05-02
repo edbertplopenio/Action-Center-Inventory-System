@@ -174,7 +174,7 @@
     });
 </script>
 
-<!-- Small Styles -->
+
 <style>
     html, body {
         margin: 0;

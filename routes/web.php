@@ -288,9 +288,6 @@ Route::get('/most-borrowed-items', [DashboardController::class, 'mostBorrowedIte
 Route::get('/equipment-quantity-by-category', [DashboardController::class, 'quantityByCategory']);
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
-
-
-
 // View profile
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
 
