@@ -1197,6 +1197,7 @@
                             <div class="border-b border-gray-900/10 pb-6">
                                 <p class="mt-1 text-xs text-gray-600">Fill in the user details.</p>
 
+                                
                                 <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-1">
                                     <div class="grid grid-cols-2 gap-6">
                                         <!-- First Name -->
@@ -1234,25 +1235,58 @@
                                         <input type="text" name="department" id="department" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter department">
                                     </div>
 
-                                    <!-- Removed Cellphone Number Section -->
-                                    <!-- <div class="sm:col-span-1">
-                                        <label for="contact_number" class="block text-xs font-medium text-gray-900">Cellphone Number</label>
-                                        <input type="text" name="contact_number" id="contact_number" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter cellphone number">
-                                    </div> -->
+                                           <!-- Password & Confirm Password -->
+                                    <div class="grid grid-cols-2 gap-3 w-full">
+                                        <!-- Password -->
+                                        <div class="flex flex-col relative">
+                                            <label for="password" class="block text-xs font-medium text-gray-900 mb-1">Password</label>
+                                            <div class="w-52 relative">
+                                                <input type="password" name="password" id="password"
+                                                    class="w-full pr-8 rounded-md border border-gray-300 px-2 py-1.5 text-xs text-gray-900 shadow-sm focus:ring-2 focus:ring-red-600 focus:outline-none"
+                                                    placeholder="Enter password" required>
+                                                <button type="button" id="togglePassword" class="absolute top-1/2 right-2 transform -translate-y-1/2">
+                                                    <i id="eyeIcon" class="ph ph-eye text-black text-lg"></i>
+                                                </button>
+                                            </div>
+                                            <div id="passwordChecklist" class="text-xs space-y-1 w-64 mt-2">
+                                                <p class="font-semibold text-red-500 mb-1">Password must contain:</p>
+                                                <div id="rule-length" class="flex items-center gap-2">
+                                                    <span class="check-icon text-red-500">•</span>
+                                                    <span class="text-red-500">At least 8 characters</span>
+                                                </div>
+                                                <div id="rule-lower" class="flex items-center gap-2">
+                                                    <span class="check-icon text-red-500">•</span>
+                                                    <span class="text-red-500">At least 1 lowercase letter (a–z)</span>
+                                                </div>
+                                                <div id="rule-upper" class="flex items-center gap-2">
+                                                    <span class="check-icon text-red-500">•</span>
+                                                    <span class="text-red-500">At least 1 uppercase letter (A–Z)</span>
+                                                </div>
+                                                <div id="rule-number" class="flex items-center gap-2">
+                                                    <span class="check-icon text-red-500">•</span>
+                                                    <span class="text-red-500">At least 1 number (0–9)</span>
+                                                </div>
+                                                <div id="rule-symbol" class="flex items-center gap-2">
+                                                    <span class="check-icon text-red-500">•</span>
+                                                    <span class="text-red-500">At least 1 special symbol (!@#$...)</span>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                    <!-- Password -->
-                                    <div class="sm:col-span-1">
-                                        <label for="password" class="block text-xs font-medium text-gray-900">Password</label>
-                                        <input type="password" name="password" id="password" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter password">
+                                        <!-- Confirm Password -->
+                                        <div class="flex flex-col relative">
+                                            <label for="password_confirmation" class="block text-xs font-medium text-gray-900 mb-1">Confirm Password</label>
+                                            <div class="w-52 relative">
+                                                <input type="password" name="password_confirmation" id="password_confirmation"
+                                                    class="w-full pr-8 rounded-md border border-gray-300 px-2 py-1.5 text-xs text-gray-900 shadow-sm focus:ring-2 focus:ring-red-600 focus:outline-none"
+                                                    placeholder="Confirm password" required>
+                                                <button type="button" id="toggleConfirmPassword" class="absolute top-1/2 right-2 transform -translate-y-1/2">
+                                                    <i id="eyeConfirmIcon" class="ph ph-eye text-black text-lg"></i>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <!-- Confirm Password -->
-                                    <div class="sm:col-span-1">
-                                        <label for="confirm_password" class="block text-xs font-medium text-gray-900">Confirm Password</label>
-                                        <input type="password" name="password_confirmation" id="password_confirmation" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Confirm password">
-                                    </div>
-                                </div>
-                            </div>
 
                             <!-- Action Buttons -->
                             <div class="mt-6 flex items-center justify-end gap-x-6">
@@ -1266,6 +1300,7 @@
         </div>
     </div>
 </div>
+
 
 
 
@@ -1412,8 +1447,49 @@
                 });
             }
         });
+        // Toggle password visibility
+        const togglePassword = document.getElementById("togglePassword");
+        const toggleConfirm = document.getElementById("toggleConfirmPassword");
+        const passwordInput = document.getElementById("password");
+        const confirmInput = document.getElementById("password_confirmation");
+        const eyeIcon = document.getElementById("eyeIcon");
+        const eyeConfirmIcon = document.getElementById("eyeConfirmIcon");
 
+        togglePassword.addEventListener("click", () => {
+            passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+            eyeIcon.classList.toggle("ph-eye");
+            eyeIcon.classList.toggle("ph-eye-slash");
+        });
+
+        toggleConfirm.addEventListener("click", () => {
+            confirmInput.type = confirmInput.type === "password" ? "text" : "password";
+            eyeConfirmIcon.classList.toggle("ph-eye");
+            eyeConfirmIcon.classList.toggle("ph-eye-slash");
+        });
+
+        // Live password checklist
+        passwordInput.addEventListener("input", () => {
+            const val = passwordInput.value;
+
+            const updateRule = (id, isValid) => {
+                const rule = document.getElementById(id);
+                const icon = rule.querySelector("span.check-icon");
+                const text = rule.querySelectorAll("span")[1];
+
+                icon.classList.toggle("text-green-500", isValid);
+                icon.classList.toggle("text-red-500", !isValid);
+                text.classList.toggle("text-green-500", isValid);
+                text.classList.toggle("text-red-500", !isValid);
+            };
+
+            updateRule("rule-length", val.length >= 8);
+            updateRule("rule-lower", /[a-z]/.test(val));
+            updateRule("rule-upper", /[A-Z]/.test(val));
+            updateRule("rule-number", /\d/.test(val));
+            updateRule("rule-symbol", /[\W_]/.test(val));
+        });
     });
+
 </script>
 
 
