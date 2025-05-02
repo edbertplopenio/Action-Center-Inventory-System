@@ -220,12 +220,14 @@
                             </span>
                         </td>
                         <td>
-                            @if($item->image_url)
-                            <img src="{{ $item->image_url }}" alt="Item Image" style="width: 50px; height: 50px;">
-                            @else
-                            No Image
-                            @endif
-                        </td>
+  @if($item->image_url)
+    <img src="{{ asset($item->image_url) }}" 
+         alt="Item Image" 
+         style="width: 50px; height: 50px; object-fit: cover">
+  @else
+    No Image
+  @endif
+</td>
                         <td>
                             <button
                                 class="borrow-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24"

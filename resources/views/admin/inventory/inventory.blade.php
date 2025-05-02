@@ -427,10 +427,7 @@ table.dataTable tbody td {
     position: relative; /* Ensure the row can hold the absolute positioned label */
 }
 
-#allItemsTable th, #allItemsTable td,  {
-    font-family: 'Arial', sans-serif;  /* Set a consistent font family */
-    font-size: 12px;  /* Ensure a uniform font size */
-}
+
 
 /* For DRRM Equipment Table */
 #equipmentTable th, #equipmentTable td {
@@ -1135,63 +1132,66 @@ $(document).ready(function () {
         });
 
         // Proceed with the AJAX request to submit the form data
-        $.ajax({
-            url: "{{ route('items.store') }}",  // Your URL for item saving
-            method: 'POST',
-            data: formData,
-            processData: false,  // Don't process the data (since it's FormData)
-            contentType: false,  // Set content type to false to let FormData handle it
-            success: function(response) {
-                Swal.fire({
-                    title: 'Success!',
-                    text: 'Item saved successfully!',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                });
-
-                // Prepend the new item to the top of the table (specifically to the all items table)
-                var newItemRow = `
-                    <tr id="item-${response.id}">
-                        <td>${response.item_code}</td>
-                        <td>${response.name}</td>
-                        <td>${response.quantity}</td>
-                        <td>${response.unit}</td>
-                        <td>${response.category}</td>
-                        <td>${response.description}</td>
-                        <td>${response.storage_location}</td>
-                        <td>${response.arrival_date}</td>
-                        <td>${response.date_purchased}</td>
-                        <td>${response.status}</td>
-                        <td><img src="${response.image_url}" alt="${response.name}" class="w-10 h-10"></td>
-                        <td class="action-buttons">
-                            <button onclick="openEditModal('${response.id}')" class="edit-btn">Edit</button>
-                            <button type="button" class="archive-btn" onclick="archiveItem('${response.id}')">Archive</button>
-                        </td>
-                    </tr>`;
-
-                // Prepend the new item row to the table (this will put it at the top)
-                $('#allItemsTable tbody').prepend(newItemRow);
-
-                // Prepend the new item to other tables (equipment, office supplies, etc.)
-                $('#equipmentTable tbody').prepend(newItemRow);
-                $('#officeSuppliesTable tbody').prepend(newItemRow);
-                $('#emergencyKitsTable tbody').prepend(newItemRow);
-                $('#otherItemsTable tbody').prepend(newItemRow);
-                $('#archivesTable tbody').prepend(newItemRow);
-
-                // Optionally, reset the modal and reload the page or form
-                $("#addItemModal").addClass("hidden");
-                $('#itemForm')[0].reset();  // Reset form fields
-            },
-            error: function(xhr, status, error) {
-                Swal.fire({
-                    title: 'Error!',
-                    text: 'There was an error saving the item.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            }
+// Proceed with the AJAX request to submit the form data
+$.ajax({
+    url: "{{ route('items.store') }}",  // Your URL for item saving
+    method: 'POST',
+    data: formData,
+    processData: false,  // Don't process the data (since it's FormData)
+    contentType: false,  // Set content type to false to let FormData handle it
+    success: function(response) {
+        Swal.fire({
+            title: 'Success!',
+            text: 'Item saved successfully!',
+            icon: 'success',
+            confirmButtonText: 'OK'
         });
+
+        // Prepend the new item to the top of the table (specifically to the all items table)
+        var newItemRow = `
+            <tr id="item-${response.id}">
+                <td>${response.item_code}</td>
+                <td>${response.name}</td>
+                <td>${response.quantity}</td>
+                <td>${response.unit}</td>
+                <td>${response.category}</td>
+                <td>${response.description}</td>
+                <td>${response.storage_location}</td>
+                <td>${response.arrival_date}</td>
+                <td>${response.date_purchased}</td>
+                <td>${response.status}</td>
+                <td><img src="${response.image_url}" alt="${response.name}" class="w-10 h-10"></td>
+                <td class="action-buttons">
+                    <button onclick="openEditModal('${response.id}')" class="edit-btn">Edit</button>
+                    <button type="button" class="archive-btn" onclick="archiveItem('${response.id}')">Archive</button>
+                </td>
+            </tr>`;
+
+        // Prepend the new item row to the tables
+        $('#allItemsTable tbody').prepend(newItemRow);
+        $('#equipmentTable tbody').prepend(newItemRow);
+        $('#officeSuppliesTable tbody').prepend(newItemRow);
+        $('#emergencyKitsTable tbody').prepend(newItemRow);
+        $('#otherItemsTable tbody').prepend(newItemRow);
+        $('#archivesTable tbody').prepend(newItemRow);
+
+        // Optionally, reset the modal and form
+        $("#addItemModal").addClass("hidden");
+        $('#itemForm')[0].reset();  // Reset form fields
+
+        // Reload the page to reflect the changes
+        location.reload();
+    },
+    error: function(xhr, status, error) {
+        Swal.fire({
+            title: 'Error!',
+            text: 'There was an error saving the item.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    }
+});
+
     });
 
     // Search functionality for existing items
