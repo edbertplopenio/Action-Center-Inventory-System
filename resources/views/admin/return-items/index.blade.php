@@ -371,24 +371,24 @@
             scrollY: '420px',
             scrollCollapse: true,
             paging: true,
-            searching: true,
+            searching: false,
             ordering: true,
             "order": [
-                [0, "desc"] // Sort by hidden ID column (index 0)
+                [0, "desc"]
             ],
             "columnDefs": [{
                 "targets": 0,
-                "visible": false // Hide ID column
+                "visible": false
             }]
         });
 
-
         $('#codeTable').DataTable({
             paging: true,
-            searching: true,
+            searching: false,
             ordering: false,
             pageLength: 10,
-            lengthChange: false
+            lengthChange: false,
+            info: false // Add this to hide the entries information
         });
 
         $('[data-toggle="tooltip"]').tooltip();
@@ -697,51 +697,50 @@
     }
 
     document.getElementById('approveButton').addEventListener('click', function() {
-    const itemId = $('#qr-modal').data('item-id');
-    
-    // Collect remarks for each scanned QR code
-    const remarks = scannedQRCodeList.map(qr => {
-        const row = Array.from(document.querySelectorAll('#codeTable tbody tr'))
-            .find(row => row.cells[0].textContent.trim() === qr);
-        return row.querySelector('.remarks-dropdown').value;
-    });
+        const itemId = $('#qr-modal').data('item-id');
 
-    // Show SweetAlert confirmation
-    Swal.fire({
-        title: 'Are you sure?',
-        text: "You are about to return this item.",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#A855F7',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Yes, return it!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            // Send the AJAX request to mark items as returned
-            $.ajax({
-                url: '/admin/return-items/mark/' + itemId,
-                type: 'POST',
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content'),
-                    qr_codes: scannedQRCodeList, // Send the list of scanned QR codes
-                    return_dates: returnDates, // Send the list of return dates for each item
-                    remarks: remarks // Add remarks to the payload
-                },
-                success: function(response) {
-                    Swal.fire('Returned!', 'The items have been returned.', 'success')
-                        .then(() => {
-                            closeQRScanner();
-                            location.reload(); // Reload the page to reflect changes
-                        });
-                },
-                error: function(err) {
-                    Swal.fire('Error!', err.responseJSON.message, 'error');
-                }
-            });
-        }
-    });
-});
+        // Collect remarks for each scanned QR code
+        const remarks = scannedQRCodeList.map(qr => {
+            const row = Array.from(document.querySelectorAll('#codeTable tbody tr'))
+                .find(row => row.cells[0].textContent.trim() === qr);
+            return row.querySelector('.remarks-dropdown').value;
+        });
 
+        // Show SweetAlert confirmation
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You are about to return this item.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#A855F7',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Yes, return it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Send the AJAX request to mark items as returned
+                $.ajax({
+                    url: '/admin/return-items/mark/' + itemId,
+                    type: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        qr_codes: scannedQRCodeList, // Send the list of scanned QR codes
+                        return_dates: returnDates, // Send the list of return dates for each item
+                        remarks: remarks // Add remarks to the payload
+                    },
+                    success: function(response) {
+                        Swal.fire('Returned!', 'The items have been returned.', 'success')
+                            .then(() => {
+                                closeQRScanner();
+                                location.reload(); // Reload the page to reflect changes
+                            });
+                    },
+                    error: function(err) {
+                        Swal.fire('Error!', err.responseJSON.message, 'error');
+                    }
+                });
+            }
+        });
+    });
 </script>
 
 
