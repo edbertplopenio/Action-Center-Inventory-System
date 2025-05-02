@@ -22,36 +22,31 @@ class AuthManager extends Controller
         return view('registration');
     }
 
-   // Handle login request
-   public function loginPost(Request $request)
-   {
-       $request->validate([
-           'email'    => ['required', 'email', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/'],
-           'password' => 'required'
-       ]);
-   
-       $credentials = $request->only('email', 'password');
-   
-       if (Auth::attempt($credentials)) {
-           $user = Auth::user();
-   
-           // Check if the user's account is inactive
-           if ($user->status === 'inactive') {
-               Auth::logout();
-               return redirect()->route('login')->with('status', 'account_inactive');
-           }
-   
-           // Redirect based on role
-           if ($user->user_role === 'Borrower') {
-               return redirect()->route('borrower.inventory.index')->with("status", "login_success");
-           }
-   
-           return redirect()->route('home')->with("status", "login_success");
-       }
-   
-       return redirect()->route('login')->with("status", "login_error");
-   }
-   
+    // Handle login request
+    public function loginPost(Request $request)
+    {
+        $request->validate([
+            'email'    => ['required', 'email', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/'],
+            'password' => 'required'
+        ]);
+
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+
+            // Redirect borrowers to Equipment Inventory
+            if ($user->user_role === 'Borrower') {
+                return redirect()->route('borrower.inventory.index')->with("status", "login_success");
+            }
+
+            // Other roles go to dashboard/home
+            return redirect()->route('home')->with("status", "login_success");
+        }
+
+        return redirect()->route('login')->with("status", "login_error");
+    }
+
 
 
     // Handle registration request
@@ -61,7 +56,11 @@ class AuthManager extends Controller
         $request->validate([
             'first_name'     => 'required|string|max:100',
             'last_name'      => 'required|string|max:100',
-            'email' => ['required', 'regex:/^\d{2}-\d{5}@g\\.batstate-u\\.edu\\.ph$/', 'unique:users,email'], // Email regex rule in array format
+            'email' => [
+                'required',
+                'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/',
+                'unique:users,email'
+            ],
             'password' => [
                 'required',
                 'confirmed',
@@ -130,6 +129,4 @@ class AuthManager extends Controller
         // If user does not exist, send failure response
         return response()->json(['success' => false]);
     }
-
-
 }
