@@ -52,7 +52,7 @@
                     <div class="mb-4">
                         <p class="text-2xl font-bold text-white leading-tight">{{ $item->name }}</p>
                         <span class="text-xs text-gray-200 mt-1">⬆️ {{ $item->quantity }} units available</span>
-                        <div class="icon bg-[#C7EEDD] text-white text-3xl flex items-center justify-center w-14 h-14 rounded-full absolute bottom-2 right-2">
+                        <div class="icon bg-[#C7EEDD] text-white text-3xl flex items-center justify-center w-14 h-14 rounded-full absolute bottom-2 rigth-2">
                             📦
                         </div>
                     </div>
@@ -114,7 +114,7 @@
             @else
                 <p class="text-white">No recent deployments.</p>
             @endif
-        </div>
+        </div> 
 
     </div>
 </div>

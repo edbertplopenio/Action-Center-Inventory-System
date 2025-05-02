@@ -56,7 +56,7 @@ class AuthManager extends Controller
         $request->validate([
             'first_name'     => 'required|string|max:100',
             'last_name'      => 'required|string|max:100',
-            'email' => ['required', 'regex:/^\d{2}-\d{5}@g\\.batstate-u\\.edu\\.ph$/', 'unique:users,email'], // Email regex rule in array format
+            'email' => ['required', 'email', 'unique:users,email'], // Email regex rule in array format
             'password' => [
                 'required',
                 'confirmed',
