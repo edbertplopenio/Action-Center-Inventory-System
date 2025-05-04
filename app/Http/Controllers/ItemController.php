@@ -37,7 +37,7 @@ class ItemController extends Controller
             'archivedItems'
         ));
     }
-//isa pa
+
     // Fetch all items (equipment)
     public function getItems()
     {

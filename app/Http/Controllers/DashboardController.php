@@ -44,7 +44,6 @@ class DashboardController extends Controller
      // Fetch the next 10 recent deployments
      $recentDeploymentsNext = BorrowedItem::with('item') 
          ->orderBy('borrow_date', 'desc')
-         ->skip(1)
          ->take(10)
          ->get();
  

@@ -258,3 +258,5 @@ Route::get('/about', function () {
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+
+Route::get('/borrower/borrow-equipment/report-preview', [BorrowedItemsController::class, 'reportPreview'])->name('borrow-equipment.report-preview');

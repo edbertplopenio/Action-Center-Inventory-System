@@ -36,7 +36,8 @@ class BorrowEquipmentController extends Controller
             'quantity_borrowed' => $request->quantity,
             'borrow_date' => Carbon::parse($request->borrow_date),
             'due_date' => Carbon::parse($request->due_date),
-            'responsible_person' => Auth::user()->first_name . ' ' . Auth::user()->last_name,
+            'request_responsible_person' => null,  // Set to null if no responsible person for the request
+            'return_responsible_person' => null,   // Set to null if no responsible person for the return
             'status' => 'Pending',
         ]);
 

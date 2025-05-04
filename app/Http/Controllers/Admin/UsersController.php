@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller
 {
@@ -22,9 +23,13 @@ public function index()
     // Fetch all users regardless of their status
     $users = User::all();
     
-    // Pass all users to the Blade view
-    return view('admin.users.index', compact('users'));
+    // Get the logged-in user's ID
+    $loggedInUserId = Auth::id(); // You can directly use Auth::id()
+
+    // Pass all users and the logged-in user's ID to the Blade view
+    return view('admin.users.index', compact('users', 'loggedInUserId'));
 }
+
 
 
     /**

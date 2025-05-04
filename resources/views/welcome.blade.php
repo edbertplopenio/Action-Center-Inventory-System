@@ -7,7 +7,7 @@
     <div class="relative min-h-screen flex flex-col items-center justify-between bg-cover bg-center font-sans"
     style="background-image: url('/images/commandcenter.png'); background-size: cover; background-position: center; max-height: 60vh;">
 <!-- Background Image -->
-<div class="absolute inset-0 w-screen h-screen bg-cover bg-center" style="background-image: url('{{ asset('images/landing.png') }}');">
+<div class="absolute inset-0 w-screen h-screen bg-cover bg-center" style="background-image: url('{{ asset('Images/landing.png') }}');">
 </div>
 <!-- Navigation Links -->
  

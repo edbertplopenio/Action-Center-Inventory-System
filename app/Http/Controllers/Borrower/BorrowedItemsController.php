@@ -78,4 +78,31 @@ class BorrowedItemsController extends Controller
         $borrowedItem->delete();
         return redirect()->route('borrower.borrow-equipment.index')->with('success', 'Borrowed item deleted successfully.');
     }
+
+
+    //report preview
+    
+    public function reportPreview(Request $request)
+    {
+        $query = BorrowedItem::with(['item', 'borrower'])
+            ->whereHas('item') // Ensures item relation exists
+            ->where('quantity_borrowed', '>', 0) // Avoid quantity 0 or placeholder entries
+            ->orderBy('borrow_date', 'desc'); // Show latest records first
+    
+        // Filter by date range if both are filled
+        if ($request->filled('startDate') && $request->filled('endDate')) {
+            $query->whereBetween('borrow_date', [$request->startDate, $request->endDate]);
+        }
+    
+        // Filter by status if not 'all'
+        if ($request->filled('statusFilter') && $request->statusFilter !== 'all') {
+            $query->where('status', $request->statusFilter);
+        }
+    
+        return response()->json($query->get());
+    }
+    
+    
+    
+
 }

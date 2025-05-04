@@ -221,20 +221,24 @@
             <table id="borrowedItemsTable" class="display" style="width:100%">
                 <thead>
                     <tr>
+                        <th style="display:none;">ID</th> <!-- Hidden ID column -->
                         <th>Borrower</th>
                         <th>Item Name</th>
-                        <th>QR Code(s)</th> <!-- New column for QR codes -->
+                        <th>QR Code(s)</th>
                         <th>Quantity</th>
                         <th>Borrow Date</th>
                         <th>Due Date</th>
-                        <th>Return Date</th> <!-- Added Return Date column -->
+                        <th>Return Date</th>
                         <th>Status</th>
+                        <th>Returned Items</th>
+                        <th>Remarks</th> <!-- New Remarks Column -->
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($borrowedItems as $borrowedItem)
                     <tr>
+                        <td style="display:none;">{{ $borrowedItem->id }}</td> <!-- Hidden ID value -->
                         <td>{{ $borrowedItem->borrower->first_name }} {{ $borrowedItem->borrower->last_name }}</td>
                         <td>{{ $borrowedItem->item->name }}</td>
 
@@ -249,22 +253,20 @@
                         <td>{{ $borrowedItem->borrow_date->format('Y-m-d') }}</td>
                         <td>{{ $borrowedItem->due_date->format('Y-m-d') }}</td>
 
-                        <!-- Display return dates and corresponding items -->
                         <td>
                             @php
-                            // Group items by return date
-                            $groupedByReturnDate = $borrowedItem->individualItems->groupBy('return_date');
+                            // Get the return dates from the individual_item_returns relationship
+                            $returnDates = $borrowedItem->individualItemReturns->groupBy('return_date');
                             @endphp
-
-                            @foreach($groupedByReturnDate as $date => $items)
+                            @foreach($returnDates as $date => $returns)
                             @if($date)
                             <strong>{{ \Carbon\Carbon::parse($date)->format('Y-m-d') }}</strong><br>
-                            @foreach($items as $item)
-                            {{ $item->qr_code }}<br> <!-- Display QR Code for each item returned on that date -->
+                            @foreach($returns as $return)
+                            {{ $return->individualItem->qr_code }}<br>
                             @endforeach
                             @endif
                             @endforeach
-                        </td> <!-- Display Return Date(s) -->
+                        </td>
 
                         <td>
                             <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
@@ -273,6 +275,26 @@
                                 {{ $borrowedItem->status }}
                             </span>
                         </td>
+
+                        <td>
+                            @php
+                            // Count how many individual items have been returned (i.e., have a non-null return date)
+                            $returnedItemsCount = $borrowedItem->individualItemReturns->whereNotNull('return_date')->count();
+                            @endphp
+                            {{ $returnedItemsCount }}/{{ $borrowedItem->quantity_borrowed }}
+                        </td>
+
+                        <!-- New Remarks Column -->
+                        <td>
+                            @foreach($borrowedItem->individualItemReturns as $return)
+                            @if($return->remarks)
+                            <strong>{{ $return->individualItem->qr_code }}</strong> - {{ $return->remarks }}<br>
+                            @else
+                            <strong>{{ $return->individualItem->qr_code }}</strong> - <span>Not Checked</span><br> <!-- Default text if no remarks -->
+                            @endif
+                            @endforeach
+                        </td>
+
                         <td>
                             <button class="return-btn px-2 py-1 m-1 bg-[#A855F7] text-white rounded hover:bg-[#7038A4] focus:outline-none focus:ring-2 focus:ring-[#A855F7] text-xs w-24"
                                 onclick="returnItem('{{ $borrowedItem->id }}')"
@@ -290,6 +312,7 @@
             </table>
 
 
+
         </div>
 
     </div>
@@ -305,10 +328,12 @@
             <table id="codeTable" class="display" style="width: 100%; height: 100%; border: 2px solid #ccc; border-collapse: collapse; table-layout: fixed;">
                 <thead>
                     <tr>
-                        <th style="text-align: center; width: 50%;">QR Code</th>
-                        <th style="text-align: center; width: 50%;">Status</th>
+                        <th style="text-align: center; width: 40%;">QR Code</th>
+                        <th style="text-align: center; width: 40%;">Status</th>
+                        <th style="text-align: center; width: 20%;">Remarks</th> <!-- New column for Remarks -->
                     </tr>
                 </thead>
+
                 <tbody style="text-align: center;">
                     <!-- QR code data will be populated here dynamically -->
                 </tbody>
@@ -347,8 +372,16 @@
             scrollCollapse: true,
             paging: true,
             searching: true,
-            ordering: true
+            ordering: true,
+            "order": [
+                [0, "desc"] // Sort by hidden ID column (index 0)
+            ],
+            "columnDefs": [{
+                "targets": 0,
+                "visible": false // Hide ID column
+            }]
         });
+
 
         $('#codeTable').DataTable({
             paging: true,
@@ -409,16 +442,20 @@
     }
 
     // Function to populate the table in the QR modal
+    // Modify the returnItem function to pass the current returned count
+    // Function to populate the table in the QR modal
     function returnItem(id) {
         $('#qr-modal').removeClass('hidden');
         $('#borrowedItemsTable button').prop('disabled', true);
         $('#qr-modal').data('item-id', id);
         $('#result').text('Scanning for QR code...');
+
         scannedQRCodeList = [];
         scannedCount = 0;
         document.getElementById('approveButton').disabled = true;
         document.getElementById('undoButton').disabled = true;
 
+        // Fetch the list of borrowed items, including the count of already returned items
         $.ajax({
             url: '/admin/borrowed-items/list/' + id,
             method: 'GET',
@@ -426,26 +463,48 @@
                 const tableBody = $('#codeTable tbody');
                 tableBody.empty();
 
+                let alreadyReturnedCount = 0;
+
                 // Iterate over the borrowed items and populate the table
                 response.borrowedItems.forEach(item => {
-                    let statusText = item.status; // Default status from the database
-                    let rowStyle = ''; // Default row style
+                    let statusText = item.status;
+                    let rowStyle = '';
+                    let remarksDisabled = ''; // Default to not disabled
 
-                    // Check if the item has been returned and display 'Returned' in the table instead of 'Available'
+                    // Check if the item has been returned and display 'Returned' in the table
                     if (item.status === 'Available') {
-                        statusText = 'Returned'; // Change display text to 'Returned'
-                        rowStyle = 'background-color: #90ee90; color: #000;'; // Inline style for highlighting (light green background)
+                        statusText = 'Returned';
+                        rowStyle = 'background-color: #90ee90; color: #000;';
+                        alreadyReturnedCount++; // Increment the returned items count
+                        remarksDisabled = 'disabled'; // Disable remarks dropdown for returned items
                     }
 
+                    // Create the row with the dropdown for remarks
                     const row = `<tr style="${rowStyle}">
                     <td>${item.qr_code}</td>
-                    <td>${statusText}</td> <!-- Show 'Returned' instead of 'Available' -->
+                    <td>${statusText}</td>
+                    <td>
+                        <select class="remarks-dropdown" data-qr="${item.qr_code}" disabled ${remarksDisabled}>
+                            <option value="Good">Good</option>
+                            <option value="Damaged">Damaged</option>
+                            <option value="Missing">Missing</option>
+                            <option value="Not Checked">Not Checked</option>
+                        </select>
+                    </td>
                 </tr>`;
                     tableBody.append(row);
+                    // Disable remarks dropdown for all unscanned items
+                    const lastRow = tableBody.find('tr').last()[0];
+                    const dropdown = lastRow.querySelector('.remarks-dropdown');
+                    if (dropdown && statusText !== 'Returned') {
+                        dropdown.disabled = true;
+                    }
+
                 });
 
                 totalRequestQuantity = response.borrowedItems.length;
-                $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
+                scannedCount = alreadyReturnedCount; // Set scannedCount to the already returned count
+                $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`); // Update counter
 
                 openQRScanner();
             },
@@ -455,6 +514,8 @@
             }
         });
     }
+
+
 
 
 
@@ -529,6 +590,13 @@
                             statusCell.textContent = 'Returned';
                             scannedCount++;
                             $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
+
+                            // ✅ Enable the remarks dropdown for the scanned QR
+                            const remarksDropdown = matchedRow.querySelector('.remarks-dropdown');
+                            if (remarksDropdown) {
+                                remarksDropdown.disabled = false;
+                            }
+
 
                             if (scannedCount >= totalRequestQuantity) {
                                 document.getElementById('request-counter').style.color = 'green';
