@@ -143,11 +143,20 @@ class ItemController extends Controller
     }
 
     // Fetch all items (equipment)
-    public function getItems()
-    {
-        $items = Item::where('is_archived', false)->get(['id', 'name']);  // Get item ID and name only
-        return response()->json($items);
+// Fetch item details for editing via AJAX
+public function getItemData($id)
+{
+    // Fetch item data from the database by its ID
+    $item = Item::find($id);
+
+    // If the item is not found, return an error response
+    if (!$item) {
+        return response()->json(['error' => 'Item not found.'], 404);
     }
+
+    // Return the item data in JSON format
+    return response()->json($item);
+}
 
     // Fetch usage rate data for a specific item
     public function getUsageRateData($itemId)
@@ -335,56 +344,67 @@ class ItemController extends Controller
     /**
      * Update the specified item in the database.
      */
-    public function update(Request $request, $id)
-    {
-        $item = Item::find($id);
-    
-        if (!$item) {
-            return redirect()->back()->with('error', 'Item not found.');
-        }
-    
-        // Validate input fields for update
-        $request->validate([
-            'quantity' => 'required|integer|min:1',
-            'storage_location' => 'required|string|max:255',
-            'arrival_date' => 'required|date',
-            'date_purchased' => 'required|date',
-            'status' => 'required|string|max:255',
-            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
-    
-        // Save the old quantity to compare later
-        $oldQuantity = $item->quantity;
-    
-        // Only update editable fields
-        $item->quantity = $request->quantity;
-        $item->storage_location = $request->storage_location;
-        $item->arrival_date = $request->arrival_date;
-        $item->date_purchased = $request->date_purchased;
-        $item->status = $request->status;
-    
-        // Handle image upload if provided and save URL to `image_url`
-        if ($request->hasFile('image_url')) {
-            $filename = time() . '.' . $request->image_url->extension();
-            $request->image_url->move(public_path('images'), $filename);
-            $item->image_url = 'images/' . $filename;
-        }
-    
-        // Save the updated item
-        $item->save();
-    
-        // Adjust the individual items table based on the quantity change
-        if ($request->quantity < $oldQuantity) {
-            // If quantity is reduced, remove entries from individual items
-            $this->removeIndividualItems($item, $oldQuantity - $request->quantity);
-        } elseif ($request->quantity > $oldQuantity) {
-            // If quantity is increased, add entries to individual items
-            $this->addIndividualItems($item, $request->quantity - $oldQuantity);
-        }
-    
-        return redirect()->back()->with('success', 'Item updated successfully!');
+// Update the specified item in the database
+public function update(Request $request, $id)
+{
+    // Fetch the item from the database using the ID
+    $item = Item::find($id);
+
+    // If the item is not found, return an error response
+    if (!$item) {
+        return response()->json(['error' => 'Item not found.'], 404);
     }
-    
+
+    // Validate the input fields for update
+    $validated = $request->validate([
+        'quantity' => 'required|integer|min:1', // Ensure quantity is a positive integer
+        'storage_location' => 'required|string|max:255', // Validate storage location
+        'arrival_date' => 'required|date', // Validate arrival date
+        'date_purchased' => 'required|date', // Validate date purchased
+        'status' => 'required|string|max:255', // Ensure status is valid
+        'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Optional image upload
+    ]);
+
+    // Save the old quantity to compare later
+    $oldQuantity = $item->quantity;
+
+    // Update the editable fields (don't update non-editable fields like `name`, `category`, etc.)
+    $item->quantity = $validated['quantity'];
+    $item->storage_location = $validated['storage_location'];
+    $item->arrival_date = $validated['arrival_date'];
+    $item->date_purchased = $validated['date_purchased'];
+    $item->status = $validated['status'];
+
+    // Handle image upload if provided and save URL to `image_url`
+    if ($request->hasFile('image_url')) {
+        // Generate a unique filename for the uploaded image
+        $filename = time() . '.' . $request->image_url->extension();
+        // Move the file to the `public/images` directory
+        $request->image_url->move(public_path('images'), $filename);
+        // Store the relative path of the image
+        $item->image_url = 'images/' . $filename;
+    }
+
+    // Save the updated item to the database
+    $item->save();
+
+    // Adjust the individual items table based on the quantity change
+    if ($validated['quantity'] < $oldQuantity) {
+        // If quantity is reduced, remove entries from individual items
+        $this->removeIndividualItems($item, $oldQuantity - $validated['quantity']);
+    } elseif ($validated['quantity'] > $oldQuantity) {
+        // If quantity is increased, add entries to individual items
+        $this->addIndividualItems($item, $validated['quantity'] - $oldQuantity);
+    }
+
+    // Return a success response with updated item data
+    return response()->json([
+        'success' => true,
+        'message' => 'Item updated successfully!',
+        'item' => $item // Return the updated item data
+    ]);
+}
+
     /**
      * Remove individual items based on the quantity reduction.
      */
@@ -401,6 +421,7 @@ class ItemController extends Controller
             $individualItem->delete();
         }
     }
+    
     
     /**
      * Add individual items based on the quantity increase.
@@ -422,6 +443,7 @@ class ItemController extends Controller
             $individualItem->save();
         }
     }
+    
         /**
      * Archive (soft delete) an item.
      */

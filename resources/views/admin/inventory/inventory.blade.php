@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -548,7 +549,8 @@ table.dataTable tbody td {
                         <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
                             <div class="button-container">
-                                <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                            <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                            
                                 <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
                             </div>
                         </td>
@@ -1374,8 +1376,19 @@ function openEditModal(itemId) {
             $('#edit_status').val(item.status);
 
             // Dynamically set the form's action URL to include the itemId
-            var formAction = "{{ route('items.update', ['id' => '__ID__']) }}".replace('__ID__', item.id);
+            var formAction = "/items/update/" + item.id; // Directly using the item ID for the action URL
             $('#editItemForm').attr('action', formAction); // Set the action URL for form
+
+            // Make the fields editable (remove the readonly/disabled attributes)
+            $('#edit_item_name').attr('readonly', false);
+            $('#edit_category').attr('disabled', false);
+            $('#edit_unit').attr('disabled', false);
+            $('#edit_description').attr('disabled', false);
+            $('#edit_storage_location').attr('disabled', false);
+            $('#edit_arrival_date').attr('disabled', false);
+            $('#edit_date_purchased').attr('disabled', false);
+            $('#edit_status').attr('disabled', false);
+            $('#edit_image').attr('disabled', false); // Allow image editing
 
             // Show the modal
             $('#editItemModal').removeClass('hidden');
@@ -1383,7 +1396,7 @@ function openEditModal(itemId) {
         error: function(xhr) {
             Swal.fire({
                 title: 'Error!',
-                text: 'Error fetching item data.',
+                text: 'Error fetching item data. Please try again.',
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
@@ -1406,25 +1419,39 @@ $('#editItemForm').submit(function(e) {
         }
     });
 
-    // Send the form data using AJAX
+    // Send the form data via AJAX to update the item
     $.ajax({
         url: $(this).attr('action'),  // Get the form's action URL
         method: 'POST',  // Use 'POST' for the AJAX request
         data: $(this).serialize(),   // Serialize the form data
         success: function(response) {
-            Swal.fire({
-                title: 'Success!',
-                text: 'Item updated successfully!',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-            $('#editItemModal').addClass('hidden');
-            location.reload();  // Refresh the page to show the updated data
+            // Check if the update was successful
+            if (response.success) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: response.message, // Show the success message from the server
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+
+                // Close the modal
+                $('#editItemModal').addClass('hidden');
+                // Optionally, update the item list or table dynamically without refreshing
+                updateItemRow(response.item);
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'There was an issue updating the item. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
         },
         error: function(xhr) {
+            // Handle errors from the server
             Swal.fire({
                 title: 'Error!',
-                text: 'Error updating item.',
+                text: 'Error updating item. Please check your input and try again.',
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
@@ -1432,14 +1459,55 @@ $('#editItemForm').submit(function(e) {
     });
 });
 
-// Close the Edit Item Modal when clicking the "Cancel" button or the "Close" button (×)
+// Function to update the item row dynamically in the table after updating
+function updateItemRow(item) {
+    // Find the table row based on the item ID and update its values
+    var row = $('#item-' + item.id);
+    row.find('.item-name').text(item.name);
+    row.find('.item-quantity').text(item.quantity);
+    row.find('.item-status').text(item.status);
+    row.find('.item-description').text(item.description);
+    row.find('.item-storage-location').text(item.storage_location);
+    row.find('.item-arrival-date').text(item.arrival_date);
+    row.find('.item-date-purchased').text(item.date_purchased);
+    // If image is updated, you may want to change the image too
+    row.find('.item-image').attr('src', item.image_url);
+}
+
+// Close the Edit Item Modal when clicking the "Cancel" button
 $(document).ready(function () {
-    $("#cancelEditModal, #closeEditModal").click(function () {
+    $("#cancelEditModal").click(function () {
         $("#editItemModal").addClass("hidden");  // Hide the modal
     });
 });
-</script>
 
+// Ensure that all form fields are correctly reset when switching between items or closing the modal
+function resetEditModal() {
+    // Reset form fields and disable/readonly settings
+    $('#edit_item_name').val('');
+    $('#edit_category').val('');
+    $('#edit_quantity').val('');
+    $('#edit_unit').val('');
+    $('#edit_description').val('');
+    $('#edit_storage_location').val('');
+    $('#edit_arrival_date').val('');
+    $('#edit_date_purchased').val('');
+    $('#edit_status').val('');
+
+    // Reset readonly/disabled states for the form
+    $('#edit_item_name').attr('readonly', false);
+    $('#edit_category').attr('disabled', false);
+    $('#edit_unit').attr('disabled', false);
+    $('#edit_description').attr('disabled', false);
+    $('#edit_storage_location').attr('disabled', false);
+    $('#edit_arrival_date').attr('disabled', false);
+    $('#edit_date_purchased').attr('disabled', false);
+    $('#edit_image').attr('disabled', false);
+
+    // Clear any success or error messages
+    Swal.close();
+}
+</script>
 
 <!-- Modal Overlay for Adding Item -->
 <div id="addItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
@@ -1549,30 +1617,31 @@ $(document).ready(function () {
         </div>
     </div>
 </div>
-
-
-<!-- Modal for Editing Item -->
+<!-- Edit Item Modal -->
 <div id="editItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
     <div class="relative z-10 flex items-center justify-center">
         <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full" style="max-width: 90%; height: auto;">
             <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Edit Item</h3>
 
-                <form id="editItemForm" action="{{ route('items.update', ['id' => '__ID__']) }}" method="POST">
+                <!-- Edit Item Form -->
+                <form id="editItemForm" action="{{ route('items.update', ['id' => '__ID__']) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')  <!-- Use PUT method for updates -->
                     <input type="hidden" id="edit_item_id" name="item_id">
 
                     <div class="space-y-6">
                         <div class="grid grid-cols-2 gap-4">
+                            <!-- Item Name -->
                             <div>
                                 <label for="edit_item_name" class="block text-xs font-medium text-gray-900">Item Name</label>
-                                <input type="text" id="edit_item_name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                <input type="text" id="edit_item_name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required readonly> <!-- readonly for non-editable -->
                             </div>
 
+                            <!-- Category -->
                             <div>
                                 <label for="edit_category" class="block text-xs font-medium text-gray-900">Category</label>
-                                <select id="edit_category" name="category" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <select id="edit_category" name="category" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
                                     <option value="DRRM Equipment">DRRM Equipment</option>
                                     <option value="Office Supplies">Office Supplies</option>
                                     <option value="Emergency Kits">Emergency Kits</option>
@@ -1580,36 +1649,43 @@ $(document).ready(function () {
                                 </select>
                             </div>
 
+                            <!-- Quantity -->
                             <div>
                                 <label for="edit_quantity" class="block text-xs font-medium text-gray-900">Quantity</label>
                                 <input type="number" id="edit_quantity" name="quantity" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
                             </div>
 
+                            <!-- Unit -->
                             <div>
                                 <label for="edit_unit" class="block text-xs font-medium text-gray-900">Unit</label>
-                                <input type="text" id="edit_unit" name="unit" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="text" id="edit_unit" name="unit" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
                             </div>
 
+                            <!-- Description -->
                             <div>
                                 <label for="edit_description" class="block text-xs font-medium text-gray-900">Description</label>
-                                <textarea id="edit_description" name="description" rows="3" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs"></textarea>
+                                <textarea id="edit_description" name="description" rows="3" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled></textarea>
                             </div>
 
+                            <!-- Storage Location -->
                             <div>
                                 <label for="edit_storage_location" class="block text-xs font-medium text-gray-900">Storage Location</label>
-                                <input type="text" id="edit_storage_location" name="storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="text" id="edit_storage_location" name="storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
                             </div>
 
+                            <!-- Arrival Date -->
                             <div>
                                 <label for="edit_arrival_date" class="block text-xs font-medium text-gray-900">Arrival Date</label>
-                                <input type="date" id="edit_arrival_date" name="arrival_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="date" id="edit_arrival_date" name="arrival_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
                             </div>
 
+                            <!-- Date Purchased -->
                             <div>
                                 <label for="edit_date_purchased" class="block text-xs font-medium text-gray-900">Date Purchased</label>
-                                <input type="date" id="edit_date_purchased" name="date_purchased" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="date" id="edit_date_purchased" name="date_purchased" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
                             </div>
 
+                            <!-- Status -->
                             <div>
                                 <label for="edit_status" class="block text-xs font-medium text-gray-900">Status</label>
                                 <select id="edit_status" name="status" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
@@ -1624,9 +1700,10 @@ $(document).ready(function () {
                                 </select>
                             </div>
 
+                            <!-- Image -->
                             <div>
                                 <label for="edit_image" class="block text-xs font-medium text-gray-900">Image</label>
-                                <input type="file" id="edit_image" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="file" id="edit_image" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
                             </div>
                         </div>
 

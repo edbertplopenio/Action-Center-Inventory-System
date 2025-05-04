@@ -11,10 +11,8 @@ use App\Http\Controllers\Borrower\BorrowEquipmentController;
 use App\Http\Controllers\Admin\RecordsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Borrower\ProfileController;  // Import the ProfileController
-
 use App\Http\Controllers\Admin\InventoryRequestController;
-
-
+use App\Http\Controllers\ItemController;  // Import ItemController
 
 // ===================
 // ✅ Authentication Routes
@@ -34,16 +32,11 @@ Route::get('/', function () {
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-
 // Admin Inventory Route
 Route::get('/admin/inventory', [AdminInventoryController::class, 'index'])->name('admin.inventory.index')->middleware('auth');
 
 // Borrower Inventory Route
 Route::get('/borrower/inventory', [BorrowerInventoryController::class, 'index'])->name('borrower.inventory.index')->middleware('auth');
-
-
-
-
 
 // ===================
 // ✅ Admin Routes (Protected by Authentication Middleware)
@@ -64,7 +57,6 @@ Route::get('/sample-ui', function () {
     return view('sample-ui');
 });
 
-
 Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/records', [RecordsController::class, 'index'])->name('records.index');
     Route::get('/records/archive', [RecordsController::class, 'archiveIndex'])->name('records.archive');
@@ -72,16 +64,10 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::post('/records/restore/{id}', [RecordsController::class, 'restore'])->name('records.restore');
 });
 
-
-
-
 Route::post('/submit-record', [RecordsController::class, 'store'])->name('records.store');
 Route::post('/records/archive/{id}', [RecordsController::class, 'archive'])->name('records.archive.store');
 
-
 Route::get('/admin/records/archive', [RecordsController::class, 'archiveIndex'])->name('records.archive');
-
-
 Route::post('/admin/records/unarchive/{id}', [RecordsController::class, 'unarchive'])->name('records.unarchive');
 Route::put('/admin/records/{id}', [RecordsController::class, 'update'])->name('records.update');
 
@@ -89,38 +75,19 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::get('/users', [UsersController::class, 'index'])->name('users.index');
 });
 
-
 Route::post('/admin/users/store', [UsersController::class, 'store']);
-
-
 Route::get('/admin/users/{id}/edit', [UsersController::class, 'edit'])->name('users.edit');
-
 Route::put('/admin/users/{id}', [UsersController::class, 'update'])->name('users.update');
-
-
-
-
-
 Route::post('/admin/users/deactivate/{id}', [UsersController::class, 'deactivate'])->name('users.deactivate');
-
 Route::get('/admin/users/deactivated', [UsersController::class, 'deactivatedIndex'])->name('users.deactivated');
-
-
 Route::post('/admin/users/activate/{id}', [UsersController::class, 'activate'])->name('users.activate');
-
-
 
 // Profile Route for Borrowers
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index')->middleware('auth');
-
-
-
 Route::get('/borrower/inventory', [InventoryController::class, 'index'])->name('borrower.inventory.index');
 
 // Borrowing Request
 Route::get('/borrowing-request', [InventoryRequestController::class, 'index'])->name('admin.borrowing-request.index');
-
-use App\Http\Controllers\Borrower\BorrowedItemsController;
 
 // Borrowed Equipment Routes (Borrowers)
 Route::prefix('borrower')->middleware(['auth'])->group(function () {
@@ -132,10 +99,6 @@ Route::prefix('borrower')->middleware(['auth'])->group(function () {
     Route::delete('/borrow-equipment/{borrowedItem}', [BorrowedItemsController::class, 'destroy'])->name('borrower.borrow-equipment.destroy');
 });
 
-
-
-
-
 // Borrowed Items Routes
 Route::middleware('auth')->group(function() {
     // Store a new borrow request
@@ -145,56 +108,30 @@ Route::middleware('auth')->group(function() {
     Route::get('/borrowed-items', [BorrowEquipmentController::class, 'index'])->name('borrowed.items');
 });
 
-
-
 // routes/web.php
 Route::post('/admin/inventory-requests/update-status/{id}', [InventoryRequestController::class, 'updateStatus'])->name('admin.updateStatus');
 
-
-
-
-// routes/web.php
-
-use App\Http\Controllers\Admin\ReturnItemsController;
-
 // Admin Returning Items Routes
 Route::prefix('admin')->middleware(['auth'])->group(function () {
-    // Show list of borrowed items to be returned
     Route::get('/return-items', [ReturnItemsController::class, 'index'])->name('admin.return-items.index');
-
-    // Mark an item as returned
     Route::post('/return-items/mark/{id}', [ReturnItemsController::class, 'markAsReturned'])->name('admin.return-items.mark');
 });
 
-
 Route::get('/admin/borrowing-request', [InventoryRequestController::class, 'index'])->name('admin.borrowing-request.index');
-
-
 Route::get('/admin/get-item-qr-codes/{itemId}', [InventoryRequestController::class, 'getItemQRCodes']);
-
-
 Route::post('/admin/inventory-requests/update-item-status', [InventoryRequestController::class, 'updateItemStatus']);
-
 Route::get('/admin/borrowed-items/list/{id}', [ReturnItemsController::class, 'getBorrowedItemsForReturn']);
 Route::post('/admin/inventory-requests/update-status/{id}', [InventoryRequestController::class, 'updateStatus']);
-
-
-
-
 
 // Route for notification badge
 Route::get('/admin/borrowing-requests/count', [InventoryRequestController::class, 'getPendingRequestsCount'])->name('admin.borrowing-requests.count');
 
-
-
 // Inventory Routes (ItemController)
 // ===========================
-use App\Http\Controllers\ItemController;
 Route::controller(ItemController::class)->group(function () {
     // Display all items in the inventory
     Route::get('/inventory', 'index')->name('inventory'); 
     
-
     // Store a new item (this is the route to save both the `items` and `individual_items`)
     Route::post('/items/store', 'store')->name('items.store'); // Explicitly define post for storing items
 
@@ -202,7 +139,7 @@ Route::controller(ItemController::class)->group(function () {
     Route::get('/items/{id}/edit', 'editItem')->name('items.edit'); 
 
     // Update item details
-    Route::put('/items/{id}', 'update')->name('items.update'); 
+    Route::put('/items/update/{id}', [ItemController::class, 'update'])->name('items.update');
 
     // Permanently delete item
     Route::delete('/items/{id}', 'deletePermanently')->name('items.destroy'); 
@@ -213,34 +150,13 @@ Route::controller(ItemController::class)->group(function () {
     Route::delete('/delete-item/{id}', 'deletePermanently')->name('delete.item'); // Permanently delete an archived item
 
     // Route for fetching item data for editing
-    Route::get('/get-item/{id}', 'editItem')->name('get.item.data'); // Fetch item data for editing
+    Route::get('/get-item/{id}', [ItemController::class, 'getItemData'])->name('get.item.data');    // Fetch item data for editing
     
     // Route for searching an item by its name
     Route::get('/search-item/{name}', 'searchItem')->name('search.item'); // Search item by name
+});
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    Route::get('/home', [ItemController::class, 'index'])->name('home');
-
+Route::get('/home', [ItemController::class, 'index'])->name('home');
 Route::get('/api/items', [ItemController::class, 'getItems']);
 Route::get('/api/usage-rate/{itemId}', [ItemController::class, 'getUsageRateData']);
 
@@ -248,28 +164,9 @@ Route::get('/api/usage-rate/{itemId}', [ItemController::class, 'getUsageRateData
 Route::get('/most-borrowed-items', [ItemController::class, 'mostBorrowedItems']);
 Route::get('/equipment-quantity-by-category', [ItemController::class, 'quantityByCategory']);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Route for About Us page
 Route::get('/about', function () {
     return view('about'); // This assumes you have an 'about.blade.php' view
 })->name('about');
 
-});
+?>
