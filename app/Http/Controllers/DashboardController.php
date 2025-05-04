@@ -54,11 +54,13 @@ class DashboardController extends Controller
 
      // Join 'borrowed_items' with 'items' to fetch item names along with the borrowed quantities
      $mostBorrowedItems = DB::table('borrowed_items')
-         ->join('items', 'borrowed_items.item_id', '=', 'items.id')  // Join on item_id
-         ->select('items.name as item_name', DB::raw('SUM(borrowed_items.quantity_borrowed) as total_borrowed'))
-         ->groupBy('items.name')  // Group by item_name
-         ->orderBy('total_borrowed', 'desc')  // Order by total borrowed quantity
-         ->get();
+     ->join('items', 'borrowed_items.item_id', '=', 'items.id')
+     ->select('items.name as item_name', DB::raw('SUM(borrowed_items.quantity_borrowed) as total_borrowed'))
+     ->where('borrowed_items.status', 'Borrowed') // Only include items with status 'Borrowed'
+     ->groupBy('items.name')
+     ->orderBy('total_borrowed', 'desc')
+     ->get();
+ 
  
      // Fetch the sum of quantities grouped by category
      $categoryCounts = DB::table('items')
