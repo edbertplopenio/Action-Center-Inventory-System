@@ -331,7 +331,7 @@
 
                 <!-- Report Preview -->
                 <div id="reportContent" class="p-4 border rounded bg-gray-100 text-sm">
-                    <p class="text-gray-700">This is a sample report content. Modify it as needed.</p>
+                    <p class="text-gray-700"></p>
                 </div>
             </div>
 
