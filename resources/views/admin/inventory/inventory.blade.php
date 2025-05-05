@@ -1496,6 +1496,39 @@ function resetEditModal() {
     Swal.close();
 }
 </script>
+<script>
+    $(document).ready(function () {
+    // Listen for changes in the "Purchased Date"
+    $('#date_purchased').on('change', function () {
+        var purchasedDate = $(this).val();
+        var arrivalDateInput = $('#arrival_date');
+
+        // Set the min value for the "Arrival Date" to the "Purchased Date"
+        arrivalDateInput.attr('min', purchasedDate);
+    });
+
+    // Listen for changes in the "Arrival Date"
+    $('#arrival_date').on('change', function () {
+        var arrivalDate = $(this).val();
+        var purchasedDate = $('#date_purchased').val();
+
+        // Check if the "Arrival Date" is earlier than the "Purchased Date"
+        if (new Date(arrivalDate) < new Date(purchasedDate)) {
+            // Display SweetAlert error
+            Swal.fire({
+                title: 'Error!',
+                text: 'Arrival Date cannot be earlier than the Date Purchased.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+
+            // Reset the "Arrival Date" field to prevent invalid selection
+            $(this).val('');
+        }
+    });
+});
+</script>
+
 
 <!-- Modal Overlay for Adding Item -->
 <div id="addItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
