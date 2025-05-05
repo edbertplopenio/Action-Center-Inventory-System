@@ -90,27 +90,25 @@
 
 
         <!-- Terms -->
-        <div class="flex items-center w-64">
-          <input type="checkbox" id="terms" name="terms"
-            class="h-3 w-3 rounded border-gray-300 text-red-600 focus:ring-red-500" required>
-          <label for="terms" class="ml-2 block text-xs text-white">Agree to terms and conditions</label>
-        </div>
+      
 
-        <!-- Submit -->
-        <div class="w-64">
-          <button type="submit" class="w-full flex justify-center rounded-md px-6 py-2 text-xs font-semibold text-white hover:bg-blue-600 focus:ring-2 focus:ring-red-600"
-            style="background-color: #780000;">
-            Register
-          </button>
-        </div>
-      </form>
+<!-- Submit -->
+<div class="flex justify-start">
+  <div class="w-80 ml-72"> <!-- Adjusted width, slightly wider container -->
+    <button type="submit" class="w-full flex justify-center rounded-md px-7 py-3 text-sm font-semibold text-white hover:bg-blue-600 focus:ring-2 focus:ring-red-600"
+      style="background-color: #780000;">
+      Register
+    </button>
 
-      <p class="mt-3 text-center text-xs text-white">
-        Already a member? <a href="{{ route('login') }}" class="font-semibold text-blue-500 hover:text-blue-600">Sign in</a>
-      </p>
-    </div>
+    <p class="mt-3 text-center text-xs text-white">
+      Already a member? <a href="{{ route('login') }}" class="font-semibold text-blue-500 hover:text-blue-600">Sign in</a>
+    </p>
   </div>
 </div>
+</form>
+
+
+
 
 <!-- Remove browser's default eye icon -->
 <style>
