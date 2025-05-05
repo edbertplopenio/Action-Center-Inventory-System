@@ -83,22 +83,38 @@
 
         <!-- Equipment Needing Repair -->
         <div class="bg-[#f0b84c] p-4 shadow-lg rounded-lg border-l-4 border-[#f0b84c] relative font-inter">
-            <h2 class="text-sm font-semibold text-gray-200 leading-none">Equipment Needing<br>Repair</h2>
-            @if($itemsNeedingRepair->count() > 0)
-            @foreach($itemsNeedingRepair as $item)
-            <div class="mb-4 relative">
-                <p class="text-2xl font-bold text-white leading-tight">{{ $item->name }}</p>
-                <span class="text-xs text-gray-200 mt-1 block">🔧 {{ $item->quantity }} units under maintenance</span>
-                <div class="icon bg-[#FAE7C3] text-white text-2xl flex items-center justify-center w-10 h-10 rounded-full absolute top-0 right-4 shadow-md -mt-3">
-                    🛠️
-                </div>
-            </div>
+    <h2 class="text-sm font-semibold text-gray-200 leading-none">Equipment Needing<br>Repair</h2>
 
-            @endforeach
-            @else
-            <p class="text-white">No equipment needing repair.</p>
-            @endif
+    <!-- Count and status -->
+    <p class="text-2xl font-bold text-white mt-2 leading-tight">
+        {{ $itemsNeedingRepair->count() }} {{ Str::plural('Item', $itemsNeedingRepair->count()) }}
+    </p>
+    <p class="text-md font-semibold text-white -mt-1">
+        Needs Repair
+    </p>
+
+    @if($itemsNeedingRepair->count() > 0)
+        <!-- Icon with padding -->
+        <div class="absolute top-0 right-0 p-2">
+            <div class="icon bg-[#FAE7C3] text-white text-2xl flex items-center justify-center w-10 h-10 rounded-full shadow-md">
+                🛠️
+            </div>
         </div>
+
+        <!-- List of items -->
+        <div class="mt-6 space-y-2">
+            @foreach($itemsNeedingRepair as $item)
+                <div>
+                    <p class="text-2xl font-bold text-white leading-tight">{{ $item->name }}</p>
+                </div>
+            @endforeach
+        </div>
+    @else
+        <p class="text-white mt-4">No equipment needing repair.</p>
+    @endif
+</div>
+
+
 
         <!-- Recent Deployments -->
         <div class="bg-[#b79ced] p-4 shadow-lg rounded-lg border-l-4 border-[#b79ced] relative font-inter">

@@ -484,13 +484,14 @@
                     <td>${item.qr_code}</td>
                     <td>${statusText}</td>
                     <td>
-                        <select class="remarks-dropdown" data-qr="${item.qr_code}" disabled ${remarksDisabled}>
+                        <select class="remarks-dropdown" data-qr="${item.qr_code}" ${remarksDisabled ? 'disabled' : ''}>
                             <option value="Good">Good</option>
+                            <option value="Needs Repair">Needs Repair</option>
                             <option value="Damaged">Damaged</option>
-                            <option value="Missing">Missing</option>
-                            <option value="Not Checked">Not Checked</option>
+                            <option value="Obsolete">Obsolete</option>
                         </select>
                     </td>
+
                 </tr>`;
                     tableBody.append(row);
                     // Disable remarks dropdown for all unscanned items

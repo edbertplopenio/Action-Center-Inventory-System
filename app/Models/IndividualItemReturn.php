@@ -23,5 +23,13 @@ class IndividualItemReturn extends Model
         return $this->belongsTo(IndividualItem::class, 'individual_item_id');
     }
 
+
+    public static function repairCount()
+    {
+        return IndividualItemReturn::where('remarks', 'Needs Repair')
+            ->count();
+    }
+    
+
     // Optionally, you can add a method to format remarks or handle them before saving if needed
 }

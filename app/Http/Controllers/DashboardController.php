@@ -6,112 +6,113 @@ use Illuminate\Http\Request;
 use App\Models\Item;
 use App\Models\IndividualItem;
 use App\Models\BorrowedItem;
+use App\Models\IndividualItemReturn; // Import the model for IndividualItemReturn
 use DB;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-         // Fetch the most available item(s) based on quantity
-         $mostAvailableItems = Item::where('is_archived', false)
-         ->orderBy('quantity', 'desc')
-         ->take(1)
-         ->get();
- 
-     // Fetch critical stock items (items with the lowest quantity)
-     $criticalStockItems = Item::where('is_archived', false)
-         ->orderBy('quantity', 'asc')
-         ->take(1)
-         ->get();
- 
-     // Fetch the most recent deployment (borrowed item)
-     $recentDeploymentFirst = BorrowedItem::with('item') 
-         ->orderBy('borrow_date', 'desc')
-         ->take(1)
-         ->get();
- 
-     // Fetch top 3 low stock items
-     $lowStockItems = Item::where('is_archived', false)
-         ->orderBy('quantity', 'asc')
-         ->take(3)
-         ->get();
- 
-     // Fetch items that need repair
-     $itemsNeedingRepair = Item::where('status', 'Needs Repair')
-         ->where('is_archived', false)
-         ->get();
- 
-     // Fetch the next 10 recent deployments
-     $recentDeploymentsNext = BorrowedItem::with('item') 
-         ->orderBy('borrow_date', 'desc')
-         ->take(10)
-         ->get();
- 
-     // Fetch distinct equipment names with their ids, ensuring no duplicates
-     $equipment = Item::where('is_archived', false)
-         ->distinct('name')
-         ->get(['id', 'name']);  // Select only the id and name columns
+        // Fetch the most available item(s) based on quantity
+        $mostAvailableItems = Item::where('is_archived', false)
+            ->orderBy('quantity', 'desc')
+            ->take(1)
+            ->get();
 
-     // Join 'borrowed_items' with 'items' to fetch item names along with the borrowed quantities
-     $mostBorrowedItems = DB::table('borrowed_items')
-     ->join('items', 'borrowed_items.item_id', '=', 'items.id')
-     ->select('items.name as item_name', DB::raw('SUM(borrowed_items.quantity_borrowed) as total_borrowed'))
-     ->where('borrowed_items.status', 'Borrowed') // Only include items with status 'Borrowed'
-     ->groupBy('items.name')
-     ->orderBy('total_borrowed', 'desc')
-     ->get();
- 
- 
-     // Fetch the sum of quantities grouped by category
-     $categoryCounts = DB::table('items')
-         ->select('category', DB::raw('SUM(quantity) as total_quantity'))
-         ->groupBy('category')
-         ->get();
+        // Fetch critical stock items (items with the lowest quantity)
+        $criticalStockItems = Item::where('is_archived', false)
+            ->orderBy('quantity', 'asc')
+            ->take(1)
+            ->get();
+
+        // Fetch the most recent deployment (borrowed item)
+        $recentDeploymentFirst = BorrowedItem::with('item') 
+            ->orderBy('borrow_date', 'desc')
+            ->take(1)
+            ->get();
+
+        // Fetch top 3 low stock items
+        $lowStockItems = Item::where('is_archived', false)
+            ->orderBy('quantity', 'asc')
+            ->take(3)
+            ->get();
+
+        // Fetch items that need repair
+        $itemsNeedingRepair = IndividualItemReturn::where('remarks', 'Needs Repair')
+        ->get();
+    
+    
+
+        // Fetch the next 10 recent deployments
+        $recentDeploymentsNext = BorrowedItem::with('item') 
+            ->orderBy('borrow_date', 'desc')
+            ->take(10)
+            ->get();
+
+        // Fetch distinct equipment names with their ids, ensuring no duplicates
+        $equipment = Item::where('is_archived', false)
+            ->distinct('name')
+            ->get(['id', 'name']);  // Select only the id and name columns
+
+        // Join 'borrowed_items' with 'items' to fetch item names along with the borrowed quantities
+        $mostBorrowedItems = DB::table('borrowed_items')
+            ->join('items', 'borrowed_items.item_id', '=', 'items.id')
+            ->select('items.name as item_name', DB::raw('SUM(borrowed_items.quantity_borrowed) as total_borrowed'))
+            ->where('borrowed_items.status', 'Borrowed') // Only include items with status 'Borrowed'
+            ->groupBy('items.name')
+            ->orderBy('total_borrowed', 'desc')
+            ->get();
+
+        // Fetch the sum of quantities grouped by category
+        $categoryCounts = DB::table('items')
+            ->select('category', DB::raw('SUM(quantity) as total_quantity'))
+            ->groupBy('category')
+            ->get();
 
         // Retrieve all borrowed items with status 'pending' to show pending requests
         $borrowedItems = BorrowedItem::where('status', 'pending')->get();
-        
 
-     // Pass all variables to the view
-     return view('home', compact(
-    
-         'mostAvailableItems',
-         'criticalStockItems',
-         'recentDeploymentFirst',
-         'lowStockItems',
-         'itemsNeedingRepair',
-         'recentDeploymentsNext',
-         'equipment', // Ensure equipment is passed to the view
-         'mostBorrowedItems',
-         'categoryCounts',
-         'borrowedItems'
-     ));
- }
+        // Fetch the repair count from IndividualItemReturn model
+        $repairCount = IndividualItemReturn::repairCount();  // Call the static method
 
-     // Fetch usage rate data for a specific item
-     public function getUsageRateData($itemId)
-     {
-         // Retrieve usage data for the selected item (quantity borrowed per month)
-         $usageData = BorrowedItem::where('item_id', $itemId)
-             ->selectRaw('MONTH(borrow_date) as month, SUM(quantity_borrowed) as total_borrowed')
-             ->groupBy('month')
-             ->orderBy('month')
-             ->get();
- 
-         // Prepare the response data
-         $labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July','August', 'September', 'October', 'November','December']; // Month names
-         $data = array_fill(0, 12, 0); // Default to 0 for each month
- 
-         // Fill the data for each month from the database
-         foreach ($usageData as $usage) {
-             $data[$usage->month - 1] = $usage->total_borrowed; // Store the total borrowed count for each month
-         }
- 
-         return response()->json([
-             'labels' => $labels,
-             'data' => $data,
-         ]);
-     }
+        // Pass all variables to the view
+        return view('home', compact(
+            'mostAvailableItems',
+            'criticalStockItems',
+            'recentDeploymentFirst',
+            'lowStockItems',
+            'itemsNeedingRepair',
+            'recentDeploymentsNext',
+            'equipment', // Ensure equipment is passed to the view
+            'mostBorrowedItems',
+            'categoryCounts',
+            'borrowedItems',
+            'repairCount'  // Pass the repair count to the view
+        ));
+    }
 
-     
+    // Fetch usage rate data for a specific item
+    public function getUsageRateData($itemId)
+    {
+        // Retrieve usage data for the selected item (quantity borrowed per month)
+        $usageData = BorrowedItem::where('item_id', $itemId)
+            ->selectRaw('MONTH(borrow_date) as month, SUM(quantity_borrowed) as total_borrowed')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+        // Prepare the response data
+        $labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July','August', 'September', 'October', 'November','December']; // Month names
+        $data = array_fill(0, 12, 0); // Default to 0 for each month
+
+        // Fill the data for each month from the database
+        foreach ($usageData as $usage) {
+            $data[$usage->month - 1] = $usage->total_borrowed; // Store the total borrowed count for each month
+        }
+
+        return response()->json([
+            'labels' => $labels,
+            'data' => $data,
+        ]);
+    }
 }
