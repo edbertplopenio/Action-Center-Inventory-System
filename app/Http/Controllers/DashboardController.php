@@ -44,7 +44,6 @@ class DashboardController extends Controller
      // Fetch the next 10 recent deployments
      $recentDeploymentsNext = BorrowedItem::with('item') 
          ->orderBy('borrow_date', 'desc')
-         ->skip(1)
          ->take(10)
          ->get();
  
@@ -55,11 +54,13 @@ class DashboardController extends Controller
 
      // Join 'borrowed_items' with 'items' to fetch item names along with the borrowed quantities
      $mostBorrowedItems = DB::table('borrowed_items')
-         ->join('items', 'borrowed_items.item_id', '=', 'items.id')  // Join on item_id
-         ->select('items.name as item_name', DB::raw('SUM(borrowed_items.quantity_borrowed) as total_borrowed'))
-         ->groupBy('items.name')  // Group by item_name
-         ->orderBy('total_borrowed', 'desc')  // Order by total borrowed quantity
-         ->get();
+     ->join('items', 'borrowed_items.item_id', '=', 'items.id')
+     ->select('items.name as item_name', DB::raw('SUM(borrowed_items.quantity_borrowed) as total_borrowed'))
+     ->where('borrowed_items.status', 'Borrowed') // Only include items with status 'Borrowed'
+     ->groupBy('items.name')
+     ->orderBy('total_borrowed', 'desc')
+     ->get();
+ 
  
      // Fetch the sum of quantities grouped by category
      $categoryCounts = DB::table('items')
@@ -68,7 +69,7 @@ class DashboardController extends Controller
          ->get();
 
         // Retrieve all borrowed items with status 'pending' to show pending requests
-        $borrowedItems = BorrowedItem::where('status', 'pending')->get(); //eto sya
+        $borrowedItems = BorrowedItem::where('status', 'pending')->get();
         
 
      // Pass all variables to the view

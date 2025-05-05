@@ -293,3 +293,17 @@ Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index
 
 // Update profile
 Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+
+
+
+
+
+
+
+
+
+
+
+
+
+Route::get('/borrower/borrow-equipment/report-preview', [BorrowedItemsController::class, 'reportPreview'])->name('borrow-equipment.report-preview');
