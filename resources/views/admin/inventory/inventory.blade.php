@@ -103,6 +103,7 @@
         border-collapse: collapse;
         margin-top: 2rem;
         margin-bottom: -2rem;
+        height: 100%;
     }
 
     table th, table td {
@@ -145,7 +146,7 @@ table th:hover {
             margin-top: 0.3rem; /* Adjust margin for spacing */  
             margin-bottom: -1.7rem;  
             overflow-x: auto; /* Only horizontal scrolling */
-            max-height: 400px; /* Ensure it fits well */
+            max-height: 800px; /* Ensure it fits well */
             
         }
 
@@ -523,42 +524,45 @@ table.dataTable tbody td {
                 </tr>
             </thead>
             <tbody>
-                @foreach($allItems as $item)
-                    <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                        <td>{{ $item->item_code }}</td>
-                        <td>
-                            {{ $item->name }}
-                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5)
-                                <span class="new-indicator">New!</span>
-                            @endif
-                        </td>
-                        <td>{{ $item->quantity }}</td>
-                        <td>{{ $item->unit }}</td>
-                        <td>{{ $item->category }}</td>
-                        <td>{{ $item->description }}</td>
-                        <td>{{ $item->storage_location }}</td>
-                        <td>{{ $item->arrival_date }}</td>
-                        <td>{{ $item->date_purchased }}</td>
-                        <td>
-                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-                                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
-                                {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
-                                {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
-                                {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-                                {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
-                                {{ $item->status }}
-                            </span>
-                        </td> 
-                        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
-                        <td class="action-buttons">
-                            <div class="button-container">
-                            <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-                            
-                                <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-                            </div>
-                        </td>
-                    </tr>
-                @endforeach
+            @foreach($allItems as $item)
+    <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
+        <td>
+            {{ $item->item_code }}
+            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 && !isset($item->new_indicator))
+                <span class="new-indicator">New!</span>
+                @php
+                    $item->new_indicator = true;
+                @endphp
+            @endif
+        </td>
+        <td>{{ $item->name }}</td>
+        <td>{{ $item->quantity }}</td>
+        <td>{{ $item->unit }}</td>
+        <td>{{ $item->category }}</td>
+        <td>{{ $item->description }}</td>
+        <td>{{ $item->storage_location }}</td>
+        <td>{{ $item->arrival_date }}</td>
+        <td>{{ $item->date_purchased }}</td>
+        <td>
+            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                {{ $item->status }}
+            </span>
+        </td>
+        <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
+        <td class="action-buttons">
+            <div class="button-container">
+                <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+            </div>
+        </td>
+    </tr>
+@endforeach
+
             </tbody>
         </table>
     </div>
@@ -587,13 +591,16 @@ table.dataTable tbody td {
             <tbody>
                 @foreach($drrmItems as $item) 
                     <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                        <td>{{ $item->item_code }}</td>
-                        <td>
-                            {{ $item->name }}
-                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5)
+                    <td>
+                            {{ $item->item_code }}
+                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 && !isset($item->new_indicator))
                                 <span class="new-indicator">New!</span>
+                                @php
+                                    $item->new_indicator = true;
+                                @endphp
                             @endif
                         </td>
+                        <td>{{ $item->name }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->category }}</td>
@@ -648,13 +655,16 @@ table.dataTable tbody td {
             <tbody>
                 @foreach($officeItems as $item) 
                     <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                        <td>{{ $item->item_code }}</td>
-                        <td>
-                            {{ $item->name }}
-                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5)
-                                <span class="new-indicator">New!</span>
-                            @endif
-                        </td>
+                    <td>
+            {{ $item->item_code }}
+            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 && !isset($item->new_indicator))
+                <span class="new-indicator">New!</span>
+                @php
+                    $item->new_indicator = true;
+                @endphp
+            @endif
+        </td>
+        <td>{{ $item->name }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->category }}</td>
@@ -711,13 +721,16 @@ table.dataTable tbody td {
             <tbody>
                 @foreach($emergencyItems as $item) 
                     <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                        <td>{{ $item->item_code }}</td>
-                        <td>
-                            {{ $item->name }}
-                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5)
-                                <span class="new-indicator">New!</span>
-                            @endif
-                        </td>
+                    <td>
+            {{ $item->item_code }}
+            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 && !isset($item->new_indicator))
+                <span class="new-indicator">New!</span>
+                @php
+                    $item->new_indicator = true;
+                @endphp
+            @endif
+        </td>
+        <td>{{ $item->name }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->category }}</td>
@@ -774,13 +787,16 @@ table.dataTable tbody td {
             <tbody>
                 @foreach($otherItems as $item) 
                     <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                        <td>{{ $item->item_code }}</td>
-                        <td>
-                            {{ $item->name }}
-                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5)
-                                <span class="new-indicator">New!</span>
-                            @endif
-                        </td>
+                    <td>
+            {{ $item->item_code }}
+            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 && !isset($item->new_indicator))
+                <span class="new-indicator">New!</span>
+                @php
+                    $item->new_indicator = true;
+                @endphp
+            @endif
+        </td>
+        <td>{{ $item->name }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->category }}</td>
@@ -836,13 +852,16 @@ table.dataTable tbody td {
             <tbody>
                 @foreach($archivedItems as $item) 
                     <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                        <td>{{ $item->item_code }}</td>
-                        <td>
-                            {{ $item->name }}
-                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5)
-                                <span class="new-indicator">New!</span>
-                            @endif
-                        </td>
+                    <td>
+            {{ $item->item_code }}
+            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 && !isset($item->new_indicator))
+                <span class="new-indicator">New!</span>
+                @php
+                    $item->new_indicator = true;
+                @endphp
+            @endif
+        </td>
+        <td>{{ $item->name }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->category }}</td>
@@ -942,9 +961,12 @@ $(document).ready(function () {
         if (daysDiff <= 5) {
             $(this).addClass('new-item');  // Add the "new-item" class
 
-            // Add the "New!" indicator in the first column (or adjust as needed)
-            var indicator = '<span class="new-indicator">New!</span>';
-            $(this).find('td:first').append(indicator);  // Append "New!" next to the Item Code column
+            // Check if the "New!" indicator is already appended to prevent duplicates
+            if (!$(this).find('.new-indicator').length) {
+                // Add the "New!" indicator in the first column (Item Code)
+                var indicator = '<span class="new-indicator">New!</span>';
+                $(this).find('td:first').append(indicator);  // Append "New!" next to the Item Code column
+            }
         }
 
         // Add hover effect to show the time difference (including hours and minutes) when hovering over the "New!" label
@@ -957,8 +979,8 @@ $(document).ready(function () {
         });
     });
 });
-
 </script>
+
 
 
 <!-- DataTables JS -->
@@ -988,6 +1010,8 @@ $(document).ready(function () {
                 ordering: true,
                 "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
                 "pageLength": 10,
+                // Sorting by the 'Arrival Date' or 'added_at' column in descending order (index 7)
+                "order": [[7, 'desc']], // Change the index (7) if your column index is different for `added_at` or `Arrival Date`
                 "initComplete": function(settings, json) {
                     $(tableId).css('font-size', '12px');
                     $(tableId + ' thead th').css('font-size', '10px');
