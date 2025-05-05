@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -104,44 +105,47 @@
         margin-bottom: -2rem;
     }
 
-        table th, table td {
-            padding: 5px; /* Match the padding from the second code */
-            text-align: center; /* Center align text */
-            border-bottom: 1px solid #E5E5E5;
-            font-size: 12px; /* Match the font size from the second code */
-            height: 20px !important;  /* Apply height with higher priority */
-            text-align: center !important; /* Ensures the content of both header and data cells are centered */
-            vertical-align: middle; /* Vertically centers the content */
-        }
+    table th, table td {
+    padding: 5px;
+    text-align: center;
+    border-bottom: 1px solid #E5E5E5;
+    font-size: 12px;
+    height: 20px !important;
+    vertical-align: middle;
+    width: auto; /* Ensure column widths are auto-adjusted */
+}
         table td{
             height: 80px !important;  /* Apply height with higher priority */
+            position: relative;
         }
 
 /* Hover effect only on the table header cell being hovered over */
 table th {
-    background-color: transparent; /* Remove background color from header */
-    color: #4a5568; /* Keep text color */
-    font-weight: bold; /* Bold text */
+    background-color: transparent;
+    color: #4a5568;
+    font-weight: bold;
 }
 
 table th:hover {
-    background-color: #f0f0f0; /* Light grey background color when hovered */
-    color: #2D3748; /* Dark text color on hover */
-    cursor: pointer; /* Pointer cursor for hover interaction */
+    background-color: #f0f0f0;
+    color: #2D3748;
+    cursor: pointer;
 }
     /* Add hover effect for rows */
     table tr:hover {
         background-color: transparent; /* Match hover effect from the second code */
     }
-
+    table td:hover {
+    background-color: transparent;
+}
 
         .table-container {
             width: 100%; /* Ensure it takes full width */
-            height: auto; /* Fixed height for vertical scrolling */
-            overflow-x: auto; /* Enable horizontal scrolling only */
             overflow-y: hidden; /* Prevent vertical scrollbar in outer container */
             margin-top: 0.3rem; /* Adjust margin for spacing */  
             margin-bottom: -1.7rem;  
+            overflow-x: auto; /* Only horizontal scrolling */
+            max-height: 400px; /* Ensure it fits well */
             
         }
 
@@ -193,32 +197,32 @@ table th:hover {
         background-color: #B79CED; /* Yellow */
     }
 
-    table th:nth-child(11), table td:nth-child(11) {
-    width: 140px !important;  /* Set a fixed width for the action column */
-    padding: 0.6rem;  /* Ensure padding is consistent */
-    }
-
     table td img {
-    display: block; /* Ensure images are block-level elements */
-    margin-left: auto;  /* Auto margin to align left */
-    margin-right: auto; /* Auto margin to align right */
-    max-width: 50px; /* Reduced width of the image */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 70px; /* Adjust image size */
     max-height: 65px;
 }
 
+/* Fix specific column width for image and action columns */
+table th:nth-child(11), table td:nth-child(11) {
+    width: 140px !important;
+    padding: 0.6rem;
+}
+
 table th:nth-child(12), table td:nth-child(12) {
-    width: 160px !important;  /* Increased width for the action column */
-    padding: 0.6rem;  /* Adjust padding for more space */
+    width: 160px !important;
+    padding: 0.6rem;
 }
 
 table td .action-buttons {
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
     height: 100%;
     gap: 5px;  /* Space between buttons */
 }
-
 
     /* Styling for the Action Buttons */
     .action-buttons {
@@ -412,22 +416,24 @@ table.dataTable tbody td {
 
 <style>
 .new-indicator {
-    position: absolute; /* Position it absolutely */
-    top: -10px; /* Adjust distance from the top of the row */
-    left: 5px; /* Adjust distance from the left of the row */
-    background-color: #4CAF50;
+    position: absolute;
+    top: -5px;
+    left: 0;
+    background-color:rgb(143, 234, 146);
     color: white;
     font-size: 0.8rem;
     padding: 2px 6px;
     border-radius: 3px;
-    cursor: pointer;
 }
 
 .new-item {
     position: relative; /* Ensure the row can hold the absolute positioned label */
 }
 
-
+#allItemsTable th, #allItemsTable td,  {
+    font-family: 'Arial', sans-serif;  /* Set a consistent font family */
+    font-size: 12px;  /* Ensure a uniform font size */
+}
 
 /* For DRRM Equipment Table */
 #equipmentTable th, #equipmentTable td {
@@ -459,13 +465,14 @@ table.dataTable tbody td {
     font-size: 12px;  /* Ensure a uniform font size */
 }
 
+/* Ensuring all DataTable controls fit well within container */
 .dataTables_wrapper .dataTables_scroll {
-    overflow-x: auto !important; /* Ensure horizontal scrolling is enabled */
-    table-layout: fixed; /* Make sure columns don’t resize unnecessarily */
+    overflow-x: auto !important;
+    table-layout: fixed;
 }
 
 .dataTables_wrapper .dataTables_paginate {
-    font-size: 12px !important; /* Fix font size for pagination buttons */
+    font-size: 12px !important;
 }
 
 table.dataTable tbody td {
@@ -545,7 +552,8 @@ table.dataTable tbody td {
                         <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
                             <div class="button-container">
-                                <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                            <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                            
                                 <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
                             </div>
                         </td>
@@ -969,80 +977,95 @@ $(document).ready(function () {
 </script>
 
 <script>
-$(document).ready(function () {
-    // Function to initialize DataTables with the necessary settings
-    function initializeDataTable(tableId) {
-        return $(tableId).DataTable({
-            "scrollY": '425px',         // Vertical scrolling
-            "scrollCollapse": true,     // Allow table to collapse when there is not enough content
-            "paging": true,             // Enable pagination
-            "ordering": true,           // Enable sorting
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]], // Entries per page
-            "pageLength": 10,           // Default entries per page
-            "order": [[8, 'desc']],     // Order by the 9th column (Arrival Date / Date Added), descending
-            "autoWidth": false,         // Disable auto-width to prevent horizontal overflow
-            "responsive": true,         // Make the table responsive (adjust to screen size)
-            "initComplete": function(settings, json) {
-                $(tableId + ' th, ' + tableId + ' td').css('font-size', '10px');
-            }
-        });
-    }
+    $(document).ready(function () {
+        // Function to initialize DataTables for a specific table
+        function initializeDataTable(tableId) {
+            return $(tableId).DataTable({
+                scrollY: '425px', 
+                scrollCollapse: true,
+                paging: true,
+                searching: true,
+                ordering: true,
+                "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+                "pageLength": 10,
+                "initComplete": function(settings, json) {
+                    $(tableId).css('font-size', '12px');
+                    $(tableId + ' thead th').css('font-size', '10px');
+                    $(tableId + ' tbody td').css('font-size', '10px');
+                }
+            });
+        }
 
-    // Initialize DataTables for each table
-    var allItemsTable = initializeDataTable('#allItemsTable');
-    var equipmentTable = initializeDataTable('#equipmentTable');
-    var officeSuppliesTable = initializeDataTable('#officeSuppliesTable');
-    var emergencyKitsTable = initializeDataTable('#emergencyKitsTable');
-    var otherItemsTable = initializeDataTable('#otherItemsTable');
-    var archivesTable = initializeDataTable('#archivesTable');
+        // Initialize DataTables for each table
+        var allItemsTable = initializeDataTable('#allItemsTable');
+        var equipmentTable = initializeDataTable('#equipmentTable');
+        var officeSuppliesTable = initializeDataTable('#officeSuppliesTable');
+        var emergencyKitsTable = initializeDataTable('#emergencyKitsTable');
+        var otherItemsTable = initializeDataTable('#otherItemsTable');
+        var archivesTable = initializeDataTable('#archivesTable'); 
 
-    // Hide all tables initially
-    $('.tab-content').hide();
-
-    // Function to switch tabs
-    function switchTab(tab) {
-        // Hide all tables
+        // Hide all tables initially
         $('.tab-content').hide();
 
-        // Show the selected tab's table
-        $('#' + tab + '-content').show();
+        // Function to switch tabs and initialize DataTable for the active tab
+        function switchTab(tab) {
+            // Hide all tabs and remove 'active' class
+            var tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tabContent => {
+                tabContent.classList.remove('active');
+                tabContent.style.display = 'none';
+            });
 
-        // Reinitialize DataTable for the newly displayed table
-        switch (tab) {
-            case 'all-items':
-                allItemsTable.ajax.reload();
-                break;
-            case 'equipment':
-                equipmentTable.ajax.reload();
-                break;
-            case 'office-supplies':
-                officeSuppliesTable.ajax.reload();
-                break;
-            case 'emergency-kits':
-                emergencyKitsTable.ajax.reload();
-                break;
-            case 'other-items':
-                otherItemsTable.ajax.reload();
-                break;
-            case 'archives':
-                archivesTable.ajax.reload();
-                break;
+            // Show the selected tab and add 'active' class
+            var activeTabContent = document.getElementById(tab + '-content');
+            if (activeTabContent) {
+                activeTabContent.classList.add('active');
+                activeTabContent.style.display = 'block';
+            }
+
+            // Reinitialize the DataTable for the newly displayed table
+            switch (tab) {
+                case 'all-items':
+                    allItemsTable.ajax.reload();
+                    break;
+                case 'equipment':
+                    equipmentTable.ajax.reload();
+                    break;
+                case 'office-supplies':
+                    officeSuppliesTable.ajax.reload();
+                    break;
+                case 'emergency-kits':
+                    emergencyKitsTable.ajax.reload();
+                    break;
+                case 'other-items':
+                    otherItemsTable.ajax.reload();
+                    break;
+                case 'archives':
+                    archivesTable.ajax.reload();
+                    break;
+            }
+
+            // Remove 'active' class from all tab buttons and add 'active' class to the clicked tab
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            var activeTabButton = document.getElementById(tab + '-tab');
+            if (activeTabButton) {
+                activeTabButton.classList.add('active');
+            }
         }
-    }
 
-    // Initialize the first tab by default (you can change it to whichever tab you want to show first)
-    switchTab('all-items');
+        // Initialize the first tab by default (you can change it to whichever tab you want to show first)
+        switchTab('all-items');
 
-    // Event listeners for tab switching
-    $('#all-items-tab').click(function () { switchTab('all-items'); });
-    $('#equipment-tab').click(function () { switchTab('equipment'); });
-    $('#office-supplies-tab').click(function () { switchTab('office-supplies'); });
-    $('#emergency-kits-tab').click(function () { switchTab('emergency-kits'); });
-    $('#other-items-tab').click(function () { switchTab('other-items'); });
-    $('#archives-tab').click(function () { switchTab('archives'); });
-});
-
+        // Event listeners for tab switching
+        $('#all-items-tab').click(function () { switchTab('all-items'); });
+        $('#equipment-tab').click(function () { switchTab('equipment'); });
+        $('#office-supplies-tab').click(function () { switchTab('office-supplies'); });
+        $('#emergency-kits-tab').click(function () { switchTab('emergency-kits'); });
+        $('#other-items-tab').click(function () { switchTab('other-items'); });
+        $('#archives-tab').click(function () { switchTab('archives'); });
+    });
 </script>
+
 
 <script>
 $(document).ready(function () {
@@ -1132,120 +1155,63 @@ $(document).ready(function () {
         });
 
         // Proceed with the AJAX request to submit the form data
-// Proceed with the AJAX request to submit the form data
-$.ajax({
-    url: "{{ route('items.store') }}",  // Your URL for item saving
-    method: 'POST',
-    data: formData,
-    processData: false,  // Don't process the data (since it's FormData)
-    contentType: false,  // Set content type to false to let FormData handle it
-    success: function(response) {
-        Swal.fire({
-            title: 'Success!',
-            text: 'Item saved successfully!',
-            icon: 'success',
-            confirmButtonText: 'OK'
+        $.ajax({
+            url: "{{ route('items.store') }}",  // Your URL for item saving
+            method: 'POST',
+            data: formData,
+            processData: false,  // Don't process the data (since it's FormData)
+            contentType: false,  // Set content type to false to let FormData handle it
+            success: function(response) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Item saved successfully!',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+
+                // Prepend the new item to the top of the table (specifically to the all items table)
+                var newItemRow = `
+                    <tr id="item-${response.id}">
+                        <td>${response.item_code}</td>
+                        <td>${response.name}</td>
+                        <td>${response.quantity}</td>
+                        <td>${response.unit}</td>
+                        <td>${response.category}</td>
+                        <td>${response.description}</td>
+                        <td>${response.storage_location}</td>
+                        <td>${response.arrival_date}</td>
+                        <td>${response.date_purchased}</td>
+                        <td>${response.status}</td>
+                        <td><img src="${response.image_url}" alt="${response.name}" class="w-10 h-10"></td>
+                        <td class="action-buttons">
+                            <button onclick="openEditModal('${response.id}')" class="edit-btn">Edit</button>
+                            <button type="button" class="archive-btn" onclick="archiveItem('${response.id}')">Archive</button>
+                        </td>
+                    </tr>`;
+
+                // Prepend the new item row to the table (this will put it at the top)
+                $('#allItemsTable tbody').prepend(newItemRow);
+
+                // Prepend the new item to other tables (equipment, office supplies, etc.)
+                $('#equipmentTable tbody').prepend(newItemRow);
+                $('#officeSuppliesTable tbody').prepend(newItemRow);
+                $('#emergencyKitsTable tbody').prepend(newItemRow);
+                $('#otherItemsTable tbody').prepend(newItemRow);
+                $('#archivesTable tbody').prepend(newItemRow);
+
+                // Optionally, reset the modal and reload the page or form
+                $("#addItemModal").addClass("hidden");
+                $('#itemForm')[0].reset();  // Reset form fields
+            },
+            error: function(xhr, status, error) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'There was an error saving the item.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
         });
-
-        // Prepend the new item to the top of the table (specifically to the all items table)
-        var newItemRow = `
-            <tr id="item-${response.id}">
-                <td>${response.item_code}</td>
-                <td>${response.name}</td>
-                <td>${response.quantity}</td>
-                <td>${response.unit}</td>
-                <td>${response.category}</td>
-                <td>${response.description}</td>
-                <td>${response.storage_location}</td>
-                <td>${response.arrival_date}</td>
-                <td>${response.date_purchased}</td>
-                <td>${response.status}</td>
-                <td><img src="${response.image_url}" alt="${response.name}" class="w-10 h-10"></td>
-                <td class="action-buttons">
-                    <button onclick="openEditModal('${response.id}')" class="edit-btn">Edit</button>
-                    <button type="button" class="archive-btn" onclick="archiveItem('${response.id}')">Archive</button>
-                </td>
-            </tr>`;
-
-        // Prepend the new item row to the tables
-        $('#allItemsTable tbody').prepend(newItemRow);
-        $('#equipmentTable tbody').prepend(newItemRow);
-        $('#officeSuppliesTable tbody').prepend(newItemRow);
-        $('#emergencyKitsTable tbody').prepend(newItemRow);
-        $('#otherItemsTable tbody').prepend(newItemRow);
-        $('#archivesTable tbody').prepend(newItemRow);
-
-        // Optionally, reset the modal and form
-        $("#addItemModal").addClass("hidden");
-        $('#itemForm')[0].reset();  // Reset form fields
-
-        // Reload the page to reflect the changes
-        location.reload();
-    },
-    error: function(xhr, status, error) {
-        Swal.fire({
-            title: 'Error!',
-            text: 'There was an error saving the item.',
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-    }
-});
-
-    });
-
-    // Search functionality for existing items
-    $('#search-item').on('input', function () {
-        var itemName = $(this).val();
-        if (itemName.length > 0) {
-            $.ajax({
-                url: '/search-item/' + itemName,  // Replace with your search route
-                method: 'GET',
-                success: function (data) {
-                    if (data) {
-                        // Fill in the form with the existing item data
-                        $('#name').val(data.name).prop('disabled', true);
-                        $('#category').val(data.category).prop('disabled', true);
-                        $('#unit').val(data.unit).prop('disabled', true);
-                        $('#description').val(data.description).prop('disabled', true);
-                        $('#image_url').prop('disabled', true);
-
-                        // Make editable fields available
-                        $('#quantity').val('').prop('disabled', false);
-                        $('#storage_location').val('').prop('disabled', false);
-                        $('#arrival_date').val('').prop('disabled', false);
-                        $('#date_purchased').val('').prop('disabled', false);
-                        $('#status').val('Available').prop('disabled', false);
-                    } else {
-                        // Reset the form if no item found
-                        $('#name').val('').prop('disabled', false);
-                        $('#category').val('').prop('disabled', false);
-                        $('#unit').val('').prop('disabled', false);
-                        $('#description').val('').prop('disabled', false);
-                        $('#image_url').prop('disabled', false);
-
-                        $('#quantity').val('').prop('disabled', false);
-                        $('#storage_location').val('').prop('disabled', false);
-                        $('#arrival_date').val('').prop('disabled', false);
-                        $('#date_purchased').val('').prop('disabled', false);
-                        $('#status').val('Available').prop('disabled', false);
-                    }
-                }
-            });
-        } else {
-            // If the input is empty, reset the form
-            $('#name').val('').prop('disabled', false);
-            $('#category').val('').prop('disabled', false);
-            $('#unit').val('').prop('disabled', false);
-            $('#description').val('').prop('disabled', false);
-            $('#image_url').prop('disabled', false);
-
-            $('#quantity').val('').prop('disabled', false);
-            $('#storage_location').val('').prop('disabled', false);
-            $('#arrival_date').val('').prop('disabled', false);
-            $('#date_purchased').val('').prop('disabled', false);
-            $('#status').val('Available').prop('disabled', false);
-        }
     });
 
     // Cancel button functionality for Add Item modal
@@ -1374,8 +1340,19 @@ function openEditModal(itemId) {
             $('#edit_status').val(item.status);
 
             // Dynamically set the form's action URL to include the itemId
-            var formAction = "{{ route('items.update', ['id' => '__ID__']) }}".replace('__ID__', item.id);
+            var formAction = "/items/update/" + item.id; // Directly using the item ID for the action URL
             $('#editItemForm').attr('action', formAction); // Set the action URL for form
+
+            // Make the fields editable (remove the readonly/disabled attributes)
+            $('#edit_item_name').attr('readonly', false);
+            $('#edit_category').attr('disabled', false);
+            $('#edit_unit').attr('disabled', false);
+            $('#edit_description').attr('disabled', false);
+            $('#edit_storage_location').attr('disabled', false);
+            $('#edit_arrival_date').attr('disabled', false);
+            $('#edit_date_purchased').attr('disabled', false);
+            $('#edit_status').attr('disabled', false);
+            $('#edit_image').attr('disabled', false); // Allow image editing
 
             // Show the modal
             $('#editItemModal').removeClass('hidden');
@@ -1383,7 +1360,7 @@ function openEditModal(itemId) {
         error: function(xhr) {
             Swal.fire({
                 title: 'Error!',
-                text: 'Error fetching item data.',
+                text: 'Error fetching item data. Please try again.',
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
@@ -1406,25 +1383,39 @@ $('#editItemForm').submit(function(e) {
         }
     });
 
-    // Send the form data using AJAX
+    // Send the form data via AJAX to update the item
     $.ajax({
         url: $(this).attr('action'),  // Get the form's action URL
         method: 'POST',  // Use 'POST' for the AJAX request
         data: $(this).serialize(),   // Serialize the form data
         success: function(response) {
-            Swal.fire({
-                title: 'Success!',
-                text: 'Item updated successfully!',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-            $('#editItemModal').addClass('hidden');
-            location.reload();  // Refresh the page to show the updated data
+            // Check if the update was successful
+            if (response.success) {
+                Swal.fire({
+                    title: 'Success!',
+                    text: response.message, // Show the success message from the server
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+
+                // Close the modal
+                $('#editItemModal').addClass('hidden');
+                // Optionally, update the item list or table dynamically without refreshing
+                updateItemRow(response.item);
+            } else {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'There was an issue updating the item. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
         },
         error: function(xhr) {
+            // Handle errors from the server
             Swal.fire({
                 title: 'Error!',
-                text: 'Error updating item.',
+                text: 'Error updating item. Please check your input and try again.',
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
@@ -1432,14 +1423,55 @@ $('#editItemForm').submit(function(e) {
     });
 });
 
-// Close the Edit Item Modal when clicking the "Cancel" button or the "Close" button (×)
+// Function to update the item row dynamically in the table after updating
+function updateItemRow(item) {
+    // Find the table row based on the item ID and update its values
+    var row = $('#item-' + item.id);
+    row.find('.item-name').text(item.name);
+    row.find('.item-quantity').text(item.quantity);
+    row.find('.item-status').text(item.status);
+    row.find('.item-description').text(item.description);
+    row.find('.item-storage-location').text(item.storage_location);
+    row.find('.item-arrival-date').text(item.arrival_date);
+    row.find('.item-date-purchased').text(item.date_purchased);
+    // If image is updated, you may want to change the image too
+    row.find('.item-image').attr('src', item.image_url);
+}
+
+// Close the Edit Item Modal when clicking the "Cancel" button
 $(document).ready(function () {
-    $("#cancelEditModal, #closeEditModal").click(function () {
+    $("#cancelEditModal").click(function () {
         $("#editItemModal").addClass("hidden");  // Hide the modal
     });
 });
-</script>
 
+// Ensure that all form fields are correctly reset when switching between items or closing the modal
+function resetEditModal() {
+    // Reset form fields and disable/readonly settings
+    $('#edit_item_name').val('');
+    $('#edit_category').val('');
+    $('#edit_quantity').val('');
+    $('#edit_unit').val('');
+    $('#edit_description').val('');
+    $('#edit_storage_location').val('');
+    $('#edit_arrival_date').val('');
+    $('#edit_date_purchased').val('');
+    $('#edit_status').val('');
+
+    // Reset readonly/disabled states for the form
+    $('#edit_item_name').attr('readonly', false);
+    $('#edit_category').attr('disabled', false);
+    $('#edit_unit').attr('disabled', false);
+    $('#edit_description').attr('disabled', false);
+    $('#edit_storage_location').attr('disabled', false);
+    $('#edit_arrival_date').attr('disabled', false);
+    $('#edit_date_purchased').attr('disabled', false);
+    $('#edit_image').attr('disabled', false);
+
+    // Clear any success or error messages
+    Swal.close();
+}
+</script>
 
 <!-- Modal Overlay for Adding Item -->
 <div id="addItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
@@ -1447,12 +1479,6 @@ $(document).ready(function () {
         <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full" style="max-width: 90%; height: auto;">
             <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Item</h3>
-
-                <!-- Search for Item -->
-                <div class="mb-4">
-                    <label for="search-item" class="block text-xs font-medium text-gray-900">Search Item by Name</label>
-                    <input type="text" id="search-item" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Search Item Name">
-                </div>
 
                 <form id="itemForm" action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
@@ -1549,30 +1575,31 @@ $(document).ready(function () {
         </div>
     </div>
 </div>
-
-
-<!-- Modal for Editing Item -->
+<!-- Edit Item Modal -->
 <div id="editItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
     <div class="relative z-10 flex items-center justify-center">
         <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full" style="max-width: 90%; height: auto;">
             <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Edit Item</h3>
 
-                <form id="editItemForm" action="{{ route('items.update', ['id' => '__ID__']) }}" method="POST">
+                <!-- Edit Item Form -->
+                <form id="editItemForm" action="{{ route('items.update', ['id' => '__ID__']) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')  <!-- Use PUT method for updates -->
                     <input type="hidden" id="edit_item_id" name="item_id">
 
                     <div class="space-y-6">
                         <div class="grid grid-cols-2 gap-4">
+                            <!-- Item Name -->
                             <div>
                                 <label for="edit_item_name" class="block text-xs font-medium text-gray-900">Item Name</label>
-                                <input type="text" id="edit_item_name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                <input type="text" id="edit_item_name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required readonly> <!-- readonly for non-editable -->
                             </div>
 
+                            <!-- Category -->
                             <div>
                                 <label for="edit_category" class="block text-xs font-medium text-gray-900">Category</label>
-                                <select id="edit_category" name="category" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <select id="edit_category" name="category" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
                                     <option value="DRRM Equipment">DRRM Equipment</option>
                                     <option value="Office Supplies">Office Supplies</option>
                                     <option value="Emergency Kits">Emergency Kits</option>
@@ -1580,36 +1607,43 @@ $(document).ready(function () {
                                 </select>
                             </div>
 
+                            <!-- Quantity -->
                             <div>
                                 <label for="edit_quantity" class="block text-xs font-medium text-gray-900">Quantity</label>
                                 <input type="number" id="edit_quantity" name="quantity" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
                             </div>
 
+                            <!-- Unit -->
                             <div>
                                 <label for="edit_unit" class="block text-xs font-medium text-gray-900">Unit</label>
-                                <input type="text" id="edit_unit" name="unit" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="text" id="edit_unit" name="unit" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
                             </div>
 
+                            <!-- Description -->
                             <div>
                                 <label for="edit_description" class="block text-xs font-medium text-gray-900">Description</label>
-                                <textarea id="edit_description" name="description" rows="3" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs"></textarea>
+                                <textarea id="edit_description" name="description" rows="3" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled></textarea>
                             </div>
 
+                            <!-- Storage Location -->
                             <div>
                                 <label for="edit_storage_location" class="block text-xs font-medium text-gray-900">Storage Location</label>
-                                <input type="text" id="edit_storage_location" name="storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="text" id="edit_storage_location" name="storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
                             </div>
 
+                            <!-- Arrival Date -->
                             <div>
                                 <label for="edit_arrival_date" class="block text-xs font-medium text-gray-900">Arrival Date</label>
-                                <input type="date" id="edit_arrival_date" name="arrival_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="date" id="edit_arrival_date" name="arrival_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
                             </div>
 
+                            <!-- Date Purchased -->
                             <div>
                                 <label for="edit_date_purchased" class="block text-xs font-medium text-gray-900">Date Purchased</label>
-                                <input type="date" id="edit_date_purchased" name="date_purchased" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="date" id="edit_date_purchased" name="date_purchased" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
                             </div>
 
+                            <!-- Status -->
                             <div>
                                 <label for="edit_status" class="block text-xs font-medium text-gray-900">Status</label>
                                 <select id="edit_status" name="status" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
@@ -1624,9 +1658,10 @@ $(document).ready(function () {
                                 </select>
                             </div>
 
+                            <!-- Image -->
                             <div>
                                 <label for="edit_image" class="block text-xs font-medium text-gray-900">Image</label>
-                                <input type="file" id="edit_image" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="file" id="edit_image" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
                             </div>
                         </div>
 
