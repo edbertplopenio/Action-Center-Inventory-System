@@ -20,7 +20,7 @@
     @if ($errors->any())
     <script>
       let errorMessages = `
-      <ul style='text-align: left;'>
+      <ul style='text-align: center;'>
           @foreach ($errors->all() as $error)
               <li>{{ $error }}</li>
           @endforeach
