@@ -74,19 +74,20 @@
             </div>
           </div>
 
-          <!-- Confirm Password -->
-          <div class="flex flex-col relative">
-            <label for="password_confirmation" class="text-xs font-medium text-white mb-1">Confirm Password</label>
-            <div class="w-64 relative">
-              <input type="password" name="password_confirmation" id="password_confirmation"
-                class="w-full pr-8 rounded-md border border-gray-300 px-2 py-1.5 text-xs text-gray-900 focus:ring-2 focus:ring-red-600" required>
-              <button type="button" id="toggleConfirmPassword" class="absolute top-1/2 right-2 transform -translate-y-1/2">
-                <i id="eyeConfirmIcon" class="ph ph-eye text-black text-lg"></i>
-              </button>
-            </div>
-            @error('password_confirmation') <span class="text-red-600 text-xs">{{ $message }}</span> @enderror
-          </div>
-        </div>
+         <!-- Confirm Password -->
+<div class="flex flex-col relative">
+  <label for="password_confirmation" class="text-xs font-medium text-white mb-1">Confirm Password</label>
+  <div class="w-64 relative">
+    <input type="password" name="password_confirmation" id="password_confirmation"
+      class="w-full pr-8 rounded-md border border-gray-300 px-2 py-1.5 text-xs text-gray-900 focus:ring-2 focus:ring-red-600" required>
+    <button type="button" id="toggleConfirmPassword" class="absolute top-1/2 right-2 transform -translate-y-1/2">
+      <i id="eyeConfirmIcon" class="ph ph-eye text-black text-lg"></i>
+    </button>
+  </div>
+  <span id="confirmMessage" class="text-xs mt-1"></span>
+  @error('password_confirmation') <span class="text-red-600 text-xs">{{ $message }}</span> @enderror
+</div>
+
 
         <!-- Terms -->
         <div class="flex items-center w-64">
@@ -196,6 +197,30 @@
     icon.style.fontWeight = passed ? 'bold' : 'normal';
     icon.style.textShadow = passed ? '0 0 3px #ff3b3b' : 'none';
   }
-</script>
 
+  // ✅ Confirm password live validation
+  const passwordInput = document.getElementById('password');
+  const confirmInput = document.getElementById('password_confirmation');
+  const confirmMessage = document.getElementById('confirmMessage');
+
+  confirmInput.addEventListener('input', function () {
+    const password = passwordInput.value;
+    const confirmPassword = confirmInput.value;
+
+    if (confirmPassword.length === 0) {
+      confirmMessage.textContent = '';
+      return;
+    }
+
+    if (password === confirmPassword) {
+      confirmMessage.textContent = '✅ Passwords match';
+      confirmMessage.classList.remove('text-red-500');
+      confirmMessage.classList.add('text-green-500');
+    } else {
+      confirmMessage.textContent = '❌ Passwords do not match';
+      confirmMessage.classList.remove('text-green-500');
+      confirmMessage.classList.add('text-red-500');
+    }
+  });
+</script>
 @endsection
