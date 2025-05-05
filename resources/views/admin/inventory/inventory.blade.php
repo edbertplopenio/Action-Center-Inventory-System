@@ -1196,60 +1196,6 @@ $(document).ready(function () {
         });
     });
 
-    // Search functionality for existing items
-    $('#search-item').on('input', function () {
-        var itemName = $(this).val();
-        if (itemName.length > 0) {
-            $.ajax({
-                url: '/search-item/' + itemName,  // Replace with your search route
-                method: 'GET',
-                success: function (data) {
-                    if (data) {
-                        // Fill in the form with the existing item data
-                        $('#name').val(data.name).prop('disabled', true);
-                        $('#category').val(data.category).prop('disabled', true);
-                        $('#unit').val(data.unit).prop('disabled', true);
-                        $('#description').val(data.description).prop('disabled', true);
-                        $('#image_url').prop('disabled', true);
-
-                        // Make editable fields available
-                        $('#quantity').val('').prop('disabled', false);
-                        $('#storage_location').val('').prop('disabled', false);
-                        $('#arrival_date').val('').prop('disabled', false);
-                        $('#date_purchased').val('').prop('disabled', false);
-                        $('#status').val('Available').prop('disabled', false);
-                    } else {
-                        // Reset the form if no item found
-                        $('#name').val('').prop('disabled', false);
-                        $('#category').val('').prop('disabled', false);
-                        $('#unit').val('').prop('disabled', false);
-                        $('#description').val('').prop('disabled', false);
-                        $('#image_url').prop('disabled', false);
-
-                        $('#quantity').val('').prop('disabled', false);
-                        $('#storage_location').val('').prop('disabled', false);
-                        $('#arrival_date').val('').prop('disabled', false);
-                        $('#date_purchased').val('').prop('disabled', false);
-                        $('#status').val('Available').prop('disabled', false);
-                    }
-                }
-            });
-        } else {
-            // If the input is empty, reset the form
-            $('#name').val('').prop('disabled', false);
-            $('#category').val('').prop('disabled', false);
-            $('#unit').val('').prop('disabled', false);
-            $('#description').val('').prop('disabled', false);
-            $('#image_url').prop('disabled', false);
-
-            $('#quantity').val('').prop('disabled', false);
-            $('#storage_location').val('').prop('disabled', false);
-            $('#arrival_date').val('').prop('disabled', false);
-            $('#date_purchased').val('').prop('disabled', false);
-            $('#status').val('Available').prop('disabled', false);
-        }
-    });
-
     // Cancel button functionality for Add Item modal
     $("#cancelModal").click(function () {
         $("#addItemModal").addClass("hidden");  // Hide the modal when cancel is clicked
@@ -1515,12 +1461,6 @@ function resetEditModal() {
         <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full" style="max-width: 90%; height: auto;">
             <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Item</h3>
-
-                <!-- Search for Item -->
-                <div class="mb-4">
-                    <label for="search-item" class="block text-xs font-medium text-gray-900">Search Item by Name</label>
-                    <input type="text" id="search-item" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Search Item Name">
-                </div>
 
                 <form id="itemForm" action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
