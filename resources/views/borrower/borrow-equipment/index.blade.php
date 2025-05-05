@@ -254,17 +254,16 @@
             </span>
         </td>
         <td>
-            <div style="display: flex; justify-content: space-between; width: 100%;">
-                <div style="flex: 1; text-align: center;">
+    <div style="display: flex; justify-content: space-between; width: 100%;">
+        <div style="flex: 1; text-align: center;">
+            {!! str_replace(' ', '<br>', $borrowed->request_responsible_person ?? 'N/A') !!}
+        </div>
+        <div style="flex: 1; text-align: center;">
+            {!! str_replace(' ', '<br>', $borrowed->return_responsible_person ?? 'N/A') !!}
+        </div>
+    </div>
+</td>
 
-                    {{ $borrowed->request_responsible_person ?? 'N/A' }}
-                </div>
-                <div style="flex: 1; text-align: center;">
-
-                    {{ $borrowed->return_responsible_person ?? 'N/A' }}
-                </div>
-            </div>
-        </td>
         <td>
             @if($borrowed->item->image_url)
                 <img src="{{ asset($borrowed->item->image_url) }}" alt="Item Image" style="width: 50px; height: 50px;">
