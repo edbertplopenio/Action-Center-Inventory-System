@@ -1492,10 +1492,6 @@
 
 </script>
 
-
-
-
-
 @endsection
 
 

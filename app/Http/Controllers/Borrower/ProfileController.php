@@ -63,9 +63,6 @@ class ProfileController extends Controller
                 $path = $request->file('profile_image')->store('profile_pictures', 'public');
                 $user->profile_picture = $path; // <<< ✅ save to profile_picture NOT profile_image
             }
-
-        
-
         $user->save();
 
         return redirect()->route('profile.index')->with('success', 'Profile updated successfully.');
