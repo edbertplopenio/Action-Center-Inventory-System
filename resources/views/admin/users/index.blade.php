@@ -427,7 +427,7 @@
 </div>
 
 
-<<!-- Edit JS -->
+<!-- Edit JS -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         console.log("✅ Script Loaded");
