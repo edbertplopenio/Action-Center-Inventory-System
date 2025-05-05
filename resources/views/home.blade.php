@@ -21,25 +21,47 @@
 
         <!-- Notifications -->
         <div class="bg-[#e57373] p-2 shadow-lg rounded-lg border-l-4 border-[#e57373] relative font-inter">
-            <h2 class="text-xs font-semibold text-gray-200 leading-none mb-4">Borrowing Request</h2> <!-- Added mb-4 here -->
+    <h2 class="text-xs font-semibold text-gray-200 leading-none mb-4">Borrowing Request</h2> <!-- Added mb-4 here -->
 
-            @php
-            $pendingRequests = $borrowedItems->where('status', 'Pending');
-            @endphp
+    @php
+    $pendingRequests = $borrowedItems->where('status', 'Pending');
+    @endphp
 
-            @if($pendingRequests->count() > 0)
-            <div class="mb-2">
-                <p class="text-lg font-bold text-white leading-tight">
-                    {{ $pendingRequests->count() }} pending request(s)
-                </p>
-                <div class="icon bg-[#FAE7C3] text-white text-xl flex items-center justify-center w-8 h-8 rounded-full absolute bottom-2 right-2">
-                    ⏳
-                </div>
-            </div>
-            @else
-            <p class="text-white text-sm">No pending borrowing requests.</p>
-            @endif
-        </div>
+    @if($pendingRequests->count() > 0)
+    <div class="mb-2">
+        <p class="text-sm font-bold text-white leading-tight">
+            {{ $pendingRequests->count() }} pending request(s)
+        </p>
+        <!-- Apply padding-top directly to the icon container -->
+        <div class="absolute top-0 right-0 pt-7 pr-2"> <!-- Added pr-10 for padding to the right -->
+    <div class="icon bg-[#FAE7C3] text-white text-xl flex items-center justify-center w-8 h-8 rounded-full shadow-md">
+        ⏳
+    </div>
+</div>
+
+    </div>
+
+    <!-- Display the first pending request's equipment and quantity with smaller font -->
+    <div class="mt-4">
+        @php
+            $firstPendingRequest = $pendingRequests->first(); // Get the first pending request
+        @endphp
+
+        @if($firstPendingRequest && $firstPendingRequest->item) <!-- Check if the first request has an item -->
+            <p class="text-xs text-white"> <!-- Changed from text-white to text-xs for smaller font size -->
+                <strong>Equipment:</strong> {{ $firstPendingRequest->item->name }}<br>
+                <strong>Quantity:</strong> {{ $firstPendingRequest->quantity_borrowed }}<br>
+            </p>
+        @endif
+    </div>
+
+    @else
+    <p class="text-white text-sm">No pending borrowing requests.</p>
+    @endif
+</div>
+
+
+
 
 
         <!-- Most Available Equipment -->
