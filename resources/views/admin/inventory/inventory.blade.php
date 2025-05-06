@@ -24,6 +24,8 @@
             padding: 0;
         }
 
+        
+
         /* Hide all tables by default, only show the active tab's table */
         .tab-content {
             display: none;
