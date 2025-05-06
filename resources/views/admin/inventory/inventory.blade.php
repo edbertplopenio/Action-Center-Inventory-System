@@ -1461,102 +1461,158 @@
         }
     </script>
 
-    <script>
-        // Open the Edit Modal and populate fields with item data
-        function openEditModal(itemId) {
-            $.ajax({
-                url: '/get-item/' + itemId, // Fetch item data for the given itemId
-                method: 'GET',
-                success: function(item) {
-                    // Populate the form fields with the item data
-                    $('#edit_item_id').val(item.id);
-                    $('#edit_item_name').val(item.name);
-                    $('#edit_category').val(item.category);
-                    $('#edit_quantity').val(item.quantity);
-                    $('#edit_unit').val(item.unit);
-                    $('#edit_description').val(item.description);
-                    $('#edit_storage_location').val(item.storage_location);
-                    $('#edit_arrival_date').val(item.arrival_date);
-                    $('#edit_date_purchased').val(item.date_purchased);
-                    $('#edit_status').val(item.status);
+<script>
+    // Open the Edit Modal and populate fields with item data
+    function openEditModal(itemId) {
+        $.ajax({
+            url: '/get-item/' + itemId,
+            method: 'GET',
+            success: function(item) {
+                // Set today's date for max validation
+                const today = new Date().toISOString().split('T')[0];
+                
+                // Populate the form fields with the item data
+                $('#edit_item_id').val(item.id);
+                $('#edit_item_name').val(item.name);
+                $('#edit_category').val(item.category);
+                $('#edit_quantity').val(item.quantity);
+                $('#edit_unit').val(item.unit);
+                $('#edit_description').val(item.description);
+                $('#edit_storage_location').val(item.storage_location);
+                $('#edit_arrival_date').val(item.arrival_date);
+                $('#edit_date_purchased').val(item.date_purchased);
+                $('#edit_status').val(item.status);
 
-                    // Dynamically set the form's action URL to include the itemId
-                    var formAction = "/items/update/" + item.id; // Directly using the item ID for the action URL
-                    $('#editItemForm').attr('action', formAction); // Set the action URL for form
+                // Set date constraints
+                $('#edit_date_purchased').attr('max', today);
+                $('#edit_arrival_date').attr({
+                    'min': item.date_purchased,
+                    'max': today
+                });
 
-                    // Make the fields editable (remove the readonly/disabled attributes)
-                    $('#edit_item_name').attr('readonly', false);
-                    $('#edit_category').attr('disabled', false);
-                    $('#edit_unit').attr('disabled', false);
-                    $('#edit_description').attr('disabled', false);
-                    $('#edit_storage_location').attr('disabled', false);
-                    $('#edit_arrival_date').attr('disabled', false);
-                    $('#edit_date_purchased').attr('disabled', false);
-                    $('#edit_status').attr('disabled', false);
-                    $('#edit_image').attr('disabled', false); // Allow image editing
+                // Set form action URL
+                $('#editItemForm').attr('action', "/items/update/" + item.id);
 
-                    // Show the modal
-                    $('#editItemModal').removeClass('hidden');
-                },
-                error: function(xhr) {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Error fetching item data. Please try again.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            });
-        }
+                // Make fields editable
+                $('#edit_item_name').attr('readonly', false);
+                $('#edit_category').attr('disabled', false);
+                $('#edit_unit').attr('disabled', false);
+                $('#edit_description').attr('disabled', false);
+                $('#edit_storage_location').attr('disabled', false);
+                $('#edit_arrival_date').attr('disabled', false);
+                $('#edit_date_purchased').attr('disabled', false);
+                $('#edit_status').attr('disabled', false);
+                $('#edit_image').attr('disabled', false);
 
-        // Save the updated item data when the form is submitted
+                // Show the modal
+                $('#editItemModal').removeClass('hidden');
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Error fetching item data. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    }
+
+    // Date validation for Edit Modal
+    $(document).ready(function() {
+        // When purchased date changes in edit modal
+        $('#edit_date_purchased').on('change', function() {
+            const purchasedDate = $(this).val();
+            const arrivalDateInput = $('#edit_arrival_date');
+            
+            // Update min date for arrival date
+            arrivalDateInput.attr('min', purchasedDate);
+            
+            // Clear arrival date if it's now invalid
+            if (arrivalDateInput.val() && new Date(arrivalDateInput.val()) < new Date(purchasedDate)) {
+                arrivalDateInput.val('');
+                Swal.fire({
+                    title: 'Date Adjusted',
+                    text: 'Arrival date was cleared because it became earlier than the purchased date.',
+                    icon: 'info',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+
+        // When arrival date changes in edit modal
+        $('#edit_arrival_date').on('change', function() {
+            const arrivalDate = $(this).val();
+            const purchasedDate = $('#edit_date_purchased').val();
+
+            if (purchasedDate && new Date(arrivalDate) < new Date(purchasedDate)) {
+                Swal.fire({
+                    title: 'Invalid Date',
+                    text: 'Arrival Date cannot be earlier than the Date Purchased.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                $(this).val('');
+            }
+        });
+
+        // Form submission handler with date validation
         $('#editItemForm').submit(function(e) {
-            e.preventDefault(); // Prevent default form submission
+            e.preventDefault();
 
-            // Show SweetAlert loading spinner before the request
+            // Date validation check
+            const arrivalDate = $("#edit_arrival_date").val();
+            const purchasedDate = $("#edit_date_purchased").val();
+
+            if (purchasedDate && arrivalDate && new Date(arrivalDate) < new Date(purchasedDate)) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Arrival Date cannot be earlier than the Date Purchased.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+                return false;
+            }
+
+            // Show loading indicator
             Swal.fire({
                 title: 'Updating...',
                 text: 'Please wait while we update the item.',
                 icon: 'info',
                 showConfirmButton: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
+                didOpen: () => Swal.showLoading()
             });
 
-            // Send the form data via AJAX to update the item
+            // Submit the form via AJAX
             $.ajax({
-                url: $(this).attr('action'), // Get the form's action URL
-                method: 'POST', // Use 'POST' for the AJAX request
-                data: $(this).serialize(), // Serialize the form data
+                url: $(this).attr('action'),
+                method: 'POST',
+                data: $(this).serialize(),
                 success: function(response) {
-                    // Check if the update was successful
                     if (response.success) {
                         Swal.fire({
                             title: 'Success!',
-                            text: response.message, // Show the success message from the server
+                            text: response.message,
                             icon: 'success',
-                            confirmButtonText: 'OK'
+                            confirmButtonText: 'OK',
+                            willClose: () => {
+                                $('#editItemModal').addClass('hidden');
+                                updateItemRow(response.item);
+                            }
                         });
-
-                        // Close the modal
-                        $('#editItemModal').addClass('hidden');
-                        // Optionally, update the item list or table dynamically without refreshing
-                        updateItemRow(response.item);
                     } else {
                         Swal.fire({
                             title: 'Error!',
-                            text: 'There was an issue updating the item. Please try again.',
+                            text: response.message || 'There was an issue updating the item.',
                             icon: 'error',
                             confirmButtonText: 'OK'
                         });
                     }
                 },
                 error: function(xhr) {
-                    // Handle errors from the server
                     Swal.fire({
                         title: 'Error!',
-                        text: 'Error updating item. Please check your input and try again.',
+                        text: xhr.responseJSON?.message || 'Error updating item. Please try again.',
                         icon: 'error',
                         confirmButtonText: 'OK'
                     });
@@ -1564,10 +1620,16 @@
             });
         });
 
-        // Function to update the item row dynamically in the table after updating
-        function updateItemRow(item) {
-            // Find the table row based on the item ID and update its values
-            var row = $('#item-' + item.id);
+        // Cancel button handler
+        $("#cancelEditModal").click(function() {
+            $("#editItemModal").addClass("hidden");
+        });
+    });
+
+    // Update the item row in the table
+    function updateItemRow(item) {
+        const row = $('#item-' + item.id);
+        if (row.length) {
             row.find('.item-name').text(item.name);
             row.find('.item-quantity').text(item.quantity);
             row.find('.item-status').text(item.status);
@@ -1575,181 +1637,188 @@
             row.find('.item-storage-location').text(item.storage_location);
             row.find('.item-arrival-date').text(item.arrival_date);
             row.find('.item-date-purchased').text(item.date_purchased);
-            // If image is updated, you may want to change the image too
-            row.find('.item-image').attr('src', item.image_url);
+            if (item.image_url) {
+                row.find('.item-image').attr('src', item.image_url);
+            }
+        } else {
+            // If row doesn't exist (maybe filtered out), reload the table
+            location.reload();
         }
+    }
 
-        // Close the Edit Item Modal when clicking the "Cancel" button
-        $(document).ready(function() {
-            $("#cancelEditModal").click(function() {
-                $("#editItemModal").addClass("hidden"); // Hide the modal
+    // Reset edit modal (optional - call this when closing modal without saving)
+    function resetEditModal() {
+        $('#editItemForm')[0].reset();
+        $('#edit_item_name').attr('readonly', false);
+        $('select, input[type="date"], textarea').attr('disabled', false);
+        $('#edit_date_purchased, #edit_arrival_date').removeAttr('min max');
+        Swal.close();
+    }
+</script>
+
+<script>
+$(document).ready(function() {
+    // Get today's date (current date)
+    const today = new Date().toISOString().split('T')[0]; // ISO format YYYY-MM-DD
+
+    // Set the min date for the Arrival Date to today's date (no past dates allowed)
+    $('#arrival_date').attr('min', today); // Arrival Date can't be earlier than today
+    $('#arrival_date').attr('max', '9999-12-31'); // You can set a max future date if needed (optional)
+
+    // Similarly, you can ensure that Date Purchased doesn't go beyond today
+    $('#date_purchased').attr('max', today); // Date Purchased should not be in the future
+
+    // When the Date Purchased changes
+    $('#date_purchased').on('change', function() {
+        const purchasedDate = $(this).val();
+        const arrivalDateInput = $('#arrival_date');
+
+        // Ensure Arrival Date cannot be earlier than Date Purchased
+        arrivalDateInput.attr('min', purchasedDate); // Arrival date cannot be earlier than purchased date
+    });
+
+    // When the Arrival Date changes, validate it
+    $('#arrival_date').on('change', function() {
+        const arrivalDate = $(this).val();
+        const purchasedDate = $('#date_purchased').val();
+
+        // If the Arrival Date is earlier than Date Purchased, clear the arrival date
+        if (purchasedDate && new Date(arrivalDate) < new Date(purchasedDate)) {
+            Swal.fire({
+                title: 'Invalid Date',
+                text: 'Arrival Date cannot be earlier than the Date Purchased.',
+                icon: 'error',
+                confirmButtonText: 'OK'
             });
-        });
-
-        // Ensure that all form fields are correctly reset when switching between items or closing the modal
-        function resetEditModal() {
-            // Reset form fields and disable/readonly settings
-            $('#edit_item_name').val('');
-            $('#edit_category').val('');
-            $('#edit_quantity').val('');
-            $('#edit_unit').val('');
-            $('#edit_description').val('');
-            $('#edit_storage_location').val('');
-            $('#edit_arrival_date').val('');
-            $('#edit_date_purchased').val('');
-            $('#edit_status').val('');
-
-            // Reset readonly/disabled states for the form
-            $('#edit_item_name').attr('readonly', false);
-            $('#edit_category').attr('disabled', false);
-            $('#edit_unit').attr('disabled', false);
-            $('#edit_description').attr('disabled', false);
-            $('#edit_storage_location').attr('disabled', false);
-            $('#edit_arrival_date').attr('disabled', false);
-            $('#edit_date_purchased').attr('disabled', false);
-            $('#edit_image').attr('disabled', false);
-
-            // Clear any success or error messages
-            Swal.close();
+            $(this).val(''); // Clear the invalid date
         }
-    </script>
-    <script>
-        $(document).ready(function() {
-            // Listen for changes in the "Purchased Date"
-            $('#date_purchased').on('change', function() {
-                var purchasedDate = $(this).val();
-                var arrivalDateInput = $('#arrival_date');
+    });
 
-                // Set the min value for the "Arrival Date" to the "Purchased Date"
-                arrivalDateInput.attr('min', purchasedDate);
+    // Validate on form submission to ensure Arrival Date is not earlier than Date Purchased
+    $("#itemForm").submit(function(e) {
+        const arrivalDate = $("#arrival_date").val();
+        const purchasedDate = $("#date_purchased").val();
+
+        // Ensure Arrival Date is not earlier than Date Purchased
+        if (new Date(arrivalDate) < new Date(purchasedDate)) {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Arrival Date cannot be earlier than the Date Purchased.',
+                icon: 'error',
+                confirmButtonText: 'OK'
             });
+            e.preventDefault(); // Prevent form submission if validation fails
+            return false;
+        }
+    });
+});
 
-            // Listen for changes in the "Arrival Date"
-            $('#arrival_date').on('change', function() {
-                var arrivalDate = $(this).val();
-                var purchasedDate = $('#date_purchased').val();
+</script>
 
-                // Check if the "Arrival Date" is earlier than the "Purchased Date"
-                if (new Date(arrivalDate) < new Date(purchasedDate)) {
-                    // Display SweetAlert error
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Arrival Date cannot be earlier than the Date Purchased.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
+<!-- Modal Overlay for Adding Item -->
+<div id="addItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
+    <div class="relative z-10 flex items-center justify-center">
+        <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full" style="max-width: 90%; height: auto;">
+            <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Item</h3>
 
-                    // Reset the "Arrival Date" field to prevent invalid selection
-                    $(this).val('');
-                }
-            });
-        });
-    </script>
+                <form id="itemForm" action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="name" class="block text-xs font-medium text-gray-900">Item Name</label>
+                                <input type="text" id="name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                            </div>
 
+                            <div>
+                                <label for="category" class="block text-xs font-medium text-gray-900">Category</label>
+                                <select id="category" name="category" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                    <option value="DRRM Equipment">DRRM Equipment</option>
+                                    <option value="Office Supplies">Office Supplies</option>
+                                    <option value="Emergency Kits">Emergency Kits</option>
+                                    <option value="Other Items">Other Items</option>
+                                </select>
+                            </div>
 
-    <!-- Modal Overlay for Adding Item -->
-    <div id="addItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
-        <div class="relative z-10 flex items-center justify-center">
-            <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full" style="max-width: 90%; height: auto;">
-                <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Item</h3>
+                            <div>
+                                <label for="quantity" class="block text-xs font-medium text-gray-900">Quantity</label>
+                                <input type="number" id="quantity" name="quantity" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                            </div>
 
-                    <form id="itemForm" action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-                        <div class="space-y-6">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label for="name" class="block text-xs font-medium text-gray-900">Item Name</label>
-                                    <input type="text" id="name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
-                                </div>
-
-                                <div>
-                                    <label for="category" class="block text-xs font-medium text-gray-900">Category</label>
-                                    <select id="category" name="category" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
-                                        <option value="DRRM Equipment">DRRM Equipment</option>
-                                        <option value="Office Supplies">Office Supplies</option>
-                                        <option value="Emergency Kits">Emergency Kits</option>
-                                        <option value="Other Items">Other Items</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label for="quantity" class="block text-xs font-medium text-gray-900">Quantity</label>
-                                    <input type="number" id="quantity" name="quantity" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
-                                </div>
-
-                                <div>
-                                    <label for="unit" class="block text-xs font-medium text-gray-900">Unit</label>
-                                    <div class="flex items-center">
-                                        <select id="unit" name="unit" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
-                                            <option value="Piece">Piece</option>
-                                            <option value="Set">Set</option>
-                                            <option value="Box">Box</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                        <!-- Inline input field next to 'Other' -->
-                                        <input type="text" id="other_unit" name="other_unit" class="mt-1 ml-2 hidden py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs w-20" maxlength="12" placeholder="Type unit">
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label for="description" class="block text-xs font-medium text-gray-900">Description</label>
-                                    <textarea id="description" name="description" rows="3" maxlength="50" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs"></textarea>
-                                </div>
-
-                                <div>
-                                    <label for="storage_location" class="block text-xs font-medium text-gray-900">Storage Location</label>
-                                    <select id="storage_location" name="storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
-                                        <option value="Shelf A">Shelf A</option>
-                                        <option value="Shelf B">Shelf B</option>
-                                        <option value="Shelf C">Shelf C</option>
+                            <div>
+                                <label for="unit" class="block text-xs font-medium text-gray-900">Unit</label>
+                                <div class="flex items-center">
+                                    <select id="unit" name="unit" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                        <option value="Piece">Piece</option>
+                                        <option value="Set">Set</option>
+                                        <option value="Box">Box</option>
                                         <option value="Other">Other</option>
                                     </select>
-                                    <input type="text" id="other_storage_location" name="other_storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs hidden" maxlength="12" placeholder="Type other location here">
-                                </div>
-
-                                <div>
-                                    <label for="arrival_date" class="block text-xs font-medium text-gray-900">Arrival Date</label>
-                                    <input type="date" id="arrival_date" name="arrival_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
-                                </div>
-
-                                <div>
-                                    <label for="date_purchased" class="block text-xs font-medium text-gray-900">Date Purchased</label>
-                                    <input type="date" id="date_purchased" name="date_purchased" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
-                                </div>
-
-                                <div>
-                                    <label for="status" class="block text-xs font-medium text-gray-900">Status</label>
-                                    <select id="status" name="status" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
-                                        <option value="Available">Available</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label for="image_url" class="block text-xs font-medium text-gray-900">Image</label>
-                                    <input type="file" id="image_url" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" accept="image/*">
+                                    <!-- Inline input field next to 'Other' -->
+                                    <input type="text" id="other_unit" name="other_unit" class="mt-1 ml-2 hidden py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs w-20" maxlength="12" placeholder="Type unit">
                                 </div>
                             </div>
 
-                            <div class="mt-6 flex items-center justify-end gap-x-6">
-                                <button type="button" id="cancelModal" class="text-xs font-semibold text-gray-900 px-4 py-2 bg-gray-400 rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
-                                    Cancel
-                                </button>
-                                <button type="submit" id="saveButton" class="rounded-md bg-green-400 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-green-600 hover:text-white">
-                                    Save
-                                </button>
-                                <!-- Clear Button -->
-                                <button type="button" id="clearForm" class="text-xs font-semibold text-gray-900 px-4 py-2 bg-gray-400 rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
-                                    Clear
-                                </button>
+                            <div>
+                                <label for="description" class="block text-xs font-medium text-gray-900">Description</label>
+                                <textarea id="description" name="description" rows="3" maxlength="50" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs"></textarea>
+                            </div>
+
+                            <div>
+                                <label for="storage_location" class="block text-xs font-medium text-gray-900">Storage Location</label>
+                                <select id="storage_location" name="storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                    <option value="Shelf A">Shelf A</option>
+                                    <option value="Shelf B">Shelf B</option>
+                                    <option value="Shelf C">Shelf C</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <input type="text" id="other_storage_location" name="other_storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs hidden" maxlength="12" placeholder="Type other location here">
+                            </div>
+
+                            <div>
+                                <label for="arrival_date" class="block text-xs font-medium text-gray-900">Arrival Date</label>
+                                <input type="date" id="arrival_date" name="arrival_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                            </div>
+
+                            <div>
+                                <label for="date_purchased" class="block text-xs font-medium text-gray-900">Date Purchased</label>
+                                <input type="date" id="date_purchased" name="date_purchased" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                            </div>
+
+                            <div>
+                                <label for="status" class="block text-xs font-medium text-gray-900">Status</label>
+                                <select id="status" name="status" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                    <option value="Available">Available</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="image_url" class="block text-xs font-medium text-gray-900">Image</label>
+                                <input type="file" id="image_url" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" accept="image/*">
                             </div>
                         </div>
-                    </form>
-                </div>
+
+                        <div class="mt-6 flex items-center justify-end gap-x-6">
+                            <button type="button" id="cancelModal" class="text-xs font-semibold text-gray-900 px-4 py-2 bg-gray-400 rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
+                                Cancel
+                            </button>
+                            <button type="submit" id="saveButton" class="rounded-md bg-green-400 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-green-600 hover:text-white">
+                                Save
+                            </button>
+                            <!-- Clear Button -->
+                            <button type="button" id="clearForm" class="text-xs font-semibold text-gray-900 px-4 py-2 bg-gray-400 rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-    <!-- Edit Item Modal -->
+</div>
+
+<!-- Edit Item Modal -->
     <div id="editItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
         <div class="relative z-10 flex items-center justify-center">
             <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full" style="max-width: 90%; height: auto;">
