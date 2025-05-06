@@ -130,7 +130,7 @@
                 @endforeach
             </div>
             @else
-            <p class="text-white mt-2 text-sm">No equipment needing repair.</p>
+            <!-- <p class="text-white mt-2 text-sm">No equipment needing repair.</p> -->
             @endif
         </div>
 
