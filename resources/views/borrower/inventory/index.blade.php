@@ -220,14 +220,14 @@
                             </span>
                         </td>
                         <td>
-  @if($item->image_url)
-    <img src="{{ asset($item->image_url) }}" 
-         alt="Item Image" 
-         style="width: 50px; height: 50px; object-fit: cover">
-  @else
-    No Image
-  @endif
-</td>
+                            @if($item->image_url)
+                            <img src="{{ asset($item->image_url) }}"
+                                alt="Item Image"
+                                style="width: 50px; height: 50px; object-fit: cover">
+                            @else
+                            No Image
+                            @endif
+                        </td>
                         <td>
                             <button
                                 class="borrow-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24"
@@ -262,6 +262,46 @@
 
 
 <!-- Modal -->
+<!-- Pre-Borrow Modal -->
+<div class="relative z-10 hidden" id="preBorrowModal" aria-labelledby="pre-modal-title" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-black/50 transition-opacity"></div>
+    <div class="fixed inset-0 z-10 flex items-center justify-center">
+        <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md">
+            <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
+                <h3 class="text-lg font-semibold text-gray-900" id="pre-modal-title">Borrow Request Confirmation</h3>
+                <form id="preBorrowForm" class="space-y-4 mt-3">
+                    <div>
+                        <label for="has-approval" class="block text-xs font-medium text-gray-900">Has your request letter been approved?</label>
+                        <select id="has-approval" required class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md text-xs">
+                            <option value="">Select</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="date-approved" class="block text-xs font-medium text-gray-900">Date Approved</label>
+                        <input type="date" id="date-approved" required class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md text-xs">
+                    </div>
+
+                    <div>
+                        <label for="submission-mode" class="block text-xs font-medium text-gray-900">Mode of Submission</label>
+                        <select id="submission-mode" required class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md text-xs">
+                            <option value="">Select</option>
+                            <option value="in_person">In Person</option>
+                            <option value="email">Email</option>
+                        </select>
+                    </div>
+
+                    <div class="flex justify-end gap-x-4 pt-2">
+                        <button type="button" id="closePreBorrowModalBtn" class="text-xs font-semibold text-gray-900 hover:text-gray-600">Cancel</button>
+                        <button type="submit" class="bg-blue-600 text-white px-3 py-2 rounded-md text-xs font-semibold hover:bg-blue-500">Continue</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
@@ -337,107 +377,193 @@
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const borrowModal = document.getElementById("borrowModal");
+        const preBorrowModal = document.getElementById("preBorrowModal");
         const closeBorrowModalBtn = document.getElementById("closeBorrowModalBtn");
+        const closePreBorrowModalBtn = document.getElementById("closePreBorrowModalBtn");
         const borrowForm = document.getElementById("borrowForm");
+        const preBorrowForm = document.getElementById("preBorrowForm");
         const borrowDateInput = document.getElementById("borrow-date");
         const dueDateInput = document.getElementById("due-date");
-        const quantityInput = document.getElementById("borrow-quantity"); // Quantity to borrow input
-        const currentQuantityInput = document.getElementById("current-quantity"); // Current quantity in modal
-        const errorMessageDiv = document.getElementById("error-message"); // Div for displaying errors
+        const quantityInput = document.getElementById("borrow-quantity");
+        const currentQuantityInput = document.getElementById("current-quantity");
+        const errorMessageDiv = document.getElementById("error-message");
+        const hasApprovalSelect = document.getElementById("has-approval");
+        const submissionModeSelect = document.getElementById("submission-mode");
+        const dateApprovedInput = document.getElementById("date-approved");
+
+        // Initialize disabled state
+        dateApprovedInput.disabled = true;
+        submissionModeSelect.disabled = true;
+        dateApprovedInput.required = false;
+        submissionModeSelect.required = false;
 
         let selectedItemId = null;
-        let currentQuantity = 0; // Store the initial current quantity for the item
-
-        // Function to get today's date in YYYY-MM-DD format
-        function getCurrentDate() {
-            const today = new Date();
-            return today.toISOString().split("T")[0]; // Format: YYYY-MM-DD
-        }
-
-        // Open Borrow Details Modal directly
-        window.borrowItem = function(itemId, itemCurrentQuantity) {
-            selectedItemId = itemId;
-            currentQuantity = itemCurrentQuantity; // Set the current quantity for the item
-            borrowModal.style.display = "block";
-            document.getElementById("borrow-item-id").value = selectedItemId;
-            borrowDateInput.value = getCurrentDate(); // Auto-fill borrow date
-            currentQuantityInput.value = currentQuantity; // Set the current quantity in the modal
+        let currentQuantity = 0;
+        let approvalData = {
+            hasApproval: null,
+            submissionMode: null,
+            dateApproved: null
         };
 
-        // When quantity to borrow is changed, calculate the remaining quantity
+        function getCurrentDate() {
+            const today = new Date();
+            return today.toISOString().split("T")[0];
+        }
+
+        // Handle approval status change
+        hasApprovalSelect.addEventListener("change", function() {
+            if (this.value === "yes") {
+                dateApprovedInput.disabled = false;
+                submissionModeSelect.disabled = false;
+                dateApprovedInput.required = true;
+                submissionModeSelect.required = true;
+                // Auto-set date approved to today
+                dateApprovedInput.value = getCurrentDate();
+            } else {
+                dateApprovedInput.disabled = true;
+                submissionModeSelect.disabled = true;
+                dateApprovedInput.required = false;
+                submissionModeSelect.required = false;
+                dateApprovedInput.value = "";
+                submissionModeSelect.value = "";
+            }
+        });
+
+        window.borrowItem = function(itemId, itemCurrentQuantity) {
+            selectedItemId = itemId;
+            currentQuantity = itemCurrentQuantity;
+            preBorrowModal.style.display = "block";
+            resetPreBorrowForm();
+        };
+
+        function resetPreBorrowForm() {
+            hasApprovalSelect.value = "";
+            submissionModeSelect.value = "";
+            dateApprovedInput.value = "";
+            approvalData = {
+                hasApproval: null,
+                submissionMode: null,
+                dateApproved: null
+            };
+            // Trigger change event to reset disabled state
+            hasApprovalSelect.dispatchEvent(new Event("change"));
+        }
+
+        preBorrowForm.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const errors = [];
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            if (!hasApprovalSelect.value) {
+                errors.push("Please indicate if your request has been approved");
+            }
+
+            if (hasApprovalSelect.value === "no") {
+                errors.push("Your request letter has not been approved. You cannot proceed with borrowing.");
+            }
+
+            if (hasApprovalSelect.value === "yes") {
+                const selectedDate = new Date(dateApprovedInput.value);
+                const selectedDateMidnight = new Date(selectedDate);
+                selectedDateMidnight.setHours(0, 0, 0, 0);
+
+                if (!dateApprovedInput.value) {
+                    errors.push("Date approved is required");
+                } else if (selectedDateMidnight > today) {
+                    errors.push("Date approved cannot be in the future");
+                }
+
+                if (!submissionModeSelect.value) {
+                    errors.push("Mode of submission is required");
+                }
+            }
+
+            // Show errors if any
+            if (errors.length > 0) {
+                Swal.fire({
+                    title: "Error!",
+                    html: errors.map(error => `<p>${error}</p>`).join(""),
+                    icon: "error",
+                    confirmButtonText: "OK"
+                });
+                return;
+            }
+
+            // Proceed only if no errors (i.e., selected "yes" with valid data)
+            approvalData = {
+                hasApproval: hasApprovalSelect.value,
+                submissionMode: submissionModeSelect.value,
+                dateApproved: hasApprovalSelect.value === "yes" ? dateApprovedInput.value : null
+            };
+
+            preBorrowModal.style.display = "none";
+            borrowModal.style.display = "block";
+            document.getElementById("borrow-item-id").value = selectedItemId;
+            borrowDateInput.value = getCurrentDate();
+            currentQuantityInput.value = currentQuantity;
+        });
+
+        // Close pre-borrow modal
+        closePreBorrowModalBtn.addEventListener("click", function() {
+            preBorrowModal.style.display = "none";
+            resetPreBorrowForm();
+        });
+
         quantityInput.addEventListener("input", function() {
             const borrowQuantity = parseInt(quantityInput.value) || 0;
             const remainingQuantity = currentQuantity - borrowQuantity;
 
-            // Update the current quantity dynamically based on what is entered
             currentQuantityInput.value = remainingQuantity >= 0 ? remainingQuantity : currentQuantity;
 
-            // If the quantity to borrow exceeds current quantity, show error
             if (remainingQuantity < 0) {
                 quantityInput.setCustomValidity("Quantity to borrow cannot exceed the available quantity.");
-                quantityInput.reportValidity(); // Trigger the validation UI
+                quantityInput.reportValidity();
             } else {
-                quantityInput.setCustomValidity(""); // Reset the custom validity
+                quantityInput.setCustomValidity("");
             }
         });
 
-        // Check if Due Date is later than Borrow Date
         function validateDueDate() {
             const borrowDate = new Date(borrowDateInput.value);
             const dueDate = new Date(dueDateInput.value);
 
             if (dueDate <= borrowDate) {
                 dueDateInput.setCustomValidity("Due Date must be later than Borrow Date.");
-                dueDateInput.reportValidity(); // Trigger the validation UI
+                dueDateInput.reportValidity();
             } else {
-                dueDateInput.setCustomValidity(""); // Reset the custom validity
+                dueDateInput.setCustomValidity("");
             }
         }
 
-        // Listen for changes in Due Date and validate it
         dueDateInput.addEventListener("input", validateDueDate);
 
-        // Close Borrow Modal and reset form fields
         closeBorrowModalBtn.addEventListener("click", function() {
             borrowModal.style.display = "none";
-
-            // Reset the fields to ensure no previous data is left
             borrowForm.reset();
-            currentQuantityInput.value = ""; // Clear current quantity display
-            errorMessageDiv.innerHTML = ""; // Clear error messages
+            currentQuantityInput.value = "";
+            errorMessageDiv.innerHTML = "";
         });
 
         borrowForm.addEventListener("submit", function(event) {
             event.preventDefault();
-            console.log("Form submission triggered");
-
-            errorMessageDiv.innerHTML = ""; // Clear previous errors
+            errorMessageDiv.innerHTML = "";
 
             const borrowDate = borrowDateInput.value.trim();
             const dueDate = dueDateInput.value.trim();
             const borrowQuantity = quantityInput.value.trim();
 
             let errors = [];
-
-            // Field Validation
             if (!borrowDate) errors.push("Borrow Date is required.");
             if (!dueDate) errors.push("Due Date is required.");
             if (!borrowQuantity) errors.push("Quantity is required.");
 
-            // Show Errors if any
             if (errors.length > 0) {
-                console.log("Validation errors: ", errors);
                 errorMessageDiv.innerHTML = errors.map(error => `<p style="color:red;">${error}</p>`).join("");
                 return;
             }
 
-            // Debugging the values before submitting
-            console.log("Borrow Date:", borrowDate);
-            console.log("Due Date:", dueDate);
-            console.log("Borrow Quantity:", borrowQuantity);
-            console.log("Item ID:", selectedItemId);
-
-            // Proceed with Submission if No Errors (without reducing quantity)
             fetch("{{ route('borrow.item') }}", {
                     method: "POST",
                     headers: {
@@ -448,7 +574,9 @@
                         item_id: selectedItemId,
                         borrow_date: borrowDate,
                         due_date: dueDate,
-                        quantity: borrowQuantity // Do not modify the quantity on inventory
+                        quantity: borrowQuantity,
+                        has_approval: approvalData.hasApproval,
+                        submission_mode: approvalData.submissionMode
                     })
                 })
                 .then(response => response.json())
@@ -460,7 +588,8 @@
                             icon: "success",
                             confirmButtonText: "OK"
                         }).then(() => {
-                            borrowModal.style.display = "none"; // Close modal after SweetAlert is confirmed
+                            borrowModal.style.display = "none";
+                            resetPreBorrowForm();
                         });
                     } else {
                         Swal.fire({
@@ -481,20 +610,14 @@
                     });
                 });
         });
-
-
-
     });
 
     $(document).ready(function() {
         let table = $('#myTable');
-
-        // Remove "No records found" row if present
         if (table.find("tbody tr").length === 1 && table.find("#noRecordsRow").length === 1) {
-            table.find("#noRecordsRow").remove(); // Remove "No records found" row
+            table.find("#noRecordsRow").remove();
         }
 
-        // Initialize DataTables with additional settings
         table.DataTable({
             scrollY: '425px',
             scrollCollapse: true,
@@ -502,11 +625,11 @@
             searching: true,
             ordering: true,
             "order": [
-                [0, "desc"] // Sort by hidden ID column (index 0)
+                [0, "desc"]
             ],
             "columnDefs": [{
                 "targets": 0,
-                "visible": false // Hide ID column
+                "visible": false
             }]
         });
     });
