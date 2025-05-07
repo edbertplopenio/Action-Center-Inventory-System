@@ -382,14 +382,14 @@
             }]
         });
 
-        $('#codeTable').DataTable({
-            paging: true,
-            searching: false,
-            ordering: false,
-            pageLength: 10,
-            lengthChange: false,
-            info: false // Add this to hide the entries information
-        });
+        // $('#codeTable').DataTable({
+        //     paging: true,
+        //     searching: false,
+        //     ordering: false,
+        //     pageLength: 10,
+        //     lengthChange: false,
+        //     info: false // Add this to hide the entries information
+        // });
 
         $('[data-toggle="tooltip"]').tooltip();
     });
@@ -445,23 +445,28 @@
     // Modify the returnItem function to pass the current returned count
     // Function to populate the table in the QR modal
     function returnItem(id) {
-        $('#qr-modal').removeClass('hidden');
-        $('#borrowedItemsTable button').prop('disabled', true);
-        $('#qr-modal').data('item-id', id);
-        $('#result').text('Scanning for QR code...');
+    $('#qr-modal').removeClass('hidden');
+    $('#borrowedItemsTable button').prop('disabled', true);
+    $('#qr-modal').data('item-id', id);
+    $('#result').text('Scanning for QR code...');
 
-        scannedQRCodeList = [];
-        scannedCount = 0;
-        document.getElementById('approveButton').disabled = true;
-        document.getElementById('undoButton').disabled = true;
+    scannedQRCodeList = [];
+    scannedCount = 0;
+    document.getElementById('approveButton').disabled = true;
+    document.getElementById('undoButton').disabled = true;
 
-        // Fetch the list of borrowed items, including the count of already returned items
-        $.ajax({
-            url: '/admin/borrowed-items/list/' + id,
-            method: 'GET',
-            success: function(response) {
-                const tableBody = $('#codeTable tbody');
-                tableBody.empty();
+    // Destroy existing DataTable instance if it exists
+    if ($.fn.DataTable.isDataTable('#codeTable')) {
+        $('#codeTable').DataTable().destroy();
+    }
+
+    // Fetch the list of borrowed items
+    $.ajax({
+        url: '/admin/borrowed-items/list/' + id,
+        method: 'GET',
+        success: function(response) {
+            const tableBody = $('#codeTable tbody');
+            tableBody.empty();
 
                 let alreadyReturnedCount = 0;
 
@@ -507,14 +512,23 @@
                 scannedCount = alreadyReturnedCount; // Set scannedCount to the already returned count
                 $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`); // Update counter
 
-                openQRScanner();
-            },
-            error: function(err) {
-                console.error('Error fetching borrowed items:', err);
-                Swal.fire('Error!', 'Unable to load borrowed items.', 'error');
-            }
-        });
-    }
+                $('#codeTable').DataTable({
+                paging: true,
+                searching: true,
+                ordering: true,
+                pageLength: 10,
+                lengthChange: false,
+                info: true,
+            });
+
+            openQRScanner();
+        },
+        error: function(err) {
+            console.error('Error fetching borrowed items:', err);
+            Swal.fire('Error!', 'Unable to load borrowed items.', 'error');
+        }
+    });
+}
 
 
 
