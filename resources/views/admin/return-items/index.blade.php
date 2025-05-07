@@ -518,21 +518,57 @@
 
 
 <script>
-    $(document).ready(function() {
-        $('#borrowedItemsTable').DataTable({
-            scrollY: '420px',
-            scrollCollapse: true,
-            paging: true,
-            searching: false,
-            ordering: true,
-            "order": [
-                [0, "desc"]
-            ],
-            "columnDefs": [{
-                "targets": 0,
-                "visible": false
-            }]
+$(document).ready(function() {
+    const table = $('#borrowedItemsTable').DataTable({
+        scrollY: '420px',
+        scrollCollapse: true,
+        paging: true,
+        searching: false,
+        ordering: true,
+        "order": [[0, "desc"]],
+        "columnDefs": [
+            { "targets": 0, "visible": false }, // Hide ID column
+            { 
+                "targets": [3, 7, 10], // QR Code(s), Return Date, Remarks columns
+                "render": function(data, type, row) {
+                    if (type === 'display') {
+                        // Check if content has multiple lines (contains <br> tags)
+                        const hasMultipleLines = data.includes('<br>');
+                        
+                        if (hasMultipleLines) {
+                            // Show first line + "View more"
+                            const firstLine = data.split('<br>')[0];
+                            return `
+                                <div class="truncated-content">
+                                    ${firstLine}
+                                    <a href="#" class="view-more text-purple-600 hover:text-purple-800 text-sm">View more</a>
+                                </div>
+                                <div class="full-content hidden">${data}</div>
+                            `;
+                        }
+                        // Single line - show full content
+                        return data;
+                    }
+                    return data;
+                }
+            }
+        ]
+    });
+
+    // Handle click on "View more" links
+    $('#borrowedItemsTable').on('click', '.view-more', function(e) {
+        e.preventDefault();
+        const cell = $(this).closest('td');
+        const fullContent = cell.find('.full-content').html();
+        
+        Swal.fire({
+            title: 'Detailed Information',
+            html: `<div style="max-height: 60vh; overflow-y: auto; white-space: pre-line;">${fullContent}</div>`,
+            showCloseButton: true,
+            showConfirmButton: false,
+            width: '700px'
         });
+    });
 
         // $('#codeTable').DataTable({
         //     paging: true,
