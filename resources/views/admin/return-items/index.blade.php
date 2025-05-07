@@ -351,16 +351,162 @@
             </div>
             <div id="result" class="mt-2">Scanning for QR code...</div>
 
-            <div class="flex gap-4 mt-4">
-                <button class="px-4 py-2 bg-blue-500 text-white rounded w-1/2" onclick="closeQRScanner()">Close</button>
-                <button id="approveButton" class="px-4 py-2 bg-green-500 text-white rounded w-1/2" disabled>Approve</button>
-                <button class="px-4 py-2 bg-gray-500 text-white rounded w-1/2" onclick="undoAction()" id="undoButton" disabled>Undo</button>
-            </div>
+<!-- Modify the button group in the QR modal -->
+<div class="flex gap-4 mt-4">
+    <button class="px-4 py-2 bg-blue-500 text-white rounded w-1/2" onclick="closeQRScanner()">Close</button>
+    <button id="approveButton" class="px-4 py-2 bg-green-500 text-white rounded w-1/2" disabled>Approve</button>
+    <button class="px-4 py-2 bg-gray-500 text-white rounded w-1/2" onclick="undoAction()" id="undoButton" disabled>Undo</button>
+    <button class="px-4 py-2 bg-purple-500 text-white rounded w-1/2" onclick="toggleSelectAll()" id="selectAllButton">Select All</button>
+</div>
         </div>
 
     </div>
 </div>
 
+
+
+<script>
+let isAllSelected = false;
+
+function toggleSelectAll() {
+    const selectAllButton = document.getElementById('selectAllButton');
+    const table = $('#codeTable').DataTable();
+    
+    if (!isAllSelected) {
+        // Select all unreturned items
+        scannedQRCodeList = [];
+        returnDates = [];
+        
+        table.rows({ search: 'applied' }).every(function() {
+            const row = this.node();
+            const qrCode = $(row).find('td:eq(0)').text().trim();
+            const statusCell = $(row).find('td:eq(1)');
+            const status = statusCell.text().trim();
+            
+            if (status !== 'Returned') {
+                scannedQRCodeList.push(qrCode);
+                returnDates.push(new Date().toISOString().split('T')[0]);
+                statusCell.text('Returned');
+                
+                // Enable remarks dropdown
+                $(row).find('.remarks-dropdown').prop('disabled', false);
+                
+                // Highlight row
+                $(row).css({
+                    'background-color': '#27D29C',
+                    'color': '#000'
+                });
+                highlightedRows[qrCode] = row;
+            }
+        });
+        
+        scannedCount = scannedQRCodeList.length;
+        $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
+        
+        // Enable Approve but disable Undo for Select All
+        document.getElementById('approveButton').disabled = false;
+        document.getElementById('undoButton').disabled = true; // Disable Undo when using Select All
+        
+        if (scannedCount >= totalRequestQuantity) {
+            document.getElementById('request-counter').style.color = 'green';
+            document.getElementById('result').textContent = 'All items selected.';
+            stopScanning();
+        }
+        
+        selectAllButton.textContent = 'Deselect All';
+        selectAllButton.classList.replace('bg-purple-500', 'bg-red-500');
+        isAllSelected = true;
+    } else {
+        // Deselect all
+        table.rows({ search: 'applied' }).every(function() {
+            const row = this.node();
+            const qrCode = $(row).find('td:eq(0)').text().trim();
+            const statusCell = $(row).find('td:eq(1)');
+            
+            if (statusCell.text().trim() === 'Returned') {
+                const index = scannedQRCodeList.indexOf(qrCode);
+                if (index !== -1) {
+                    scannedQRCodeList.splice(index, 1);
+                    returnDates.splice(index, 1);
+                    statusCell.text('Borrowed');
+                    
+                    $(row).find('.remarks-dropdown').prop('disabled', true);
+                    $(row).css({
+                        'background-color': '',
+                        'color': ''
+                    });
+                    delete highlightedRows[qrCode];
+                }
+            }
+        });
+        
+        scannedCount = 0;
+        $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
+        
+        document.getElementById('approveButton').disabled = true;
+        document.getElementById('undoButton').disabled = true;
+        
+        document.getElementById('request-counter').style.color = '';
+        document.getElementById('result').textContent = 'Scanning for QR code...';
+        
+        selectAllButton.textContent = 'Select All';
+        selectAllButton.classList.replace('bg-red-500', 'bg-purple-500');
+        isAllSelected = false;
+    }
+    
+    table.draw();
+}
+
+// Update approveButton event listener to handle Select All case
+document.getElementById('approveButton').addEventListener('click', function() {
+    const itemId = $('#qr-modal').data('item-id');
+    
+    // Collect remarks for all selected items
+    const remarks = [];
+    const table = $('#codeTable').DataTable();
+    
+    table.rows({ search: 'applied' }).every(function() {
+        const row = this.node();
+        const qrCode = $(row).find('td:eq(0)').text().trim();
+        if (scannedQRCodeList.includes(qrCode)) {
+            remarks.push($(row).find('.remarks-dropdown').val());
+        }
+    });
+
+    Swal.fire({
+        title: 'Confirm Return',
+        text: `Return ${scannedCount} item(s)?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#A855F7',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Yes, return all'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '/admin/return-items/mark/' + itemId,
+                type: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    qr_codes: scannedQRCodeList,
+                    return_dates: returnDates,
+                    remarks: remarks
+                },
+                success: function(response) {
+                    Swal.fire('Success!', 'Items returned successfully.', 'success')
+                        .then(() => {
+                            closeQRScanner();
+                            location.reload();
+                        });
+                },
+                error: function(err) {
+                    Swal.fire('Error!', err.responseJSON.message, 'error');
+                }
+            });
+        }
+    });
+});
+</script>
 
 
 
@@ -647,69 +793,101 @@
     }
 
     function undoAction() {
-        if (scannedQRCodeList.length > 0) {
-            const lastCode = scannedQRCodeList.pop();
-            const row = Array.from(document.querySelectorAll('#codeTable tbody tr'))
-                .find(row => row.cells[0].textContent.trim() === lastCode);
-
-            if (row) row.cells[1].textContent = 'Borrowed';
-
-            scannedCount--;
-            $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
-
-            // Reset counter color if scanning is no longer complete
-            if (scannedCount < totalRequestQuantity) {
-                document.getElementById('request-counter').style.color = '';
+    if (scannedQRCodeList.length > 0) {
+        const table = $('#codeTable').DataTable();
+        const lastCode = scannedQRCodeList.pop();
+        
+        // Find the row across all pages
+        let foundRow = null;
+        table.rows({ search: 'applied' }).every(function() {
+            const row = this.node();
+            if ($(row).find('td:eq(0)').text().trim() === lastCode) {
+                foundRow = row;
+                return false; // Break the loop
             }
-
-            document.getElementById('approveButton').disabled = true;
-            if (scannedQRCodeList.length === 0) {
-                document.getElementById('undoButton').disabled = true;
-            }
-
-            // Remove highlight from the undone row
-            resetHighlight(lastCode);
-
-            // Reset scanning state after undo
-            if (scannedCount < totalRequestQuantity) {
-                // Allow scanning again if not all QR codes have been scanned
-                document.getElementById('result').textContent = 'Scanning for QR code...';
-                // Reset the scanning state
-                openQRScanner();
+        });
+        
+        if (foundRow) {
+            $(foundRow).find('td:eq(1)').text('Borrowed');
+            // Disable the remarks dropdown
+            const remarksDropdown = $(foundRow).find('.remarks-dropdown');
+            if (remarksDropdown.length) {
+                remarksDropdown.prop('disabled', true);
             }
         }
-    }
 
+        scannedCount--;
+        $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
 
-
-    function closeQRScanner() {
-        $('#qr-modal').addClass('hidden');
-        const video = document.getElementById('video');
-        const stream = video.srcObject;
-
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
-            video.srcObject = null;
-        }
-
-        isScanning = false;
-        if (scanLoopId) {
-            clearInterval(scanLoopId);
-            scanLoopId = null;
-        }
-
-        $('#borrowedItemsTable button').prop('disabled', false);
-        $('#result').text('Scanning for QR code...');
-        scannedQRCodeList = [];
-        scannedCount = 0;
-        document.getElementById('approveButton').disabled = true;
-        document.getElementById('undoButton').disabled = true;
-
-        // Reset counter color if scanning is incomplete
+        // Reset counter color if scanning is no longer complete
         if (scannedCount < totalRequestQuantity) {
-            document.getElementById('request-counter').style.color = ''; // Reset color
+            document.getElementById('request-counter').style.color = '';
         }
+
+        document.getElementById('approveButton').disabled = scannedCount === 0;
+        if (scannedQRCodeList.length === 0) {
+            document.getElementById('undoButton').disabled = true;
+            // Reset Select All button if all items are undone
+            const selectAllButton = document.getElementById('selectAllButton');
+            selectAllButton.textContent = 'Select All';
+            selectAllButton.classList.remove('bg-red-500');
+            selectAllButton.classList.add('bg-purple-500');
+            isAllSelected = false;
+        }
+
+        // Remove highlight from the undone row
+        resetHighlight(lastCode);
+
+        // Reset scanning state after undo
+        if (scannedCount < totalRequestQuantity) {
+            // Allow scanning again if not all QR codes have been scanned
+            document.getElementById('result').textContent = 'Scanning for QR code...';
+            // Reset the scanning state
+            openQRScanner();
+        }
+        
+        // Redraw the table to reflect changes
+        table.draw();
     }
+}
+
+
+
+function closeQRScanner() {
+    $('#qr-modal').addClass('hidden');
+    const video = document.getElementById('video');
+    const stream = video.srcObject;
+
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        video.srcObject = null;
+    }
+
+    isScanning = false;
+    if (scanLoopId) {
+        clearInterval(scanLoopId);
+        scanLoopId = null;
+    }
+
+    $('#borrowedItemsTable button').prop('disabled', false);
+    $('#result').text('Scanning for QR code...');
+    scannedQRCodeList = [];
+    scannedCount = 0;
+    document.getElementById('approveButton').disabled = true;
+    document.getElementById('undoButton').disabled = true;
+    
+    // Reset Select All button state
+    const selectAllButton = document.getElementById('selectAllButton');
+    selectAllButton.textContent = 'Select All';
+    selectAllButton.classList.remove('bg-red-500');
+    selectAllButton.classList.add('bg-purple-500');
+    isAllSelected = false;
+
+    // Reset counter color if scanning is incomplete
+    if (scannedCount < totalRequestQuantity) {
+        document.getElementById('request-counter').style.color = ''; // Reset color
+    }
+}
 
     document.getElementById('approveButton').addEventListener('click', function() {
         const itemId = $('#qr-modal').data('item-id');
