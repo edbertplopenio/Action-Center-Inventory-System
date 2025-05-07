@@ -357,6 +357,7 @@
                                             <label for="edit_role" class="block text-xs font-medium text-gray-900">Role</label>
                                             <select name="role" id="edit_role" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
                                                 <option value="Admin">Admin</option>
+                                                <option value="Supervisor">Supervisor</option> <!-- Added Supervisor -->
                                                 <option value="Borrower">Borrower</option>
                                             </select>
                                         </div>
@@ -680,38 +681,38 @@
         });
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
-    const passwordInput = document.getElementById('edit_password');
-    const confirmPasswordInput = document.getElementById('edit_password_confirmation');
-    const message = document.getElementById('passwordMatchMessage');
-    const updateBtn = document.getElementById('updateUserBtn');
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.getElementById('edit_password');
+        const confirmPasswordInput = document.getElementById('edit_password_confirmation');
+        const message = document.getElementById('passwordMatchMessage');
+        const updateBtn = document.getElementById('updateUserBtn');
 
-    function checkPasswordMatch() {
-        const password = passwordInput.value;
-        const confirmPassword = confirmPasswordInput.value;
+        function checkPasswordMatch() {
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
 
-        if (confirmPassword === '') {
-            message.textContent = '';
-            updateBtn.disabled = false;
-            return;
+            if (confirmPassword === '') {
+                message.textContent = '';
+                updateBtn.disabled = false;
+                return;
+            }
+
+            if (password === confirmPassword) {
+                message.textContent = 'Passwords match ✔';
+                message.classList.remove('text-red-500');
+                message.classList.add('text-green-500');
+                updateBtn.disabled = false;
+            } else {
+                message.textContent = 'Passwords do not match ✖';
+                message.classList.remove('text-green-500');
+                message.classList.add('text-red-500');
+                updateBtn.disabled = true;
+            }
         }
 
-        if (password === confirmPassword) {
-            message.textContent = 'Passwords match ✔';
-            message.classList.remove('text-red-500');
-            message.classList.add('text-green-500');
-            updateBtn.disabled = false;
-        } else {
-            message.textContent = 'Passwords do not match ✖';
-            message.classList.remove('text-green-500');
-            message.classList.add('text-red-500');
-            updateBtn.disabled = true;
-        }
-    }
-
-    passwordInput.addEventListener('input', checkPasswordMatch);
-    confirmPasswordInput.addEventListener('input', checkPasswordMatch);
-});
+        passwordInput.addEventListener('input', checkPasswordMatch);
+        confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+    });
 </script>
 
 
@@ -1265,7 +1266,7 @@
                             <div class="border-b border-gray-900/10 pb-6">
                                 <p class="mt-1 text-xs text-gray-600">Fill in the user details.</p>
 
-                                
+
                                 <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-1">
                                     <div class="grid grid-cols-2 gap-6">
                                         <!-- First Name -->
@@ -1291,8 +1292,9 @@
                                     <div class="sm:col-span-1">
                                         <label for="user_role" class="block text-xs font-medium text-gray-900">Role</label>
                                         <select name="user_role" id="user_role" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
-                                            <option value="">-- Select Role --</option> <!-- Prevent sending an empty role -->
+                                            <option value="">-- Select Role --</option>
                                             <option value="Admin">Admin</option>
+                                            <option value="Supervisor">Supervisor</option> <!-- Added Supervisor -->
                                             <option value="Borrower">Borrower</option>
                                         </select>
                                     </div>
@@ -1303,7 +1305,7 @@
                                         <input type="text" name="department" id="department" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter department">
                                     </div>
 
-                                           <!-- Password & Confirm Password -->
+                                    <!-- Password & Confirm Password -->
                                     <div class="grid grid-cols-2 gap-3 w-full">
                                         <!-- Password -->
                                         <div class="flex flex-col relative">
@@ -1356,12 +1358,12 @@
                                     </div>
 
 
-                            <!-- Action Buttons -->
-                            <div class="mt-6 flex items-center justify-end gap-x-6">
-                                <button type="button" class="text-xs font-semibold text-gray-900" id="closeUserModal">Cancel</button>
-                                <button type="submit" class="rounded-md bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-500">Save</button>
-                            </div>
-                        </div>
+                                    <!-- Action Buttons -->
+                                    <div class="mt-6 flex items-center justify-end gap-x-6">
+                                        <button type="button" class="text-xs font-semibold text-gray-900" id="closeUserModal">Cancel</button>
+                                        <button type="submit" class="rounded-md bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-500">Save</button>
+                                    </div>
+                                </div>
                     </form>
                 </div>
             </div>
@@ -1557,7 +1559,6 @@
             updateRule("rule-symbol", /[\W_]/.test(val));
         });
     });
-
 </script>
 
 
