@@ -322,7 +322,8 @@
 
 <!-- Modal for QR Code Scanner -->
 <div id="qr-modal" class="mx-auto p-2 hidden fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm bg-black bg-opacity-50 transition-all duration-300 ease-in-out" style="font-family: 'Inter', sans-serif;">
-    <div class="bg-white p-8 rounded-lg max-w-4xl w-full max-h-[680px] flex">
+    <div class="bg-white p-8 rounded-lg w-full max-h-[680px] flex" style="max-width: 70%;">
+
 
         <div class="h-full overflow-y-auto w-1/2">
             <table id="codeTable" class="display" style="width: 100%; height: 100%; border: 2px solid #ccc; border-collapse: collapse; table-layout: fixed;">
@@ -340,7 +341,7 @@
             </table>
         </div>
 
-        <div class="w-1/2 pl-4 flex flex-col justify-between" style="height: 400px;">
+        <div class="w-1/2 pl-4 flex flex-col justify-between" style="height: 500px;">
             <h2 class="text-xl mb-4 flex justify-between items-center">
                 Scan QR Code
                 <span id="request-counter" class="text-lg font-bold text-gray-700">0/0</span>
@@ -518,57 +519,61 @@
 
 
 <script>
-$(document).ready(function() {
-    const table = $('#borrowedItemsTable').DataTable({
-        scrollY: '420px',
-        scrollCollapse: true,
-        paging: true,
-        searching: false,
-        ordering: true,
-        "order": [[0, "desc"]],
-        "columnDefs": [
-            { "targets": 0, "visible": false }, // Hide ID column
-            { 
-                "targets": [3, 7, 10], // QR Code(s), Return Date, Remarks columns
-                "render": function(data, type, row) {
-                    if (type === 'display') {
-                        // Check if content has multiple lines (contains <br> tags)
-                        const hasMultipleLines = data.includes('<br>');
-                        
-                        if (hasMultipleLines) {
-                            // Show first line + "View more"
-                            const firstLine = data.split('<br>')[0];
-                            return `
+    $(document).ready(function() {
+        const table = $('#borrowedItemsTable').DataTable({
+            scrollY: '420px',
+            scrollCollapse: true,
+            paging: true,
+            searching: false,
+            ordering: true,
+            "order": [
+                [0, "desc"]
+            ],
+            "columnDefs": [{
+                    "targets": 0,
+                    "visible": false
+                }, // Hide ID column
+                {
+                    "targets": [3, 7, 10], // QR Code(s), Return Date, Remarks columns
+                    "render": function(data, type, row) {
+                        if (type === 'display') {
+                            // Check if content has multiple lines (contains <br> tags)
+                            const hasMultipleLines = data.includes('<br>');
+
+                            if (hasMultipleLines) {
+                                // Show first line + "View more"
+                                const firstLine = data.split('<br>')[0];
+                                return `
                                 <div class="truncated-content">
                                     ${firstLine}
                                     <a href="#" class="view-more text-purple-600 hover:text-purple-800 text-sm">View more</a>
                                 </div>
                                 <div class="full-content hidden">${data}</div>
                             `;
+                            }
+                            // Single line - show full content
+                            return data;
                         }
-                        // Single line - show full content
                         return data;
                     }
-                    return data;
                 }
-            }
-        ]
-    });
-
-    // Handle click on "View more" links
-    $('#borrowedItemsTable').on('click', '.view-more', function(e) {
-        e.preventDefault();
-        const cell = $(this).closest('td');
-        const fullContent = cell.find('.full-content').html();
-        
-        Swal.fire({
-            title: 'Detailed Information',
-            html: `<div style="max-height: 60vh; overflow-y: auto; white-space: pre-line;">${fullContent}</div>`,
-            showCloseButton: true,
-            showConfirmButton: false,
-            width: '700px'
+            ]
         });
-    });
+
+        // Handle click on "View more" links
+        $('#borrowedItemsTable').on('click', '.view-more', function(e) {
+            e.preventDefault();
+            const cell = $(this).closest('td');
+            const fullContent = cell.find('.full-content').html();
+
+            Swal.fire({
+                title: 'Detailed Information',
+                html: `<div style="max-height: 60vh; overflow-y: auto; white-space: pre-line;">${fullContent}</div>`,
+                showCloseButton: true,
+                showConfirmButton: false,
+                width: '700px'
+            });
+        });
 
         // $('#codeTable').DataTable({
         //     paging: true,
