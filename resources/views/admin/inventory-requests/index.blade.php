@@ -596,11 +596,20 @@
                             if (qrCodeCell && qrCodeCell.textContent === qrCode.data) {
                                 rowFound = true;
 
+                                function showItemStatusMessage(status) {
+                                    if (status === 'Borrowed') {
+                                        resultText.textContent = 'This item is already borrowed.';
+                                    } else if (status === 'Pending') {
+                                        resultText.textContent = 'This item is already pending.';
+                                    }
+                                }
+
                                 // If the item is already "Borrowed", do not count it and show a message
-                                if (statusCell.textContent === 'Borrowed') {
-                                    resultText.textContent = 'This item is already borrowed.';
+                                if (statusCell.textContent === 'Borrowed' || statusCell.textContent === 'Pending') {
+                                    showItemStatusMessage(statusCell.textContent);
                                     return;
                                 }
+
 
                                 scannedQRCodeList.push(qrCode.data); // Add scanned QR code to the list
                                 highlightAndMoveRow(qrCode.data);
