@@ -2121,20 +2121,7 @@
             }
         });
 
-        // Populate year dropdowns
-        function populateYearSelect(selectElementId, startYear, endYear) {
-            const select = document.getElementById(selectElementId);
-            if (!select) return;
-            for (let year = endYear; year >= startYear; year--) {
-                const option = document.createElement('option');
-                option.value = year;
-                option.text = year;
-                select.add(option);
-            }
-        }
 
-        populateYearSelect('start_year', 2000, new Date().getFullYear());
-        populateYearSelect('end_year', 2000, new Date().getFullYear());
 
         // Validate and submit form
         form.addEventListener("submit", async function(event) {
