@@ -21,18 +21,19 @@
                 @csrf
 
                 <!-- Profile Image Section -->
-                <div class="flex flex-col items-center justify-center h-full">
-                    <div class="w-80 h-80 rounded-full border border-white flex items-center justify-center mb-6 relative">
-                        <img id="profile-image-display" 
-                             src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('images/default_profile.jpg') }}" 
-                             alt="Profile Image" 
-                             class="w-80 h-80 rounded-full object-cover border-4 border-white" />
-                        <button type="button" class="absolute bottom-2 right-2 text-white border border-white rounded-full p-2 bg-blue-600 hover:bg-blue-700" onclick="document.getElementById('profile-image').click();">
-                            <i class="fas fa-pen"></i>
-                        </button>
-                    </div>
-                    <input type="file" id="profile-image" name="profile_image" class="hidden" onchange="handleProfileImageSelect()" />
-                </div>
+<!-- Update the image section -->
+<div class="flex flex-col items-center justify-center h-full">
+    <div class="w-80 h-80 rounded-full border border-white flex items-center justify-center mb-6 relative">
+        <img id="profile-image-display" 
+             src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('images/default-profile.png') }}" 
+             alt="Profile Image" 
+             class="w-80 h-80 rounded-full object-cover border-4 border-white" />
+        <button type="button" class="absolute bottom-2 right-2 text-white border border-white rounded-full p-2 bg-blue-600 hover:bg-blue-700">
+            <i class="fas fa-pen"></i>
+        </button>
+    </div>
+    <input type="file" id="profile-image" name="profile_image" class="hidden" />
+</div>
 
                 <!-- Form Fields -->
                 <div class="bg-white p-6 rounded-lg shadow-lg opacity-80 w-full max-w-xl">
@@ -108,18 +109,23 @@
 
 <!-- JavaScript -->
 <script>
-    function handleProfileImageSelect() {
-        const fileInput = document.getElementById('profile-image');
-        const file = fileInput.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                document.getElementById('profile-image-display').src = event.target.result;
-            }
-            reader.readAsDataURL(file);
-        }
-    }
 
+// Profile image upload handling
+// Add to existing script section
+document.querySelector('button[type="button"]').addEventListener('click', function() {
+    document.getElementById('profile-image').click();
+});
+
+document.getElementById('profile-image').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            document.getElementById('profile-image-display').src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+});
     // Toggle password visibility
     document.getElementById('togglePassword').addEventListener('click', function () {
         const input = document.getElementById('edit_password');

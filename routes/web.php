@@ -321,3 +321,8 @@ Route::post('/admin/return-items/approve-pending/{id}', [ReturnItemsController::
 
 Route::get('/verify-email/{token}', [AuthManager::class, 'verifyEmail'])->name('verify.email');
 
+// In routes/web.php
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+});
