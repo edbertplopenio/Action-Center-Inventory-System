@@ -317,10 +317,62 @@ public function getItemData($id)
         // Save the item in the database
         $item->save();
     
+        // Generate individual item codes and save to 'codes' field
+        $codes = [];
+        for ($i = 1; $i <= $item->quantity; $i++) {
+            $individualItemCode = $item->item_code . '-' . str_pad($i, 2, '0', STR_PAD_LEFT);
+            $codes[] = $individualItemCode;
+    
+            // Save QR code in individual_items table
+            $individualItem = new IndividualItem();
+            $individualItem->item_id = $item->id;
+            $individualItem->qr_code = $individualItemCode;
+            $individualItem->status = $item->status;
+            $individualItem->save();
+        }
+    
+        // Save the codes as a comma-separated string in the 'codes' field of the items table
+        $item->codes = implode(',', $codes);
+        $item->save();  // Save the updated item codes
+    
         // Redirect back with success message
         return redirect()->back()->with('success', 'Item added/updated successfully!');
     }
-                   
+
+    
+/**
+ * get codes
+ */
+public function getQrCodes($itemCode)
+{
+    // Log the incoming item_code for debugging
+    \Log::info("Fetching QR codes for item_code: " . $itemCode);
+
+    // Find the item by its item_code prefix (we use 'like' to match the item_code starting with the given prefix)
+    $item = Item::where('item_code', 'like', $itemCode . '%')->first();
+
+    // If the item is not found, log and return an empty array
+    if (!$item) {
+        \Log::error("Item not found with item_code prefix: " . $itemCode);
+        return response()->json([]);
+    }
+
+    // Log the found item and its QR codes
+    \Log::info("Item found. QR Codes: " . $item->codes);
+
+    // Check if the 'codes' field is not empty
+    if (!empty($item->codes)) {
+        // Split the codes field by commas to get individual QR codes
+        $qrCodes = explode(',', $item->codes);
+
+        // Return the QR codes as a JSON array
+        return response()->json($qrCodes);
+    } else {
+        \Log::warning("No QR codes found for item with item_code: " . $itemCode);
+        return response()->json([]);
+    }
+}
+
 
 
     /**

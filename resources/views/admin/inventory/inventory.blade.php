@@ -644,8 +644,8 @@ margin-bottom: -2rem;
         <table id="allItemsTable" class="display">
             <thead>
                 <tr>
-                    <th>Item Code</th>
                     <th>Item Name</th>
+                    <th>Item Code</th>
                     <th>Brand</th>
                     <th>Quantity</th>
                     <th>Unit</th>
@@ -665,8 +665,8 @@ margin-bottom: -2rem;
             <tbody>
                 @foreach($allItems as $item)
                 <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                    <td>{{ $item->item_code }}</td>
-                    <td>{{ $item->name }}</td>
+                <td>{{ $item->name }}</td>
+                <td>{{ $item->item_code }}</td>
                     <td>{{ $item->brand }}</td>
                     <td>{{ $item->quantity }}</td>
                     <td>{{ $item->unit }}</td>
@@ -706,8 +706,8 @@ margin-bottom: -2rem;
         <table id="equipmentTable" class="display">
             <thead>
                 <tr>
+                <th>Item Name</th>
                     <th>Item Code</th>
-                    <th>Item Name</th>
                     <th>Brand</th>
                     <th>Quantity</th>
                     <th>Unit</th>
@@ -727,8 +727,8 @@ margin-bottom: -2rem;
             <tbody>
                 @foreach($drrmItems as $item)
                 <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                    <td>{{ $item->item_code }}</td>
-                    <td>{{ $item->name }}</td>
+                <td>{{ $item->name }}</td>    
+                <td>{{ $item->item_code }}</td>
                     <td>{{ $item->brand }}</td>
                     <td>{{ $item->quantity }}</td>
                     <td>{{ $item->unit }}</td>
@@ -768,8 +768,8 @@ margin-bottom: -2rem;
         <table id="officeSuppliesTable" class="display">
             <thead>
                 <tr>
+                <th>Item Name</th>
                     <th>Item Code</th>
-                    <th>Item Name</th>
                     <th>Brand</th>
                     <th>Quantity</th>
                     <th>Unit</th>
@@ -789,8 +789,8 @@ margin-bottom: -2rem;
             <tbody>
                 @foreach($officeItems as $item)
                 <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                    <td>{{ $item->item_code }}</td>
-                    <td>{{ $item->name }}</td>
+                <td>{{ $item->name }}</td>    
+                <td>{{ $item->item_code }}</td>
                     <td>{{ $item->brand }}</td>
                     <td>{{ $item->quantity }}</td>
                     <td>{{ $item->unit }}</td>
@@ -830,8 +830,8 @@ margin-bottom: -2rem;
         <table id="emergencyKitsTable" class="display">
             <thead>
                 <tr>
+                <th>Item Name</th>
                     <th>Item Code</th>
-                    <th>Item Name</th>
                     <th>Brand</th>
                     <th>Quantity</th>
                     <th>Unit</th>
@@ -851,8 +851,8 @@ margin-bottom: -2rem;
             <tbody>
                 @foreach($emergencyItems as $item)
                 <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                    <td>{{ $item->item_code }}</td>
-                    <td>{{ $item->name }}</td>
+                <td>{{ $item->name }}</td>    
+                <td>{{ $item->item_code }}</td>
                     <td>{{ $item->brand }}</td>
                     <td>{{ $item->quantity }}</td>
                     <td>{{ $item->unit }}</td>
@@ -892,8 +892,8 @@ margin-bottom: -2rem;
         <table id="otherItemsTable" class="display">
             <thead>
                 <tr>
+                <th>Item Name</th>
                     <th>Item Code</th>
-                    <th>Item Name</th>
                     <th>Brand</th>
                     <th>Quantity</th>
                     <th>Unit</th>
@@ -913,8 +913,8 @@ margin-bottom: -2rem;
             <tbody>
                 @foreach($otherItems as $item)
                 <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                    <td>{{ $item->item_code }}</td>
-                    <td>{{ $item->name }}</td>
+                <td>{{ $item->name }}</td>
+                <td>{{ $item->item_code }}</td>
                     <td>{{ $item->brand }}</td>
                     <td>{{ $item->quantity }}</td>
                     <td>{{ $item->unit }}</td>
@@ -954,8 +954,8 @@ margin-bottom: -2rem;
         <table id="archivesTable" class="display">
             <thead>
                 <tr>
+                <th>Item Name</th>
                     <th>Item Code</th>
-                    <th>Item Name</th>
                     <th>Brand</th>
                     <th>Quantity</th>
                     <th>Unit</th>
@@ -975,8 +975,8 @@ margin-bottom: -2rem;
             <tbody>
                 @foreach($archivedItems as $item)
                 <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                    <td>{{ $item->item_code }}</td>
-                    <td>{{ $item->name }}</td>
+                <td>{{ $item->name }}</td>    
+                <td>{{ $item->item_code }}</td>
                     <td>{{ $item->brand }}</td>
                     <td>{{ $item->quantity }}</td>
                     <td>{{ $item->unit }}</td>
@@ -1643,6 +1643,57 @@ $(document).ready(function() {
 });
 </script>
 
+<script>
+$(document).ready(function() {
+    // When the item code is clicked
+    $('#allItemsTable').on('click', 'td:nth-child(2)', function() {
+        var itemCodePrefix = $(this).text().trim();  // Get the item code from the second column (Item Code)
+
+        // Strip any extra text like "New!" from the item code
+        itemCodePrefix = itemCodePrefix.replace(/[^A-Za-z0-9-]/g, '');  // Remove non-alphanumeric characters
+
+        console.log("Clicked itemCode prefix:", itemCodePrefix);  // Log the clicked item code prefix
+
+        // Fetch QR codes for the clicked item code prefix
+        $.ajax({
+            url: '/get-qr-codes/' + encodeURIComponent(itemCodePrefix),  // Pass the base item code prefix
+            method: 'GET',
+            success: function(data) {
+                console.log("QR codes fetched:", data);  // Log the fetched QR codes
+
+                if (data.length > 0) {
+                    var qrListHtml = '<ul>';
+                    data.forEach(function(qrCode) {
+                        qrListHtml += '<li>' + qrCode + '</li>';  // Create a list item for each QR code
+                    });
+                    qrListHtml += '</ul>';
+                    
+                    // Show the QR codes in a SweetAlert modal or overlay
+                    Swal.fire({
+                        title: 'QR Codes for ' + itemCodePrefix,
+                        html: qrListHtml,  // Display the list of QR codes in the modal
+                        icon: 'info'
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'No QR Codes Found',
+                        text: 'There are no QR codes for this item.',
+                        icon: 'warning'
+                    });
+                }
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Something went wrong. Please try again later.',
+                    icon: 'error'
+                });
+            }
+        });
+    });
+});
+
+</script>
 
 <!-- Modal Overlay for Adding Item -->
 <div id="addItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">

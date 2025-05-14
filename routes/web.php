@@ -227,6 +227,7 @@ Route::controller(ItemController::class)->group(function () {
 
 
 
+    Route::get('/get-qr-codes/{itemCode}', [ItemController::class, 'getQrCodes']);
 
 
 
