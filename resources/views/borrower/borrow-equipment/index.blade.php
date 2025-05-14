@@ -254,16 +254,17 @@
             </span>
         </td>
         <td>
-    <div style="display: flex; justify-content: space-between; width: 100%;">
-        <div style="flex: 1; text-align: center;">
-            {!! str_replace(' ', '<br>', $borrowed->request_responsible_person ?? 'N/A') !!}
-        </div>
-        <div style="flex: 1; text-align: center;">
-            {!! str_replace(' ', '<br>', $borrowed->return_responsible_person ?? 'N/A') !!}
-        </div>
-    </div>
-</td>
+            <div style="display: flex; justify-content: space-between; width: 100%;">
+                <div style="flex: 1; text-align: center;">
 
+                    {{ $borrowed->request_responsible_person ?? 'N/A' }}
+                </div>
+                <div style="flex: 1; text-align: center;">
+
+                    {{ $borrowed->return_responsible_person ?? 'N/A' }}
+                </div>
+            </div>
+        </td>
         <td>
             @if($borrowed->item->image_url)
                 <img src="{{ asset($borrowed->item->image_url) }}" alt="Item Image" style="width: 50px; height: 50px;">
@@ -298,7 +299,9 @@
 
     <!-- Modal Content -->
     <div class="fixed inset-0 flex items-center justify-center p-4">
-        <div class="bg-white rounded-lg shadow-2xl w-full max-w-3xl overflow-hidden transform transition-all">
+    <div class="bg-white rounded-lg shadow-2xl w-full max-w-3xl overflow-hidden transform transition-all text-base">
+
+
             <!-- Modal Header -->
             <div class="px-6 py-4 border-b">
                 <h3 class="text-lg font-semibold text-gray-900" id="modal-title">Generate Report</h3>
@@ -329,7 +332,8 @@
                 </div>
 
                 <!-- Report Preview -->
-                <div id="reportContent" class="p-4 border rounded bg-gray-100 text-sm">
+                <div id="reportContent" class="p-4 border rounded bg-gray-50 text-sm">
+
                     <p class="text-gray-700"></p>
                 </div>
             </div>
@@ -348,98 +352,6 @@
 </div>
 
 
-<!-- JS should be below the modal or in your scripts file -->
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    let reportData = []; // Make it globally scoped within this function
-
-    // Fetch data once on load
-    fetch('/borrower/borrow-equipment/report-preview')
-        .then(response => response.json())
-        .then(data => {
-            reportData = data;
-            renderReport(reportData); // initial render
-        });
-
-    // Handle status filter change
-    const statusFilter = document.getElementById('statusFilter');
-    statusFilter.addEventListener('change', function () {
-        const selectedStatus = this.value;
-        const filteredData = selectedStatus === "all"
-            ? reportData
-            : reportData.filter(item => item.status === selectedStatus);
-        renderReport(filteredData);
-    });
-
-    // Reusable render function
-    function renderReport(data) {
-        const reportDiv = document.getElementById('reportContent');
-        if (data.length === 0) {
-            reportDiv.innerHTML = '<p class="text-gray-700">No data available.</p>';
-            return;
-        }
-
-        let html = `<table class="table-auto w-full text-sm text-left text-gray-700 border">
-            <thead>
-                <tr class="bg-gray-200">
-                    <th class="p-2 border">Item Name</th>
-                    <th class="p-2 border">Quantity</th>
-                    <th class="p-2 border">Borrow Date</th>
-                    <th class="p-2 border">Due Date</th>
-                    <th class="p-2 border">Status</th>
-                    <th class="p-2 border">Responsible Person</th>
-                </tr>
-            </thead>
-            <tbody>`;
-
-        data.forEach(item => {
-            html += `<tr>
-                <td class="p-2 border">${item.item?.name ?? 'N/A'}</td>
-                <td class="p-2 border">${item.quantity_borrowed}</td>
-                <td class="p-2 border">${item.borrow_date}</td>
-                <td class="p-2 border">${item.due_date}</td>
-                <td class="p-2 border">${item.status}</td>
-                <td class="p-2 border">${item.responsible_person}</td>
-            </tr>`;
-        });
-
-        html += '</tbody></table>';
-        reportDiv.innerHTML = html;
-    }
-});
-</script>
-
-
-
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const openModalBtn = document.getElementById("openModal");
-        const modal = document.getElementById("myModal");
-        const closeModalBtn = document.getElementById("closeModal");
-        const printBtn = document.getElementById("printReport");
-
-        // Open modal
-        openModalBtn.addEventListener("click", function() {
-            modal.style.display = "block";
-        });
-
-        // Close modal
-        closeModalBtn.addEventListener("click", function() {
-            modal.style.display = "none";
-        });
-
-        // Print report
-        printBtn.addEventListener("click", function() {
-            const printContent = document.getElementById("reportContent").innerHTML;
-            const printWindow = window.open("", "", "width=800,height=600");
-            printWindow.document.write(`<html><head><title>Print Report</title></head><body>${printContent}</body></html>`);
-            printWindow.document.close();
-            printWindow.print();
-        });
-    });
-</script>
-
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     let reportData = [];
@@ -448,13 +360,17 @@ document.addEventListener('DOMContentLoaded', function () {
     const startDateInput = document.getElementById('startDate');
     const endDateInput = document.getElementById('endDate');
     const reportDiv = document.getElementById('reportContent');
+    const openModalBtn = document.getElementById("openModal");
+    const modal = document.getElementById("myModal");
+    const closeModalBtn = document.getElementById("closeModal");
+    const printBtn = document.getElementById("printReport");
 
+    // Fetch and render data
     function fetchAndRenderData() {
         const startDate = startDateInput.value;
         const endDate = endDateInput.value;
 
         let url = '/borrower/borrow-equipment/report-preview';
-
         if (startDate && endDate) {
             url += `?startDate=${startDate}&endDate=${endDate}`;
         }
@@ -468,88 +384,92 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function applyFilters() {
-    const selectedStatus = statusFilter.value;
-    const startDate = startDateInput.value;
-    const endDate = endDateInput.value;
+        const selectedStatus = statusFilter.value;
+        const start = new Date(startDateInput.value);
+        const end = new Date(endDateInput.value);
 
-    let filteredData = reportData;
+        let filteredData = reportData;
 
-    // Filter by status if not 'all'
-    if (selectedStatus !== "all") {
-        filteredData = filteredData.filter(item => item.status === selectedStatus);
+        if (selectedStatus !== "all") {
+            filteredData = filteredData.filter(item => item.status === selectedStatus);
+        }
+
+        if (startDateInput.value && endDateInput.value) {
+            filteredData = filteredData.filter(item => {
+                const borrowDate = new Date(item.borrow_date);
+                return borrowDate >= start && borrowDate <= end;
+            });
+        }
+
+        renderReport(filteredData);
     }
 
-    // Filter by borrow_date if both dates are provided
-    if (startDate && endDate) {
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        filteredData = filteredData.filter(item => {
-            const borrowDate = new Date(item.borrow_date);
-            return borrowDate >= start && borrowDate <= end;
+    function renderReport(data) {
+        if (!data || data.length === 0) {
+            reportDiv.innerHTML = '<p class="text-gray-700" style="font-size: 15px;">No data available.</p>';
+            return;
+        }
+
+        let html = `<table class="table-auto w-full text-sm text-left text-gray-700 border" style="font-size: 10px;>
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="p-2 border">Item Name</th>
+                    <th class="p-2 border">Quantity</th>
+                    <th class="p-2 border">Borrow Date</th>
+                    <th class="p-2 border">Return Date</th>
+                    <th class="p-2 border" style="min-width: 150px;">
+                        Responsible Person <br>
+                        <span style="display: flex; justify-content: space-between; font-weight: normal;">
+                            <span>Request</span>
+                            <span>Return</span>
+                        </span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+        data.forEach(item => {
+            if (!item.item || !item.item.name || item.quantity_borrowed <= 0) return;
+
+            html += `<tr>
+                <td class="p-2 border">${item.item.name}</td>
+                <td class="p-2 border">${item.quantity_borrowed}</td>
+                <td class="p-2 border">${item.borrow_date}</td>
+                <td class="p-2 border">${item.due_date}</td>
+                <td class="p-2 border">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>${item.request_responsible_person || ''}</span>
+                        <span>${item.return_responsible_person || ''}</span>
+                    </div>
+                </td>
+            </tr>`;
         });
+
+        html += '</tbody></table>';
+        reportDiv.innerHTML = html;
     }
 
-    renderReport(filteredData);
-}
-
-function renderReport(data) {
-    if (!data || data.length === 0) {
-        reportContent.innerHTML = '<p class="text-gray-700">No data available.</p>';
-        return;
-    }
-
-    let html = `<table class="table-auto w-full text-sm text-left text-gray-700 border">
-        <thead>
-            <tr class="bg-gray-200">
-                <th class="p-2 border">Item Name</th>
-                <th class="p-2 border">Quantity</th>
-                <th class="p-2 border">Borrow Date</th>
-                <th class="p-2 border">Due Date</th>
-                <th class="p-2 border">Status</th>
-                <th class="p-2 border">Responsible Person</th>
-            </tr>
-        </thead>
-        <tbody>`;
-
-    data.forEach(item => {
-        // Filter out incomplete data client-side too, just in case
-        if (!item.item || !item.item.name || item.quantity_borrowed <= 0) return;
-
-        html += `<tr>
-            <td class="p-2 border">${item.item.name}</td>
-            <td class="p-2 border">${item.quantity_borrowed}</td>
-            <td class="p-2 border">${item.borrow_date}</td>
-            <td class="p-2 border">${item.due_date}</td>
-            <td class="p-2 border">${item.status}</td>
-            <td class="p-2 border">${item.responsible_person}</td>
-        </tr>`;
+    // Modal and print controls
+    openModalBtn.addEventListener("click", () => modal.style.display = "block");
+    closeModalBtn.addEventListener("click", () => modal.style.display = "none");
+    printBtn.addEventListener("click", () => {
+        const printContent = reportDiv.innerHTML;
+        const printWindow = window.open("", "", "width=800,height=600");
+        printWindow.document.write(`<html><head><title>Print Report</title></head><body>${printContent}</body></html>`);
+        printWindow.document.close();
+        printWindow.print();
     });
 
-    html += '</tbody></table>';
-    reportContent.innerHTML = html;
-}
-
-
-
-    // Event listeners
+    // Filter listeners
     statusFilter.addEventListener('change', applyFilters);
     startDateInput.addEventListener('change', fetchAndRenderData);
     endDateInput.addEventListener('change', fetchAndRenderData);
 
-    // Initial fetch
+
+
     fetchAndRenderData();
-    function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toISOString().split("T")[0];  // Outputs: YYYY-MM-DD
-}
 });
 </script>
-
-
-
-
-
-
 
 <script>
     $(document).ready(function() {

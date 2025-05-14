@@ -79,30 +79,40 @@ class BorrowedItemsController extends Controller
         return redirect()->route('borrower.borrow-equipment.index')->with('success', 'Borrowed item deleted successfully.');
     }
 
+    function applyFilters() {
+        fetchAndRenderData();
+    }
+    
+
 
     //report preview
     
     public function reportPreview(Request $request)
     {
         $query = BorrowedItem::with(['item', 'borrower'])
-            ->whereHas('item') // Ensures item relation exists
-            ->where('quantity_borrowed', '>', 0) // Avoid quantity 0 or placeholder entries
-            ->orderBy('borrow_date', 'desc'); // Show latest records first
+            ->whereHas('item')
+            ->where('quantity_borrowed', '>', 0)
+            ->where('borrower_id', auth()->id()) // Only the logged-in user's data
+            ->orderBy('borrow_date', 'desc');
     
-        // Filter by date range if both are filled
+        // Filter by start and end date
         if ($request->filled('startDate') && $request->filled('endDate')) {
-            $query->whereBetween('borrow_date', [$request->startDate, $request->endDate]);
+            $start = $request->startDate;
+            $end = $request->endDate;
+    
+            $query->where(function ($q) use ($start, $end) {
+                $q->whereBetween('borrow_date', [$start, $end])
+                  ->orWhereBetween('due_date', [$start, $end]);
+            });
         }
     
-        // Filter by status if not 'all'
+        // Optional status filter
         if ($request->filled('statusFilter') && $request->statusFilter !== 'all') {
             $query->where('status', $request->statusFilter);
         }
     
         return response()->json($query->get());
     }
-    
-    
     
 
 }
