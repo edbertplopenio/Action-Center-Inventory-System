@@ -27,8 +27,14 @@ class IndividualItem extends Model
     }
 
     public function borrowedItems()
-{
-    return $this->belongsToMany(BorrowedItem::class, 'borrowed_item_individual_items', 'individual_item_id', 'borrowed_item_id');
-}
+    {
+        return $this->belongsToMany(BorrowedItem::class, 'borrowed_item_individual_items', 'individual_item_id', 'borrowed_item_id');
+    }
 
+    // Add this to your model to track pending returns
+    public function pendingReturns()
+    {
+        return $this->hasMany(\App\Models\IndividualItemReturn::class)
+            ->where('status', 'Pending');
+    }
 }

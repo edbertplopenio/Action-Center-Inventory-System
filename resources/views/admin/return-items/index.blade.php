@@ -252,17 +252,21 @@
                         <td>{{ $borrowedItem->individualItems()->count() }}</td>
                         <td>{{ $borrowedItem->borrow_date->format('Y-m-d') }}</td>
                         <td>{{ $borrowedItem->due_date->format('Y-m-d') }}</td>
-
                         <td>
                             @php
-                            // Get the return dates from the individual_item_returns relationship
                             $returnDates = $borrowedItem->individualItemReturns->groupBy('return_date');
                             @endphp
                             @foreach($returnDates as $date => $returns)
                             @if($date)
                             <strong>{{ \Carbon\Carbon::parse($date)->format('Y-m-d') }}</strong><br>
                             @foreach($returns as $return)
-                            {{ $return->individualItem->qr_code }}<br>
+                            {{ $return->individualItem->qr_code }}
+                            @if($return->status == 'Pending')
+                            (Pending)
+                            @elseif($return->status == 'Approved')
+                            (Approved)
+                            @endif
+                            <br>
                             @endforeach
                             @endif
                             @endforeach
@@ -270,10 +274,14 @@
 
                         <td>
                             <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-                {{ $borrowedItem->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-                {{ $borrowedItem->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}">
+        {{ $borrowedItem->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+        {{ $borrowedItem->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
+        {{ $borrowedItem->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-600 border border-yellow-500' : '' }}">
                                 {{ $borrowedItem->status }}
                             </span>
+                            @if($borrowedItem->individualItemReturns->where('status', 'Approved')->count() > 0)
+                            <span class="text-xs text-green-600">(Approved)</span>
+                            @endif
                         </td>
 
                         <td>
@@ -296,15 +304,23 @@
                         </td>
 
                         <td>
+                            @if($borrowedItem->status == 'Pending' && $isSupervisor)
+                            <button class="approve-pending-btn px-2 py-1 m-1 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 text-xs w-24"
+                                onclick="approvePendingItems('{{ $borrowedItem->id }}')">
+                                Approve
+                            </button>
+                            @else
                             <button class="return-btn px-2 py-1 m-1 bg-[#A855F7] text-white rounded hover:bg-[#7038A4] focus:outline-none focus:ring-2 focus:ring-[#A855F7] text-xs w-24"
                                 onclick="returnItem('{{ $borrowedItem->id }}')"
-                                @if($borrowedItem->status == 'Returned')
+                                @if($borrowedItem->status == 'Returned' || ($borrowedItem->status == 'Pending' && !$isSupervisor))
                                 disabled
                                 style="opacity: 0.5;"
-                                data-toggle="tooltip" data-placement="top" title="This item has already been returned."
+                                data-toggle="tooltip" data-placement="top"
+                                title="{{ $borrowedItem->status == 'Returned' ? 'This item has already been returned' : 'Pending approval' }}"
                                 @endif>
                                 Return
                             </button>
+                            @endif
                         </td>
                     </tr>
                     @endforeach
@@ -357,7 +373,7 @@
                 <button class="px-4 py-2 bg-blue-500 text-white rounded w-1/2" onclick="closeQRScanner()">Close</button>
                 <button id="approveButton" class="px-4 py-2 bg-green-500 text-white rounded w-1/2" disabled>Approve</button>
                 <button class="px-4 py-2 bg-gray-500 text-white rounded w-1/2" onclick="undoAction()" id="undoButton" disabled>Undo</button>
-                <button class="px-4 py-2 bg-purple-500 text-white rounded w-1/2" onclick="toggleSelectAll()" id="selectAllButton">Select All</button>
+                <button class="px-4 py-2 bg-purple-500 text-white rounded w-1/2" onclick="processPending()" id="selectAllButton">Select All</button>
             </div>
         </div>
 
@@ -369,140 +385,122 @@
 <script>
     let isAllSelected = false;
 
-    function toggleSelectAll() {
+    function processPending() {
         const selectAllButton = document.getElementById('selectAllButton');
         const table = $('#codeTable').DataTable();
 
-        if (!isAllSelected) {
-            // Select all unreturned items
-            scannedQRCodeList = [];
-            returnDates = [];
+        // Clear previous selections
+        scannedQRCodeList = [];
+        returnDates = [];
+        highlightedRows = {};
 
-            table.rows({
-                search: 'applied'
-            }).every(function() {
-                const row = this.node();
-                const qrCode = $(row).find('td:eq(0)').text().trim();
-                const statusCell = $(row).find('td:eq(1)');
-                const status = statusCell.text().trim();
-
-                if (status !== 'Returned') {
-                    scannedQRCodeList.push(qrCode);
-                    returnDates.push(new Date().toISOString().split('T')[0]);
-                    statusCell.text('Returned');
-
-                    // Enable remarks dropdown
-                    $(row).find('.remarks-dropdown').prop('disabled', false);
-
-                    // Highlight row
-                    $(row).css({
-                        'background-color': '#27D29C',
-                        'color': '#000'
-                    });
-                    highlightedRows[qrCode] = row;
-                }
-            });
-
-            scannedCount = scannedQRCodeList.length;
-            $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
-
-            // Enable Approve but disable Undo for Select All
-            document.getElementById('approveButton').disabled = false;
-            document.getElementById('undoButton').disabled = true; // Disable Undo when using Select All
-
-            if (scannedCount >= totalRequestQuantity) {
-                document.getElementById('request-counter').style.color = 'green';
-                document.getElementById('result').textContent = 'All items selected.';
-                stopScanning();
-            }
-
-            selectAllButton.textContent = 'Deselect All';
-            selectAllButton.classList.replace('bg-purple-500', 'bg-red-500');
-            isAllSelected = true;
-        } else {
-            // Deselect all
-            table.rows({
-                search: 'applied'
-            }).every(function() {
-                const row = this.node();
-                const qrCode = $(row).find('td:eq(0)').text().trim();
-                const statusCell = $(row).find('td:eq(1)');
-
-                if (statusCell.text().trim() === 'Returned') {
-                    const index = scannedQRCodeList.indexOf(qrCode);
-                    if (index !== -1) {
-                        scannedQRCodeList.splice(index, 1);
-                        returnDates.splice(index, 1);
-                        statusCell.text('Borrowed');
-
-                        $(row).find('.remarks-dropdown').prop('disabled', true);
-                        $(row).css({
-                            'background-color': '',
-                            'color': ''
-                        });
-                        delete highlightedRows[qrCode];
-                    }
-                }
-            });
-
-            scannedCount = 0;
-            $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
-
-            document.getElementById('approveButton').disabled = true;
-            document.getElementById('undoButton').disabled = true;
-
-            document.getElementById('request-counter').style.color = '';
-            document.getElementById('result').textContent = 'Scanning for QR code...';
-
-            selectAllButton.textContent = 'Select All';
-            selectAllButton.classList.replace('bg-red-500', 'bg-purple-500');
-            isAllSelected = false;
-        }
-
-        table.draw();
-    }
-
-    // Update approveButton event listener to handle Select All case
-    document.getElementById('approveButton').addEventListener('click', function() {
-        const itemId = $('#qr-modal').data('item-id');
-
-        // Collect remarks for all selected items
-        const remarks = [];
-        const table = $('#codeTable').DataTable();
-
+        // Select all unreturned items and mark as Pending
         table.rows({
             search: 'applied'
         }).every(function() {
             const row = this.node();
             const qrCode = $(row).find('td:eq(0)').text().trim();
-            if (scannedQRCodeList.includes(qrCode)) {
-                remarks.push($(row).find('.remarks-dropdown').val());
+            const statusCell = $(row).find('td:eq(1)');
+            const status = statusCell.text().trim();
+
+            if (status !== 'Returned' && status !== 'Pending') {
+                scannedQRCodeList.push(qrCode);
+                returnDates.push(new Date().toISOString().split('T')[0]);
+                statusCell.text('Pending');
+
+                // Yellow highlight for pending items
+                $(row).css({
+                    'background-color': '#fffacd',
+                    'color': '#000'
+                });
+
+                $(row).find('.remarks-dropdown').prop('disabled', false);
+                highlightedRows[qrCode] = row;
             }
         });
 
+        scannedCount = scannedQRCodeList.length;
+        $('#request-counter').text(`${scannedCount}/${totalRequestQuantity}`);
+
+        // Immediately process the pending status (no separate approval needed)
+        if (scannedCount > 0) {
+            const itemId = $('#qr-modal').data('item-id');
+            const remarks = [];
+
+            // Collect remarks
+            table.rows({
+                search: 'applied'
+            }).every(function() {
+                const row = this.node();
+                const qrCode = $(row).find('td:eq(0)').text().trim();
+                if (scannedQRCodeList.includes(qrCode)) {
+                    remarks.push($(row).find('.remarks-dropdown').val());
+                }
+            });
+
+            Swal.fire({
+                title: 'Mark as Pending?',
+                text: `Mark ${scannedCount} item(s) as pending for approval?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#A855F7',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, mark as pending'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/admin/return-items/pending/' + itemId,
+                        type: 'POST',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                            qr_codes: scannedQRCodeList,
+                            return_dates: returnDates,
+                            remarks: remarks
+                        },
+                        success: function(response) {
+                            Swal.fire('Success!', 'Items marked as pending for approval!', 'success')
+                                .then(() => {
+                                    closeQRScanner();
+                                    location.reload();
+                                });
+                        },
+                        error: function(err) {
+                            Swal.fire('Error!', err.responseJSON.message, 'error');
+                        }
+                    });
+                } else {
+                    // If cancelled, undo the selection
+                    undoAction();
+                }
+            });
+        }
+    }
+
+
+
+
+
+
+    function approvePendingItems(borrowedItemId) {
         Swal.fire({
-            title: 'Confirm Return',
-            text: `Return ${scannedCount} item(s)?`,
+            title: 'Approve Pending Items?',
+            text: 'This will mark all pending items as returned.',
             icon: 'question',
             showCancelButton: true,
-            confirmButtonColor: '#A855F7',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, return all'
+            confirmButtonColor: '#10B981',
+            cancelButtonColor: '#6B7280',
+            confirmButtonText: 'Yes, approve all'
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: '/admin/return-items/mark/' + itemId,
+                    url: '/admin/return-items/approve-pending/' + borrowedItemId,
                     type: 'POST',
                     data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        qr_codes: scannedQRCodeList,
-                        return_dates: returnDates,
-                        remarks: remarks
+                        _token: $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function(response) {
-                        Swal.fire('Success!', 'Items returned successfully.', 'success')
+                        Swal.fire('Approved!', 'All pending items have been approved.', 'success')
                             .then(() => {
-                                closeQRScanner();
                                 location.reload();
                             });
                     },
@@ -512,7 +510,7 @@
                 });
             }
         });
-    });
+    }
 </script>
 
 

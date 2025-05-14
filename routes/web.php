@@ -7,7 +7,7 @@ use App\Http\Controllers\Borrower\InventoryController as BorrowerInventoryContro
 use App\Http\Controllers\Admin\InventoryController as AdminInventoryController;  // Import Admin Inventory Controller
 use App\Http\Controllers\Borrower\InventoryController;
 use App\Http\Controllers\Borrower\BorrowedEquipmentController;
-use App\Http\Controllers\Borrower\BorrowEquipmentController; 
+use App\Http\Controllers\Borrower\BorrowEquipmentController;
 use App\Http\Controllers\Admin\RecordsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Borrower\ProfileController;  // Import the ProfileController
@@ -137,7 +137,7 @@ Route::prefix('borrower')->middleware(['auth'])->group(function () {
 
 
 // Borrowed Items Routes
-Route::middleware('auth')->group(function() {
+Route::middleware('auth')->group(function () {
     // Store a new borrow request
     Route::post('/borrow-item', [BorrowEquipmentController::class, 'store'])->name('borrow.item');
 
@@ -190,22 +190,23 @@ Route::get('/admin/borrowing-requests/count', [InventoryRequestController::class
 // Inventory Routes (ItemController)
 // ===========================
 use App\Http\Controllers\ItemController;
+
 Route::controller(ItemController::class)->group(function () {
     // Display all items in the inventory
-    Route::get('/inventory', 'index')->name('inventory'); 
-    
+    Route::get('/inventory', 'index')->name('inventory');
+
 
     // Store a new item (this is the route to save both the `items` and `individual_items`)
     Route::post('/items/store', 'store')->name('items.store'); // Explicitly define post for storing items
 
     // Show edit form for an item
-    Route::get('/items/{id}/edit', 'editItem')->name('items.edit'); 
+    Route::get('/items/{id}/edit', 'editItem')->name('items.edit');
 
     // Update item details
-    Route::put('/items/{id}', 'update')->name('items.update'); 
+    Route::put('/items/{id}', 'update')->name('items.update');
 
     // Permanently delete item
-    Route::delete('/items/{id}', 'deletePermanently')->name('items.destroy'); 
+    Route::delete('/items/{id}', 'deletePermanently')->name('items.destroy');
 
     // Routes for Archiving (Soft Delete), Restoring, and Permanently Deleting Items
     Route::post('/archive-item/{id}', 'archiveItem')->name('archive.item');    // Archive (soft delete)
@@ -214,7 +215,7 @@ Route::controller(ItemController::class)->group(function () {
 
     // Route for fetching item data for editing
     Route::get('/get-item/{id}', 'editItem')->name('get.item.data'); // Fetch item data for editing
-    
+
     // Route for searching an item by its name
     Route::get('/search-item/{name}', 'searchItem')->name('search.item'); // Search item by name
 
@@ -241,14 +242,12 @@ Route::controller(ItemController::class)->group(function () {
 
     Route::get('/home', [ItemController::class, 'index'])->name('home');
 
-Route::get('/api/items', [ItemController::class, 'getItems']);
-Route::get('/api/usage-rate/{itemId}', [ItemController::class, 'getUsageRateData']);
+    Route::get('/api/items', [ItemController::class, 'getItems']);
+    Route::get('/api/usage-rate/{itemId}', [ItemController::class, 'getUsageRateData']);
 
-// routes/web.php
-Route::get('/most-borrowed-items', [ItemController::class, 'mostBorrowedItems']);
-Route::get('/equipment-quantity-by-category', [ItemController::class, 'quantityByCategory']);
-
-
+    // routes/web.php
+    Route::get('/most-borrowed-items', [ItemController::class, 'mostBorrowedItems']);
+    Route::get('/equipment-quantity-by-category', [ItemController::class, 'quantityByCategory']);
 
 
 
@@ -267,11 +266,12 @@ Route::get('/equipment-quantity-by-category', [ItemController::class, 'quantityB
 
 
 
-// Route for About Us page
-Route::get('/about', function () {
-    return view('about'); // This assumes you have an 'about.blade.php' view
-})->name('about');
 
+
+    // Route for About Us page
+    Route::get('/about', function () {
+        return view('about'); // This assumes you have an 'about.blade.php' view
+    })->name('about');
 });
 
 
@@ -307,3 +307,13 @@ Route::post('/profile/update', [ProfileController::class, 'update'])->name('prof
 
 
 Route::get('/borrower/borrow-equipment/report-preview', [BorrowedItemsController::class, 'reportPreview'])->name('borrow-equipment.report-preview');
+
+Route::post('/admin/return-items/pending/{id}', [ReturnItemsController::class, 'markAsPending'])
+    ->name('admin.return-items.pending');
+
+
+
+Route::post('/admin/return-items/approve-pending/{id}', [ReturnItemsController::class, 'approvePending'])
+    ->name('admin.return-items.approve-pending');
+
+Route::post('/admin/return-items/approve-pending/{id}', [ReturnItemsController::class, 'approveAllPending']);
