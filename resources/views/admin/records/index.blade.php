@@ -440,8 +440,10 @@
                                             <option value="weekly">Weekly</option>
                                             <option value="monthly">Monthly</option>
                                             <option value="yearly">Yearly</option>
+                                            <option value="daily">Daily</option>
                                         </select>
                                     </div>
+
 
                                     <!-- RELATED DOCUMENTS -->
                                     <div class="sm:col-span-1">
@@ -1605,8 +1607,10 @@
                                             <option value="weekly">Weekly</option>
                                             <option value="monthly">Monthly</option>
                                             <option value="yearly">Yearly</option>
+                                            <option value="daily">Daily</option>
                                         </select>
                                     </div>
+
 
                                     <!-- RELATED DOCUMENTS (Fixed Duplicate Name Issue) -->
                                     <div class="sm:col-span-1">
