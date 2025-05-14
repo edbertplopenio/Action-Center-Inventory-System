@@ -22,18 +22,22 @@ class Item extends Model
         'description',
         'storage_location',
         'arrival_date',
-        'date_purchased',
         'status',
         'image_url',
         'archived',
         'is_archived',
         'added_at', // Add this field here for mass assignment
+        'brand', // New field for brand
+        'expiration_date', // New field for expiration date
+        'date_tested_inspected', // New field for date tested/inspected
+        'inventory_date', // New field for inventory date
     ];
 
     // Specify timestamps (if your table uses 'created_at' and 'updated_at' fields)
     public $timestamps = true;
 
-    // Define relationship with IndividualItem
+
+    // Define relationship with IndividualItem (already present in your code)
     public function individualItems()
     {
         return $this->hasMany(IndividualItem::class);
@@ -50,6 +54,11 @@ class Item extends Model
         static::creating(function ($item) {
             if (!$item->added_at) {
                 $item->added_at = Carbon::now();  // Set added_at to the current time if it's not provided
+            }
+
+            // Automatically set 'inventory_date' if it's not provided
+            if (!$item->inventory_date) {
+                $item->inventory_date = Carbon::now()->toDateString(); // Set to the current date if not provided
             }
         });
     }

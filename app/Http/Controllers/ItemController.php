@@ -183,114 +183,142 @@ public function getItemData($id)
         ]);
     }
 
+
+
+    // Fetch item details for borrowing and make necessary changes
+    public function borrowItem(Request $request, $itemId)
+    {
+        // Fetch the item from the database by ID
+        $item = Item::findOrFail($itemId);
+
+        // Check if the item is consumable
+        if ($item->is_consumable) {
+            // For consumable items, reduce quantity and mark as borrowed
+            if ($item->quantity >= $request->quantity) {
+                $item->quantity -= $request->quantity; // Decrease the quantity
+                $item->status = 'Borrowed'; // Set status to 'Borrowed'
+                $item->save(); // Save the changes
+
+                // Record the borrowing in the BorrowedItem table
+                $borrowedItem = new BorrowedItem();
+                $borrowedItem->item_id = $item->id;
+                $borrowedItem->quantity_borrowed = $request->quantity;
+                $borrowedItem->borrow_date = now(); // Record the borrowing date
+                $borrowedItem->save(); // Save the record
+
+                // Return a success response
+                return response()->json(['message' => 'Consumable item borrowed successfully.'], 200);
+            } else {
+                return response()->json(['error' => 'Not enough stock for this consumable item.'], 400);
+            }
+        } else {
+            // For non-consumable items, borrow them without reducing quantity
+            $item->status = 'Borrowed'; // Set status to 'Borrowed'
+            $item->save(); // Save the change
+
+            // Record the borrowing
+            $borrowedItem = new BorrowedItem();
+            $borrowedItem->item_id = $item->id;
+            $borrowedItem->quantity_borrowed = $request->quantity;
+            $borrowedItem->borrow_date = now(); // Record the borrow date
+            $borrowedItem->save(); // Save the record
+
+            return response()->json(['message' => 'Non-consumable item borrowed successfully.'], 200);
+        }
+    }
+
+
+
     /**
      * Store items in the database.
      */
     public function store(Request $request)
-{
-    // Validate input fields
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'quantity' => 'required|integer|min:1',
-        'unit' => 'required|string|max:255',
-        'category' => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'storage_location' => 'required|string|max:255',
-        'other_storage_location' => 'nullable|string|max:255', // Add validation for "Other" storage location
-        'arrival_date' => 'required|date',
-        'date_purchased' => 'required|date',
-        'status' => 'required|string|max:255',
-        'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-    ]);
-
-    // Check if the item already exists (same name & category)
-    $item = Item::where('name', $request->name)
-                ->where('category', $request->category)
-                ->first();
-
-    // Handle the storage location: If 'Other' is selected, use the value from 'other_storage_location'
-    $storageLocation = $request->storage_location;
-    if ($storageLocation === 'Other') {
-        $storageLocation = $request->other_storage_location; // Use custom input if "Other" is selected
-    }
-
-    if ($item) {
-        // If item exists, update quantity and dates
-        $item->quantity += $request->quantity;  // Add the new quantity
-        $item->arrival_date = $request->arrival_date;
-        $item->date_purchased = $request->date_purchased;
-        $item->storage_location = $storageLocation; // Update storage location
-        $item->save();
-
-        // Generate individual items for the new quantity added
-        $this->generateIndividualItems($item, $request->quantity);
-    } else {
-        // Create new item
-        $item = new Item();
-        $item->name = $request->name;
-        $item->quantity = $request->quantity;
+    {
+        // Validate all possible fields, excluding batches
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'quantity' => 'required|integer|min:1',
+            'unit' => 'required|string|max:255',
+            'category' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'storage_location' => 'required|string|max:255',
+            'other_storage_location' => 'nullable|string|max:255',
+            'arrival_date' => 'required|date',
+            'status' => 'required|string|max:255',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'brand' => 'nullable|string|max:255',
+            'expiration_date' => 'nullable|date',
+            'date_tested_inspected' => 'nullable|date',
+            'is_consumable' => 'nullable|boolean',
+            'inventory_date' => 'required|date',
+        ]);
+    
+        // Final storage location
+        $storageLocation = $request->storage_location === 'Other'
+            ? $request->other_storage_location
+            : $request->storage_location;
+    
+        // Boolean handling
+        $isConsumable = $request->boolean('is_consumable');
+    
+        // Check if item exists
+        $item = Item::where('name', $request->name)
+                    ->where('category', $request->category)
+                    ->first();
+    
+        if ($item) {
+            $item->quantity += $request->quantity;
+        } else {
+            $item = new Item();
+            $item->name = $request->name;
+            $item->quantity = $request->quantity;
+    
+            // Generate item code
+            $categoryMap = [
+                'DRRM Equipment' => 'DRRM',
+                'Office Supplies' => 'Office',
+                'Emergency Kits' => 'Emergency',
+                'Other Items' => 'Other',
+            ];
+            $abbr = $categoryMap[$request->category] ?? strtoupper($request->category);
+            $itemCount = Item::where('category', $request->category)->count();
+            $itemInitials = collect(explode(' ', strtoupper($request->name)))
+                ->map(fn($part) => substr($part, 0, 1))
+                ->implode('');
+            if (strlen($itemInitials) < 2) {
+                $itemInitials = strtoupper(substr($request->name, 0, 2));
+            }
+            $item->item_code = "{$abbr}-" . str_pad($itemCount + 1, 2, '0', STR_PAD_LEFT) . "-{$itemInitials}";
+            $item->added_at = now();
+        }
+    
+        // Common field assignments
         $item->unit = $request->unit;
         $item->category = $request->category;
         $item->description = $request->description;
-        $item->storage_location = $storageLocation; // Use updated storage location
+        $item->storage_location = $storageLocation;
         $item->arrival_date = $request->arrival_date;
-        $item->date_purchased = $request->date_purchased;
         $item->status = $request->status;
-        $item->added_at = now();  // Set added_at to current timestamp
-
-        // Handle image upload if provided and save URL to `image_url`
+        $item->brand = $request->brand;
+        $item->date_tested_inspected = $request->date_tested_inspected;
+        $item->expiration_date = $request->expiration_date;
+        $item->is_consumable = $isConsumable;
+        $item->inventory_date = $request->inventory_date;
+    
+        // Handle file upload
         if ($request->hasFile('image_url')) {
             $filename = time() . '.' . $request->image_url->extension();
             $request->image_url->move(public_path('images'), $filename);
-            $item->image_url = 'images/' . $filename; // Store the relative path
+            $item->image_url = 'images/' . $filename;
         }
-
-        // Generate item code based on category abbreviation and count of items in that category
-        $category = $request->category;
-
-        // Map categories to their abbreviations
-        $categoryMap = [
-            'DRRM Equipment' => 'DRRM',
-            'Office Supplies' => 'Office',
-            'Emergency Kits' => 'Emergency',
-            'Other Items' => 'Other',
-        ];
-
-        // Get the abbreviation for the category
-        $categoryAbbreviation = isset($categoryMap[$category]) ? $categoryMap[$category] : strtoupper($category);
-
-        // Count how many items are in this category
-        $itemCount = Item::where('category', $category)->count();
-
-        // Process item name to get initials if it's more than 8 characters or has more than one word
-        $itemName = strtoupper($request->name); // Uppercase the item name
-        $nameParts = explode(' ', $itemName); // Split the name into words
-        $itemInitials = '';
-
-        if (count($nameParts) > 1 || strlen($itemName) > 8) {
-            // Take the first letter of each word for names with more than 1 word or > 8 chars
-            foreach ($nameParts as $part) {
-                $itemInitials .= strtoupper(substr($part, 0, 1)); // Take the first letter of each word
-            }
-        } else {
-            $itemInitials = strtoupper(substr($itemName, 0, 2)); // Otherwise, take first 2 letters
-        }
-
-        // Generate a single item code for the new item
-        $itemCode = $categoryAbbreviation . '-' . str_pad($itemCount + 1, 2, '0', STR_PAD_LEFT) . '-' . $itemInitials;
-
-        // Store the item code
-        $item->item_code = $itemCode;
-
+    
         $item->save();
-
-        // Generate individual items based on quantity
-        $this->generateIndividualItems($item, $request->quantity);
+    
+        // Remove any batch-related logic here
+    
+        return redirect()->back()->with('success', 'Item added/updated successfully!');
     }
-
-    return redirect()->back()->with('success', 'Item added/updated successfully!');
-}
-
+    
     /**
      * Generate individual items for the added quantity.
      */
@@ -360,9 +388,13 @@ public function update(Request $request, $id)
         'quantity' => 'required|integer|min:1', // Ensure quantity is a positive integer
         'storage_location' => 'required|string|max:255', // Validate storage location
         'arrival_date' => 'required|date', // Validate arrival date
-        'date_purchased' => 'required|date', // Validate date purchased
         'status' => 'required|string|max:255', // Ensure status is valid
         'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Optional image upload
+        // Validation for new fields
+        'brand' => 'nullable|string|max:255', // New field: Brand
+        'expiration_date' => 'nullable|date', // New field: Expiration Date
+        'date_tested_inspected' => 'nullable|date', // New field: Date Tested/Inspected
+        'inventory_date' => 'nullable|date',  // Add inventory_date validation
     ]);
 
     // Save the old quantity to compare later
@@ -372,8 +404,13 @@ public function update(Request $request, $id)
     $item->quantity = $validated['quantity'];
     $item->storage_location = $validated['storage_location'];
     $item->arrival_date = $validated['arrival_date'];
-    $item->date_purchased = $validated['date_purchased'];
     $item->status = $validated['status'];
+
+    // Update the new fields
+    $item->brand = $validated['brand']; // Brand field
+    $item->expiration_date = $validated['expiration_date'] ?? null; // Handling Expiration Date (nullable)
+    $item->date_tested_inspected = $validated['date_tested_inspected'] ?? null; // Handling Date Tested/Inspected (nullable)
+    $item->inventory_date = $validated['inventory_date'] ?? null; // Handling Inventory Date (nullable)
 
     // Handle image upload if provided and save URL to `image_url`
     if ($request->hasFile('image_url')) {
@@ -405,44 +442,41 @@ public function update(Request $request, $id)
     ]);
 }
 
-    /**
-     * Remove individual items based on the quantity reduction.
-     */
-    private function removeIndividualItems($item, $quantityToRemove)
-    {
-        // Get the latest individual items for this item
-        $individualItems = IndividualItem::where('item_id', $item->id)
-                                          ->orderBy('qr_code', 'desc')
-                                          ->take($quantityToRemove)
-                                          ->get();
-    
-        // Delete the specified number of individual items
-        foreach ($individualItems as $individualItem) {
-            $individualItem->delete();
-        }
+/**
+ * Add individual items based on the quantity increase.
+ */
+private function addIndividualItems($item, $quantityToAdd)
+{
+    $itemCode = $item->item_code;
+    $currentQuantity = $item->quantity;
+
+    // Generate individual item codes for the new quantity
+    for ($i = $currentQuantity - $quantityToAdd + 1; $i <= $currentQuantity; $i++) {
+        $individualItemCode = $itemCode . '-' . str_pad($i, 2, '0', STR_PAD_LEFT);
+
+        // Create individual item entry
+        $individualItem = new IndividualItem();
+        $individualItem->item_id = $item->id;
+        $individualItem->qr_code = $individualItemCode;  // Store the QR code string
+        $individualItem->status = $item->status;
+        $individualItem->save();
     }
-    
-    
-    /**
-     * Add individual items based on the quantity increase.
-     */
-    private function addIndividualItems($item, $quantityToAdd)
-    {
-        $itemCode = $item->item_code;
-        $currentQuantity = $item->quantity;
-    
-        // Generate individual item codes for the new quantity
-        for ($i = $currentQuantity - $quantityToAdd + 1; $i <= $currentQuantity; $i++) {
-            $individualItemCode = $itemCode . '-' . str_pad($i, 2, '0', STR_PAD_LEFT);
-    
-            // Create individual item entry
-            $individualItem = new IndividualItem();
-            $individualItem->item_id = $item->id;
-            $individualItem->qr_code = $individualItemCode;  // Store the QR code string
-            $individualItem->status = $item->status;
-            $individualItem->save();
-        }
+}
+
+/**
+ * Remove individual items based on the quantity decrease.
+ */
+private function removeIndividualItems($item, $quantityToRemove)
+{
+    $individualItems = IndividualItem::where('item_id', $item->id)
+                                      ->orderBy('id', 'desc') // Get the latest added items first
+                                      ->take($quantityToRemove)
+                                      ->get();
+
+    foreach ($individualItems as $individualItem) {
+        $individualItem->delete(); // Delete the individual item
     }
+}
     
         /**
      * Archive (soft delete) an item.
