@@ -373,6 +373,11 @@ public function getItemData($id)
         return response()->json($item);
     }
 
+
+
+    /**
+     * Update
+     */
     public function update(Request $request, $id)
     {
         // Fetch the item from the database using the ID
@@ -385,66 +390,58 @@ public function getItemData($id)
     
         // Validate the input fields for update
         $validated = $request->validate([
-            'quantity' => 'required|integer|min:1', // Ensure quantity is a positive integer
-            'storage_location' => 'required|string|max:255', // Validate storage location
-            'arrival_date' => 'required|date', // Validate arrival date
-            'status' => 'required|string|max:255', // Ensure status is valid
-            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Optional image upload
-            'brand' => 'nullable|string|max:255', // New field: Brand
-            'expiration_date' => 'nullable|date', // New field: Expiration Date
-            'date_tested_inspected' => 'nullable|date', // New field: Date Tested/Inspected
-            'inventory_date' => 'nullable|date',  // Add inventory_date validation
+            'quantity' => 'required|integer|min:1',
+            'storage_location' => 'required|string|max:255',
+            'arrival_date' => 'required|date',
+            'status' => 'required|string|max:255',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'brand' => 'nullable|string|max:255',
+            'expiration_date' => 'nullable|date',
+            'date_tested_inspected' => 'nullable|date',
+            'inventory_date' => 'nullable|date',
         ]);
     
         // Save the old quantity to compare later
         $oldQuantity = $item->quantity;
     
-        // Update the editable fields (don't update non-editable fields like `name`, `category`, etc.)
+        // Update the editable fields
         $item->quantity = $validated['quantity'];
         $item->storage_location = $validated['storage_location'];
         $item->arrival_date = $validated['arrival_date'];
         $item->status = $validated['status'];
-    
-        // Update the new fields
-        $item->brand = $validated['brand']; // Brand field
-        $item->expiration_date = $validated['expiration_date'] ?? null; // Handling Expiration Date (nullable)
-        $item->date_tested_inspected = $validated['date_tested_inspected'] ?? null; // Handling Date Tested/Inspected (nullable)
-        $item->inventory_date = $validated['inventory_date'] ?? null; // Handling Inventory Date (nullable)
+        $item->brand = $validated['brand'];
+        $item->expiration_date = $validated['expiration_date'] ?? null;
+        $item->date_tested_inspected = $validated['date_tested_inspected'] ?? null;
+        $item->inventory_date = $validated['inventory_date'] ?? null;
     
         // Boolean handling for 'consumable'
-        $isConsumable = $request->has('consumable') && $request->consumable == '1'; // If 'consumable' is checked
-        $item->is_consumable = $isConsumable;
+        $item->is_consumable = $request->has('consumable') && $request->consumable == '1';
     
-        // Handle image upload if provided and save URL to `image_url`
+        // Handle image upload if provided
         if ($request->hasFile('image_url')) {
-            // Generate a unique filename for the uploaded image
             $filename = time() . '.' . $request->image_url->extension();
-            // Move the file to the `public/images` directory
             $request->image_url->move(public_path('images'), $filename);
-            // Store the relative path of the image
             $item->image_url = 'images/' . $filename;
         }
     
-        // Save the updated item to the database
+        // Save the updated item
         $item->save();
     
         // Adjust the individual items table based on the quantity change
         if ($validated['quantity'] < $oldQuantity) {
-            // If quantity is reduced, remove entries from individual items
             $this->removeIndividualItems($item, $oldQuantity - $validated['quantity']);
         } elseif ($validated['quantity'] > $oldQuantity) {
-            // If quantity is increased, add entries to individual items
             $this->addIndividualItems($item, $validated['quantity'] - $oldQuantity);
         }
     
-        // Return a success response with updated item data
+        // Return a success response with the updated item data
         return response()->json([
             'success' => true,
             'message' => 'Item updated successfully!',
-            'item' => $item // Return the updated item data
+            'item' => $item
         ]);
     }
-    
+        
     // Add individual items based on the quantity increase.
     private function addIndividualItems($item, $quantityToAdd)
     {

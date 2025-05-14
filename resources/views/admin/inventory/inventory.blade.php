@@ -1469,7 +1469,7 @@ function openEditModal(itemId) {
         success: function(item) {
             // Set today's date for max validation
             const today = new Date().toISOString().split('T')[0];
-            
+
             // Populate the form fields with the item data
             $('#edit_item_id').val(item.id);
             $('#edit_item_name').val(item.name);
@@ -1641,38 +1641,6 @@ $(document).ready(function() {
         $("#editItemModal").addClass("hidden");
     });
 });
-
-// Update the item row in the table
-function updateItemRow(item) {
-    const row = $('#item-' + item.id);
-    if (row.length) {
-        row.find('.item-name').text(item.name);
-        row.find('.item-quantity').text(item.quantity);
-        row.find('.item-status').text(item.status);
-        row.find('.item-description').text(item.description);
-        row.find('.item-storage-location').text(item.storage_location);
-        row.find('.item-arrival-date').text(item.arrival_date);
-        row.find('.item-date-purchased').text(item.date_purchased);
-        row.find('.item-expiration-date').text(item.expiration_date); // Update expiration date
-        row.find('.item-tested-date').text(item.date_tested_inspected); // Update tested date
-        row.find('.item-inventory-date').text(item.inventory_date); // Update inventory date
-        if (item.image_url) {
-            row.find('.item-image').attr('src', item.image_url);
-        }
-    } else {
-        // If row doesn't exist (maybe filtered out), reload the table
-        location.reload();
-    }
-}
-
-// Reset edit modal (optional - call this when closing modal without saving)
-function resetEditModal() {
-    $('#editItemForm')[0].reset();
-    $('#edit_item_name').attr('readonly', false);
-    $('select, input[type="date"], textarea').attr('disabled', false);
-    $('#edit_date_purchased, #edit_arrival_date').removeAttr('min max');
-    Swal.close();
-}
 </script>
 
 
@@ -1745,6 +1713,7 @@ function resetEditModal() {
                                     <option value="Shelf A">Shelf A</option>
                                     <option value="Shelf B">Shelf B</option>
                                     <option value="Shelf C">Shelf C</option>
+                                    <option value="Shelf D">Shelf D</option>
                                     <option value="Other">Other</option>
                                 </select>
                                 <input type="text" id="other_storage_location" name="other_storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs hidden" maxlength="12" placeholder="Type other location here">
@@ -1840,6 +1809,12 @@ function resetEditModal() {
                                 </select>
                             </div>
 
+                            <!-- Consumable Checkbox -->
+                            <div>
+                                <input type="checkbox" id="edit_consumable" name="consumable" value="1" class="form-checkbox">
+                                <label for="edit_consumable" class="text-xs font-medium text-gray-900">Consumable</label>
+                            </div>
+
                             <!-- Quantity -->
                             <div>
                                 <label for="edit_quantity" class="block text-xs font-medium text-gray-900">Quantity</label>
@@ -1870,31 +1845,24 @@ function resetEditModal() {
                                 <input type="date" id="edit_arrival_date" name="arrival_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
                             </div>
 
-                            <!-- Expiration Date (Optional) -->
-                            <div>
-                                <label for="edit_expiration_date" class="block text-xs font-medium text-gray-900">Expiration Date (Optional)</label>
-                                <input type="date" id="edit_expiration_date" name="expiration_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
-                            </div>
-
-                            <!-- Date Tested/Inspected -->
-                            <div>
-                                <label for="edit_date_tested_inspected" class="block text-xs font-medium text-gray-900">Date Tested/Inspected (Optional)</label>
-                                <input type="date" id="edit_date_tested_inspected" name="date_tested_inspected" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
-                            </div>
-
                             <!-- Inventory Date -->
                             <div>
                                 <label for="edit_inventory_date" class="block text-xs font-medium text-gray-900">Inventory Date</label>
                                 <input type="date" id="edit_inventory_date" name="inventory_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
                             </div>
 
-                            <!-- Consumable Checkbox -->
+                            <!-- Image -->
                             <div>
-                                <input type="checkbox" id="edit_consumable" name="consumable" value="1" class="form-checkbox">
-                                <label for="edit_consumable" class="text-xs font-medium text-gray-900">Consumable</label>
+                                <label for="edit_image" class="block text-xs font-medium text-gray-900">Image</label>
+                                <input type="file" id="edit_image" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
                             </div>
 
-                            <!-- Status -->
+                            <!-- Brand and Status fields on the same line (2 columns) -->
+                            <div>
+                                <label for="edit_brand" class="block text-xs font-medium text-gray-900">Brand</label>
+                                <input type="text" id="edit_brand" name="brand" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                            </div>
+
                             <div>
                                 <label for="edit_status" class="block text-xs font-medium text-gray-900">Status</label>
                                 <select id="edit_status" name="status" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
@@ -1909,11 +1877,17 @@ function resetEditModal() {
                                 </select>
                             </div>
 
-                            <!-- Image -->
+                            <!-- Expiration Date and Date Tested fields on the same line (2 columns) -->
                             <div>
-                                <label for="edit_image" class="block text-xs font-medium text-gray-900">Image</label>
-                                <input type="file" id="edit_image" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <label for="edit_expiration_date" class="block text-xs font-medium text-gray-900">Expiration Date (Optional)</label>
+                                <input type="date" id="edit_expiration_date" name="expiration_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
                             </div>
+
+                            <div>
+                                <label for="edit_date_tested_inspected" class="block text-xs font-medium text-gray-900">Date Tested/Inspected (Optional)</label>
+                                <input type="date" id="edit_date_tested_inspected" name="date_tested_inspected" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                            </div>
+
                         </div>
 
                         <div class="mt-6 flex items-center justify-end gap-x-6">
@@ -1932,5 +1906,4 @@ function resetEditModal() {
 </div>
 
 </body>
-
 </html>
