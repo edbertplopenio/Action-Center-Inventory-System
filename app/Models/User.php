@@ -21,6 +21,7 @@ class User extends Authenticatable
         'password',
         'profile_picture',
         'status', // Add this line
+        'verification_token'
     ];
     
     protected $hidden = [

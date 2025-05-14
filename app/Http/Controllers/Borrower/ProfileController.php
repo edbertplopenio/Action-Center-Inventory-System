@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\User;
+
 
 class ProfileController extends Controller
 {
@@ -17,7 +19,7 @@ class ProfileController extends Controller
      */
     public function index()
     {
-        $user = auth()->user();
+$user = Auth::user();
         return view('borrower.profile.index', compact('user'));
     }
 
@@ -39,7 +41,7 @@ class ProfileController extends Controller
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $user = auth()->user();
+$user = Auth::user();
 
         // Update basic info
         $user->first_name = $request->first_name;
