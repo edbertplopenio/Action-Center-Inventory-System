@@ -687,7 +687,7 @@ margin-bottom: -2rem;
                             {{ $item->status }}
                         </span>
                     </td>
-                    <td>{{ $item->consumable ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
+                    <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
                     <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                     <td class="action-buttons">
                         <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
@@ -701,7 +701,7 @@ margin-bottom: -2rem;
 </div>
 
 <!-- Equipment Table -->
-<div id="equipment-content" class="tab-content active">
+<div id="equipment-content" class="tab-content">
     <div class="table-container">
         <table id="equipmentTable" class="display">
             <thead>
@@ -749,7 +749,7 @@ margin-bottom: -2rem;
                             {{ $item->status }}
                         </span>
                     </td>
-                    <td>{{ $item->consumable ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
+                    <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
                     <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                     <td class="action-buttons">
                         <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
@@ -811,7 +811,7 @@ margin-bottom: -2rem;
                             {{ $item->status }}
                         </span>
                     </td>
-                    <td>{{ $item->consumable ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
+                    <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
                     <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                     <td class="action-buttons">
                         <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
@@ -873,7 +873,7 @@ margin-bottom: -2rem;
                             {{ $item->status }}
                         </span>
                     </td>
-                    <td>{{ $item->consumable ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
+                    <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
                     <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                     <td class="action-buttons">
                         <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
@@ -935,7 +935,7 @@ margin-bottom: -2rem;
                             {{ $item->status }}
                         </span>
                     </td>
-                    <td>{{ $item->consumable ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
+                    <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
                     <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                     <td class="action-buttons">
                         <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
@@ -997,7 +997,7 @@ margin-bottom: -2rem;
                             {{ $item->status }}
                         </span>
                     </td>
-                    <td>{{ $item->consumable ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
+                    <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
                     <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                     <td class="action-buttons">
                         <!-- Restore Button: Form for restoring an archived item -->
@@ -1225,6 +1225,9 @@ margin-bottom: -2rem;
     });
 </script>
 
+
+
+
 <script>
 $(document).ready(function() {
     $("#add-item-btn").click(function() {
@@ -1244,11 +1247,13 @@ $(document).ready(function() {
         $('#other_unit').toggleClass('hidden', $(this).val() !== 'Other');
     });
 
+    // Ensure the consumable checkbox updates the form value correctly
     $('#consumable').on('change', function() {
-        $('input[name="is_consumable"]').val($(this).is(':checked') ? '1' : '0');
+        // This updates the form data with '1' for checked and '0' for unchecked
+        $('input[name="consumable"]').val($(this).is(':checked') ? '1' : '0');
     });
 
-
+    // Handle form submission
     $("#itemForm").submit(function(e) {
         e.preventDefault();
         const formData = new FormData(this);
@@ -1259,7 +1264,7 @@ $(document).ready(function() {
         formData.append('unit', $('#unit').val());
         formData.append('category', $('#category').val());
         formData.append('status', 'Available');
-        formData.append('consumable', $('#consumable').is(':checked') ? 1 : 0);
+        formData.append('consumable', $('#consumable').is(':checked') ? 1 : 0);  // This sends '1' for checked, '0' for unchecked
         formData.append('inventory_date', $('#inventory_date').val());
 
         // Handle conditional fields
@@ -1283,7 +1288,7 @@ $(document).ready(function() {
         });
 
         $.ajax({
-            url: "{{ route('items.store') }}",
+            url: "{{ route('items.store') }}", // Ensure this is your correct store route URL
             method: 'POST',
             data: formData,
             processData: false,
@@ -1295,7 +1300,7 @@ $(document).ready(function() {
                     icon: 'success',
                     timer: 1500,
                     showConfirmButton: false,
-                    willClose: () => location.reload()
+                    willClose: () => location.reload() // Reload the page to reflect the new item
                 });
             },
             error: function(xhr) {
@@ -1310,10 +1315,12 @@ $(document).ready(function() {
         });
     });
 
+    // Close the modal when the cancel button is clicked
     $("#cancelModal").click(function() {
         $("#addItemModal").addClass("hidden");
     });
 
+    // Clear the form when the clear button is clicked
     $("#clearForm").click(function() {
         $('#itemForm').find('input[type="text"], input[type="number"], input[type="date"], input[type="file"], textarea').val('');
         $('#itemForm').find('select').prop('selectedIndex', 0);
@@ -1322,6 +1329,7 @@ $(document).ready(function() {
         $('#itemForm').find('input, select, textarea').prop('disabled', false);
     });
 
+    // Remove the min/max validation for arrival date field
     $('#arrival_date').removeAttr('min max');
 });
 
@@ -1700,7 +1708,7 @@ function resetEditModal() {
                                 <input type="checkbox" id="consumable" name="consumable" value="1" class="form-checkbox">
                                 <label for="consumable" class="text-xs font-medium text-gray-900">Consumable</label>
                                 <!-- Hidden field to handle the unchecked state -->
-                                <input type="hidden" id="consumable_hidden" name="consumable" value="0">
+                                <input type="hidden" name="consumable" value="0">
                             </div>
 
                             <!-- Quantity -->
@@ -1798,6 +1806,7 @@ function resetEditModal() {
         </div>
     </div>
 </div>
+
 
 <!-- Edit Item Modal -->
 <div id="editItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">

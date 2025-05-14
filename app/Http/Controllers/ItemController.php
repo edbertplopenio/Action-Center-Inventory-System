@@ -234,7 +234,7 @@ public function getItemData($id)
      */
     public function store(Request $request)
     {
-        // Validate all possible fields, excluding batches
+        // Validate all possible fields
         $request->validate([
             'name' => 'required|string|max:255',
             'quantity' => 'required|integer|min:1',
@@ -249,31 +249,33 @@ public function getItemData($id)
             'brand' => 'nullable|string|max:255',
             'expiration_date' => 'nullable|date',
             'date_tested_inspected' => 'nullable|date',
-            'is_consumable' => 'nullable|boolean',
+            'consumable' => 'nullable|boolean',  // 'consumable' field can be nullable and boolean
             'inventory_date' => 'required|date',
         ]);
     
-        // Final storage location
+        // Final storage location (if "Other" storage location is selected)
         $storageLocation = $request->storage_location === 'Other'
             ? $request->other_storage_location
             : $request->storage_location;
     
-        // Boolean handling
-        $isConsumable = $request->boolean('is_consumable');
+        // Boolean handling for 'consumable'
+        $isConsumable = $request->has('consumable') && $request->consumable == '1'; // If 'consumable' is checked
     
-        // Check if item exists
+        // Check if item exists by name and category
         $item = Item::where('name', $request->name)
                     ->where('category', $request->category)
                     ->first();
     
         if ($item) {
+            // If the item exists, we just update the quantity
             $item->quantity += $request->quantity;
         } else {
+            // If the item doesn't exist, we create a new one
             $item = new Item();
             $item->name = $request->name;
             $item->quantity = $request->quantity;
     
-            // Generate item code
+            // Generate item code (item_code) based on category and name
             $categoryMap = [
                 'DRRM Equipment' => 'DRRM',
                 'Office Supplies' => 'Office',
@@ -302,23 +304,25 @@ public function getItemData($id)
         $item->brand = $request->brand;
         $item->date_tested_inspected = $request->date_tested_inspected;
         $item->expiration_date = $request->expiration_date;
-        $item->is_consumable = $isConsumable;
+        $item->is_consumable = $isConsumable; // Corrected to use 'is_consumable' field in the database
         $item->inventory_date = $request->inventory_date;
     
-        // Handle file upload
+        // Handle file upload for image
         if ($request->hasFile('image_url')) {
             $filename = time() . '.' . $request->image_url->extension();
             $request->image_url->move(public_path('images'), $filename);
             $item->image_url = 'images/' . $filename;
         }
     
+        // Save the item in the database
         $item->save();
     
-        // Remove any batch-related logic here
-    
+        // Redirect back with success message
         return redirect()->back()->with('success', 'Item added/updated successfully!');
     }
-    
+                   
+
+
     /**
      * Generate individual items for the added quantity.
      */
@@ -369,116 +373,112 @@ public function getItemData($id)
         return response()->json($item);
     }
 
-    /**
-     * Update the specified item in the database.
-     */
-// Update the specified item in the database
-public function update(Request $request, $id)
-{
-    // Fetch the item from the database using the ID
-    $item = Item::find($id);
-
-    // If the item is not found, return an error response
-    if (!$item) {
-        return response()->json(['error' => 'Item not found.'], 404);
-    }
-
-    // Validate the input fields for update
-    $validated = $request->validate([
-        'quantity' => 'required|integer|min:1', // Ensure quantity is a positive integer
-        'storage_location' => 'required|string|max:255', // Validate storage location
-        'arrival_date' => 'required|date', // Validate arrival date
-        'status' => 'required|string|max:255', // Ensure status is valid
-        'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Optional image upload
-        // Validation for new fields
-        'brand' => 'nullable|string|max:255', // New field: Brand
-        'expiration_date' => 'nullable|date', // New field: Expiration Date
-        'date_tested_inspected' => 'nullable|date', // New field: Date Tested/Inspected
-        'inventory_date' => 'nullable|date',  // Add inventory_date validation
-    ]);
-
-    // Save the old quantity to compare later
-    $oldQuantity = $item->quantity;
-
-    // Update the editable fields (don't update non-editable fields like `name`, `category`, etc.)
-    $item->quantity = $validated['quantity'];
-    $item->storage_location = $validated['storage_location'];
-    $item->arrival_date = $validated['arrival_date'];
-    $item->status = $validated['status'];
-
-    // Update the new fields
-    $item->brand = $validated['brand']; // Brand field
-    $item->expiration_date = $validated['expiration_date'] ?? null; // Handling Expiration Date (nullable)
-    $item->date_tested_inspected = $validated['date_tested_inspected'] ?? null; // Handling Date Tested/Inspected (nullable)
-    $item->inventory_date = $validated['inventory_date'] ?? null; // Handling Inventory Date (nullable)
-
-    // Handle image upload if provided and save URL to `image_url`
-    if ($request->hasFile('image_url')) {
-        // Generate a unique filename for the uploaded image
-        $filename = time() . '.' . $request->image_url->extension();
-        // Move the file to the `public/images` directory
-        $request->image_url->move(public_path('images'), $filename);
-        // Store the relative path of the image
-        $item->image_url = 'images/' . $filename;
-    }
-
-    // Save the updated item to the database
-    $item->save();
-
-    // Adjust the individual items table based on the quantity change
-    if ($validated['quantity'] < $oldQuantity) {
-        // If quantity is reduced, remove entries from individual items
-        $this->removeIndividualItems($item, $oldQuantity - $validated['quantity']);
-    } elseif ($validated['quantity'] > $oldQuantity) {
-        // If quantity is increased, add entries to individual items
-        $this->addIndividualItems($item, $validated['quantity'] - $oldQuantity);
-    }
-
-    // Return a success response with updated item data
-    return response()->json([
-        'success' => true,
-        'message' => 'Item updated successfully!',
-        'item' => $item // Return the updated item data
-    ]);
-}
-
-/**
- * Add individual items based on the quantity increase.
- */
-private function addIndividualItems($item, $quantityToAdd)
-{
-    $itemCode = $item->item_code;
-    $currentQuantity = $item->quantity;
-
-    // Generate individual item codes for the new quantity
-    for ($i = $currentQuantity - $quantityToAdd + 1; $i <= $currentQuantity; $i++) {
-        $individualItemCode = $itemCode . '-' . str_pad($i, 2, '0', STR_PAD_LEFT);
-
-        // Create individual item entry
-        $individualItem = new IndividualItem();
-        $individualItem->item_id = $item->id;
-        $individualItem->qr_code = $individualItemCode;  // Store the QR code string
-        $individualItem->status = $item->status;
-        $individualItem->save();
-    }
-}
-
-/**
- * Remove individual items based on the quantity decrease.
- */
-private function removeIndividualItems($item, $quantityToRemove)
-{
-    $individualItems = IndividualItem::where('item_id', $item->id)
-                                      ->orderBy('id', 'desc') // Get the latest added items first
-                                      ->take($quantityToRemove)
-                                      ->get();
-
-    foreach ($individualItems as $individualItem) {
-        $individualItem->delete(); // Delete the individual item
-    }
-}
+    public function update(Request $request, $id)
+    {
+        // Fetch the item from the database using the ID
+        $item = Item::find($id);
     
-        /**
+        // If the item is not found, return an error response
+        if (!$item) {
+            return response()->json(['error' => 'Item not found.'], 404);
+        }
+    
+        // Validate the input fields for update
+        $validated = $request->validate([
+            'quantity' => 'required|integer|min:1', // Ensure quantity is a positive integer
+            'storage_location' => 'required|string|max:255', // Validate storage location
+            'arrival_date' => 'required|date', // Validate arrival date
+            'status' => 'required|string|max:255', // Ensure status is valid
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Optional image upload
+            'brand' => 'nullable|string|max:255', // New field: Brand
+            'expiration_date' => 'nullable|date', // New field: Expiration Date
+            'date_tested_inspected' => 'nullable|date', // New field: Date Tested/Inspected
+            'inventory_date' => 'nullable|date',  // Add inventory_date validation
+        ]);
+    
+        // Save the old quantity to compare later
+        $oldQuantity = $item->quantity;
+    
+        // Update the editable fields (don't update non-editable fields like `name`, `category`, etc.)
+        $item->quantity = $validated['quantity'];
+        $item->storage_location = $validated['storage_location'];
+        $item->arrival_date = $validated['arrival_date'];
+        $item->status = $validated['status'];
+    
+        // Update the new fields
+        $item->brand = $validated['brand']; // Brand field
+        $item->expiration_date = $validated['expiration_date'] ?? null; // Handling Expiration Date (nullable)
+        $item->date_tested_inspected = $validated['date_tested_inspected'] ?? null; // Handling Date Tested/Inspected (nullable)
+        $item->inventory_date = $validated['inventory_date'] ?? null; // Handling Inventory Date (nullable)
+    
+        // Boolean handling for 'consumable'
+        $isConsumable = $request->has('consumable') && $request->consumable == '1'; // If 'consumable' is checked
+        $item->is_consumable = $isConsumable;
+    
+        // Handle image upload if provided and save URL to `image_url`
+        if ($request->hasFile('image_url')) {
+            // Generate a unique filename for the uploaded image
+            $filename = time() . '.' . $request->image_url->extension();
+            // Move the file to the `public/images` directory
+            $request->image_url->move(public_path('images'), $filename);
+            // Store the relative path of the image
+            $item->image_url = 'images/' . $filename;
+        }
+    
+        // Save the updated item to the database
+        $item->save();
+    
+        // Adjust the individual items table based on the quantity change
+        if ($validated['quantity'] < $oldQuantity) {
+            // If quantity is reduced, remove entries from individual items
+            $this->removeIndividualItems($item, $oldQuantity - $validated['quantity']);
+        } elseif ($validated['quantity'] > $oldQuantity) {
+            // If quantity is increased, add entries to individual items
+            $this->addIndividualItems($item, $validated['quantity'] - $oldQuantity);
+        }
+    
+        // Return a success response with updated item data
+        return response()->json([
+            'success' => true,
+            'message' => 'Item updated successfully!',
+            'item' => $item // Return the updated item data
+        ]);
+    }
+    
+    // Add individual items based on the quantity increase.
+    private function addIndividualItems($item, $quantityToAdd)
+    {
+        $itemCode = $item->item_code;
+        $currentQuantity = $item->quantity;
+    
+        // Generate individual item codes for the new quantity
+        for ($i = $currentQuantity - $quantityToAdd + 1; $i <= $currentQuantity; $i++) {
+            $individualItemCode = $itemCode . '-' . str_pad($i, 2, '0', STR_PAD_LEFT);
+    
+            // Create individual item entry
+            $individualItem = new IndividualItem();
+            $individualItem->item_id = $item->id;
+            $individualItem->qr_code = $individualItemCode;  // Store the QR code string
+            $individualItem->status = $item->status;
+            $individualItem->save();
+        }
+    }
+    
+    // Remove individual items based on the quantity decrease.
+    private function removeIndividualItems($item, $quantityToRemove)
+    {
+        $individualItems = IndividualItem::where('item_id', $item->id)
+                                          ->orderBy('id', 'desc') // Get the latest added items first
+                                          ->take($quantityToRemove)
+                                          ->get();
+    
+        foreach ($individualItems as $individualItem) {
+            $individualItem->delete(); // Delete the individual item
+        }
+    }
+
+
+    /**
      * Archive (soft delete) an item.
      */
     public function archiveItem($id)
