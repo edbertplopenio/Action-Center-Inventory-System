@@ -3,13 +3,10 @@
 @section('title', 'Edit Profile')
 
 @section('content')
-<!-- Include Font Awesome for the Pen Icon -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
-<!-- Background Image -->
 <img class="absolute w-full h-full object-cover" src="{{ asset('images/bgp.png') }}" alt="Background Image" style="z-index: -1;" />
 
-<!-- Content Form Section -->
 <div class="flex justify-between items-center h-full px-24">
     <div class="mx-auto p-2 overflow-hidden" style="max-width: 1220px; max-height: 700px; font-family: 'Inter', sans-serif;">
         <div class="container mx-auto py-6">
@@ -21,16 +18,15 @@
             @endif
 
             <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="grid grid-cols-2 gap-12 items-start">
-    @csrf
+                @csrf
 
-                <!-- Profile Image Section (Left Side) -->
+                <!-- Profile Image Section -->
                 <div class="flex flex-col items-center justify-center h-full">
                     <div class="w-80 h-80 rounded-full border border-white flex items-center justify-center mb-6 relative">
-                    <img id="profile-image-display" 
-                    src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('images/default_profile.jpg') }}" 
-                    alt="Profile Image" 
-                    class="w-80 h-80 rounded-full object-cover border-4 border-white" />
-
+                        <img id="profile-image-display" 
+                             src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('images/default_profile.jpg') }}" 
+                             alt="Profile Image" 
+                             class="w-80 h-80 rounded-full object-cover border-4 border-white" />
                         <button type="button" class="absolute bottom-2 right-2 text-white border border-white rounded-full p-2 bg-blue-600 hover:bg-blue-700" onclick="document.getElementById('profile-image').click();">
                             <i class="fas fa-pen"></i>
                         </button>
@@ -38,8 +34,7 @@
                     <input type="file" id="profile-image" name="profile_image" class="hidden" onchange="handleProfileImageSelect()" />
                 </div>
 
-
-                <!-- Form Fields (Right Side) -->
+                <!-- Form Fields -->
                 <div class="bg-white p-6 rounded-lg shadow-lg opacity-80 w-full max-w-xl">
                     <div class="flex flex-col space-y-4">
                         <div class="flex items-center space-x-6">
@@ -66,9 +61,9 @@
                         <div class="grid grid-cols-2 gap-6 w-full">
                             <!-- Password -->
                             <div class="flex flex-col relative">
-                                <label for="password" class="text-gray-700 text-left mb-2">Password</label>
+                                <label for="edit_password" class="text-gray-700 text-left mb-2">Password</label>
                                 <div class="relative">
-                                    <input type="password" name="password" id="password" class="w-full pr-10 px-3 py-2 border border-gray-300 rounded-md">
+                                    <input type="password" name="password" id="edit_password" class="w-full pr-10 px-3 py-2 border border-gray-300 rounded-md">
                                     <button type="button" id="togglePassword" class="absolute top-1/2 right-3 transform -translate-y-1/2">
                                         <i id="eyeIcon" class="fas fa-eye text-gray-600"></i>
                                     </button>
@@ -87,13 +82,14 @@
 
                             <!-- Confirm Password -->
                             <div class="flex flex-col relative">
-                                <label for="password_confirmation" class="text-gray-700 text-left mb-2">Confirm Password</label>
+                                <label for="edit_password_confirmation" class="text-gray-700 text-left mb-2">Confirm Password</label>
                                 <div class="relative">
-                                    <input type="password" name="password_confirmation" id="password_confirmation" class="w-full pr-10 px-3 py-2 border border-gray-300 rounded-md">
+                                    <input type="password" name="password_confirmation" id="edit_password_confirmation" class="w-full pr-10 px-3 py-2 border border-gray-300 rounded-md">
                                     <button type="button" id="toggleConfirmPassword" class="absolute top-1/2 right-3 transform -translate-y-1/2">
                                         <i id="eyeConfirmIcon" class="fas fa-eye text-gray-600"></i>
                                     </button>
                                 </div>
+                                <p id="passwordMatchMessage" class="text-xs mt-2"></p>
                             </div>
                         </div>
 
@@ -110,9 +106,8 @@
     </div>
 </div>
 
-<!-- JavaScript Section -->
+<!-- JavaScript -->
 <script>
-    // Handle Profile Image Selection
     function handleProfileImageSelect() {
         const fileInput = document.getElementById('profile-image');
         const file = fileInput.files[0];
@@ -125,47 +120,59 @@
         }
     }
 
-    // Toggle Password Visibility
+    // Toggle password visibility
     document.getElementById('togglePassword').addEventListener('click', function () {
-        const passwordInput = document.getElementById('password');
+        const input = document.getElementById('edit_password');
         const icon = document.getElementById('eyeIcon');
-        if (passwordInput.type === "password") {
-            passwordInput.type = "text";
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            passwordInput.type = "password";
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        }
+        input.type = input.type === "password" ? "text" : "password";
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
     });
 
     document.getElementById('toggleConfirmPassword').addEventListener('click', function () {
-        const passwordInput = document.getElementById('password_confirmation');
+        const input = document.getElementById('edit_password_confirmation');
         const icon = document.getElementById('eyeConfirmIcon');
-        if (passwordInput.type === "password") {
-            passwordInput.type = "text";
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
-        } else {
-            passwordInput.type = "password";
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
+        input.type = input.type === "password" ? "text" : "password";
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+    });
+
+    // Password checklist
+    document.getElementById('edit_password').addEventListener('input', function() {
+        const val = this.value;
+        document.getElementById('rule-length').style.color = val.length >= 8 ? 'green' : 'red';
+        document.getElementById('rule-lower').style.color = /[a-z]/.test(val) ? 'green' : 'red';
+        document.getElementById('rule-upper').style.color = /[A-Z]/.test(val) ? 'green' : 'red';
+        document.getElementById('rule-number').style.color = /\d/.test(val) ? 'green' : 'red';
+        document.getElementById('rule-symbol').style.color = /[^A-Za-z0-9]/.test(val) ? 'green' : 'red';
+    });
+
+    // Password match check
+    document.addEventListener('DOMContentLoaded', function () {
+        const password = document.getElementById('edit_password');
+        const confirmPassword = document.getElementById('edit_password_confirmation');
+        const message = document.getElementById('passwordMatchMessage');
+
+        function checkPasswordMatch() {
+            if (!confirmPassword.value) {
+                message.textContent = '';
+                return;
+            }
+
+            if (password.value === confirmPassword.value) {
+                message.textContent = '✅ Passwords match';
+                message.style.color = 'green';
+            } else {
+                message.textContent = '❌ Passwords do not match';
+                message.style.color = 'red';
+            }
         }
+
+        password.addEventListener('input', checkPasswordMatch);
+        confirmPassword.addEventListener('input', checkPasswordMatch);
     });
 
-    // Password Checklist Update
-    const passwordInput = document.getElementById('password');
-    passwordInput.addEventListener('input', function() {
-        const value = passwordInput.value;
-        document.getElementById('rule-length').style.color = value.length >= 8 ? 'green' : 'red';
-        document.getElementById('rule-lower').style.color = /[a-z]/.test(value) ? 'green' : 'red';
-        document.getElementById('rule-upper').style.color = /[A-Z]/.test(value) ? 'green' : 'red';
-        document.getElementById('rule-number').style.color = /\d/.test(value) ? 'green' : 'red';
-        document.getElementById('rule-symbol').style.color = /[^A-Za-z0-9]/.test(value) ? 'green' : 'red';
-    });
-
-    // Auto-hide success message
+    // Hide success message after 3s
     window.addEventListener('DOMContentLoaded', function() {
         const successMessage = document.getElementById('success-message');
         if (successMessage) {
@@ -173,7 +180,6 @@
         }
     });
 </script>
-
 
 <style>
     html, body {
