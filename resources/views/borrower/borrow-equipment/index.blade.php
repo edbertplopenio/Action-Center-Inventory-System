@@ -254,17 +254,16 @@
             </span>
         </td>
         <td>
-            <div style="display: flex; justify-content: space-between; width: 100%;">
-                <div style="flex: 1; text-align: center;">
+    <div style="display: flex; justify-content: space-between; width: 100%;">
+        <div style="flex: 1; text-align: center;">
+            {!! str_replace(' ', '<br>', $borrowed->request_responsible_person ?? 'N/A') !!}
+        </div>
+        <div style="flex: 1; text-align: center;">
+            {!! str_replace(' ', '<br>', $borrowed->return_responsible_person ?? 'N/A') !!}
+        </div>
+    </div>
+</td>
 
-                    {{ $borrowed->request_responsible_person ?? 'N/A' }}
-                </div>
-                <div style="flex: 1; text-align: center;">
-
-                    {{ $borrowed->return_responsible_person ?? 'N/A' }}
-                </div>
-            </div>
-        </td>
         <td>
             @if($borrowed->item->image_url)
                 <img src="{{ asset($borrowed->item->image_url) }}" alt="Item Image" style="width: 50px; height: 50px;">
@@ -299,9 +298,7 @@
 
     <!-- Modal Content -->
     <div class="fixed inset-0 flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg shadow-2xl w-full max-w-3xl overflow-hidden transform transition-all text-base">
-
-
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-3xl overflow-hidden transform transition-all">
             <!-- Modal Header -->
             <div class="px-6 py-4 border-b">
                 <h3 class="text-lg font-semibold text-gray-900" id="modal-title">Generate Report</h3>
@@ -332,8 +329,7 @@
                 </div>
 
                 <!-- Report Preview -->
-                <div id="reportContent" class="p-4 border rounded bg-gray-50 text-sm">
-
+                <div id="reportContent" class="p-4 border rounded bg-gray-100 text-sm">
                     <p class="text-gray-700"></p>
                 </div>
             </div>
