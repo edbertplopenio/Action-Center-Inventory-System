@@ -50,47 +50,45 @@ class AuthManager extends Controller
 
 
     // Handle registration request
-    public function registrationPost(Request $request)
-    {
-        // Validate registration data using array format for regex rules
-        $request->validate([
-            'first_name'     => 'required|string|max:100',
-            'last_name'      => 'required|string|max:100',
-            'email' => [
-                'required',
-                'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/',
-                'unique:users,email'
-            ],
-            'password' => [
-                'required',
-                'confirmed',
-                'min:8',
-                'regex:/[A-Z]/',  // Ensures password contains at least one uppercase letter
-                'regex:/[0-9]/',  // Ensures password contains at least one number
-                'regex:/[\W_]/',  // Ensures password contains at least one special character
-            ],
-            'department'     => 'nullable|string|max:255',
-            'contact_number' => ['nullable', 'regex:/^(09|\+639)\d{9}$/'],  // Contact number regex rule in array format
-        ]);
+public function registrationPost(Request $request)
+{
+    $request->validate([
+        'first_name'     => 'required|string|max:100',
+        'last_name'      => 'required|string|max:100',
+        'email' => [
+            'required',
+            'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/',
+            'unique:users,email'
+        ],
+        'password' => [
+            'required',
+            'confirmed',
+            'min:8',
+            'regex:/[A-Z]/',
+            'regex:/[0-9]/',
+            'regex:/[\W_]/',
+        ],
+        'department'     => 'nullable|string|max:255',
+        'contact_number' => ['nullable', 'regex:/^(09|\+639)\d{9}$/'],
+    ]);
 
-        // Create new user
-        $user = User::create([
-            'first_name'     => $request->first_name,
-            'last_name'      => $request->last_name,
-            'email'          => $request->email,
-            'password'       => Hash::make($request->password),
-            'department'     => $request->department,
-            'contact_number' => $request->contact_number,
-        ]);
+    $user = User::create([
+        'first_name'     => $request->first_name,
+        'last_name'      => $request->last_name,
+        'email'          => $request->email,
+        'password'       => Hash::make($request->password),
+        'department'     => $request->department,
+        'contact_number' => $request->contact_number,
+        'active'         => 0, // Add this line to mark user as inactive
+    ]);
 
-        // Inside registrationPost method
-        if (!$user) {
-            return redirect()->route('registration')->with("status", "error");
-        }
-
-        // Use a unique status message for registration success
-        return redirect()->route('login')->with("status", "registration_success");
+    if (!$user) {
+        return redirect()->route('registration')->with("status", "error");
     }
+
+    // Redirect back to registration with verification message
+    return redirect()->route('registration')->with("status", "verification_pending");
+}
 
     // Handle logout request
     public function logout()

@@ -129,14 +129,15 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-@if (session('status') == 'registration_success')
+{{-- Remove the original registration_success alert --}}
+@if (session('status') == 'verification_pending')
 <script>
   Swal.fire({
-    icon: 'success',
-    title: 'Registration Successful!',
-    text: 'You can now log in to your account.',
-    showConfirmButton: false,
-    timer: 1500
+    icon: 'info',
+    title: 'Account Activation Required',
+    html: 'To activate your account, we will send a verification link to your email address. Please check your inbox and follow the instructions to activate your account.',
+    confirmButtonText: 'OK',
+    confirmButtonColor: '#780000',
   });
 </script>
 @endif
@@ -145,10 +146,9 @@
 <script>
   Swal.fire({
     icon: 'error',
-    title: 'Oops...',
-    text: 'There was an issue with the registration. Please try again.',
-    showConfirmButton: false,
-    timer: 1500
+    title: 'Registration Failed',
+    text: 'There was an issue processing your registration. Please try again.',
+    confirmButtonColor: '#780000',
   });
 </script>
 @endif
