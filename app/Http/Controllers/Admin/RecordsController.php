@@ -15,8 +15,8 @@ class RecordsController extends Controller
     public function index()
     {
         // Fetch all records where status is not 'archived'
-    $records = Record::where('status', '!=', 'archived')->get();
-    return view('admin.records.index', compact('records'));
+        $records = Record::where('status', '!=', 'archived')->get();
+        return view('admin.records.index', compact('records'));
     }
 
     /**
@@ -35,7 +35,7 @@ class RecordsController extends Controller
             'end_year' => 'nullable|integer|min:1900|max:2100',
             'volume' => 'nullable|string|max:255',
             'medium' => 'required|string|max:50',
-            'restriction' => 'required|in:open-access,confidential',
+            'restriction' => 'required|in:open-access,confidential,restricted',
             'location' => 'required|string|max:255',
             'frequency' => 'required|in:as_needed,weekly,monthly,yearly',
             'duplication' => 'nullable|string|max:255',
@@ -115,156 +115,147 @@ class RecordsController extends Controller
 
 
     public function archive($id)
-{
-    $record = Record::find($id);
-    if ($record) {
-        // Mark the record as archived in the database
-        $record->status = 'archived';
-        $record->save();
+    {
+        $record = Record::find($id);
+        if ($record) {
+            // Mark the record as archived in the database
+            $record->status = 'archived';
+            $record->save();
+
+            return response()->json([
+                'message' => 'Record archived successfully!',
+            ]);
+        }
 
         return response()->json([
-            'message' => 'Record archived successfully!',
+            'message' => 'Record not found.',
+        ], 404);
+    }
+
+
+
+
+    public function unarchive($id)
+    {
+        $record = Record::find($id);
+        if ($record) {
+            // Update the record's status to active
+            $record->status = 'active';
+            $record->save();
+
+            return response()->json(['message' => 'Record unarchived successfully!']);
+        }
+
+        return response()->json(['message' => 'Record not found.'], 404);
+    }
+
+
+
+
+
+
+    public function update(Request $request, $id)
+    {
+        $record = Record::find($id);
+        if (!$record) {
+            return response()->json(['success' => false, 'message' => 'Record not found'], 404);
+        }
+
+        // Validate request data
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'related_documents' => 'nullable|string|max:255',
+            'start_year' => 'required|integer|min:1900|max:2100',
+            'end_year' => 'nullable|integer|min:1900|max:2100',
+            'volume' => 'nullable|string|min:0',
+            'medium' => 'required|string|max:50',
+            'restriction' => 'required|in:open-access,confidential,restricted',
+            'location' => 'required|string|max:255',
+            'frequency' => 'required|in:as_needed,weekly,monthly,yearly',
+            'duplication' => 'nullable|string|max:255',
+            'time_value' => 'required|in:T,P',
+            'utility_value' => 'nullable|array',
+            'active' => 'nullable|integer|min:0',
+            'active_unit' => 'nullable|string|max:20',
+            'storage' => 'nullable|integer|min:0',
+            'storage_unit' => 'nullable|string|max:20',
+            'disposition' => 'nullable|string|max:500',
+            'grds_item' => 'nullable|string|max:255',
+            'permanent' => 'nullable|boolean',
+        ]);
+
+        // Convert utility_value array to comma-separated string
+        $validatedData['utility_value'] = isset($validatedData['utility_value'])
+            ? implode(',', $validatedData['utility_value'])
+            : null;
+
+        // Handle "Permanent" selection
+        if ($request->has('permanent')) {
+            $validatedData['active'] = null;
+            $validatedData['storage'] = null;
+            $validatedData['active_unit'] = 'Permanent';
+            $validatedData['storage_unit'] = 'Permanent';
+        } else {
+            // If fields are missing, set them to defaults to prevent errors
+            $validatedData['active'] = $validatedData['active'] ?? 0;
+            $validatedData['active_unit'] = $validatedData['active_unit'] ?? 'years';
+            $validatedData['storage'] = $validatedData['storage'] ?? 0;
+            $validatedData['storage_unit'] = $validatedData['storage_unit'] ?? 'years';
+        }
+
+        // Update the record
+        $record->update($validatedData);
+
+        // Calculate total retention (in years and months)
+        $totalYears = 0;
+        $totalMonths = 0;
+
+        if ($validatedData['active_unit'] === "years") {
+            $totalYears += $validatedData['active'] ?? 0;
+        } elseif ($validatedData['active_unit'] === "months") {
+            $totalMonths += $validatedData['active'] ?? 0;
+        }
+
+        if ($validatedData['storage_unit'] === "years") {
+            $totalYears += $validatedData['storage'] ?? 0;
+        } elseif ($validatedData['storage_unit'] === "months") {
+            $totalMonths += $validatedData['storage'] ?? 0;
+        }
+
+        // Convert months into years if applicable
+        $totalYears += intdiv($totalMonths, 12);
+        $totalMonths = $totalMonths % 12;
+
+        // Format total retention period
+        $totalRetention = $totalYears ? "{$totalYears} yrs" : "";
+        if ($totalMonths) {
+            $totalRetention .= $totalYears ? ", " : "";
+            $totalRetention .= "{$totalMonths} mos";
+        }
+        if (!$totalRetention) $totalRetention = "0";
+
+        // Return JSON response for AJAX request
+        return response()->json([
+            'success' => true,
+            'message' => 'Record updated successfully!',
+            'updatedRecord' => [
+                'id' => $record->id,
+                'title' => $record->title,
+                'related_documents' => $record->related_documents,
+                'start_year' => $record->start_year,
+                'end_year' => $record->end_year,
+                'volume' => $record->volume,
+                'medium' => ucfirst(strtolower($record->medium)),
+                'location' => $record->location,
+                'time_value' => $record->time_value,
+                'active' => $record->active,
+                'active_unit' => $record->active_unit,
+                'storage' => $record->storage,
+                'storage_unit' => $record->storage_unit,
+                'disposition' => $record->disposition,
+                'grds_item' => $record->grds_item,
+                'total_retention' => $totalRetention
+            ]
         ]);
     }
-
-    return response()->json([
-        'message' => 'Record not found.',
-    ], 404);
 }
-
-
-
-
-public function unarchive($id)
-{
-    $record = Record::find($id);
-    if ($record) {
-        // Update the record's status to active
-        $record->status = 'active';
-        $record->save();
-
-        return response()->json(['message' => 'Record unarchived successfully!']);
-    }
-
-    return response()->json(['message' => 'Record not found.'], 404);
-}
-
-
-
-
-
-
-public function update(Request $request, $id)
-{
-    $record = Record::find($id);
-    if (!$record) {
-        return response()->json(['success' => false, 'message' => 'Record not found'], 404);
-    }
-
-    // Validate request data
-    $validatedData = $request->validate([
-        'title' => 'required|string|max:255',
-        'related_documents' => 'nullable|string|max:255',
-        'start_year' => 'required|integer|min:1900|max:2100',
-        'end_year' => 'nullable|integer|min:1900|max:2100',
-        'volume' => 'nullable|string|min:0',
-        'medium' => 'required|string|max:50',
-        'restriction' => 'required|in:open-access,confidential',
-        'location' => 'required|string|max:255',
-        'frequency' => 'required|in:as_needed,weekly,monthly,yearly',
-        'duplication' => 'nullable|string|max:255',
-        'time_value' => 'required|in:T,P',
-        'utility_value' => 'nullable|array',
-        'active' => 'nullable|integer|min:0',
-        'active_unit' => 'nullable|string|max:20',
-        'storage' => 'nullable|integer|min:0',
-        'storage_unit' => 'nullable|string|max:20',
-        'disposition' => 'nullable|string|max:500',
-        'grds_item' => 'nullable|string|max:255',
-        'permanent' => 'nullable|boolean',
-    ]);
-
-    // Convert utility_value array to comma-separated string
-    $validatedData['utility_value'] = isset($validatedData['utility_value']) 
-        ? implode(',', $validatedData['utility_value']) 
-        : null;
-
-    // Handle "Permanent" selection
-    if ($request->has('permanent')) {
-        $validatedData['active'] = null;
-        $validatedData['storage'] = null;
-        $validatedData['active_unit'] = 'Permanent';
-        $validatedData['storage_unit'] = 'Permanent';
-    } else {
-        // If fields are missing, set them to defaults to prevent errors
-        $validatedData['active'] = $validatedData['active'] ?? 0;
-        $validatedData['active_unit'] = $validatedData['active_unit'] ?? 'years';
-        $validatedData['storage'] = $validatedData['storage'] ?? 0;
-        $validatedData['storage_unit'] = $validatedData['storage_unit'] ?? 'years';
-    }
-
-    // Update the record
-    $record->update($validatedData);
-
-    // Calculate total retention (in years and months)
-    $totalYears = 0;
-    $totalMonths = 0;
-
-    if ($validatedData['active_unit'] === "years") {
-        $totalYears += $validatedData['active'] ?? 0;
-    } elseif ($validatedData['active_unit'] === "months") {
-        $totalMonths += $validatedData['active'] ?? 0;
-    }
-
-    if ($validatedData['storage_unit'] === "years") {
-        $totalYears += $validatedData['storage'] ?? 0;
-    } elseif ($validatedData['storage_unit'] === "months") {
-        $totalMonths += $validatedData['storage'] ?? 0;
-    }
-
-    // Convert months into years if applicable
-    $totalYears += intdiv($totalMonths, 12);
-    $totalMonths = $totalMonths % 12;
-
-    // Format total retention period
-    $totalRetention = $totalYears ? "{$totalYears} yrs" : "";
-    if ($totalMonths) {
-        $totalRetention .= $totalYears ? ", " : "";
-        $totalRetention .= "{$totalMonths} mos";
-    }
-    if (!$totalRetention) $totalRetention = "0";
-
-    // Return JSON response for AJAX request
-    return response()->json([
-        'success' => true,
-        'message' => 'Record updated successfully!',
-        'updatedRecord' => [
-            'id' => $record->id,
-            'title' => $record->title,
-            'related_documents' => $record->related_documents,
-            'start_year' => $record->start_year,
-            'end_year' => $record->end_year,
-            'volume' => $record->volume,
-            'medium' => ucfirst(strtolower($record->medium)),
-            'location' => $record->location,
-            'time_value' => $record->time_value,
-            'active' => $record->active,
-            'active_unit' => $record->active_unit,
-            'storage' => $record->storage,
-            'storage_unit' => $record->storage_unit,
-            'disposition' => $record->disposition,
-            'grds_item' => $record->grds_item,
-            'total_retention' => $totalRetention
-        ]
-    ]);
-}
-
-
-
-    
-    
-}
-
-
-
-

@@ -734,8 +734,10 @@
                                             class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
                                             <option value="open-access">Open Access</option>
                                             <option value="confidential">Confidential</option>
+                                            <option value="restricted">Restricted</option>
                                         </select>
                                     </div>
+
 
                                     <!-- DISPOSITION PROVISION -->
                                     <div class="sm:col-span-1">
@@ -1866,8 +1868,10 @@
                                         <select name="restriction" id="restriction" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
                                             <option value="open-access">Open Access</option>
                                             <option value="confidential">Confidential</option>
+                                            <option value="restricted">Restricted</option>
                                         </select>
                                     </div>
+
 
 
                                     <!-- DISPOSITION PROVISION -->
