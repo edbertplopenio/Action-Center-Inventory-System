@@ -15,6 +15,36 @@
     style="backdrop-filter: blur(10px); transform: translateX(45%);">
 
 
+    @if(session('status') == 'login_error')
+    <script>
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: 'Invalid credentials. Please try again.'
+      });
+    </script>
+    @endif
+
+    @if(session('status') == 'inactive_account')
+    <script>
+      Swal.fire({
+        icon: 'warning',
+        title: 'Account Inactive',
+        text: 'Please verify your email before logging in.'
+      });
+    </script>
+    @endif
+
+    @if(session('status') == 'verification_success')
+    <script>
+      Swal.fire({
+        icon: 'success',
+        title: 'Email Verified!',
+        text: 'Your account has been activated. You may now log in.'
+      });
+    </script>
+    @endif
+
 
     <!-- Display Validation Errors -->
     @if ($errors->any())
@@ -101,12 +131,12 @@
 
 @if (session('status') == 'account_inactive')
 <script>
-    Swal.fire({
-        icon: 'error',
-        title: 'Account Inactive',
-        text: 'Your account is inactive. Please contact an administrator.',
-        confirmButtonText: 'OK'
-    });
+  Swal.fire({
+    icon: 'error',
+    title: 'Account Inactive',
+    text: 'Your account is inactive. Please contact an administrator.',
+    confirmButtonText: 'OK'
+  });
 </script>
 @endif
 

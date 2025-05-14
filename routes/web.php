@@ -317,3 +317,7 @@ Route::post('/admin/return-items/approve-pending/{id}', [ReturnItemsController::
     ->name('admin.return-items.approve-pending');
 
 Route::post('/admin/return-items/approve-pending/{id}', [ReturnItemsController::class, 'approveAllPending']);
+
+
+Route::get('/verify-email/{token}', [AuthManager::class, 'verifyEmail'])->name('verify.email');
+
