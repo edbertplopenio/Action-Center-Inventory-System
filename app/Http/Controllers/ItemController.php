@@ -430,23 +430,31 @@ public function getQrCodes($itemCode)
     
         // Validate the input fields for update
         $validated = $request->validate([
-            'quantity' => 'required|integer|min:1',
-            'storage_location' => 'required|string|max:255',
-            'arrival_date' => 'required|date',
-            'status' => 'required|string|max:255',
-            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10000',
-            'brand' => 'nullable|string|max:255',
-            'expiration_date' => 'nullable|date',
-            'date_tested_inspected' => 'nullable|date',
-            'inventory_date' => 'nullable|date',
-            'consumable' => 'nullable|boolean', // Added consumable validation
+            'name' => 'required|string|max:255',  // Ensure the name is not empty
+            'quantity' => 'required|integer|min:1',  // Validate quantity
+            'unit' => 'required|string|max:255',  // Validate unit
+            'category' => 'required|string|max:255',  // Validate category
+            'description' => 'nullable|string|max:255',  // Description is optional
+            'storage_location' => 'required|string|max:255',  // Validate storage location
+            'arrival_date' => 'required|date',  // Validate arrival date
+            'status' => 'required|string|max:255',  // Validate status
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10000',  // Image upload validation
+            'brand' => 'nullable|string|max:255',  // Brand is optional
+            'expiration_date' => 'nullable|date',  // Expiration date is optional
+            'date_tested_inspected' => 'nullable|date',  // Date tested/inspected is optional
+            'inventory_date' => 'nullable|date',  // Inventory date is optional
+            'consumable' => 'nullable|boolean',  // Handle consumable field
         ]);
     
         // Save the old quantity to compare later
         $oldQuantity = $item->quantity;
     
         // Update the editable fields
+        $item->name = $validated['name'];
         $item->quantity = $validated['quantity'];
+        $item->unit = $validated['unit'];
+        $item->category = $validated['category'];
+        $item->description = $validated['description'];
         $item->storage_location = $validated['storage_location'];
         $item->arrival_date = $validated['arrival_date'];
         $item->status = $validated['status'];
@@ -455,12 +463,12 @@ public function getQrCodes($itemCode)
         $item->date_tested_inspected = $validated['date_tested_inspected'] ?? null;
         $item->inventory_date = $validated['inventory_date'] ?? null;
     
-        // Boolean handling for 'consumable'
-        // We make sure 'consumable' is set correctly
+        // Handle consumable field (boolean)
         $item->is_consumable = $request->has('consumable') && $request->consumable == '1';
     
         // Handle image upload if provided
         if ($request->hasFile('image_url')) {
+            // Generate a unique filename and move the uploaded file
             $filename = time() . '.' . $request->image_url->extension();
             $request->image_url->move(public_path('images'), $filename);
             $item->image_url = 'images/' . $filename;
@@ -471,8 +479,10 @@ public function getQrCodes($itemCode)
     
         // Adjust the individual items table based on the quantity change
         if ($validated['quantity'] < $oldQuantity) {
+            // If quantity decreased, remove excess individual items
             $this->removeIndividualItems($item, $oldQuantity - $validated['quantity']);
         } elseif ($validated['quantity'] > $oldQuantity) {
+            // If quantity increased, add new individual items
             $this->addIndividualItems($item, $validated['quantity'] - $oldQuantity);
         }
     
@@ -483,14 +493,27 @@ public function getQrCodes($itemCode)
             'item' => $item
         ]);
     }
-            
-    // Add individual items based on the quantity increase.
+    
+    // Method to remove individual items (if quantity decreases)
+    private function removeIndividualItems($item, $quantityToRemove)
+    {
+        $individualItems = IndividualItem::where('item_id', $item->id)
+                                          ->orderBy('id', 'desc') // Remove the latest added items first
+                                          ->take($quantityToRemove)
+                                          ->get();
+    
+        foreach ($individualItems as $individualItem) {
+            $individualItem->delete();  // Delete individual item record
+        }
+    }
+    
+    // Method to add individual items (if quantity increases)
     private function addIndividualItems($item, $quantityToAdd)
     {
         $itemCode = $item->item_code;
         $currentQuantity = $item->quantity;
     
-        // Generate individual item codes for the new quantity
+        // Generate new individual item codes for the new quantity
         for ($i = $currentQuantity - $quantityToAdd + 1; $i <= $currentQuantity; $i++) {
             $individualItemCode = $itemCode . '-' . str_pad($i, 2, '0', STR_PAD_LEFT);
     
@@ -503,19 +526,6 @@ public function getQrCodes($itemCode)
         }
     }
     
-    // Remove individual items based on the quantity decrease.
-    private function removeIndividualItems($item, $quantityToRemove)
-    {
-        $individualItems = IndividualItem::where('item_id', $item->id)
-                                          ->orderBy('id', 'desc') // Get the latest added items first
-                                          ->take($quantityToRemove)
-                                          ->get();
-    
-        foreach ($individualItems as $individualItem) {
-            $individualItem->delete(); // Delete the individual item
-        }
-    }
-
 
     /**
      * Archive (soft delete) an item.

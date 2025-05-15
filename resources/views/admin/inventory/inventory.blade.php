@@ -1675,6 +1675,7 @@ $(document).ready(function() {
         $("#editItemModal").addClass("hidden");
     });
 });
+
 </script>
 
 <script>
@@ -1900,13 +1901,13 @@ $(document).ready(function() {
                             <!-- Item Name -->
                             <div>
                                 <label for="edit_item_name" class="block text-xs font-medium text-gray-900">Item Name</label>
-                                <input type="text" id="edit_item_name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->name }}" required readonly>
+                                <input type="text" id="edit_item_name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->name }}" required>
                             </div>
 
                             <!-- Category -->
                             <div>
                                 <label for="edit_category" class="block text-xs font-medium text-gray-900">Category</label>
-                                <select id="edit_category" name="category" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
+                                <select id="edit_category" name="category" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
                                     <option value="DRRM Equipment" {{ $item->category == 'DRRM Equipment' ? 'selected' : '' }}>DRRM Equipment</option>
                                     <option value="Office Supplies" {{ $item->category == 'Office Supplies' ? 'selected' : '' }}>Office Supplies</option>
                                     <option value="Emergency Kits" {{ $item->category == 'Emergency Kits' ? 'selected' : '' }}>Emergency Kits</option>
@@ -1929,13 +1930,13 @@ $(document).ready(function() {
                             <!-- Unit -->
                             <div>
                                 <label for="edit_unit" class="block text-xs font-medium text-gray-900">Unit</label>
-                                <input type="text" id="edit_unit" name="unit" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->unit }}" disabled>
+                                <input type="text" id="edit_unit" name="unit" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->unit }}">
                             </div>
 
                             <!-- Description -->
                             <div>
                                 <label for="edit_description" class="block text-xs font-medium text-gray-900">Description</label>
-                                <textarea id="edit_description" name="description" rows="3" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>{{ $item->description }}</textarea>
+                                <textarea id="edit_description" name="description" rows="3" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">{{ $item->description }}</textarea>
                             </div>
 
                             <!-- Storage Location -->
