@@ -422,10 +422,15 @@ margin-bottom: -2rem;
 
     /* Change font size for table cells */
     table.dataTable tbody td {
-        font-size: 14px;
+        font-size: 12px;
         /* Adjust the font size for table data cells */
         text-align: center;
     }
+/* Ensure font size remains consistent for all table rows */
+table.dataTable tbody td, 
+table.dataTable thead th {
+    font-size: 12px !important;  /* Reset the font size */
+}
 
     /**/
     /**/
@@ -1149,11 +1154,17 @@ margin-bottom: -2rem;
                 // Sorting by the 'Arrival Date' or 'added_at' column in descending order (index 7)
                 "order": [
                     [8, 'desc']
-                ], // Change the index (7) if your column index is different for `added_at` or `Arrival Date`
+                ], // Change the index (7) if your column index is different for `added_at` or 'Arrival Date'
                 "initComplete": function(settings, json) {
+                    // Set the font size for the table after initialization
                     $(tableId).css('font-size', '12px');
                     $(tableId + ' thead th').css('font-size', '10px');
                     $(tableId + ' tbody td').css('font-size', '10px');
+                },
+                "drawCallback": function(settings) {
+                    // Reset font size whenever DataTable is redrawn (e.g., after pagination or page size change)
+                    $(tableId + ' tbody td').css('font-size', '12px');
+                    $(tableId + ' thead th').css('font-size', '10px');
                 }
             });
         }
@@ -1238,7 +1249,7 @@ margin-bottom: -2rem;
             switchTab('archives');
         });
     });
-</script>
+    </script>
 
 
 
@@ -1270,37 +1281,6 @@ $(document).ready(function() {
     $('#consumable').on('change', function() {
         // This updates the form data with '1' for checked and '0' for unchecked
         $('input[name="consumable"]').val($(this).is(':checked') ? '1' : '0');
-    });
-
-    // Search for item when typing in the item search box
-    $('#item-name-search').on('input', function() {
-        var itemName = $(this).val();
-        if (itemName.length > 2) {  // Only trigger search if the name has 3 or more characters
-            $.ajax({
-                url: "{{ route('items.searchItem') }}", // Make sure this route is correct
-                method: 'GET',
-                data: { name: itemName },
-                success: function(response) {
-                    if (response.error) {
-                        console.log(response.error);
-                        // Enable save button for new item
-                        $('#saveButton').prop('disabled', false);
-                    } else {
-                        // Populate fields with the fetched item data
-                        $('#category').val(response.category);
-                        $('#quantity').val(response.quantity);
-                        $('#unit').val(response.unit);
-                        $('#brand').val(response.brand);
-                        $('#description').val(response.description);
-                        $('#storage_location').val(response.storage_location);
-                        $('#saveButton').removeAttr('disabled'); // Enable save button for existing item
-                    }
-                },
-                error: function(xhr) {
-                    console.error('Error searching item:', xhr.responseText);
-                }
-            });
-        }
     });
 
     // Handle form submission
@@ -1377,7 +1357,6 @@ $(document).ready(function() {
         $('#itemForm').find('input[type="text"], input[type="number"], input[type="date"], input[type="file"], textarea').val('');
         $('#itemForm').find('select').prop('selectedIndex', 0);
         $('#other_unit, #other_storage_location').addClass('hidden').val('');
-        $('#item-name-search').val('');
         $('#itemForm').find('input, select, textarea').prop('disabled', false);
         $('#saveButton').prop('disabled', true); // Disable save button when clearing
     });
@@ -1782,11 +1761,12 @@ $(document).ready(function() {
                     @csrf
                     <div class="space-y-6">
                         <div class="grid grid-cols-2 gap-4">
-                            <!-- Item Name (Search) -->
+                            <!-- Item Name -->
                             <div>
                                 <label for="name" class="block text-xs font-medium text-gray-900">Item Name</label>
-                                <input type="text" id="item-name-search" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Search Item by Name" required>
+                                <input type="text" id="name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter Item Name" required>
                             </div>
+
 
                             <!-- Category -->
                             <div>
