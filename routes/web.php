@@ -202,7 +202,8 @@ Route::controller(ItemController::class)->group(function () {
     Route::get('/items/{id}/edit', 'editItem')->name('items.edit'); 
 
     // Update item details
-    Route::put('/items/{id}', 'update')->name('items.update'); 
+    Route::put('/items/{id}', 'update')->name('items.update');  // Updated to use PUT
+
 
     // Permanently delete item
     Route::delete('/items/{id}', 'deletePermanently')->name('items.destroy'); 

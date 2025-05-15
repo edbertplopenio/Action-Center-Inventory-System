@@ -245,7 +245,7 @@ public function getItemData($id)
             'other_storage_location' => 'nullable|string|max:255',
             'arrival_date' => 'required|date',
             'status' => 'required|string|max:255',
-            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10000',
             'brand' => 'nullable|string|max:255',
             'expiration_date' => 'nullable|date',
             'date_tested_inspected' => 'nullable|date',
@@ -434,11 +434,12 @@ public function getQrCodes($itemCode)
             'storage_location' => 'required|string|max:255',
             'arrival_date' => 'required|date',
             'status' => 'required|string|max:255',
-            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10000',
             'brand' => 'nullable|string|max:255',
             'expiration_date' => 'nullable|date',
             'date_tested_inspected' => 'nullable|date',
             'inventory_date' => 'nullable|date',
+            'consumable' => 'nullable|boolean', // Added consumable validation
         ]);
     
         // Save the old quantity to compare later
@@ -455,6 +456,7 @@ public function getQrCodes($itemCode)
         $item->inventory_date = $validated['inventory_date'] ?? null;
     
         // Boolean handling for 'consumable'
+        // We make sure 'consumable' is set correctly
         $item->is_consumable = $request->has('consumable') && $request->consumable == '1';
     
         // Handle image upload if provided
@@ -481,7 +483,7 @@ public function getQrCodes($itemCode)
             'item' => $item
         ]);
     }
-        
+            
     // Add individual items based on the quantity increase.
     private function addIndividualItems($item, $quantityToAdd)
     {

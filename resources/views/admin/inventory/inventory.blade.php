@@ -636,6 +636,7 @@ table.dataTable thead th {
         font-size: 12px;
         /* Make sure the font size remains consistent */
     }
+
 </style>
 
 </head>
@@ -1526,8 +1527,8 @@ function openEditModal(itemId) {
                 'max': today
             });
 
-            // Set form action URL
-            $('#editItemForm').attr('action', "/items/update/" + item.id);
+            // Set form action URL for updating the item (use PUT method)
+            $('#editItemForm').attr('action', "/items/" + item.id); // Correct URL
 
             // Make fields editable
             $('#edit_item_name').attr('readonly', false);
@@ -1634,7 +1635,7 @@ $(document).ready(function() {
         // Submit the form via AJAX
         $.ajax({
             url: $(this).attr('action'),
-            method: 'POST',
+            method: 'PUT', // Use PUT request for update
             data: $(this).serialize(),
             success: function(response) {
                 if (response.success) {
@@ -1645,7 +1646,8 @@ $(document).ready(function() {
                         confirmButtonText: 'OK',
                         willClose: () => {
                             $('#editItemModal').addClass('hidden');
-                            updateItemRow(response.item);
+                            // Reload the page to reflect changes
+                            location.reload();  // Automatically reload the page
                         }
                     });
                 } else {
@@ -1880,7 +1882,6 @@ $(document).ready(function() {
     </div>
 </div>
 
-
 <!-- Edit Item Modal -->
 <div id="editItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
     <div class="relative z-10 flex items-center justify-center">
@@ -1889,70 +1890,70 @@ $(document).ready(function() {
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Edit Item</h3>
 
                 <!-- Edit Item Form -->
-                <form id="editItemForm" action="{{ route('items.update', ['id' => '__ID__']) }}" method="POST" enctype="multipart/form-data">
+                <form id="editItemForm" action="{{ route('items.update', ['id' => $item->id]) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT') <!-- Use PUT method for updates -->
-                    <input type="hidden" id="edit_item_id" name="item_id">
+                    <input type="hidden" id="edit_item_id" name="item_id" value="{{ $item->id }}">
 
                     <div class="space-y-6">
                         <div class="grid grid-cols-2 gap-4">
                             <!-- Item Name -->
                             <div>
                                 <label for="edit_item_name" class="block text-xs font-medium text-gray-900">Item Name</label>
-                                <input type="text" id="edit_item_name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required readonly> <!-- readonly for non-editable -->
+                                <input type="text" id="edit_item_name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->name }}" required readonly>
                             </div>
 
                             <!-- Category -->
                             <div>
                                 <label for="edit_category" class="block text-xs font-medium text-gray-900">Category</label>
                                 <select id="edit_category" name="category" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
-                                    <option value="DRRM Equipment">DRRM Equipment</option>
-                                    <option value="Office Supplies">Office Supplies</option>
-                                    <option value="Emergency Kits">Emergency Kits</option>
-                                    <option value="Other Items">Other Items</option>
+                                    <option value="DRRM Equipment" {{ $item->category == 'DRRM Equipment' ? 'selected' : '' }}>DRRM Equipment</option>
+                                    <option value="Office Supplies" {{ $item->category == 'Office Supplies' ? 'selected' : '' }}>Office Supplies</option>
+                                    <option value="Emergency Kits" {{ $item->category == 'Emergency Kits' ? 'selected' : '' }}>Emergency Kits</option>
+                                    <option value="Other Items" {{ $item->category == 'Other Items' ? 'selected' : '' }}>Other Items</option>
                                 </select>
                             </div>
 
                             <!-- Consumable Checkbox -->
                             <div>
-                                <input type="checkbox" id="edit_consumable" name="consumable" value="1" class="form-checkbox">
+                                <input type="checkbox" id="edit_consumable" name="consumable" value="1" class="form-checkbox" {{ $item->is_consumable ? 'checked' : '' }}>
                                 <label for="edit_consumable" class="text-xs font-medium text-gray-900">Consumable</label>
                             </div>
 
                             <!-- Quantity -->
                             <div>
                                 <label for="edit_quantity" class="block text-xs font-medium text-gray-900">Quantity</label>
-                                <input type="number" id="edit_quantity" name="quantity" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                <input type="number" id="edit_quantity" name="quantity" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->quantity }}" required>
                             </div>
 
                             <!-- Unit -->
                             <div>
                                 <label for="edit_unit" class="block text-xs font-medium text-gray-900">Unit</label>
-                                <input type="text" id="edit_unit" name="unit" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
+                                <input type="text" id="edit_unit" name="unit" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->unit }}" disabled>
                             </div>
 
                             <!-- Description -->
                             <div>
                                 <label for="edit_description" class="block text-xs font-medium text-gray-900">Description</label>
-                                <textarea id="edit_description" name="description" rows="3" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled></textarea>
+                                <textarea id="edit_description" name="description" rows="3" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>{{ $item->description }}</textarea>
                             </div>
 
                             <!-- Storage Location -->
                             <div>
                                 <label for="edit_storage_location" class="block text-xs font-medium text-gray-900">Storage Location</label>
-                                <input type="text" id="edit_storage_location" name="storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
+                                <input type="text" id="edit_storage_location" name="storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->storage_location }}">
                             </div>
 
                             <!-- Arrival Date -->
                             <div>
                                 <label for="edit_arrival_date" class="block text-xs font-medium text-gray-900">Arrival Date</label>
-                                <input type="date" id="edit_arrival_date" name="arrival_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
+                                <input type="date" id="edit_arrival_date" name="arrival_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->arrival_date }}">
                             </div>
 
                             <!-- Inventory Date -->
                             <div>
                                 <label for="edit_inventory_date" class="block text-xs font-medium text-gray-900">Inventory Date</label>
-                                <input type="date" id="edit_inventory_date" name="inventory_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="date" id="edit_inventory_date" name="inventory_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->inventory_date }}">
                             </div>
 
                             <!-- Image -->
@@ -1964,32 +1965,32 @@ $(document).ready(function() {
                             <!-- Brand and Status fields on the same line (2 columns) -->
                             <div>
                                 <label for="edit_brand" class="block text-xs font-medium text-gray-900">Brand</label>
-                                <input type="text" id="edit_brand" name="brand" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                <input type="text" id="edit_brand" name="brand" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->brand }}" required>
                             </div>
 
                             <div>
                                 <label for="edit_status" class="block text-xs font-medium text-gray-900">Status</label>
                                 <select id="edit_status" name="status" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
-                                    <option value="Available">Available</option>
-                                    <option value="Borrowed">Borrowed</option>
-                                    <option value="Reserved">Reserved</option>
-                                    <option value="Out Of Stock">Out of Stock</option>
-                                    <option value="Needs Repair">Needs Repair</option>
-                                    <option value="Damage">Damage</option>
-                                    <option value="Lost">Lost</option>
-                                    <option value="Retired">Retired</option>
+                                    <option value="Available" {{ $item->status == 'Available' ? 'selected' : '' }}>Available</option>
+                                    <option value="Borrowed" {{ $item->status == 'Borrowed' ? 'selected' : '' }}>Borrowed</option>
+                                    <option value="Reserved" {{ $item->status == 'Reserved' ? 'selected' : '' }}>Reserved</option>
+                                    <option value="Out Of Stock" {{ $item->status == 'Out Of Stock' ? 'selected' : '' }}>Out of Stock</option>
+                                    <option value="Needs Repair" {{ $item->status == 'Needs Repair' ? 'selected' : '' }}>Needs Repair</option>
+                                    <option value="Damage" {{ $item->status == 'Damage' ? 'selected' : '' }}>Damage</option>
+                                    <option value="Lost" {{ $item->status == 'Lost' ? 'selected' : '' }}>Lost</option>
+                                    <option value="Retired" {{ $item->status == 'Retired' ? 'selected' : '' }}>Retired</option>
                                 </select>
                             </div>
 
                             <!-- Expiration Date and Date Tested fields on the same line (2 columns) -->
                             <div>
                                 <label for="edit_expiration_date" class="block text-xs font-medium text-gray-900">Expiration Date (Optional)</label>
-                                <input type="date" id="edit_expiration_date" name="expiration_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="date" id="edit_expiration_date" name="expiration_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->expiration_date }}">
                             </div>
 
                             <div>
                                 <label for="edit_date_tested_inspected" class="block text-xs font-medium text-gray-900">Date Tested/Inspected (Optional)</label>
-                                <input type="date" id="edit_date_tested_inspected" name="date_tested_inspected" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="date" id="edit_date_tested_inspected" name="date_tested_inspected" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->date_tested_inspected }}">
                             </div>
 
                         </div>
@@ -2008,6 +2009,9 @@ $(document).ready(function() {
         </div>
     </div>
 </div>
+
+
+
 
 </body>
 </html>
