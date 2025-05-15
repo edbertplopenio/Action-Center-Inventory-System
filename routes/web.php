@@ -331,3 +331,7 @@ Route::middleware('auth')->group(function () {
 // routes/web.php
 Route::post('/admin/return-items/reject-pending/{id}', [ReturnItemsController::class, 'rejectPending'])
     ->name('admin.return-items.reject-pending');
+
+
+Route::get('/get-qr-codes/{itemCode}', [ItemController::class, 'getQrCodes']);
+Route::get('/items/search', [ItemController::class, 'searchItem'])->name('items.searchItem');

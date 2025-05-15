@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -24,6 +25,8 @@
             padding: 0;
         }
 
+
+
         /* Hide all tables by default, only show the active tab's table */
         .tab-content {
             display: none;
@@ -36,18 +39,13 @@
         /* Custom tab color styles */
         .tab-button {
             padding: 0.3rem 1rem;
-            /* Reduced padding */
             font-size: 0.8rem;
-            /* Reduced font size */
             font-weight: 500;
             color: white;
             cursor: pointer;
             transition: background-color 0.3s;
             border: none;
-            /* Remove default button border */
             border-radius: 0.375rem;
-            /* Consistent border radius */
-
         }
 
         .tab-button:hover {
@@ -57,7 +55,6 @@
         .tab-button.active {
             font-weight: bold;
             background-color: #4A90E2;
-            /* Active tab background color */
         }
 
         /* Flex container for Tabs and Add Item Button */
@@ -66,7 +63,7 @@
             align-items: center;
             margin-bottom: -0.5rem;
             /* Slightly smaller margin */
-            margin-top: .5rem;
+            margin-top: 1.5rem;
         }
 
         .tab-button-container {
@@ -124,18 +121,19 @@
             margin-top: 2rem;
             margin-bottom: -2rem;
             height: 100%;
+            table-layout: fixed;
+            /* Changed to auto for dynamic sizing */
         }
 
         table th,
         table td {
-            padding: 5px;
+            padding: 8px;
             text-align: center;
             border-bottom: 1px solid #E5E5E5;
             font-size: 12px;
             height: 20px !important;
             vertical-align: middle;
             width: auto;
-            /* Ensure column widths are auto-adjusted */
         }
 
         table td {
@@ -169,18 +167,28 @@
 
         .table-container {
             width: 100%;
-            /* Ensure it takes full width */
-            overflow-y: hidden;
-            /* Prevent vertical scrollbar in outer container */
-            margin-top: 0.3rem;
-            /* Adjust margin for spacing */
-            margin-bottom: -1.7rem;
+            max-height: 850px;
+            /* Set max height for the table container */
             overflow-x: auto;
-            /* Only horizontal scrolling */
-            max-height: 800px;
-            /* Ensure it fits well */
+            /* Allow horizontal scrolling if necessary */
+            overflow-y: auto;
+            /* Allow vertical scrolling if necessary */
+            margin-top: 0.3rem;
+            margin-bottom: -2rem;
 
         }
+
+        .table td .action-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            /* Ensures buttons are positioned relative to this container */
+            height: 100%;
+            gap: 5px;
+        }
+
+
 
         /* Form row layout (two fields per row) */
         .form-row {
@@ -248,21 +256,100 @@
             margin-left: auto;
             margin-right: auto;
             max-width: 70px;
-            /* Adjust image size */
             max-height: 65px;
         }
 
-        /* Fix specific column width for image and action columns */
+        /** Fix specific column width for image and action columns 
+    table th:nth-child(11),
+    table td:nth-child(11) {
+        width: 140px !important;
+    }
+
+    table th:nth-child(12),
+    table td:nth-child(12) {
+        width: 160px !important;
+    }
+        */
+
+        /* Ensuring all columns behave consistently */
+        table th:nth-child(1),
+        table td:nth-child(1) {
+            width: 80px;
+        }
+
+        table th:nth-child(2),
+        table td:nth-child(2) {
+            width: 80px;
+        }
+
+        table th:nth-child(3),
+        table td:nth-child(3) {
+            width: 100px;
+        }
+
+        table th:nth-child(4),
+        table td:nth-child(4) {
+            width: 100px;
+        }
+
+        table th:nth-child(5),
+        table td:nth-child(5) {
+            width: 100px;
+        }
+
+        table th:nth-child(6),
+        table td:nth-child(6) {
+            width: 100px;
+        }
+
+        table th:nth-child(7),
+        table td:nth-child(7) {
+            width: 120px;
+        }
+
+        table th:nth-child(8),
+        table td:nth-child(8) {
+            width: 100px;
+        }
+
+        table th:nth-child(9),
+        table td:nth-child(9) {
+            width: 100px;
+        }
+
+        table th:nth-child(10),
+        table td:nth-child(10) {
+            width: 100px;
+        }
+
         table th:nth-child(11),
         table td:nth-child(11) {
-            width: 140px !important;
-            padding: 0.6rem;
+            width: 100px;
         }
 
         table th:nth-child(12),
         table td:nth-child(12) {
-            width: 160px !important;
-            padding: 0.6rem;
+            width: 140px;
+        }
+
+        table th:nth-child(13),
+        table td:nth-child(13) {
+            width: 120px;
+        }
+
+        table th:nth-child(14),
+        table td:nth-child(14) {
+            width: 110px;
+        }
+
+        table th:nth-child(15),
+        table td:nth-child(15) {
+            width: 120px;
+        }
+
+        table th:nth-child(16),
+        table td:nth-child(16) {
+            width: 120px;
         }
 
         table td .action-buttons {
@@ -281,61 +368,77 @@
             /* Space between buttons */
             align-items: center;
             height: 100%;
+            gap: 5px
         }
 
         .button-container {
             display: flex;
             flex-direction: column;
-            /* Arrange buttons in a column */
             gap: 5px;
-            /* Space between buttons */
         }
 
         .edit-btn,
         .archive-btn {
-            border-radius: 5px;
-            /* Slightly rounded corners */
-            padding: 5px 30px;
-            /* Increased padding for better touch */
+            padding: 6px 20px;
+            /* Consistent padding for buttons */
             font-size: 12px;
-            /* Font size adjustment */
+            /* Ensure font size is consistent */
+            text-align: center;
+            /* Align the text inside the button */
             white-space: nowrap;
-            /* Prevent text overflow */
-            overflow: hidden;
-            /* Hide overflow if the button text is too long */
+            /* Prevent button text from overflowing */
         }
 
+        /* Edit Button */
         .edit-btn {
+            position: absolute;
             top: 0;
-            /* Position the Edit button at the top */
+            /* Position at the top */
             background-color: #4cc9f0;
-            /* Edit button color */
             color: white;
-
+            padding: 6px 17px;
+            /* Same padding as Archive button */
+            font-size: 12px;
+            /* Same font size as Archive button */
+            text-align: center;
+            white-space: nowrap;
+            cursor: pointer;
+            margin-top: 5px;
+            width: 100%;
+            /* Ensure Edit button takes full width */
+            box-sizing: border-box;
+            /* Prevents padding from breaking layout */
         }
 
         .edit-btn:hover {
             background-color: #36a9c1;
-            /* Darker shade on hover */
             transform: scale(1.05);
-            /* Slight scaling effect */
         }
 
+        /* Archive Button */
         .archive-btn {
+            position: absolute;
             top: 40px;
-            /* Position the Archive button below the Edit button */
+            /* Position below the Edit button */
             background-color: #57cc99;
-            /* Archive button color */
             color: white;
-            margin-bottom: -3px;
+            padding: 6px 17px;
+            /* Same padding as Edit button */
+            font-size: 12px;
+            /* Same font size as Edit button */
+            text-align: center;
+            cursor: pointer;
+            width: 100%;
+            /* Ensure Archive button takes full width */
+            box-sizing: border-box;
+            /* Prevents padding from breaking layout */
         }
 
         .archive-btn:hover {
-            background-color: #57cc99;
-            /* Darker shade on hover */
+            background-color: #36a9c1;
             transform: scale(1.05);
-            /* Slight scaling effect */
         }
+
 
         /* Default Styles for Table Header */
         table thead th {
@@ -344,7 +447,15 @@
             border: 1px solid transparent;
             /* Default border color */
             padding: 10px;
-            text-align: left;
+            font-size: 11px;
+            text-align: center;
+            color: #4a5568;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            /* Stick to the top of the table */
+            z-index: 1;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
         }
 
 
@@ -364,9 +475,16 @@
 
         /* Change font size for table cells */
         table.dataTable tbody td {
-            font-size: 14px;
+            font-size: 12px;
             /* Adjust the font size for table data cells */
             text-align: center;
+        }
+
+        /* Ensure font size remains consistent for all table rows */
+        table.dataTable tbody td,
+        table.dataTable thead th {
+            font-size: 12px !important;
+            /* Reset the font size */
         }
 
         /**/
@@ -575,7 +693,6 @@
         }
     </style>
 
-
 </head>
 
 <body class="bg-gray-100">
@@ -602,16 +719,20 @@
             <table id="allItemsTable" class="display">
                 <thead>
                     <tr>
-                        <th>Item Code</th>
                         <th>Item Name</th>
+                        <th>Item Code</th>
+                        <th>Brand</th>
                         <th>Quantity</th>
                         <th>Unit</th>
                         <th>Category</th>
                         <th>Description</th>
                         <th>Storage Location</th>
                         <th>Arrival Date</th>
-                        <th>Date Purchased</th>
+                        <th>Inventory Date</th>
+                        <th>Expiration Date</th>
+                        <th>Date Tested/Inspected</th>
                         <th>Status</th>
+                        <th>Consumable</th> <!-- New Consumable Column -->
                         <th>Image</th>
                         <th>Action</th>
                     </tr>
@@ -619,64 +740,61 @@
                 <tbody>
                     @foreach($allItems as $item)
                     <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                        <td>
-                            {{ $item->item_code }}
-                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 && !isset($item->new_indicator))
-                                <span class="new-indicator">New!</span>
-                                @php
-                                $item->new_indicator = true;
-                                @endphp
-                                @endif
-                        </td>
                         <td>{{ $item->name }}</td>
+                        <td>{{ $item->item_code }}</td>
+                        <td>{{ $item->brand }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->category }}</td>
                         <td>{{ $item->description }}</td>
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
-                        <td>{{ $item->date_purchased }}</td>
+                        <td>{{ $item->inventory_date ?? 'N/A' }}</td>
+                        <td>{{ $item->expiration_date ?? 'N/A' }}</td>
+                        <td>{{ $item->date_tested_inspected ?? 'N/A' }}</td>
                         <td>
                             <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
-                {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
-                {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
-                {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-                {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                        {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                        {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                        {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                        {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                        {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
                                 {{ $item->status }}
                             </span>
                         </td>
+                        <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
                         <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
-                            <div class="button-container">
-                                <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-                                <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-                            </div>
+                            <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                            <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
                         </td>
                     </tr>
                     @endforeach
-
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- All Items Table -->
-    <div id="equipment-content" class="tab-content active">
+    <!-- Equipment Table -->
+    <div id="equipment-content" class="tab-content">
         <div class="table-container">
             <table id="equipmentTable" class="display">
                 <thead>
                     <tr>
-                        <th>Item Code</th>
                         <th>Item Name</th>
+                        <th>Item Code</th>
+                        <th>Brand</th>
                         <th>Quantity</th>
                         <th>Unit</th>
                         <th>Category</th>
                         <th>Description</th>
                         <th>Storage Location</th>
                         <th>Arrival Date</th>
-                        <th>Date Purchased</th>
+                        <th>Inventory Date</th>
+                        <th>Expiration Date</th>
+                        <th>Date Tested/Inspected</th>
                         <th>Status</th>
+                        <th>Consumable</th> <!-- New Consumable Column -->
                         <th>Image</th>
                         <th>Action</th>
                     </tr>
@@ -684,39 +802,33 @@
                 <tbody>
                     @foreach($drrmItems as $item)
                     <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                        <td>
-                            {{ $item->item_code }}
-                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 && !isset($item->new_indicator))
-                                <span class="new-indicator">New!</span>
-                                @php
-                                $item->new_indicator = true;
-                                @endphp
-                                @endif
-                        </td>
                         <td>{{ $item->name }}</td>
+                        <td>{{ $item->item_code }}</td>
+                        <td>{{ $item->brand }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->category }}</td>
                         <td>{{ $item->description }}</td>
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
-                        <td>{{ $item->date_purchased }}</td>
+                        <td>{{ $item->inventory_date ?? 'N/A' }}</td>
+                        <td>{{ $item->expiration_date ?? 'N/A' }}</td>
+                        <td>{{ $item->date_tested_inspected ?? 'N/A' }}</td>
                         <td>
                             <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-                                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
-                                {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
-                                {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
-                                {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-                                {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                        {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                        {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                        {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                        {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                        {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
                                 {{ $item->status }}
                             </span>
                         </td>
+                        <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
                         <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
-                            <div class="button-container">
-                                <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-                                <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-                            </div>
+                            <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                            <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
                         </td>
                     </tr>
                     @endforeach
@@ -725,22 +837,26 @@
         </div>
     </div>
 
+    <!-- Office Supplies Table -->
     <div id="office-supplies-content" class="tab-content">
-        <!--<h3 class="text-xl font-semibold mb-4">Office Supplies</h3>--->
         <div class="table-container">
             <table id="officeSuppliesTable" class="display">
                 <thead>
                     <tr>
-                        <th>Item Code</th>
                         <th>Item Name</th>
+                        <th>Item Code</th>
+                        <th>Brand</th>
                         <th>Quantity</th>
                         <th>Unit</th>
                         <th>Category</th>
                         <th>Description</th>
                         <th>Storage Location</th>
                         <th>Arrival Date</th>
-                        <th>Date Purchased</th>
+                        <th>Inventory Date</th>
+                        <th>Expiration Date</th>
+                        <th>Date Tested/Inspected</th>
                         <th>Status</th>
+                        <th>Consumable</th> <!-- New Consumable Column -->
                         <th>Image</th>
                         <th>Action</th>
                     </tr>
@@ -748,39 +864,33 @@
                 <tbody>
                     @foreach($officeItems as $item)
                     <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                        <td>
-                            {{ $item->item_code }}
-                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 && !isset($item->new_indicator))
-                                <span class="new-indicator">New!</span>
-                                @php
-                                $item->new_indicator = true;
-                                @endphp
-                                @endif
-                        </td>
                         <td>{{ $item->name }}</td>
+                        <td>{{ $item->item_code }}</td>
+                        <td>{{ $item->brand }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->category }}</td>
                         <td>{{ $item->description }}</td>
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
-                        <td>{{ $item->date_purchased }}</td>
+                        <td>{{ $item->inventory_date ?? 'N/A' }}</td>
+                        <td>{{ $item->expiration_date ?? 'N/A' }}</td>
+                        <td>{{ $item->date_tested_inspected ?? 'N/A' }}</td>
                         <td>
                             <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-                                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
-                                {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
-                                {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
-                                {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-                                {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                        {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                        {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                        {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                        {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                        {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
                                 {{ $item->status }}
                             </span>
                         </td>
+                        <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
                         <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
-                            <div class="button-container">
-                                <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-                                <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-                            </div>
+                            <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                            <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
                         </td>
                     </tr>
                     @endforeach
@@ -789,24 +899,26 @@
         </div>
     </div>
 
-    <!-- Emergency Kits Tab -->
+    <!-- Emergency Kits Table -->
     <div id="emergency-kits-content" class="tab-content">
-        <!--<h3 class="text-xl font-semibold mb-4">Emergency Kits</h3>-->
         <div class="table-container">
             <table id="emergencyKitsTable" class="display">
-
                 <thead>
                     <tr>
-                        <th>Item Code</th>
                         <th>Item Name</th>
+                        <th>Item Code</th>
+                        <th>Brand</th>
                         <th>Quantity</th>
                         <th>Unit</th>
                         <th>Category</th>
                         <th>Description</th>
                         <th>Storage Location</th>
                         <th>Arrival Date</th>
-                        <th>Date Purchased</th>
+                        <th>Inventory Date</th>
+                        <th>Expiration Date</th>
+                        <th>Date Tested/Inspected</th>
                         <th>Status</th>
+                        <th>Consumable</th> <!-- New Consumable Column -->
                         <th>Image</th>
                         <th>Action</th>
                     </tr>
@@ -814,39 +926,33 @@
                 <tbody>
                     @foreach($emergencyItems as $item)
                     <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                        <td>
-                            {{ $item->item_code }}
-                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 && !isset($item->new_indicator))
-                                <span class="new-indicator">New!</span>
-                                @php
-                                $item->new_indicator = true;
-                                @endphp
-                                @endif
-                        </td>
                         <td>{{ $item->name }}</td>
+                        <td>{{ $item->item_code }}</td>
+                        <td>{{ $item->brand }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->category }}</td>
                         <td>{{ $item->description }}</td>
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
-                        <td>{{ $item->date_purchased }}</td>
+                        <td>{{ $item->inventory_date ?? 'N/A' }}</td>
+                        <td>{{ $item->expiration_date ?? 'N/A' }}</td>
+                        <td>{{ $item->date_tested_inspected ?? 'N/A' }}</td>
                         <td>
                             <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-                                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
-                                {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
-                                {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
-                                {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-                                {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                        {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                        {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                        {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                        {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                        {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
                                 {{ $item->status }}
                             </span>
                         </td>
+                        <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
                         <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
-                            <div class="button-container">
-                                <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-                                <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-                            </div>
+                            <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                            <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
                         </td>
                     </tr>
                     @endforeach
@@ -855,24 +961,26 @@
         </div>
     </div>
 
-    <!-- Other Items Tab -->
+    <!-- Other Items Table -->
     <div id="other-items-content" class="tab-content">
-        <!--<h3 class="text-xl font-semibold mb-4">Other Items</h3>--->
         <div class="table-container">
             <table id="otherItemsTable" class="display">
-
                 <thead>
                     <tr>
-                        <th>Item Code</th>
                         <th>Item Name</th>
+                        <th>Item Code</th>
+                        <th>Brand</th>
                         <th>Quantity</th>
                         <th>Unit</th>
                         <th>Category</th>
                         <th>Description</th>
                         <th>Storage Location</th>
                         <th>Arrival Date</th>
-                        <th>Date Purchased</th>
+                        <th>Inventory Date</th>
+                        <th>Expiration Date</th>
+                        <th>Date Tested/Inspected</th>
                         <th>Status</th>
+                        <th>Consumable</th> <!-- New Consumable Column -->
                         <th>Image</th>
                         <th>Action</th>
                     </tr>
@@ -880,39 +988,33 @@
                 <tbody>
                     @foreach($otherItems as $item)
                     <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                        <td>
-                            {{ $item->item_code }}
-                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 && !isset($item->new_indicator))
-                                <span class="new-indicator">New!</span>
-                                @php
-                                $item->new_indicator = true;
-                                @endphp
-                                @endif
-                        </td>
                         <td>{{ $item->name }}</td>
+                        <td>{{ $item->item_code }}</td>
+                        <td>{{ $item->brand }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->category }}</td>
                         <td>{{ $item->description }}</td>
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
-                        <td>{{ $item->date_purchased }}</td>
+                        <td>{{ $item->inventory_date ?? 'N/A' }}</td>
+                        <td>{{ $item->expiration_date ?? 'N/A' }}</td>
+                        <td>{{ $item->date_tested_inspected ?? 'N/A' }}</td>
                         <td>
                             <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-                                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
-                                {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
-                                {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
-                                {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-                                {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                        {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                        {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                        {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                        {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                        {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
                                 {{ $item->status }}
                             </span>
                         </td>
+                        <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
                         <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
-                            <div class="button-container">
-                                <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-                                <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-                            </div>
+                            <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
+                            <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
                         </td>
                     </tr>
                     @endforeach
@@ -921,23 +1023,26 @@
         </div>
     </div>
 
-    <!-- Archives Tab -->
+    <!-- Archives Table -->
     <div id="archives-content" class="tab-content">
-        <!--<h3 class="text-xl font-semibold mb-4">Archives</h3>-->
         <div class="table-container">
             <table id="archivesTable" class="display">
                 <thead>
                     <tr>
-                        <th>Item Code</th>
                         <th>Item Name</th>
+                        <th>Item Code</th>
+                        <th>Brand</th>
                         <th>Quantity</th>
                         <th>Unit</th>
                         <th>Category</th>
                         <th>Description</th>
                         <th>Storage Location</th>
                         <th>Arrival Date</th>
-                        <th>Date Purchased</th>
+                        <th>Inventory Date</th>
+                        <th>Expiration Date</th>
+                        <th>Date Tested/Inspected</th>
                         <th>Status</th>
+                        <th>Consumable</th> <!-- New Consumable Column -->
                         <th>Image</th>
                         <th>Action</th>
                     </tr>
@@ -945,33 +1050,29 @@
                 <tbody>
                     @foreach($archivedItems as $item)
                     <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                        <td>
-                            {{ $item->item_code }}
-                            @if(\Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 && !isset($item->new_indicator))
-                                <span class="new-indicator">New!</span>
-                                @php
-                                $item->new_indicator = true;
-                                @endphp
-                                @endif
-                        </td>
                         <td>{{ $item->name }}</td>
+                        <td>{{ $item->item_code }}</td>
+                        <td>{{ $item->brand }}</td>
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->category }}</td>
                         <td>{{ $item->description }}</td>
                         <td>{{ $item->storage_location }}</td>
                         <td>{{ $item->arrival_date }}</td>
-                        <td>{{ $item->date_purchased }}</td>
+                        <td>{{ $item->inventory_date ?? 'N/A' }}</td>
+                        <td>{{ $item->expiration_date ?? 'N/A' }}</td>
+                        <td>{{ $item->date_tested_inspected ?? 'N/A' }}</td>
                         <td>
                             <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-                                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
-                                {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
-                                {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
-                                {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-                                {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                        {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                        {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                        {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                        {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                        {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
                                 {{ $item->status }}
                             </span>
                         </td>
+                        <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
                         <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                         <td class="action-buttons">
                             <!-- Restore Button: Form for restoring an archived item -->
@@ -986,7 +1087,6 @@
             </table>
         </div>
     </div>
-
 
     </div>
     </div>
@@ -1108,12 +1208,18 @@
                     "pageLength": 10,
                     // Sorting by the 'Arrival Date' or 'added_at' column in descending order (index 7)
                     "order": [
-                        [7, 'desc']
-                    ], // Change the index (7) if your column index is different for `added_at` or `Arrival Date`
+                        [8, 'desc']
+                    ], // Change the index (7) if your column index is different for `added_at` or 'Arrival Date'
                     "initComplete": function(settings, json) {
+                        // Set the font size for the table after initialization
                         $(tableId).css('font-size', '12px');
                         $(tableId + ' thead th').css('font-size', '10px');
                         $(tableId + ' tbody td').css('font-size', '10px');
+                    },
+                    "drawCallback": function(settings) {
+                        // Reset font size whenever DataTable is redrawn (e.g., after pagination or page size change)
+                        $(tableId + ' tbody td').css('font-size', '12px');
+                        $(tableId + ' thead th').css('font-size', '10px');
                     }
                 });
             }
@@ -1201,148 +1307,91 @@
     </script>
 
 
+
+    <!--Add item Modal-->
     <script>
         $(document).ready(function() {
-            // Show the Add Item Modal when the button is clicked
+            // Open modal when "Add Item" button is clicked
             $("#add-item-btn").click(function() {
                 $("#addItemModal").removeClass("hidden");
             });
 
-            // Validate quantity to ensure it is not 0 or empty
+            // Enable Save button only if quantity is greater than 0
             $('#quantity').on('input', function() {
                 var quantity = $(this).val();
-                if (quantity == 0 || quantity == "") {
-                    $("#saveButton").prop('disabled', true); // Disable save button if quantity is 0 or empty
-                } else {
-                    $("#saveButton").prop('disabled', false); // Enable save button
-                }
+                $("#saveButton").prop('disabled', quantity == 0 || quantity === "");
             });
 
-            // Storage location dropdown logic
+            // Show input field for other storage location if 'Other' is selected
             $('#storage_location').on('change', function() {
-                if ($(this).val() == 'Other') {
-                    $('#other_storage_location').removeClass('hidden'); // Show input if "Other" is selected
-                } else {
-                    $('#other_storage_location').addClass('hidden'); // Hide input if not "Other"
-                }
+                $('#other_storage_location').toggleClass('hidden', $(this).val() !== 'Other');
             });
 
-            // Unit dropdown logic: Show input field inline next to "Other"
+            // Show input field for other unit if 'Other' is selected
             $('#unit').on('change', function() {
-                if ($(this).val() == 'Other') {
-                    $('#other_unit').removeClass('hidden'); // Show inline input if "Other" is selected
-                } else {
-                    $('#other_unit').addClass('hidden'); // Hide inline input if not "Other"
-                }
+                $('#other_unit').toggleClass('hidden', $(this).val() !== 'Other');
             });
 
-            // Ensure no future dates can be selected for Arrival Date and Date Purchased
-            const today = new Date().toISOString().split('T')[0];
-            $('#arrival_date, #date_purchased').attr('max', today);
+            // Ensure consumable checkbox updates the form value correctly
+            $('#consumable').on('change', function() {
+                // This updates the form data with '1' for checked and '0' for unchecked
+                $('input[name="consumable"]').val($(this).is(':checked') ? '1' : '0');
+            });
 
-            // On form submission, submit the data to save both items and individual items
+            // Handle form submission
             $("#itemForm").submit(function(e) {
-                // Get the Arrival Date and Date Purchased
-                var arrivalDate = $("#arrival_date").val();
-                var purchasedDate = $("#date_purchased").val();
+                e.preventDefault();
+                const formData = new FormData(this);
 
-                // Compare the Arrival Date with Date Purchased
-                if (new Date(arrivalDate) < new Date(purchasedDate)) {
-                    // Show an alert if Arrival Date is earlier than Date Purchased
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Arrival Date cannot be earlier than the Date Purchased.',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-                    e.preventDefault(); // Prevent the form from submitting
-                    return false;
-                }
+                // Ensure essential fields are appended
+                formData.append('name', $('#name').val());
+                formData.append('brand', $('#brand').val());
+                formData.append('unit', $('#unit').val());
+                formData.append('category', $('#category').val());
+                formData.append('status', 'Available');
+                formData.append('consumable', $('#consumable').is(':checked') ? 1 : 0); // This sends '1' for checked, '0' for unchecked
+                formData.append('inventory_date', $('#inventory_date').val());
 
-                e.preventDefault(); // Prevent default form submission
-
-                // Grabs the form data and explicitly append required fields
-                var formData = new FormData(this); // Grabs the form data
-
-                // Explicitly append required fields if they aren't automatically added
-                formData.append('name', $('#name').val()); // Add 'name' field
-                formData.append('unit', $('#unit').val()); // Add 'unit' field
-                formData.append('category', $('#category').val()); // Add 'category' field
-
-                // If "Other" is selected for unit, append the value from other_unit field
+                // Handle conditional fields
                 if ($('#unit').val() === 'Other') {
-                    formData.append('unit', $('#other_unit').val()); // Add custom unit if "Other" is selected
+                    formData.set('unit', $('#other_unit').val());
+                }
+                if ($('#storage_location').val() === 'Other') {
+                    formData.set('storage_location', $('#other_storage_location').val());
                 }
 
-                // Optional: Log the FormData to check what is being sent
-                console.log(formData); // This will print the form data in the browser console
+                // NEW: Append optional fields
+                formData.append('expiration_date', $('#expiration_date').val());
+                formData.append('date_tested_inspected', $('#date_tested_inspected').val());
 
-                // Show SweetAlert loading spinner before the request
+                // Show loading state with Swal
                 Swal.fire({
                     title: 'Saving...',
                     text: 'Please wait while we save the item.',
                     icon: 'info',
                     showConfirmButton: false,
-                    didOpen: () => {
-                        Swal.showLoading(); // Show loading spinner
-                    }
+                    didOpen: () => Swal.showLoading()
                 });
 
-                // Proceed with the AJAX request to submit the form data
+                // Send data to the server using AJAX
                 $.ajax({
-                    url: "{{ route('items.store') }}", // Your URL for item saving
+                    url: "{{ route('items.store') }}", // Make sure this route is correct
                     method: 'POST',
                     data: formData,
-                    processData: false, // Don't process the data (since it's FormData)
-                    contentType: false, // Set content type to false to let FormData handle it
+                    processData: false,
+                    contentType: false,
                     success: function(response) {
                         Swal.fire({
                             title: 'Success!',
                             text: 'Item saved successfully!',
                             icon: 'success',
+                            timer: 1500,
                             showConfirmButton: false,
-                            timer: 1500, // Show success message for 1.5 seconds
-                            willClose: () => {
-                                location.reload(); // Reload when SweetAlert closes
-                            }
+                            willClose: () => location.reload() // Reload the page to reflect the new item
                         });
-
-
-                        // Prepend the new item to the top of the table (specifically to the all items table)
-                        var newItemRow = `
-                    <tr id="item-${response.id}">
-                        <td>${response.item_code}</td>
-                        <td>${response.name}</td>
-                        <td>${response.quantity}</td>
-                        <td>${response.unit}</td>
-                        <td>${response.category}</td>
-                        <td>${response.description}</td>
-                        <td>${response.storage_location}</td>
-                        <td>${response.arrival_date}</td>
-                        <td>${response.date_purchased}</td>
-                        <td>${response.status}</td>
-                        <td><img src="${response.image_url}" alt="${response.name}" class="w-10 h-10"></td>
-                        <td class="action-buttons">
-                            <button onclick="openEditModal('${response.id}')" class="edit-btn">Edit</button>
-                            <button type="button" class="archive-btn" onclick="archiveItem('${response.id}')">Archive</button>
-                        </td>
-                    </tr>`;
-
-                        // Prepend the new item row to the table (this will put it at the top)
-                        $('#allItemsTable tbody').prepend(newItemRow);
-
-                        // Prepend the new item to other tables (equipment, office supplies, etc.)
-                        $('#equipmentTable tbody').prepend(newItemRow);
-                        $('#officeSuppliesTable tbody').prepend(newItemRow);
-                        $('#emergencyKitsTable tbody').prepend(newItemRow);
-                        $('#otherItemsTable tbody').prepend(newItemRow);
-                        $('#archivesTable tbody').prepend(newItemRow);
-
-                        // Optionally, reset the modal and reload the page or form
-                        $("#addItemModal").addClass("hidden");
-                        $('#itemForm')[0].reset(); // Reset form fields
                     },
-                    error: function(xhr, status, error) {
+                    error: function(xhr) {
+                        console.error(xhr.responseText);
                         Swal.fire({
                             title: 'Error!',
                             text: 'There was an error saving the item.',
@@ -1353,66 +1402,82 @@
                 });
             });
 
-            // Cancel button functionality for Add Item modal
+            // Close the modal when the cancel button is clicked
             $("#cancelModal").click(function() {
-                $("#addItemModal").addClass("hidden"); // Hide the modal when cancel is clicked
+                $("#addItemModal").addClass("hidden");
             });
 
-            // Clear button functionality for the Add Item modal
+            // Clear the form when the clear button is clicked
             $("#clearForm").click(function() {
-                // Clear all input fields and reset the dropdowns to their default value
                 $('#itemForm').find('input[type="text"], input[type="number"], input[type="date"], input[type="file"], textarea').val('');
-                $('#itemForm').find('select').prop('selectedIndex', 0); // Reset all dropdowns to the first option
-
-                // If you have a field for "Other" input (for unit or storage location), hide them and clear their values
-                $('#other_unit').addClass('hidden').val('');
-                $('#other_storage_location').addClass('hidden').val('');
-
-                // Clear the search bar field and reset it to an empty state
-                $('#search-item').val('');
-
-                // Re-enable the input fields to make them editable again
+                $('#itemForm').find('select').prop('selectedIndex', 0);
+                $('#other_unit, #other_storage_location').addClass('hidden').val('');
                 $('#itemForm').find('input, select, textarea').prop('disabled', false);
+                $('#saveButton').prop('disabled', true); // Disable save button when clearing
             });
+
+            // Remove the min/max validation for arrival date field
+            $('#arrival_date').removeAttr('min max');
         });
     </script>
-
 
     <SCRIPT>
         //ARCHIVES
         function archiveItem(itemId) {
-            $.ajax({
-                url: '/archive-item/' + itemId,
-                type: 'POST',
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content')
-                },
-                beforeSend: function() {
-                    // Show SweetAlert loading spinner before archiving the item
-                    Swal.fire({
-                        title: 'Archiving...',
-                        text: 'Please wait while we archive the item.',
-                        icon: 'info',
-                        showConfirmButton: false,
-                        didOpen: () => {
-                            Swal.showLoading();
+            // Show the SweetAlert confirmation dialog for archiving
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this action!",
+                icon: 'warning',
+                showCancelButton: true, // Show the Cancel button
+                confirmButtonText: 'Yes, archive it!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true // Ensure the "No" button is on the right
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If the user clicked "Yes", proceed with archiving the item
+                    $.ajax({
+                        url: '/archive-item/' + itemId,
+                        type: 'POST',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        beforeSend: function() {
+                            // Show SweetAlert loading spinner before archiving the item
+                            Swal.fire({
+                                title: 'Archiving...',
+                                text: 'Please wait while we archive the item.',
+                                icon: 'info',
+                                showConfirmButton: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: 'Item archived successfully.',
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            });
+                            $('#item-' + itemId).remove(); // Remove the item row from the table
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Error archiving item.',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
                         }
                     });
-                },
-                success: function(response) {
+                } else {
+                    // If the user clicked "No", do nothing and show a cancellation message
                     Swal.fire({
-                        title: 'Success!',
-                        text: 'Item archived successfully.',
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    });
-                    $('#item-' + itemId).remove(); // Remove the item row from the table
-                },
-                error: function(xhr) {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Error archiving item.',
-                        icon: 'error',
+                        title: 'Cancelled',
+                        text: 'The item was not archived.',
+                        icon: 'info',
                         confirmButtonText: 'OK'
                     });
                 }
@@ -1420,38 +1485,60 @@
         }
 
         function restoreItem(itemId) {
-            $.ajax({
-                url: '/restore-item/' + itemId,
-                type: 'POST',
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content')
-                },
-                beforeSend: function() {
-                    // Show SweetAlert loading spinner before restoring the item
-                    Swal.fire({
-                        title: 'Restoring...',
-                        text: 'Please wait while we restore the item.',
-                        icon: 'info',
-                        showConfirmButton: false,
-                        didOpen: () => {
-                            Swal.showLoading();
+            // Show the SweetAlert confirmation dialog for restoring
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You want to restore this item?",
+                icon: 'warning',
+                showCancelButton: true, // Show the Cancel button
+                confirmButtonText: 'Yes, restore it!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true // Ensure the "No" button is on the right
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // If the user clicked "Yes", proceed with restoring the item
+                    $.ajax({
+                        url: '/restore-item/' + itemId,
+                        type: 'POST',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                        },
+                        beforeSend: function() {
+                            // Show SweetAlert loading spinner before restoring the item
+                            Swal.fire({
+                                title: 'Restoring...',
+                                text: 'Please wait while we restore the item.',
+                                icon: 'info',
+                                showConfirmButton: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+                        },
+                        success: function(response) {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: 'Item restored successfully.',
+                                icon: 'success',
+                                confirmButtonText: 'OK'
+                            });
+                            location.reload(); // Reload the page to update the table
+                        },
+                        error: function(xhr) {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: 'Error restoring item.',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
                         }
                     });
-                },
-                success: function(response) {
+                } else {
+                    // If the user clicked "No", do nothing and show a cancellation message
                     Swal.fire({
-                        title: 'Success!',
-                        text: 'Item restored successfully.',
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    });
-                    location.reload(); // Reload the page to update the table
-                },
-                error: function(xhr) {
-                    Swal.fire({
-                        title: 'Error!',
-                        text: 'Error restoring item.',
-                        icon: 'error',
+                        title: 'Cancelled',
+                        text: 'The item was not restored.',
+                        icon: 'info',
                         confirmButtonText: 'OK'
                     });
                 }
@@ -1463,9 +1550,12 @@
         // Open the Edit Modal and populate fields with item data
         function openEditModal(itemId) {
             $.ajax({
-                url: '/get-item/' + itemId, // Fetch item data for the given itemId
+                url: '/get-item/' + itemId,
                 method: 'GET',
                 success: function(item) {
+                    // Set today's date for max validation
+                    const today = new Date().toISOString().split('T')[0];
+
                     // Populate the form fields with the item data
                     $('#edit_item_id').val(item.id);
                     $('#edit_item_name').val(item.name);
@@ -1475,23 +1565,38 @@
                     $('#edit_description').val(item.description);
                     $('#edit_storage_location').val(item.storage_location);
                     $('#edit_arrival_date').val(item.arrival_date);
-                    $('#edit_date_purchased').val(item.date_purchased);
                     $('#edit_status').val(item.status);
 
-                    // Dynamically set the form's action URL to include the itemId
-                    var formAction = "/items/update/" + item.id; // Directly using the item ID for the action URL
-                    $('#editItemForm').attr('action', formAction); // Set the action URL for form
+                    // Populate new fields with the item data
+                    $('#edit_brand').val(item.brand);
+                    $('#edit_expiration_date').val(item.expiration_date);
+                    $('#edit_date_tested_inspected').val(item.date_tested_inspected);
+                    $('#edit_inventory_date').val(item.inventory_date);
+                    $('#edit_consumable').prop('checked', item.is_consumable); // Check if consumable
 
-                    // Make the fields editable (remove the readonly/disabled attributes)
+                    // Set date constraints
+                    $('#edit_arrival_date').attr({
+                        'min': item.date_purchased,
+                        'max': today
+                    });
+
+                    // Set form action URL
+                    $('#editItemForm').attr('action', "/items/update/" + item.id);
+
+                    // Make fields editable
                     $('#edit_item_name').attr('readonly', false);
                     $('#edit_category').attr('disabled', false);
                     $('#edit_unit').attr('disabled', false);
                     $('#edit_description').attr('disabled', false);
                     $('#edit_storage_location').attr('disabled', false);
                     $('#edit_arrival_date').attr('disabled', false);
-                    $('#edit_date_purchased').attr('disabled', false);
                     $('#edit_status').attr('disabled', false);
-                    $('#edit_image').attr('disabled', false); // Allow image editing
+                    $('#edit_image').attr('disabled', false);
+                    $('#edit_brand').attr('disabled', false);
+                    $('#edit_expiration_date').attr('disabled', false);
+                    $('#edit_date_tested_inspected').attr('disabled', false);
+                    $('#edit_inventory_date').attr('disabled', false);
+                    $('#edit_consumable').attr('disabled', false);
 
                     // Show the modal
                     $('#editItemModal').removeClass('hidden');
@@ -1507,139 +1612,194 @@
             });
         }
 
-        // Save the updated item data when the form is submitted
-        $('#editItemForm').submit(function(e) {
-            e.preventDefault(); // Prevent default form submission
+        // Date validation for Edit Modal
+        $(document).ready(function() {
+            // When arrival date changes in edit modal
+            $('#edit_arrival_date').on('change', function() {
+                const arrivalDate = $(this).val();
+                const purchasedDate = $('#edit_date_purchased').val();
 
-            // Show SweetAlert loading spinner before the request
-            Swal.fire({
-                title: 'Updating...',
-                text: 'Please wait while we update the item.',
-                icon: 'info',
-                showConfirmButton: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
-            });
-
-            // Send the form data via AJAX to update the item
-            $.ajax({
-                url: $(this).attr('action'), // Get the form's action URL
-                method: 'POST', // Use 'POST' for the AJAX request
-                data: $(this).serialize(), // Serialize the form data
-                success: function(response) {
-                    // Check if the update was successful
-                    if (response.success) {
-                        Swal.fire({
-                            title: 'Success!',
-                            text: response.message, // Show the success message from the server
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        });
-
-                        // Close the modal
-                        $('#editItemModal').addClass('hidden');
-                        // Optionally, update the item list or table dynamically without refreshing
-                        updateItemRow(response.item);
-                    } else {
-                        Swal.fire({
-                            title: 'Error!',
-                            text: 'There was an issue updating the item. Please try again.',
-                            icon: 'error',
-                            confirmButtonText: 'OK'
-                        });
-                    }
-                },
-                error: function(xhr) {
-                    // Handle errors from the server
+                if (purchasedDate && new Date(arrivalDate) < new Date(purchasedDate)) {
                     Swal.fire({
-                        title: 'Error!',
-                        text: 'Error updating item. Please check your input and try again.',
+                        title: 'Invalid Date',
+                        text: 'Arrival Date cannot be earlier than the Date Purchased.',
                         icon: 'error',
                         confirmButtonText: 'OK'
                     });
+                    $(this).val('');
                 }
             });
-        });
 
-        // Function to update the item row dynamically in the table after updating
-        function updateItemRow(item) {
-            // Find the table row based on the item ID and update its values
-            var row = $('#item-' + item.id);
-            row.find('.item-name').text(item.name);
-            row.find('.item-quantity').text(item.quantity);
-            row.find('.item-status').text(item.status);
-            row.find('.item-description').text(item.description);
-            row.find('.item-storage-location').text(item.storage_location);
-            row.find('.item-arrival-date').text(item.arrival_date);
-            row.find('.item-date-purchased').text(item.date_purchased);
-            // If image is updated, you may want to change the image too
-            row.find('.item-image').attr('src', item.image_url);
-        }
+            // When expiration date or tested date changes
+            $('#edit_expiration_date, #edit_date_tested_inspected').on('change', function() {
+                const expirationDate = $('#edit_expiration_date').val();
+                const testedDate = $('#edit_date_tested_inspected').val();
 
-        // Close the Edit Item Modal when clicking the "Cancel" button
-        $(document).ready(function() {
-            $("#cancelEditModal").click(function() {
-                $("#editItemModal").addClass("hidden"); // Hide the modal
-            });
-        });
-
-        // Ensure that all form fields are correctly reset when switching between items or closing the modal
-        function resetEditModal() {
-            // Reset form fields and disable/readonly settings
-            $('#edit_item_name').val('');
-            $('#edit_category').val('');
-            $('#edit_quantity').val('');
-            $('#edit_unit').val('');
-            $('#edit_description').val('');
-            $('#edit_storage_location').val('');
-            $('#edit_arrival_date').val('');
-            $('#edit_date_purchased').val('');
-            $('#edit_status').val('');
-
-            // Reset readonly/disabled states for the form
-            $('#edit_item_name').attr('readonly', false);
-            $('#edit_category').attr('disabled', false);
-            $('#edit_unit').attr('disabled', false);
-            $('#edit_description').attr('disabled', false);
-            $('#edit_storage_location').attr('disabled', false);
-            $('#edit_arrival_date').attr('disabled', false);
-            $('#edit_date_purchased').attr('disabled', false);
-            $('#edit_image').attr('disabled', false);
-
-            // Clear any success or error messages
-            Swal.close();
-        }
-    </script>
-    <script>
-        $(document).ready(function() {
-            // Listen for changes in the "Purchased Date"
-            $('#date_purchased').on('change', function() {
-                var purchasedDate = $(this).val();
-                var arrivalDateInput = $('#arrival_date');
-
-                // Set the min value for the "Arrival Date" to the "Purchased Date"
-                arrivalDateInput.attr('min', purchasedDate);
+                if (expirationDate && testedDate && new Date(expirationDate) < new Date(testedDate)) {
+                    Swal.fire({
+                        title: 'Invalid Date',
+                        text: 'Expiration Date cannot be earlier than the Date Tested/Inspected.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    $(this).val('');
+                }
             });
 
-            // Listen for changes in the "Arrival Date"
-            $('#arrival_date').on('change', function() {
-                var arrivalDate = $(this).val();
-                var purchasedDate = $('#date_purchased').val();
+            // Form submission handler with date validation
+            $('#editItemForm').submit(function(e) {
+                e.preventDefault();
 
-                // Check if the "Arrival Date" is earlier than the "Purchased Date"
-                if (new Date(arrivalDate) < new Date(purchasedDate)) {
-                    // Display SweetAlert error
+                // Validate dates
+                const arrivalDate = $("#edit_arrival_date").val();
+                const purchasedDate = $("#edit_date_purchased").val();
+                const expirationDate = $("#edit_expiration_date").val();
+                const testedDate = $("#edit_date_tested_inspected").val();
+
+                if (purchasedDate && arrivalDate && new Date(arrivalDate) < new Date(purchasedDate)) {
                     Swal.fire({
                         title: 'Error!',
                         text: 'Arrival Date cannot be earlier than the Date Purchased.',
                         icon: 'error',
                         confirmButtonText: 'OK'
                     });
-
-                    // Reset the "Arrival Date" field to prevent invalid selection
-                    $(this).val('');
+                    return false;
                 }
+
+                if (expirationDate && testedDate && new Date(expirationDate) < new Date(testedDate)) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Expiration Date cannot be earlier than the Date Tested/Inspected.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return false;
+                }
+
+                // Show loading indicator
+                Swal.fire({
+                    title: 'Updating...',
+                    text: 'Please wait while we update the item.',
+                    icon: 'info',
+                    showConfirmButton: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                // Submit the form via AJAX
+                $.ajax({
+                    url: $(this).attr('action'),
+                    method: 'POST',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        if (response.success) {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: response.message,
+                                icon: 'success',
+                                confirmButtonText: 'OK',
+                                willClose: () => {
+                                    $('#editItemModal').addClass('hidden');
+                                    updateItemRow(response.item);
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error!',
+                                text: response.message || 'There was an issue updating the item.',
+                                icon: 'error',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: xhr.responseJSON?.message || 'Error updating item. Please try again.',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        });
+                    }
+                });
+            });
+
+            // Cancel button handler
+            $("#cancelEditModal").click(function() {
+                $("#editItemModal").addClass("hidden");
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // When the item code is clicked
+            $('#allItemsTable').on('click', 'td:nth-child(2)', function() {
+                var itemCodePrefix = $(this).text().trim(); // Get the item code from the second column (Item Code)
+
+                // Strip any extra text like "New!" from the item code
+                itemCodePrefix = itemCodePrefix.replace(/[^A-Za-z0-9-]/g, ''); // Remove non-alphanumeric characters
+
+                console.log("Clicked itemCode prefix:", itemCodePrefix); // Log the clicked item code prefix
+
+                // Fetch QR codes for the clicked item code prefix
+                $.ajax({
+                    url: '/get-qr-codes/' + encodeURIComponent(itemCodePrefix), // Pass the base item code prefix
+                    method: 'GET',
+                    success: function(data) {
+                        console.log("QR codes fetched:", data); // Log the fetched QR codes
+
+                        if (data.length > 0) {
+                            var qrListHtml = '<ul>';
+                            var newlyAddedQrCodes = []; // To store newly added QR codes
+
+                            // Get the current date for comparison
+                            var currentDate = new Date();
+
+                            // Loop through all fetched QR codes and identify the new ones
+                            data.forEach(function(qrCode) {
+                                var qrCodeDate = new Date(qrCode.timestamp); // Use the timestamp provided by the backend
+
+                                // Calculate the difference between now and the QR code creation date
+                                var timeDiff = currentDate - qrCodeDate;
+                                var daysDiff = timeDiff / (1000 * 3600 * 24); // Convert milliseconds to days
+
+                                // If the QR code was added within the last 2 days, mark it as "New"
+                                if (daysDiff <= 2) {
+                                    newlyAddedQrCodes.push(qrCode); // Add to newly added list
+                                    qrListHtml += '<li style="color: green;">' + qrCode.qr_code + ' (New)</li>'; // Highlight new QR code
+                                } else {
+                                    qrListHtml += '<li>' + qrCode.qr_code + '</li>'; // Normal QR code
+                                }
+                            });
+
+                            qrListHtml += '</ul>';
+
+                            // Show the QR codes in a SweetAlert modal or overlay
+                            Swal.fire({
+                                title: 'QR Codes for ' + itemCodePrefix,
+                                html: qrListHtml, // Display the list of QR codes in the modal
+                                icon: 'info'
+                            });
+
+                            // Log the newly added QR codes
+                            if (newlyAddedQrCodes.length > 0) {
+                                console.log("Newly Added QR Codes:", newlyAddedQrCodes);
+                            }
+                        } else {
+                            Swal.fire({
+                                title: 'No QR Codes Found',
+                                text: 'There are no QR codes for this item.',
+                                icon: 'warning'
+                            });
+                        }
+                    },
+                    error: function(xhr) {
+                        Swal.fire({
+                            title: 'Error',
+                            text: 'Something went wrong. Please try again later.',
+                            icon: 'error'
+                        });
+                    }
+                });
             });
         });
     </script>
@@ -1651,16 +1811,18 @@
             <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full" style="max-width: 90%; height: auto;">
                 <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Item</h3>
-
                     <form id="itemForm" action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="space-y-6">
                             <div class="grid grid-cols-2 gap-4">
+                                <!-- Item Name -->
                                 <div>
                                     <label for="name" class="block text-xs font-medium text-gray-900">Item Name</label>
-                                    <input type="text" id="name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                    <input type="text" id="name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter Item Name" required>
                                 </div>
 
+
+                                <!-- Category -->
                                 <div>
                                     <label for="category" class="block text-xs font-medium text-gray-900">Category</label>
                                     <select id="category" name="category" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
@@ -1671,11 +1833,20 @@
                                     </select>
                                 </div>
 
+                                <!-- Consumable Checkbox -->
+                                <div class="col-span-2">
+                                    <input type="checkbox" id="consumable" name="consumable" value="1" class="form-checkbox">
+                                    <label for="consumable" class="text-xs font-medium text-gray-900">Consumable</label>
+                                    <input type="hidden" name="consumable" value="0">
+                                </div>
+
+                                <!-- Quantity -->
                                 <div>
                                     <label for="quantity" class="block text-xs font-medium text-gray-900">Quantity</label>
                                     <input type="number" id="quantity" name="quantity" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
                                 </div>
 
+                                <!-- Unit -->
                                 <div>
                                     <label for="unit" class="block text-xs font-medium text-gray-900">Unit</label>
                                     <div class="flex items-center">
@@ -1685,47 +1856,63 @@
                                             <option value="Box">Box</option>
                                             <option value="Other">Other</option>
                                         </select>
-                                        <!-- Inline input field next to 'Other' -->
                                         <input type="text" id="other_unit" name="other_unit" class="mt-1 ml-2 hidden py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs w-20" maxlength="12" placeholder="Type unit">
                                     </div>
                                 </div>
 
+                                <!-- Description -->
                                 <div>
                                     <label for="description" class="block text-xs font-medium text-gray-900">Description</label>
-                                    <textarea id="description" name="description" rows="3" maxlength="50" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs"></textarea>
+                                    <textarea id="description" name="description" rows="3" maxlength="250" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs"></textarea>
                                 </div>
 
+                                <!-- Storage Location -->
                                 <div>
                                     <label for="storage_location" class="block text-xs font-medium text-gray-900">Storage Location</label>
                                     <select id="storage_location" name="storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
                                         <option value="Shelf A">Shelf A</option>
                                         <option value="Shelf B">Shelf B</option>
                                         <option value="Shelf C">Shelf C</option>
+                                        <option value="Shelf D">Shelf D</option>
                                         <option value="Other">Other</option>
                                     </select>
                                     <input type="text" id="other_storage_location" name="other_storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs hidden" maxlength="12" placeholder="Type other location here">
                                 </div>
 
+                                <!-- Arrival Date -->
                                 <div>
                                     <label for="arrival_date" class="block text-xs font-medium text-gray-900">Arrival Date</label>
-                                    <input type="date" id="arrival_date" name="arrival_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                    <input type="date" id="arrival_date" name="arrival_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" min="2000-01-01" required>
                                 </div>
 
+                                <!-- Inventory Date -->
                                 <div>
-                                    <label for="date_purchased" class="block text-xs font-medium text-gray-900">Date Purchased</label>
-                                    <input type="date" id="date_purchased" name="date_purchased" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                    <label for="inventory_date" class="block text-xs font-medium text-gray-900">Inventory Date</label>
+                                    <input type="date" id="inventory_date" name="inventory_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" min="2000-01-01">
                                 </div>
 
-                                <div>
-                                    <label for="status" class="block text-xs font-medium text-gray-900">Status</label>
-                                    <select id="status" name="status" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
-                                        <option value="Available">Available</option>
-                                    </select>
-                                </div>
-
+                                <!-- Image -->
                                 <div>
                                     <label for="image_url" class="block text-xs font-medium text-gray-900">Image</label>
                                     <input type="file" id="image_url" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" accept="image/*">
+                                </div>
+
+                                <!-- Brand Field -->
+                                <div>
+                                    <label for="brand" class="block text-xs font-medium text-gray-900">Brand</label>
+                                    <input type="text" id="brand" name="brand" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                </div>
+
+                                <!-- Expiration Date -->
+                                <div>
+                                    <label for="expiration_date" class="block text-xs font-medium text-gray-900">Expiration Date (Optional)</label>
+                                    <input type="date" id="expiration_date" name="expiration_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                </div>
+
+                                <!-- Date Tested/Inspected -->
+                                <div>
+                                    <label for="date_tested_inspected" class="block text-xs font-medium text-gray-900">Date Tested/Inspected (Optional)</label>
+                                    <input type="date" id="date_tested_inspected" name="date_tested_inspected" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
                                 </div>
                             </div>
 
@@ -1733,10 +1920,9 @@
                                 <button type="button" id="cancelModal" class="text-xs font-semibold text-gray-900 px-4 py-2 bg-gray-400 rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
                                     Cancel
                                 </button>
-                                <button type="submit" id="saveButton" class="rounded-md bg-green-400 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-green-600 hover:text-white">
+                                <button type="submit" id="saveButton" class="rounded-md bg-green-400 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-green-600 hover:text-white" disabled>
                                     Save
                                 </button>
-                                <!-- Clear Button -->
                                 <button type="button" id="clearForm" class="text-xs font-semibold text-gray-900 px-4 py-2 bg-gray-400 rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
                                     Clear
                                 </button>
@@ -1747,6 +1933,8 @@
             </div>
         </div>
     </div>
+
+
     <!-- Edit Item Modal -->
     <div id="editItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
         <div class="relative z-10 flex items-center justify-center">
@@ -1779,6 +1967,12 @@
                                     </select>
                                 </div>
 
+                                <!-- Consumable Checkbox -->
+                                <div>
+                                    <input type="checkbox" id="edit_consumable" name="consumable" value="1" class="form-checkbox">
+                                    <label for="edit_consumable" class="text-xs font-medium text-gray-900">Consumable</label>
+                                </div>
+
                                 <!-- Quantity -->
                                 <div>
                                     <label for="edit_quantity" class="block text-xs font-medium text-gray-900">Quantity</label>
@@ -1809,13 +2003,24 @@
                                     <input type="date" id="edit_arrival_date" name="arrival_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
                                 </div>
 
-                                <!-- Date Purchased -->
+                                <!-- Inventory Date -->
                                 <div>
-                                    <label for="edit_date_purchased" class="block text-xs font-medium text-gray-900">Date Purchased</label>
-                                    <input type="date" id="edit_date_purchased" name="date_purchased" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
+                                    <label for="edit_inventory_date" class="block text-xs font-medium text-gray-900">Inventory Date</label>
+                                    <input type="date" id="edit_inventory_date" name="inventory_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
                                 </div>
 
-                                <!-- Status -->
+                                <!-- Image -->
+                                <div>
+                                    <label for="edit_image" class="block text-xs font-medium text-gray-900">Image</label>
+                                    <input type="file" id="edit_image" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                </div>
+
+                                <!-- Brand and Status fields on the same line (2 columns) -->
+                                <div>
+                                    <label for="edit_brand" class="block text-xs font-medium text-gray-900">Brand</label>
+                                    <input type="text" id="edit_brand" name="brand" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                </div>
+
                                 <div>
                                     <label for="edit_status" class="block text-xs font-medium text-gray-900">Status</label>
                                     <select id="edit_status" name="status" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
@@ -1830,11 +2035,17 @@
                                     </select>
                                 </div>
 
-                                <!-- Image -->
+                                <!-- Expiration Date and Date Tested fields on the same line (2 columns) -->
                                 <div>
-                                    <label for="edit_image" class="block text-xs font-medium text-gray-900">Image</label>
-                                    <input type="file" id="edit_image" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" disabled>
+                                    <label for="edit_expiration_date" class="block text-xs font-medium text-gray-900">Expiration Date (Optional)</label>
+                                    <input type="date" id="edit_expiration_date" name="expiration_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
                                 </div>
+
+                                <div>
+                                    <label for="edit_date_tested_inspected" class="block text-xs font-medium text-gray-900">Date Tested/Inspected (Optional)</label>
+                                    <input type="date" id="edit_date_tested_inspected" name="date_tested_inspected" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                </div>
+
                             </div>
 
                             <div class="mt-6 flex items-center justify-end gap-x-6">
