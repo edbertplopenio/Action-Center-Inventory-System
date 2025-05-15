@@ -637,6 +637,40 @@ table.dataTable thead th {
         /* Make sure the font size remains consistent */
     }
 
+
+/* Style for the image modal */
+        /* Modal styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+        }
+
+        .modal-content {
+            margin: 15% auto; /* 15% from the top and centered */
+            display: block;
+            width: 80%; /* Could be more or less, depending on screen size */
+            max-width: 400px; /* Max width for larger screens */
+            max-height: 500px
+            
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
 </style>
 
 </head>
@@ -1152,10 +1186,9 @@ table.dataTable thead th {
                     [10, 25, 50, "All"]
                 ],
                 "pageLength": 10,
-                // Sorting by the 'Arrival Date' or 'added_at' column in descending order (index 7)
                 "order": [
                     [8, 'desc']
-                ], // Change the index (7) if your column index is different for `added_at` or 'Arrival Date'
+                ], 
                 "initComplete": function(settings, json) {
                     // Set the font size for the table after initialization
                     $(tableId).css('font-size', '12px');
@@ -1166,6 +1199,13 @@ table.dataTable thead th {
                     // Reset font size whenever DataTable is redrawn (e.g., after pagination or page size change)
                     $(tableId + ' tbody td').css('font-size', '12px');
                     $(tableId + ' thead th').css('font-size', '10px');
+
+                    // Reinitialize the image click event after the table is redrawn
+                    $('table img').on('click', function() {
+                        var imgSrc = $(this).attr('src'); // Get the source of the clicked image
+                        $('#img01').attr('src', imgSrc); // Set the source of the modal image
+                        $('#myModal').css('display', 'block'); // Show the modal
+                    });
                 }
             });
         }
@@ -1248,6 +1288,18 @@ table.dataTable thead th {
         });
         $('#archives-tab').click(function() {
             switchTab('archives');
+        });
+
+        // Modal logic to close modal when clicked outside of image
+        $(window).on('click', function(event) {
+            if (event.target == document.getElementById('myModal')) {
+                $('#myModal').css('display', 'none');
+            }
+        });
+
+        // Close the modal when the close button is clicked
+        $('.close').on('click', function() {
+            $('#myModal').css('display', 'none');
         });
     });
     </script>
@@ -1753,6 +1805,29 @@ $(document).ready(function() {
 });
 </script>
 
+<script>
+    $(document).ready(function(){
+        // When an image is clicked
+        $('table img').on('click', function(){
+            var imgSrc = $(this).attr('src'); // Get the source of the clicked image
+            $('#img01').attr('src', imgSrc); // Set the source of the modal image
+            $('#myModal').css('display', 'block'); // Show the modal
+        });
+
+        // Close the modal when the close button is clicked
+        $('.close').on('click', function() {
+            $('#myModal').css('display', 'none');
+        });
+
+        // Close the modal when clicking anywhere outside of the image
+        $(window).on('click', function(event) {
+            if (event.target == document.getElementById('myModal')) {
+                $('#myModal').css('display', 'none');
+            }
+        });
+    });
+</script>
+
 
 <!-- Modal Overlay for Adding Item -->
 <div id="addItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
@@ -2012,7 +2087,13 @@ $(document).ready(function() {
 </div>
 
 
+<!-- Existing HTML content omitted for brevity -->
 
+<!-- Modal for displaying large images -->
+<div id="myModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="img01">
+</div>
 
 </body>
 </html>
