@@ -252,29 +252,37 @@ public function getItemData($id)
             'consumable' => 'nullable|boolean',  // 'consumable' field can be nullable and boolean
             'inventory_date' => 'required|date',
         ]);
-    
+        
         // Final storage location (if "Other" storage location is selected)
         $storageLocation = $request->storage_location === 'Other'
             ? $request->other_storage_location
             : $request->storage_location;
-    
+        
         // Boolean handling for 'consumable'
         $isConsumable = $request->has('consumable') && $request->consumable == '1'; // If 'consumable' is checked
-    
+        
         // Check if item exists by name and category
         $item = Item::where('name', $request->name)
                     ->where('category', $request->category)
                     ->first();
-    
+        
+        // Track old codes if item exists (we will use this to compare with newly generated QR codes)
+        $oldCodes = [];
         if ($item) {
             // If the item exists, we just update the quantity
+            $oldCodes = explode(',', $item->codes);  // Track the old QR codes
+    
+            // Store the previous quantity to compare with the updated quantity
+            $oldQuantity = $item->quantity;
+    
+            // Increase the quantity by the new quantity
             $item->quantity += $request->quantity;
         } else {
             // If the item doesn't exist, we create a new one
             $item = new Item();
             $item->name = $request->name;
             $item->quantity = $request->quantity;
-    
+        
             // Generate item code (item_code) based on category and name
             $categoryMap = [
                 'DRRM Equipment' => 'DRRM',
@@ -293,7 +301,7 @@ public function getItemData($id)
             $item->item_code = "{$abbr}-" . str_pad($itemCount + 1, 2, '0', STR_PAD_LEFT) . "-{$itemInitials}";
             $item->added_at = now();
         }
-    
+        
         // Common field assignments
         $item->unit = $request->unit;
         $item->category = $request->category;
@@ -306,23 +314,29 @@ public function getItemData($id)
         $item->expiration_date = $request->expiration_date;
         $item->is_consumable = $isConsumable; // Corrected to use 'is_consumable' field in the database
         $item->inventory_date = $request->inventory_date;
-    
+        
         // Handle file upload for image
         if ($request->hasFile('image_url')) {
             $filename = time() . '.' . $request->image_url->extension();
             $request->image_url->move(public_path('images'), $filename);
             $item->image_url = 'images/' . $filename;
         }
-    
+        
         // Save the item in the database
         $item->save();
-    
+        
         // Generate individual item codes and save to 'codes' field
         $codes = [];
+        $newCodes = []; // Array to track newly added QR codes
         for ($i = 1; $i <= $item->quantity; $i++) {
             $individualItemCode = $item->item_code . '-' . str_pad($i, 2, '0', STR_PAD_LEFT);
             $codes[] = $individualItemCode;
-    
+        
+            // Check if the code is new (i.e., if quantity increased)
+            if (!in_array($individualItemCode, $oldCodes)) {
+                $newCodes[] = $individualItemCode;
+            }
+        
             // Save QR code in individual_items table
             $individualItem = new IndividualItem();
             $individualItem->item_id = $item->id;
@@ -330,15 +344,15 @@ public function getItemData($id)
             $individualItem->status = $item->status;
             $individualItem->save();
         }
-    
+        
         // Save the codes as a comma-separated string in the 'codes' field of the items table
         $item->codes = implode(',', $codes);
         $item->save();  // Save the updated item codes
-    
-        // Redirect back with success message
-        return redirect()->back()->with('success', 'Item added/updated successfully!');
+        
+        // Return the new codes as a response (optional for frontend display)
+        return redirect()->back()->with('success', 'Item added/updated successfully! New QR Codes: ' . implode(', ', $newCodes));
     }
-
+    
     
 /**
  * get codes

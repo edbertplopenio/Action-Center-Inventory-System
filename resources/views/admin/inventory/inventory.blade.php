@@ -1663,9 +1663,19 @@ $(document).ready(function() {
 
                 if (data.length > 0) {
                     var qrListHtml = '<ul>';
+                    var newlyAddedQrCodes = []; // To store newly added QR codes
+
+                    // Loop through all fetched QR codes and identify the new ones
                     data.forEach(function(qrCode) {
-                        qrListHtml += '<li>' + qrCode + '</li>';  // Create a list item for each QR code
+                        // Check if the QR code is newly added by comparing with previously displayed codes
+                        if (qrCode.includes(itemCodePrefix + '-04')) {
+                            newlyAddedQrCodes.push(qrCode);  // Add to newly added list if it's the newly added QR code
+                            qrListHtml += '<li style="color: green;">' + qrCode + ' (New)</li>';  // Highlight new QR code
+                        } else {
+                            qrListHtml += '<li>' + qrCode + '</li>';  // Normal QR code
+                        }
                     });
+
                     qrListHtml += '</ul>';
                     
                     // Show the QR codes in a SweetAlert modal or overlay
@@ -1674,6 +1684,11 @@ $(document).ready(function() {
                         html: qrListHtml,  // Display the list of QR codes in the modal
                         icon: 'info'
                     });
+
+                    // Log the newly added QR codes
+                    if (newlyAddedQrCodes.length > 0) {
+                        console.log("Newly Added QR Codes:", newlyAddedQrCodes);
+                    }
                 } else {
                     Swal.fire({
                         title: 'No QR Codes Found',
@@ -1692,8 +1707,9 @@ $(document).ready(function() {
         });
     });
 });
-
 </script>
+
+
 
 <!-- Modal Overlay for Adding Item -->
 <div id="addItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
