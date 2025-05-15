@@ -353,6 +353,23 @@ public function getItemData($id)
         return redirect()->back()->with('success', 'Item added/updated successfully! New QR Codes: ' . implode(', ', $newCodes));
     }
     
+/**
+ * search eme eme
+ */
+public function searchItem(Request $request)
+{
+    // Search for an item based on the name
+    $item = Item::where('name', 'like', '%' . $request->name . '%')->first();
+
+    if ($item) {
+        // If the item exists, return its details
+        return response()->json($item);
+    }
+
+    // If the item doesn't exist, return an error
+    return response()->json(['error' => 'Item not found.'], 404);
+}
+
     
 /**
  * get codes
@@ -362,7 +379,7 @@ public function getQrCodes($itemCode)
     // Log the incoming item_code for debugging
     \Log::info("Fetching QR codes for item_code: " . $itemCode);
 
-    // Find the item by its item_code prefix (we use 'like' to match the item_code starting with the given prefix)
+    // Find the item by its item_code (just the prefix part)
     $item = Item::where('item_code', 'like', $itemCode . '%')->first();
 
     // If the item is not found, log and return an empty array
@@ -379,8 +396,16 @@ public function getQrCodes($itemCode)
         // Split the codes field by commas to get individual QR codes
         $qrCodes = explode(',', $item->codes);
 
-        // Return the QR codes as a JSON array
-        return response()->json($qrCodes);
+        // Build the response with timestamp
+        $qrCodesWithTimestamp = array_map(function($qrCode) {
+            return [
+                'qr_code' => $qrCode,
+                'timestamp' => now()->toIso8601String(), // Add the timestamp
+            ];
+        }, $qrCodes);
+
+        // Return the filtered QR codes with timestamp
+        return response()->json($qrCodesWithTimestamp);
     } else {
         \Log::warning("No QR codes found for item with item_code: " . $itemCode);
         return response()->json([]);
@@ -409,20 +434,6 @@ public function getQrCodes($itemCode)
             $individualItem->status = $item->status;
             $individualItem->save();
         }
-    }
-
-    /**
-     * Fetch and return item details for editing or populating the form.
-     */
-    public function searchItem($name)
-    {
-        $item = Item::where('name', 'like', '%' . $name . '%')->first();
-
-        if ($item) {
-            return response()->json($item);
-        }
-
-        return response()->json(['error' => 'Item not found.'], 404);
     }
 
     /**

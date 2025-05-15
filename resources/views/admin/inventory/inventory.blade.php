@@ -173,6 +173,17 @@ margin-bottom: -2rem;
 
     }
 
+    .table td .action-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative; /* Ensures buttons are positioned relative to this container */
+    height: 100%;
+    gap: 5px;
+}
+
+
+
     /* Form row layout (two fields per row) */
     .form-row {
         display: grid;
@@ -242,7 +253,7 @@ margin-bottom: -2rem;
         max-height: 65px;
     }
 
-    /* Fix specific column width for image and action columns */
+    /** Fix specific column width for image and action columns 
     table th:nth-child(11),
     table td:nth-child(11) {
         width: 140px !important;
@@ -252,6 +263,7 @@ margin-bottom: -2rem;
     table td:nth-child(12) {
         width: 160px !important;
     }
+        */
 
      /* Ensuring all columns behave consistently */
      table th:nth-child(1),
@@ -270,10 +282,10 @@ margin-bottom: -2rem;
     table td:nth-child(5) { width: 100px; }
 
     table th:nth-child(6),
-    table td:nth-child(6) { width: 120px; }
+    table td:nth-child(6) { width: 100px; }
 
     table th:nth-child(7),
-    table td:nth-child(7) { width: 150px; }
+    table td:nth-child(7) { width: 120px; }
 
     table th:nth-child(8),
     table td:nth-child(8) { width: 100px; }
@@ -285,16 +297,16 @@ margin-bottom: -2rem;
     table td:nth-child(10) { width: 100px; }
 
     table th:nth-child(11),
-    table td:nth-child(11) { width: 70px; }
+    table td:nth-child(11) { width: 100px; }
 
     table th:nth-child(12),
-    table td:nth-child(12) { width: 70px; }
+    table td:nth-child(12) { width: 140px; }
 
     table th:nth-child(13),
-    table td:nth-child(13) { width: 100px; }
+    table td:nth-child(13) { width: 120px; }
 
     table th:nth-child(14),
-    table td:nth-child(14) { width: 80px; }
+    table td:nth-child(14) { width: 110px; }
 
     table th:nth-child(15),
     table td:nth-child(15) { width: 120px; }
@@ -328,50 +340,53 @@ margin-bottom: -2rem;
     }
 
     .edit-btn,
-    .archive-btn {
-        border-radius: 5px;
-        /* Slightly rounded corners */
-        padding: 5px 30px;
-        /* Increased padding for better touch */
-        font-size: 12px;
-        /* Font size adjustment */
-        white-space: nowrap;
-        /* Prevent text overflow */
-        overflow: hidden;
-        /* Hide overflow if the button text is too long */
-    }
+.archive-btn {
+    padding: 6px 20px; /* Consistent padding for buttons */
+    font-size: 12px; /* Ensure font size is consistent */
+    text-align: center; /* Align the text inside the button */
+    white-space: nowrap; /* Prevent button text from overflowing */
+}
 
-    .edit-btn {
-        top: 0;
-        /* Position the Edit button at the top */
-        background-color: #4cc9f0;
-        /* Edit button color */
-        color: white;
+/* Edit Button */
+.edit-btn {
+    position: absolute;
+    top: 0; /* Position at the top */
+    background-color: #4cc9f0;
+    color: white;
+    padding: 6px 17px; /* Same padding as Archive button */
+    font-size: 12px; /* Same font size as Archive button */
+    text-align: center;
+    white-space: nowrap;
+    cursor: pointer;
+    margin-top: 5px;
+    width: 100%; /* Ensure Edit button takes full width */
+    box-sizing: border-box; /* Prevents padding from breaking layout */
+}
 
-    }
+.edit-btn:hover {
+    background-color: #36a9c1;
+    transform: scale(1.05);
+}
 
-    .edit-btn:hover {
-        background-color: #36a9c1;
-        /* Darker shade on hover */
-        transform: scale(1.05);
-        /* Slight scaling effect */
-    }
+/* Archive Button */
+.archive-btn {
+    position: absolute;
+    top: 40px; /* Position below the Edit button */
+    background-color: #57cc99;
+    color: white;
+    padding: 6px 17px; /* Same padding as Edit button */
+    font-size: 12px; /* Same font size as Edit button */
+    text-align: center;
+    cursor: pointer;
+    width: 100%; /* Ensure Archive button takes full width */
+    box-sizing: border-box; /* Prevents padding from breaking layout */
+}
 
-    .archive-btn {
-        top: 40px;
-        /* Position the Archive button below the Edit button */
-        background-color: #57cc99;
-        /* Archive button color */
-        color: white;
-        margin-bottom: -3px;
-    }
+.archive-btn:hover {
+    background-color: #36a9c1;
+    transform: scale(1.05);
+}
 
-    .archive-btn:hover {
-        background-color: #57cc99;
-        /* Darker shade on hover */
-        transform: scale(1.05);
-        /* Slight scaling effect */
-    }
 
     /* Default Styles for Table Header */
     table thead th {
@@ -1227,30 +1242,65 @@ margin-bottom: -2rem;
 
 
 
-
+<!--Add item Modal-->
 <script>
 $(document).ready(function() {
+    // Open modal when "Add Item" button is clicked
     $("#add-item-btn").click(function() {
         $("#addItemModal").removeClass("hidden");
     });
 
+    // Enable Save button only if quantity is greater than 0
     $('#quantity').on('input', function() {
         var quantity = $(this).val();
         $("#saveButton").prop('disabled', quantity == 0 || quantity === "");
     });
 
+    // Show input field for other storage location if 'Other' is selected
     $('#storage_location').on('change', function() {
         $('#other_storage_location').toggleClass('hidden', $(this).val() !== 'Other');
     });
 
+    // Show input field for other unit if 'Other' is selected
     $('#unit').on('change', function() {
         $('#other_unit').toggleClass('hidden', $(this).val() !== 'Other');
     });
 
-    // Ensure the consumable checkbox updates the form value correctly
+    // Ensure consumable checkbox updates the form value correctly
     $('#consumable').on('change', function() {
         // This updates the form data with '1' for checked and '0' for unchecked
         $('input[name="consumable"]').val($(this).is(':checked') ? '1' : '0');
+    });
+
+    // Search for item when typing in the item search box
+    $('#item-name-search').on('input', function() {
+        var itemName = $(this).val();
+        if (itemName.length > 2) {  // Only trigger search if the name has 3 or more characters
+            $.ajax({
+                url: "{{ route('items.searchItem') }}", // Make sure this route is correct
+                method: 'GET',
+                data: { name: itemName },
+                success: function(response) {
+                    if (response.error) {
+                        console.log(response.error);
+                        // Enable save button for new item
+                        $('#saveButton').prop('disabled', false);
+                    } else {
+                        // Populate fields with the fetched item data
+                        $('#category').val(response.category);
+                        $('#quantity').val(response.quantity);
+                        $('#unit').val(response.unit);
+                        $('#brand').val(response.brand);
+                        $('#description').val(response.description);
+                        $('#storage_location').val(response.storage_location);
+                        $('#saveButton').removeAttr('disabled'); // Enable save button for existing item
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error searching item:', xhr.responseText);
+                }
+            });
+        }
     });
 
     // Handle form submission
@@ -1279,6 +1329,7 @@ $(document).ready(function() {
         formData.append('expiration_date', $('#expiration_date').val());
         formData.append('date_tested_inspected', $('#date_tested_inspected').val());
 
+        // Show loading state with Swal
         Swal.fire({
             title: 'Saving...',
             text: 'Please wait while we save the item.',
@@ -1287,8 +1338,9 @@ $(document).ready(function() {
             didOpen: () => Swal.showLoading()
         });
 
+        // Send data to the server using AJAX
         $.ajax({
-            url: "{{ route('items.store') }}", // Ensure this is your correct store route URL
+            url: "{{ route('items.store') }}", // Make sure this route is correct
             method: 'POST',
             data: formData,
             processData: false,
@@ -1325,8 +1377,9 @@ $(document).ready(function() {
         $('#itemForm').find('input[type="text"], input[type="number"], input[type="date"], input[type="file"], textarea').val('');
         $('#itemForm').find('select').prop('selectedIndex', 0);
         $('#other_unit, #other_storage_location').addClass('hidden').val('');
-        $('#search-item').val('');
+        $('#item-name-search').val('');
         $('#itemForm').find('input, select, textarea').prop('disabled', false);
+        $('#saveButton').prop('disabled', true); // Disable save button when clearing
     });
 
     // Remove the min/max validation for arrival date field
@@ -1665,14 +1718,23 @@ $(document).ready(function() {
                     var qrListHtml = '<ul>';
                     var newlyAddedQrCodes = []; // To store newly added QR codes
 
+                    // Get the current date for comparison
+                    var currentDate = new Date();
+                    
                     // Loop through all fetched QR codes and identify the new ones
                     data.forEach(function(qrCode) {
-                        // Check if the QR code is newly added by comparing with previously displayed codes
-                        if (qrCode.includes(itemCodePrefix + '-04')) {
-                            newlyAddedQrCodes.push(qrCode);  // Add to newly added list if it's the newly added QR code
-                            qrListHtml += '<li style="color: green;">' + qrCode + ' (New)</li>';  // Highlight new QR code
+                        var qrCodeDate = new Date(qrCode.timestamp);  // Use the timestamp provided by the backend
+
+                        // Calculate the difference between now and the QR code creation date
+                        var timeDiff = currentDate - qrCodeDate;
+                        var daysDiff = timeDiff / (1000 * 3600 * 24);  // Convert milliseconds to days
+
+                        // If the QR code was added within the last 2 days, mark it as "New"
+                        if (daysDiff <= 2) {
+                            newlyAddedQrCodes.push(qrCode);  // Add to newly added list
+                            qrListHtml += '<li style="color: green;">' + qrCode.qr_code + ' (New)</li>';  // Highlight new QR code
                         } else {
-                            qrListHtml += '<li>' + qrCode + '</li>';  // Normal QR code
+                            qrListHtml += '<li>' + qrCode.qr_code + '</li>';  // Normal QR code
                         }
                     });
 
@@ -1710,7 +1772,6 @@ $(document).ready(function() {
 </script>
 
 
-
 <!-- Modal Overlay for Adding Item -->
 <div id="addItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
     <div class="relative z-10 flex items-center justify-center">
@@ -1721,10 +1782,10 @@ $(document).ready(function() {
                     @csrf
                     <div class="space-y-6">
                         <div class="grid grid-cols-2 gap-4">
-                            <!-- Item Name -->
+                            <!-- Item Name (Search) -->
                             <div>
                                 <label for="name" class="block text-xs font-medium text-gray-900">Item Name</label>
-                                <input type="text" id="name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                <input type="text" id="item-name-search" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Search Item by Name" required>
                             </div>
 
                             <!-- Category -->
@@ -1742,7 +1803,6 @@ $(document).ready(function() {
                             <div class="col-span-2">
                                 <input type="checkbox" id="consumable" name="consumable" value="1" class="form-checkbox">
                                 <label for="consumable" class="text-xs font-medium text-gray-900">Consumable</label>
-                                <!-- Hidden field to handle the unchecked state -->
                                 <input type="hidden" name="consumable" value="0">
                             </div>
 
@@ -1762,7 +1822,6 @@ $(document).ready(function() {
                                         <option value="Box">Box</option>
                                         <option value="Other">Other</option>
                                     </select>
-                                    <!-- Inline input field next to 'Other' -->
                                     <input type="text" id="other_unit" name="other_unit" class="mt-1 ml-2 hidden py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs w-20" maxlength="12" placeholder="Type unit">
                                 </div>
                             </div>
@@ -1804,13 +1863,13 @@ $(document).ready(function() {
                                 <input type="file" id="image_url" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" accept="image/*">
                             </div>
 
-                            <!-- Brand Field (New) -->
+                            <!-- Brand Field -->
                             <div>
                                 <label for="brand" class="block text-xs font-medium text-gray-900">Brand</label>
                                 <input type="text" id="brand" name="brand" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
                             </div>
 
-                            <!-- Expiration Date (Optional) -->
+                            <!-- Expiration Date -->
                             <div>
                                 <label for="expiration_date" class="block text-xs font-medium text-gray-900">Expiration Date (Optional)</label>
                                 <input type="date" id="expiration_date" name="expiration_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
@@ -1821,17 +1880,15 @@ $(document).ready(function() {
                                 <label for="date_tested_inspected" class="block text-xs font-medium text-gray-900">Date Tested/Inspected (Optional)</label>
                                 <input type="date" id="date_tested_inspected" name="date_tested_inspected" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
                             </div>
-
                         </div>
 
                         <div class="mt-6 flex items-center justify-end gap-x-6">
                             <button type="button" id="cancelModal" class="text-xs font-semibold text-gray-900 px-4 py-2 bg-gray-400 rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
                                 Cancel
                             </button>
-                            <button type="submit" id="saveButton" class="rounded-md bg-green-400 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-green-600 hover:text-white">
+                            <button type="submit" id="saveButton" class="rounded-md bg-green-400 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-green-600 hover:text-white" disabled>
                                 Save
                             </button>
-                            <!-- Clear Button -->
                             <button type="button" id="clearForm" class="text-xs font-semibold text-gray-900 px-4 py-2 bg-gray-400 rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
                                 Clear
                             </button>
