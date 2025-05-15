@@ -1828,13 +1828,13 @@ $(document).ready(function() {
                             <!-- Arrival Date -->
                             <div>
                                 <label for="arrival_date" class="block text-xs font-medium text-gray-900">Arrival Date</label>
-                                <input type="date" id="arrival_date" name="arrival_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                <input type="date" id="arrival_date" name="arrival_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" min="2000-01-01" >
                             </div>
 
                             <!-- Inventory Date -->
                             <div>
                                 <label for="inventory_date" class="block text-xs font-medium text-gray-900">Inventory Date</label>
-                                <input type="date" id="inventory_date" name="inventory_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="date" id="inventory_date" name="inventory_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" min="2000-01-01">
                             </div>
 
                             <!-- Image -->
