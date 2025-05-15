@@ -18,7 +18,9 @@ class IndividualItem extends Model
         'qr_code',
         'status',
         'is_archived',
+        'was_rejected'
     ];
+
 
     // Define the inverse relationship to the Item model
     public function item()
@@ -36,5 +38,10 @@ class IndividualItem extends Model
     {
         return $this->hasMany(\App\Models\IndividualItemReturn::class)
             ->where('status', 'Pending');
+    }
+
+    public function borrowedItem()
+    {
+        return $this->belongsTo(BorrowedItem::class, 'item_id');
     }
 }

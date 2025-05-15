@@ -326,3 +326,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 });
+
+
+// routes/web.php
+Route::post('/admin/return-items/reject-pending/{id}', [ReturnItemsController::class, 'rejectPending'])
+    ->name('admin.return-items.reject-pending');

@@ -191,4 +191,44 @@ class ReturnItemsController extends Controller
             'borrowedItems' => $borrowedIndividualItems
         ]);
     }
+
+    public function rejectPending($id)
+    {
+        $borrowedItem = BorrowedItem::findOrFail($id);
+
+        if ($borrowedItem->status !== 'Pending') {
+            return response()->json(['message' => 'Item is not pending approval.'], 400);
+        }
+
+        // Get all individual items currently marked as 'Pending'
+        $pendingItems = $borrowedItem->individualItems()
+            ->where('status', 'Pending')
+            ->get();
+
+        foreach ($pendingItems as $item) {
+            // Revert item status back to 'Borrowed'
+            $item->status = 'Borrowed';
+            $item->save();
+
+            // Delete latest return record (no status column!)
+            $latestReturn = \App\Models\IndividualItemReturn::where('borrowed_item_id', $borrowedItem->id)
+                ->where('individual_item_id', $item->id)
+                ->latest()
+                ->first();
+
+            if ($latestReturn) {
+                $latestReturn->delete();
+            }
+        }
+
+        // Update the borrowed item's overall status
+        $unreturnedExists = $borrowedItem->individualItems()
+            ->where('status', '!=', 'Available')
+            ->exists();
+
+        $borrowedItem->status = $unreturnedExists ? 'Borrowed' : 'Returned';
+        $borrowedItem->save();
+
+        return response()->json(['message' => 'Pending items reverted to borrowed and return records deleted.'], 200);
+    }
 }

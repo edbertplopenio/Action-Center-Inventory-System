@@ -489,9 +489,11 @@
             showCancelButton: true,
             confirmButtonColor: '#10B981',
             cancelButtonColor: '#6B7280',
-            confirmButtonText: 'Yes, approve all'
+            confirmButtonText: 'Yes, approve all',
+            cancelButtonText: 'Reject' // Add reject button text
         }).then((result) => {
             if (result.isConfirmed) {
+                // Existing approve logic
                 $.ajax({
                     url: '/admin/return-items/approve-pending/' + borrowedItemId,
                     type: 'POST',
@@ -500,6 +502,24 @@
                     },
                     success: function(response) {
                         Swal.fire('Approved!', 'All pending items have been approved.', 'success')
+                            .then(() => {
+                                location.reload();
+                            });
+                    },
+                    error: function(err) {
+                        Swal.fire('Error!', err.responseJSON.message, 'error');
+                    }
+                });
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                // New reject logic
+                $.ajax({
+                    url: '/admin/return-items/reject-pending/' + borrowedItemId,
+                    type: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        Swal.fire('Rejected!', 'Pending items reverted to borrowed status.', 'success')
                             .then(() => {
                                 location.reload();
                             });
