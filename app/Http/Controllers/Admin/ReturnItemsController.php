@@ -12,66 +12,61 @@ class ReturnItemsController extends Controller
     // Display the list of borrowed and returned items
     // ReturnItemsController.php
 
-    public function index()
-    {
-        $borrowedItems = BorrowedItem::with('borrower', 'item', 'individualItems', 'individualItemReturns')
-            ->whereIn('status', ['Borrowed', 'Returned', 'Pending'])
-            ->get();
+public function index()
+{
+    $borrowedItems = BorrowedItem::with('borrower', 'item', 'individualItems', 'individualItemReturns')
+        ->whereIn('status', ['Borrowed', 'Returned', 'Pending Return']) // Changed to Pending Return
+        ->get();
 
-        $isSupervisor = Auth::check() && Auth::user()->user_role === 'Supervisor';
+    $isSupervisor = Auth::check() && Auth::user()->user_role === 'Supervisor';
 
-        return view('admin.return-items.index', compact('borrowedItems', 'isSupervisor'));
+    return view('admin.return-items.index', compact('borrowedItems', 'isSupervisor'));
+}
+
+
+
+public function approveAllPending($id)
+{
+    $borrowedItem = BorrowedItem::findOrFail($id);
+
+    if ($borrowedItem->status !== 'Pending Return') { // Check for Pending Return
+        return response()->json(['message' => 'This item is not in pending return status.'], 400);
     }
 
+    // Get all individual items marked as Pending Return
+    $pendingItems = $borrowedItem->individualItems()->where('status', 'Pending Return')->get();
 
+    $returnedCount = 0;
 
-    public function approveAllPending($id)
-    {
-        $borrowedItem = BorrowedItem::findOrFail($id);
+    foreach ($pendingItems as $item) {
+        $item->status = 'Available';
+        $item->save();
 
-        if ($borrowedItem->status !== 'Pending') {
-            return response()->json(['message' => 'This item is not in pending status.'], 400);
+        $latestReturn = \App\Models\IndividualItemReturn::where('individual_item_id', $item->id)
+            ->latest()
+            ->first();
+
+        if ($latestReturn) {
+            $latestReturn->remarks = 'Good';
+            $latestReturn->save();
         }
 
-        // Get all individual items still marked as Pending
-        $pendingItems = $borrowedItem->individualItems()->where('status', 'Pending')->get();
-
-        $returnedCount = 0;
-
-        foreach ($pendingItems as $item) {
-            // Mark as Available
-            $item->status = 'Available';
-            $item->save();
-
-            // Update latest return record
-            $latestReturn = \App\Models\IndividualItemReturn::where('individual_item_id', $item->id)
-                ->latest()
-                ->first();
-
-            if ($latestReturn) {
-                $latestReturn->remarks = 'Good'; // ✅ Or any allowed value
-
-                $latestReturn->save();
-            }
-
-            $returnedCount++;
-        }
-
-        // ✅ Update item stock (like markAsReturned)
-        $mainItem = $borrowedItem->item;
-        $mainItem->quantity += $returnedCount;
-        $mainItem->save();
-
-        // ✅ Update borrowed item status
-        $unreturnedCount = $borrowedItem->individualItems()
-            ->where('status', '!=', 'Available')
-            ->count();
-
-        $borrowedItem->status = $unreturnedCount > 0 ? 'Borrowed' : 'Returned';
-        $borrowedItem->save();
-
-        return response()->json(['message' => 'All pending items approved and stock updated.'], 200);
+        $returnedCount++;
     }
+
+    $mainItem = $borrowedItem->item;
+    $mainItem->quantity += $returnedCount;
+    $mainItem->save();
+
+    $unreturnedCount = $borrowedItem->individualItems()
+        ->where('status', '!=', 'Available')
+        ->count();
+
+    $borrowedItem->status = $unreturnedCount > 0 ? 'Borrowed' : 'Returned';
+    $borrowedItem->save();
+
+    return response()->json(['message' => 'All pending return items approved.'], 200);
+}
 
 
 
@@ -140,37 +135,35 @@ class ReturnItemsController extends Controller
 
 
 
-    public function markAsPending($id, Request $request)
-    {
-        $borrowedItem = BorrowedItem::findOrFail($id);
-        $scannedQRCodes = $request->input('qr_codes');
-        $returnDates = $request->input('return_dates');
-        $remarks = $request->input('remarks');
+ public function markAsPending($id, Request $request)
+{
+    $borrowedItem = BorrowedItem::findOrFail($id);
+    $scannedQRCodes = $request->input('qr_codes');
+    $returnDates = $request->input('return_dates');
+    $remarks = $request->input('remarks');
 
-        foreach ($scannedQRCodes as $index => $scannedQRCode) {
-            $individualItem = $borrowedItem->individualItems()->where('qr_code', $scannedQRCode)->first();
+    foreach ($scannedQRCodes as $index => $scannedQRCode) {
+        $individualItem = $borrowedItem->individualItems()->where('qr_code', $scannedQRCode)->first();
 
-            if ($individualItem && $individualItem->status !== 'Available') {
-                // Only mark as Pending if not already Available
-                $individualItem->status = 'Pending';
-                $individualItem->save();
+        if ($individualItem && $individualItem->status !== 'Available') {
+            $individualItem->status = 'Pending Return'; // Set to Pending Return
+            $individualItem->save();
 
-                \App\Models\IndividualItemReturn::create([
-                    'individual_item_id' => $individualItem->id,
-                    'borrowed_item_id' => $borrowedItem->id,
-                    'return_date' => $returnDates[$index] ?? now(),
-                    'remarks' => $remarks[$index] ?? 'Not Checked',
-                    'status' => 'Pending'
-                ]);
-            }
+            \App\Models\IndividualItemReturn::create([
+                'individual_item_id' => $individualItem->id,
+                'borrowed_item_id' => $borrowedItem->id,
+                'return_date' => $returnDates[$index] ?? now(),
+                'remarks' => $remarks[$index] ?? 'Not Checked',
+                'status' => 'Pending Return' // Set status to Pending Return
+            ]);
         }
-
-        // Update parent status to Pending
-        $borrowedItem->status = 'Pending';
-        $borrowedItem->save();
-
-        return response()->json(['message' => 'Items marked as pending for approval!'], 200);
     }
+
+    $borrowedItem->status = 'Pending Return'; // Update parent status
+    $borrowedItem->save();
+
+    return response()->json(['message' => 'Items marked as pending return!'], 200);
+}
 
 
 
@@ -192,43 +185,39 @@ class ReturnItemsController extends Controller
         ]);
     }
 
-    public function rejectPending($id)
-    {
-        $borrowedItem = BorrowedItem::findOrFail($id);
+ public function rejectPending($id)
+{
+    $borrowedItem = BorrowedItem::findOrFail($id);
 
-        if ($borrowedItem->status !== 'Pending') {
-            return response()->json(['message' => 'Item is not pending approval.'], 400);
-        }
-
-        // Get all individual items currently marked as 'Pending'
-        $pendingItems = $borrowedItem->individualItems()
-            ->where('status', 'Pending')
-            ->get();
-
-        foreach ($pendingItems as $item) {
-            // Revert item status back to 'Borrowed'
-            $item->status = 'Borrowed';
-            $item->save();
-
-            // Delete latest return record (no status column!)
-            $latestReturn = \App\Models\IndividualItemReturn::where('borrowed_item_id', $borrowedItem->id)
-                ->where('individual_item_id', $item->id)
-                ->latest()
-                ->first();
-
-            if ($latestReturn) {
-                $latestReturn->delete();
-            }
-        }
-
-        // Update the borrowed item's overall status
-        $unreturnedExists = $borrowedItem->individualItems()
-            ->where('status', '!=', 'Available')
-            ->exists();
-
-        $borrowedItem->status = $unreturnedExists ? 'Borrowed' : 'Returned';
-        $borrowedItem->save();
-
-        return response()->json(['message' => 'Pending items reverted to borrowed and return records deleted.'], 200);
+    if ($borrowedItem->status !== 'Pending Return') { // Check for Pending Return
+        return response()->json(['message' => 'Item is not pending return.'], 400);
     }
+
+    $pendingItems = $borrowedItem->individualItems()
+        ->where('status', 'Pending Return')
+        ->get();
+
+    foreach ($pendingItems as $item) {
+        $item->status = 'Borrowed';
+        $item->save();
+
+        $latestReturn = \App\Models\IndividualItemReturn::where('borrowed_item_id', $borrowedItem->id)
+            ->where('individual_item_id', $item->id)
+            ->latest()
+            ->first();
+
+        if ($latestReturn) {
+            $latestReturn->delete();
+        }
+    }
+
+    $unreturnedExists = $borrowedItem->individualItems()
+        ->where('status', '!=', 'Available')
+        ->exists();
+
+    $borrowedItem->status = $unreturnedExists ? 'Borrowed' : 'Returned';
+    $borrowedItem->save();
+
+    return response()->json(['message' => 'Pending return items reverted.'], 200);
+}
 }

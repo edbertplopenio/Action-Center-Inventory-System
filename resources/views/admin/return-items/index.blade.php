@@ -261,7 +261,7 @@
                             <strong>{{ \Carbon\Carbon::parse($date)->format('Y-m-d') }}</strong><br>
                             @foreach($returns as $return)
                             {{ $return->individualItem->qr_code }}
-                            @if($return->status == 'Pending')
+                            @if($return->status == 'Pending Return')
                             (Pending)
                             @elseif($return->status == 'Approved')
                             (Approved)
@@ -273,16 +273,16 @@
                         </td>
 
                         <td>
-                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+    <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
         {{ $borrowedItem->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
         {{ $borrowedItem->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
-        {{ $borrowedItem->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-600 border border-yellow-500' : '' }}">
-                                {{ $borrowedItem->status }}
-                            </span>
-                            @if($borrowedItem->individualItemReturns->where('status', 'Approved')->count() > 0)
-                            <span class="text-xs text-green-600">(Approved)</span>
-                            @endif
-                        </td>
+        {{ $borrowedItem->status == 'Pending Return' ? 'bg-yellow-500/10 text-yellow-600 border border-yellow-500' : '' }}">
+        {{ $borrowedItem->status }}
+    </span>
+    @if($borrowedItem->individualItemReturns->where('status', 'Approved')->count() > 0)
+    <span class="text-xs text-green-600">(Approved)</span>
+    @endif
+</td>
 
                         <td>
                             @php
@@ -304,15 +304,15 @@
                         </td>
 
                         <td>
-                            @if($borrowedItem->status == 'Pending' && $isSupervisor)
-                            <button class="approve-pending-btn px-2 py-1 m-1 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 text-xs w-24"
-                                onclick="approvePendingItems('{{ $borrowedItem->id }}')">
-                                Review
-                            </button>
-                            @else
+@if($borrowedItem->status == 'Pending Return' && $isSupervisor)
+<button class="approve-pending-btn px-2 py-1 m-1 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 text-xs w-24"
+    onclick="approvePendingItems('{{ $borrowedItem->id }}')">
+    Review
+</button>
+@else
                             <button class="return-btn px-2 py-1 m-1 bg-[#A855F7] text-white rounded hover:bg-[#7038A4] focus:outline-none focus:ring-2 focus:ring-[#A855F7] text-xs w-24"
                                 onclick="returnItem('{{ $borrowedItem->id }}')"
-                                @if($borrowedItem->status == 'Returned' || ($borrowedItem->status == 'Pending' && !$isSupervisor))
+                                @if($borrowedItem->status == 'Returned' || ($borrowedItem->status == 'Pending Return' && !$isSupervisor))
                                 disabled
                                 style="opacity: 0.5;"
                                 data-toggle="tooltip" data-placement="top"
@@ -406,7 +406,7 @@
             if (status !== 'Returned' && status !== 'Pending') {
                 scannedQRCodeList.push(qrCode);
                 returnDates.push(new Date().toISOString().split('T')[0]);
-                statusCell.text('Pending');
+                statusCell.text('Pending Return');
 
                 // Yellow highlight for pending items
                 $(row).css({
@@ -689,12 +689,15 @@ function approvePendingItems(borrowedItemId) {
                     let remarksDisabled = ''; // Default to not disabled
 
                     // Check if the item has been returned and display 'Returned' in the table
-                    if (item.status === 'Available') {
-                        statusText = 'Returned';
-                        rowStyle = 'background-color: #90ee90; color: #000;';
-                        alreadyReturnedCount++; // Increment the returned items count
-                        remarksDisabled = 'disabled'; // Disable remarks dropdown for returned items
-                    }
+if (item.status === 'Available') {
+    statusText = 'Returned';
+    rowStyle = 'background-color: #90ee90; color: #000;';
+    alreadyReturnedCount++; // Increment the returned items count
+    remarksDisabled = 'disabled'; // Disable remarks dropdown for returned items
+} else if (item.status === 'Pending Return') {
+    statusText = 'Pending Return';
+}
+
 
                     // Create the row with the dropdown for remarks
                     const row = `<tr style="${rowStyle}">
