@@ -284,14 +284,19 @@
                         <td>
                             <button class="approve-btn px-2 py-1 m-1 bg-green-500 text-white rounded 
                                     hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 text-xs w-24"
-                                onclick="openQRScanner('{{ $request->item->id }}', '{{ $request->quantity_borrowed }}')"
-                                @if(in_array($request->status, ['Approved', 'Rejected', 'Borrowed', 'Returned', 'Overdue', 'Lost', 'Damaged']))
-                                disabled
-                                style="opacity: 0.5;"
-                                data-toggle="tooltip" data-placement="top" title="This request cannot be approved because it is already in a final state."
-                                @endif>
-                                Approve
-                            </button>
+                                onclick="openQRScanner('{{ $request->item->id }}', '{{ $request->quantity_borrowed }}', '{{ $request->id }}')"
+    @if(in_array($request->status, ['Approved', 'Rejected', 'Borrowed', 'Returned', 'Overdue', 'Lost', 'Damaged']))
+        disabled
+        title="Final state"
+    @elseif(!$request->can_approve)
+        disabled
+        title="Prioritized request pending"
+    @elseif($request->item->quantity < $request->quantity_borrowed)
+        disabled
+        title="Insufficient quantity"
+    @endif>
+    Approve
+</button>
 
                             <button class="reject-btn px-2 py-1 m-1 bg-red-500 text-white rounded 
                                     hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 text-xs w-24"

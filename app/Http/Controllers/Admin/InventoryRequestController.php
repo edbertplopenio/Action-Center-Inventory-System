@@ -12,19 +12,24 @@ use Illuminate\Support\Facades\Auth;
 class InventoryRequestController extends Controller
 {
     public function index()
-    {
-        // Fetch all borrowing requests with related item and borrower details, where the status is 'Pending'
-        $borrowing_requests = BorrowedItem::with(['item', 'borrower'])
-            ->where('status', 'Pending')  // Add the filter for Pending status
-            ->orderBy('created_at', 'desc')
-            ->get();
+{
+    $borrowing_requests = BorrowedItem::with(['item', 'borrower'])
+        ->where('status', 'Pending')
+        ->orderBy('created_at', 'asc')
+        ->get();
 
-        // Fetch all items along with their associated individual items and their QR codes
-        $items = Item::with('individualItems')->get();
-
-        // Pass the items to the view
-        return view('admin.inventory-requests.index', compact('borrowing_requests', 'items'));
+    $grouped = $borrowing_requests->groupBy('item_id');
+    foreach ($grouped as $item_id => $requests) {
+        $firstRequest = true;
+        foreach ($requests as $request) {
+            $request->can_approve = $firstRequest;
+            $firstRequest = false;
+        }
     }
+
+    $items = Item::with('individualItems')->get();
+    return view('admin.inventory-requests.index', compact('borrowing_requests', 'items'));
+}
 
 
     public function updateStatus(Request $request, $id)
