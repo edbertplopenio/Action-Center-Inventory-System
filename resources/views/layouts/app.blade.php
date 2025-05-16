@@ -233,12 +233,12 @@
                 }
 
                 // Wait for the DOM content to load completely before executing the function
+                // In app.blade.php script
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Call the function to update the badge immediately when the page loads
-                    updatePendingRequestsCount();
+                    updatePendingRequestsCount(); // Initial call
 
-                    // Optionally, you can set an interval to update the count every 30 seconds
-                    setInterval(updatePendingRequestsCount, 30000); // Update every 30 seconds
+                    // Update every 5 seconds instead of 30
+                    setInterval(updatePendingRequestsCount, 5000);
                 });
             </script>
 
