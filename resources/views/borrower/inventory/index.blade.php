@@ -588,6 +588,7 @@
                             icon: "success",
                             confirmButtonText: "OK"
                         }).then(() => {
+                            window.location.reload();
                             borrowModal.style.display = "none";
                             resetPreBorrowForm();
                         });
