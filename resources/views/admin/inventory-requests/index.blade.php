@@ -221,7 +221,7 @@
             <table id="requestsTable" class="display" style="width: 100%">
                 <thead>
                     <tr>
-                        <th style="display:none;">ID</th> <!-- Hidden ID column -->
+                        <th>Request #</th><!-- Hidden ID column -->
                         <th>Borrower</th>
                         <th>Item Name</th>
                         <th>Quantity</th>
@@ -242,7 +242,7 @@
                         data-due-date="{{ \Carbon\Carbon::parse($request->due_date)->format('Y-m-d') }}"
                         data-status="{{ $request->status }}">
 
-                        <td style="display:none;">{{ $request->id }}</td> <!-- Hidden ID value -->
+                        <td>{{ $request->id }}</td> <!-- Visible Request Number -->
 
                         <!-- Borrower -->
                         <td>
@@ -335,12 +335,10 @@
             searching: true,
             ordering: true,
             order: [
-                [0, "desc"]
-            ], // Sort by hidden ID column (index 0) in descending order
-            columnDefs: [{
-                targets: 0,
-                visible: false // Hide the ID column
-            }]
+                [0, "desc"] // Sort by visible Request Number
+            ],
+            columnDefs: []
+
         });
 
         // Initialize tooltips
