@@ -7,7 +7,9 @@ use App\Models\Item;
 use App\Models\IndividualItem;
 use App\Models\BorrowedItem;
 use App\Models\IndividualItemReturn; // Import the model for IndividualItemReturn
-use DB;
+use Illuminate\Support\Facades\DB;
+
+use Illuminate\Support\Facades\Cache;
 
 class DashboardController extends Controller
 {
@@ -26,7 +28,7 @@ class DashboardController extends Controller
             ->get();
 
         // Fetch the most recent deployment (borrowed item)
-        $recentDeploymentFirst = BorrowedItem::with('item') 
+        $recentDeploymentFirst = BorrowedItem::with('item')
             ->orderBy('borrow_date', 'desc')
             ->take(1)
             ->get();
@@ -39,12 +41,12 @@ class DashboardController extends Controller
 
         // Fetch items that need repair
         $itemsNeedingRepair = IndividualItemReturn::where('remarks', 'Needs Repair')
-        ->get();
-    
-    
+            ->get();
+
+
 
         // Fetch the next 10 recent deployments
-        $recentDeploymentsNext = BorrowedItem::with('item') 
+        $recentDeploymentsNext = BorrowedItem::with('item')
             ->orderBy('borrow_date', 'desc')
             ->take(10)
             ->get();
@@ -53,15 +55,26 @@ class DashboardController extends Controller
         $equipment = Item::where('is_archived', false)
             ->distinct('name')
             ->get(['id', 'name']);  // Select only the id and name columns
-
-        // Join 'borrowed_items' with 'items' to fetch item names along with the borrowed quantities
-        $mostBorrowedItems = DB::table('borrowed_items')
-            ->join('items', 'borrowed_items.item_id', '=', 'items.id')
-            ->select('items.name as item_name', DB::raw('SUM(borrowed_items.quantity_borrowed) as total_borrowed'))
-            ->where('borrowed_items.status', 'Borrowed') // Only include items with status 'Borrowed'
-            ->groupBy('items.name')
-            ->orderBy('total_borrowed', 'desc')
-            ->get();
+        $cacheDuration = now()->addHours(1);
+        $mostBorrowedItems = Cache::remember('most_borrowed_items', $cacheDuration, function () {
+            return BorrowedItem::select([
+                'borrowed_items.item_id',
+                'items.name as item_name',
+                DB::raw('SUM(borrowed_items.quantity_borrowed) as total_borrowed')
+            ])
+                ->join('items', 'borrowed_items.item_id', '=', 'items.id')
+                ->whereIn('borrowed_items.status', ['Borrowed', 'Returned'])
+                ->groupBy('borrowed_items.item_id', 'items.name')
+                ->orderByDesc('total_borrowed')
+                ->take(10)
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'item_name' => $item->item_name,
+                        'total_borrowed' => (int)$item->total_borrowed
+                    ];
+                });
+        });
 
         // Fetch the sum of quantities grouped by category
         $categoryCounts = DB::table('items')
@@ -102,7 +115,7 @@ class DashboardController extends Controller
             ->get();
 
         // Prepare the response data
-        $labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July','August', 'September', 'October', 'November','December']; // Month names
+        $labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']; // Month names
         $data = array_fill(0, 12, 0); // Default to 0 for each month
 
         // Fill the data for each month from the database
