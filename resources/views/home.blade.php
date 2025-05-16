@@ -307,37 +307,47 @@
         });
 
 
-        // Low Stock Chart
-        var lowStockItemsNames = <?php echo json_encode($lowStockItems->pluck('name')->toArray()); ?>;
-        var lowStockItemsQuantities = <?php echo json_encode($lowStockItems->pluck('quantity')->toArray()); ?>;
+ // Low Stock Chart
+var lowStockItemsNames = <?php echo json_encode($lowStockItems->pluck('name')->toArray()); ?>;
+var lowStockItemsQuantities = <?php echo json_encode($lowStockItems->pluck('quantity')->toArray()); ?>;
 
-        var ctx2 = document.getElementById('lowStockChart').getContext('2d');
-        var lowStockChart = new Chart(ctx2, {
-            type: 'bar', // Bar chart type
-            data: {
-                labels: lowStockItemsNames, // Get item names
-                datasets: [{
-                    label: 'Low Stock Items',
-                    data: lowStockItemsQuantities, // Get item quantities
-                    backgroundColor: 'rgba(255, 99, 132, 1)', // Pink color for the bars
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                indexAxis: 'y', // This makes the chart horizontal
-                scales: {
-                    x: {
-                        beginAtZero: true
-                    },
-                    y: {
-                        beginAtZero: true
-                    }
-                }
+// Define 3 different colors to rotate
+var barColors = ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)'];
+var backgroundColors = lowStockItemsQuantities.map((_, index) => barColors[index % 3]);
+
+var ctx2 = document.getElementById('lowStockChart').getContext('2d');
+var lowStockChart = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+        labels: lowStockItemsNames,
+        datasets: [{
+            label: 'Low Stock Items',
+            data: lowStockItemsQuantities,
+            backgroundColor: backgroundColors,
+            borderColor: backgroundColors,
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        indexAxis: 'y',
+        plugins: {
+            legend: {
+                display: false // <-- This line hides the legend
             }
-        });
+        },
+        scales: {
+            x: {
+                beginAtZero: true
+            },
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+
 
 
         // Quantity By Category Chart

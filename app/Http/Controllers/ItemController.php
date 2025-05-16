@@ -20,89 +20,89 @@ class ItemController extends Controller
 
         // Fetch all items, sorted by the added_at field in descending order (most recent first)
         $allItems = Item::where('is_archived', false)
-            ->orderBy('added_at', 'desc')
-            ->get()
-            ->map(function ($item) use ($currentTime) {
-                // Calculate the time difference in days and check if it's within 5 days
-                $item->is_new = $currentTime->diffInDays($item->added_at) <= 5;
-                return $item;
-            });
+                        ->orderBy('added_at', 'desc')
+                        ->get()
+                        ->map(function($item) use ($currentTime) {
+                            // Calculate the time difference in days and check if it's within 5 days
+                            $item->is_new = $currentTime->diffInDays($item->added_at) <= 5;
+                            return $item;
+                        });
 
         // Fetch categorized items in descending order by added_at
         $drrmItems = Item::where('is_archived', false)
-            ->where('category', 'DRRM Equipment')
-            ->orderBy('added_at', 'desc')
-            ->get()
-            ->map(function ($item) use ($currentTime) {
-                $item->is_new = $currentTime->diffInDays($item->added_at) <= 5;
-                return $item;
-            });
+                         ->where('category', 'DRRM Equipment')
+                         ->orderBy('added_at', 'desc')
+                         ->get()
+                         ->map(function($item) use ($currentTime) {
+                             $item->is_new = $currentTime->diffInDays($item->added_at) <= 5;
+                             return $item;
+                         });
 
         $officeItems = Item::where('is_archived', false)
-            ->where('category', 'Office Supplies')
-            ->orderBy('added_at', 'desc')
-            ->get()
-            ->map(function ($item) use ($currentTime) {
-                $item->is_new = $currentTime->diffInDays($item->added_at) <= 5;
-                return $item;
-            });
+                           ->where('category', 'Office Supplies')
+                           ->orderBy('added_at', 'desc')
+                           ->get()
+                           ->map(function($item) use ($currentTime) {
+                               $item->is_new = $currentTime->diffInDays($item->added_at) <= 5;
+                               return $item;
+                           });
 
         $emergencyItems = Item::where('is_archived', false)
-            ->where('category', 'Emergency Kits')
-            ->orderBy('added_at', 'desc')
-            ->get()
-            ->map(function ($item) use ($currentTime) {
-                $item->is_new = $currentTime->diffInDays($item->added_at) <= 5;
-                return $item;
-            });
+                              ->where('category', 'Emergency Kits')
+                              ->orderBy('added_at', 'desc')
+                              ->get()
+                              ->map(function($item) use ($currentTime) {
+                                  $item->is_new = $currentTime->diffInDays($item->added_at) <= 5;
+                                  return $item;
+                              });
 
         $otherItems = Item::where('is_archived', false)
-            ->where('category', 'Other Items')
-            ->orderBy('added_at', 'desc')
-            ->get()
-            ->map(function ($item) use ($currentTime) {
-                $item->is_new = $currentTime->diffInDays($item->added_at) <= 5;
-                return $item;
-            });
+                          ->where('category', 'Other Items')
+                          ->orderBy('added_at', 'desc')
+                          ->get()
+                          ->map(function($item) use ($currentTime) {
+                              $item->is_new = $currentTime->diffInDays($item->added_at) <= 5;
+                              return $item;
+                          });
 
         // Fetch archived items
         $archivedItems = Item::where('is_archived', true)->get();
-        // Fetch the most available item(s) based on quantity
+ // Fetch the most available item(s) based on quantity
         $mostAvailableItems = Item::where('is_archived', false)
             ->orderBy('quantity', 'desc')
             ->take(1)
             ->get();
-
+    
         // Fetch critical stock items (items with the lowest quantity)
         $criticalStockItems = Item::where('is_archived', false)
             ->orderBy('quantity', 'asc')
             ->take(1)
             ->get();
-
+    
         // Fetch the most recent deployment (borrowed item)
-        $recentDeploymentFirst = BorrowedItem::with('item')
+        $recentDeploymentFirst = BorrowedItem::with('item') 
             ->orderBy('borrow_date', 'desc')
             ->take(1)
             ->get();
-
+    
         // Fetch top 3 low stock items
         $lowStockItems = Item::where('is_archived', false)
             ->orderBy('quantity', 'asc')
             ->take(3)
             ->get();
-
+    
         // Fetch items that need repair
         $itemsNeedingRepair = Item::where('status', 'Needs Repair')
             ->where('is_archived', false)
             ->get();
-
+    
         // Fetch the next 10 recent deployments
-        $recentDeploymentsNext = BorrowedItem::with('item')
+        $recentDeploymentsNext = BorrowedItem::with('item') 
             ->orderBy('borrow_date', 'desc')
             ->skip(1)
             ->take(10)
             ->get();
-
+    
         // Fetch distinct equipment names with their ids, ensuring no duplicates
         $equipment = Item::where('is_archived', false)
             ->distinct('name')
@@ -115,7 +115,7 @@ class ItemController extends Controller
             ->groupBy('items.name')  // Group by item_name
             ->orderBy('total_borrowed', 'desc')  // Order by total borrowed quantity
             ->get();
-
+    
         // Fetch the sum of quantities grouped by category
         $categoryCounts = DB::table('items')
             ->select('category', DB::raw('SUM(quantity) as total_quantity'))
@@ -124,12 +124,12 @@ class ItemController extends Controller
 
         // Pass all variables to the view
         return view('home', compact(
-            'allItems',
-            'drrmItems',
-            'officeItems',
-            'emergencyItems',
-            'otherItems',
-            'archivedItems',
+            'allItems', 
+            'drrmItems', 
+            'officeItems', 
+            'emergencyItems', 
+            'otherItems', 
+            'archivedItems', 
             'mostAvailableItems',
             'criticalStockItems',
             'recentDeploymentFirst',
@@ -143,20 +143,20 @@ class ItemController extends Controller
     }
 
     // Fetch all items (equipment)
-    // Fetch item details for editing via AJAX
-    public function getItemData($id)
-    {
-        // Fetch item data from the database by its ID
-        $item = Item::find($id);
+// Fetch item details for editing via AJAX
+public function getItemData($id)
+{
+    // Fetch item data from the database by its ID
+    $item = Item::find($id);
 
-        // If the item is not found, return an error response
-        if (!$item) {
-            return response()->json(['error' => 'Item not found.'], 404);
-        }
-
-        // Return the item data in JSON format
-        return response()->json($item);
+    // If the item is not found, return an error response
+    if (!$item) {
+        return response()->json(['error' => 'Item not found.'], 404);
     }
+
+    // Return the item data in JSON format
+    return response()->json($item);
+}
 
     // Fetch usage rate data for a specific item
     public function getUsageRateData($itemId)
@@ -245,27 +245,27 @@ class ItemController extends Controller
             'other_storage_location' => 'nullable|string|max:255',
             'arrival_date' => 'required|date',
             'status' => 'required|string|max:255',
-            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10000',
             'brand' => 'nullable|string|max:255',
             'expiration_date' => 'nullable|date',
             'date_tested_inspected' => 'nullable|date',
             'consumable' => 'nullable|boolean',  // 'consumable' field can be nullable and boolean
             'inventory_date' => 'required|date',
         ]);
-
+        
         // Final storage location (if "Other" storage location is selected)
         $storageLocation = $request->storage_location === 'Other'
             ? $request->other_storage_location
             : $request->storage_location;
-
+        
         // Boolean handling for 'consumable'
         $isConsumable = $request->has('consumable') && $request->consumable == '1'; // If 'consumable' is checked
-
+    
         // Create a new item or update the existing one if necessary
         $item = new Item();
         $item->name = $request->name;
         $item->quantity = $request->quantity;
-
+    
         // Generate item code (item_code) based on category and name
         $categoryMap = [
             'DRRM Equipment' => 'DRRM',
@@ -283,7 +283,7 @@ class ItemController extends Controller
         }
         $item->item_code = "{$abbr}-" . str_pad($itemCount + 1, 2, '0', STR_PAD_LEFT) . "-{$itemInitials}";
         $item->added_at = now();
-
+    
         // Common field assignments
         $item->unit = $request->unit;
         $item->category = $request->category;
@@ -296,27 +296,27 @@ class ItemController extends Controller
         $item->expiration_date = $request->expiration_date;
         $item->is_consumable = $isConsumable; // Corrected to use 'is_consumable' field in the database
         $item->inventory_date = $request->inventory_date;
-
+        
         // Handle file upload for image
         if ($request->hasFile('image_url')) {
             $filename = time() . '.' . $request->image_url->extension();
             $request->image_url->move(public_path('images'), $filename);
             $item->image_url = 'images/' . $filename;
         }
-
+        
         // Save the item in the database
         $item->save();
-
+    
         // Generate individual item codes and save to 'codes' field
         $codes = [];
         $newCodes = []; // Array to track newly added QR codes
         for ($i = 1; $i <= $item->quantity; $i++) {
             $individualItemCode = $item->item_code . '-' . str_pad($i, 2, '0', STR_PAD_LEFT);
             $codes[] = $individualItemCode;
-
+    
             // Add new QR codes to the list if the code is new
             $newCodes[] = $individualItemCode;
-
+    
             // Save QR code in individual_items table
             $individualItem = new IndividualItem();
             $individualItem->item_id = $item->id;
@@ -324,56 +324,56 @@ class ItemController extends Controller
             $individualItem->status = $item->status;
             $individualItem->save();
         }
-
+        
         // Save the codes as a comma-separated string in the 'codes' field of the items table
         $item->codes = implode(',', $codes);
         $item->save();  // Save the updated item codes
-
+        
         // Return the new codes as a response (optional for frontend display)
         return redirect()->back()->with('success', 'Item added/updated successfully! New QR Codes: ' . implode(', ', $newCodes));
     }
+        
+    
+/**
+ * get codes
+ */
+public function getQrCodes($itemCode)
+{
+    // Log the incoming item_code for debugging
+    \Log::info("Fetching QR codes for item_code: " . $itemCode);
 
+    // Find the item by its item_code (just the prefix part)
+    $item = Item::where('item_code', 'like', $itemCode . '%')->first();
 
-    /**
-     * get codes
-     */
-    public function getQrCodes($itemCode)
-    {
-        // Log the incoming item_code for debugging
-        \Log::info("Fetching QR codes for item_code: " . $itemCode);
-
-        // Find the item by its item_code (just the prefix part)
-        $item = Item::where('item_code', 'like', $itemCode . '%')->first();
-
-        // If the item is not found, log and return an empty array
-        if (!$item) {
-            \Log::error("Item not found with item_code prefix: " . $itemCode);
-            return response()->json([]);
-        }
-
-        // Log the found item and its QR codes
-        \Log::info("Item found. QR Codes: " . $item->codes);
-
-        // Check if the 'codes' field is not empty
-        if (!empty($item->codes)) {
-            // Split the codes field by commas to get individual QR codes
-            $qrCodes = explode(',', $item->codes);
-
-            // Build the response with timestamp
-            $qrCodesWithTimestamp = array_map(function ($qrCode) {
-                return [
-                    'qr_code' => $qrCode,
-                    'timestamp' => now()->toIso8601String(), // Add the timestamp
-                ];
-            }, $qrCodes);
-
-            // Return the filtered QR codes with timestamp
-            return response()->json($qrCodesWithTimestamp);
-        } else {
-            \Log::warning("No QR codes found for item with item_code: " . $itemCode);
-            return response()->json([]);
-        }
+    // If the item is not found, log and return an empty array
+    if (!$item) {
+        \Log::error("Item not found with item_code prefix: " . $itemCode);
+        return response()->json([]);
     }
+
+    // Log the found item and its QR codes
+    \Log::info("Item found. QR Codes: " . $item->codes);
+
+    // Check if the 'codes' field is not empty
+    if (!empty($item->codes)) {
+        // Split the codes field by commas to get individual QR codes
+        $qrCodes = explode(',', $item->codes);
+
+        // Build the response with timestamp
+        $qrCodesWithTimestamp = array_map(function($qrCode) {
+            return [
+                'qr_code' => $qrCode,
+                'timestamp' => now()->toIso8601String(), // Add the timestamp
+            ];
+        }, $qrCodes);
+
+        // Return the filtered QR codes with timestamp
+        return response()->json($qrCodesWithTimestamp);
+    } else {
+        \Log::warning("No QR codes found for item with item_code: " . $itemCode);
+        return response()->json([]);
+    }
+}
 
 
 
@@ -422,30 +422,39 @@ class ItemController extends Controller
     {
         // Fetch the item from the database using the ID
         $item = Item::find($id);
-
+    
         // If the item is not found, return an error response
         if (!$item) {
             return response()->json(['error' => 'Item not found.'], 404);
         }
-
+    
         // Validate the input fields for update
         $validated = $request->validate([
-            'quantity' => 'required|integer|min:1',
-            'storage_location' => 'required|string|max:255',
-            'arrival_date' => 'required|date',
-            'status' => 'required|string|max:255',
-            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'brand' => 'nullable|string|max:255',
-            'expiration_date' => 'nullable|date',
-            'date_tested_inspected' => 'nullable|date',
-            'inventory_date' => 'nullable|date',
+            'name' => 'required|string|max:255',  // Ensure the name is not empty
+            'quantity' => 'required|integer|min:1',  // Validate quantity
+            'unit' => 'required|string|max:255',  // Validate unit
+            'category' => 'required|string|max:255',  // Validate category
+            'description' => 'nullable|string|max:255',  // Description is optional
+            'storage_location' => 'required|string|max:255',  // Validate storage location
+            'arrival_date' => 'required|date',  // Validate arrival date
+            'status' => 'required|string|max:255',  // Validate status
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10000',  // Image upload validation
+            'brand' => 'nullable|string|max:255',  // Brand is optional
+            'expiration_date' => 'nullable|date',  // Expiration date is optional
+            'date_tested_inspected' => 'nullable|date',  // Date tested/inspected is optional
+            'inventory_date' => 'nullable|date',  // Inventory date is optional
+            'consumable' => 'nullable|boolean',  // Handle consumable field
         ]);
-
+    
         // Save the old quantity to compare later
         $oldQuantity = $item->quantity;
-
+    
         // Update the editable fields
+        $item->name = $validated['name'];
         $item->quantity = $validated['quantity'];
+        $item->unit = $validated['unit'];
+        $item->category = $validated['category'];
+        $item->description = $validated['description'];
         $item->storage_location = $validated['storage_location'];
         $item->arrival_date = $validated['arrival_date'];
         $item->status = $validated['status'];
@@ -453,27 +462,30 @@ class ItemController extends Controller
         $item->expiration_date = $validated['expiration_date'] ?? null;
         $item->date_tested_inspected = $validated['date_tested_inspected'] ?? null;
         $item->inventory_date = $validated['inventory_date'] ?? null;
-
-        // Boolean handling for 'consumable'
+    
+        // Handle consumable field (boolean)
         $item->is_consumable = $request->has('consumable') && $request->consumable == '1';
-
+    
         // Handle image upload if provided
         if ($request->hasFile('image_url')) {
+            // Generate a unique filename and move the uploaded file
             $filename = time() . '.' . $request->image_url->extension();
             $request->image_url->move(public_path('images'), $filename);
             $item->image_url = 'images/' . $filename;
         }
-
+    
         // Save the updated item
         $item->save();
-
+    
         // Adjust the individual items table based on the quantity change
         if ($validated['quantity'] < $oldQuantity) {
+            // If quantity decreased, remove excess individual items
             $this->removeIndividualItems($item, $oldQuantity - $validated['quantity']);
         } elseif ($validated['quantity'] > $oldQuantity) {
+            // If quantity increased, add new individual items
             $this->addIndividualItems($item, $validated['quantity'] - $oldQuantity);
         }
-
+    
         // Return a success response with the updated item data
         return response()->json([
             'success' => true,
@@ -481,17 +493,30 @@ class ItemController extends Controller
             'item' => $item
         ]);
     }
-
-    // Add individual items based on the quantity increase.
+    
+    // Method to remove individual items (if quantity decreases)
+    private function removeIndividualItems($item, $quantityToRemove)
+    {
+        $individualItems = IndividualItem::where('item_id', $item->id)
+                                          ->orderBy('id', 'desc') // Remove the latest added items first
+                                          ->take($quantityToRemove)
+                                          ->get();
+    
+        foreach ($individualItems as $individualItem) {
+            $individualItem->delete();  // Delete individual item record
+        }
+    }
+    
+    // Method to add individual items (if quantity increases)
     private function addIndividualItems($item, $quantityToAdd)
     {
         $itemCode = $item->item_code;
         $currentQuantity = $item->quantity;
-
-        // Generate individual item codes for the new quantity
+    
+        // Generate new individual item codes for the new quantity
         for ($i = $currentQuantity - $quantityToAdd + 1; $i <= $currentQuantity; $i++) {
             $individualItemCode = $itemCode . '-' . str_pad($i, 2, '0', STR_PAD_LEFT);
-
+    
             // Create individual item entry
             $individualItem = new IndividualItem();
             $individualItem->item_id = $item->id;
@@ -500,20 +525,7 @@ class ItemController extends Controller
             $individualItem->save();
         }
     }
-
-    // Remove individual items based on the quantity decrease.
-    private function removeIndividualItems($item, $quantityToRemove)
-    {
-        $individualItems = IndividualItem::where('item_id', $item->id)
-            ->orderBy('id', 'desc') // Get the latest added items first
-            ->take($quantityToRemove)
-            ->get();
-
-        foreach ($individualItems as $individualItem) {
-            $individualItem->delete(); // Delete the individual item
-        }
-    }
-
+    
 
     /**
      * Archive (soft delete) an item.

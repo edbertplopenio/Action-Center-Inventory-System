@@ -202,8 +202,11 @@ Route::controller(ItemController::class)->group(function () {
     // Show edit form for an item
     Route::get('/items/{id}/edit', 'editItem')->name('items.edit');
 
+
     // Update item details
-    Route::put('/items/{id}', 'update')->name('items.update');
+    Route::put('/items/{id}', 'update')->name('items.update');  // Updated to use PUT
+
+    Route::get('/items/{id}', [ItemController::class, 'getItemData']); // Fe
 
     // Permanently delete item
     Route::delete('/items/{id}', 'deletePermanently')->name('items.destroy');
@@ -333,5 +336,5 @@ Route::post('/admin/return-items/reject-pending/{id}', [ReturnItemsController::c
     ->name('admin.return-items.reject-pending');
 
 
-Route::get('/get-qr-codes/{itemCode}', [ItemController::class, 'getQrCodes']);
-Route::get('/items/search', [ItemController::class, 'searchItem'])->name('items.searchItem');
+    Route::get('/get-qr-codes/{itemCode}', [ItemController::class, 'getQrCodes']);
+    Route::get('/items/search', [ItemController::class, 'searchItem'])->name('items.searchItem');
