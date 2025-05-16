@@ -307,7 +307,7 @@
                             @if($borrowedItem->status == 'Pending' && $isSupervisor)
                             <button class="approve-pending-btn px-2 py-1 m-1 bg-green-500 text-white rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 text-xs w-24"
                                 onclick="approvePendingItems('{{ $borrowedItem->id }}')">
-                                Approve
+                                Review
                             </button>
                             @else
                             <button class="return-btn px-2 py-1 m-1 bg-[#A855F7] text-white rounded hover:bg-[#7038A4] focus:outline-none focus:ring-2 focus:ring-[#A855F7] text-xs w-24"
@@ -445,7 +445,7 @@
                 showCancelButton: true,
                 confirmButtonColor: '#A855F7',
                 cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Yes, mark as pending'
+                confirmButtonText: 'Mark as Pending'
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.ajax({
@@ -481,16 +481,17 @@
 
 
 
-    function approvePendingItems(borrowedItemId) {
-        Swal.fire({
-            title: 'Approve Pending Items?',
-            text: 'This will mark all pending items as returned.',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#10B981',
-            cancelButtonColor: '#6B7280',
-            confirmButtonText: 'Yes, approve all',
-            cancelButtonText: 'Reject' // Add reject button text
+function approvePendingItems(borrowedItemId) {
+    Swal.fire({
+        title: 'Confirm Action',
+        text: 'Do you want to approve or reject the return of all pending items?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#10B981',
+        cancelButtonColor: '#EF4444', // Optional: make reject red for clarity
+        confirmButtonText: 'Approve',
+        cancelButtonText: 'Reject'
+
         }).then((result) => {
             if (result.isConfirmed) {
                 // Existing approve logic
