@@ -207,17 +207,21 @@
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->description }}</td>
                         <td>
-                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-                {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
-                {{ $item->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-                {{ $item->status == 'Reserved' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
-                {{ $item->status == 'Out of Stock' ? 'bg-gray-500/10 text-gray-500 border border-gray-500' : '' }}
-                {{ $item->status == 'Needs Repair' ? 'bg-pink-500/10 text-pink-500 border border-pink-500' : '' }}
-                {{ $item->status == 'Damaged' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
-                {{ $item->status == 'Lost' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
-                {{ $item->status == 'Retired' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
-                                {{ $item->status }}
-                            </span>
+                            @php
+                            // Determine displayed status based on quantity
+                            $displayStatus = $item->quantity <= 0 ? 'Borrowed' : $item->status;
+                                @endphp
+                                <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+        {{ $displayStatus == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+        {{ $displayStatus == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+        {{ $displayStatus == 'Reserved' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+        {{ $displayStatus == 'Out of Stock' ? 'bg-gray-500/10 text-gray-500 border border-gray-500' : '' }}
+        {{ $displayStatus == 'Needs Repair' ? 'bg-pink-500/10 text-pink-500 border border-pink-500' : '' }}
+        {{ $displayStatus == 'Damaged' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+        {{ $displayStatus == 'Lost' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
+        {{ $displayStatus == 'Retired' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                                    {{ $displayStatus }}
+                                </span>
                         </td>
                         <td>
                             @if($item->image_url)
@@ -232,12 +236,12 @@
                             <button
                                 class="borrow-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] focus:outline-none focus:ring-2 focus:ring-[#4cc9f0] text-xs w-24"
                                 onclick="borrowItem('{{ $item->id }}', '{{ $item->quantity }}')"
-                                @if(in_array($item->status, ['Borrowed', 'Reserved', 'Out of Stock', 'Needs Repair', 'Damaged', 'Lost', 'Retired']))
-                                disabled
-                                style="opacity: 0.5; cursor: not-allowed;"
-                                data-toggle="tooltip" data-placement="top" title="This item is not available for borrowing."
-                                @endif>
-                                Borrow
+                                @if($item->quantity <= 0 || in_array($item->status, ['Borrowed', 'Reserved', 'Out of Stock', 'Needs Repair', 'Damaged', 'Lost', 'Retired']))
+                                    disabled
+                                    style="opacity: 0.5; cursor: not-allowed;"
+                                    data-toggle="tooltip" data-placement="top" title="This item is not available for borrowing."
+                                    @endif>
+                                    Borrow
                             </button>
                         </td>
                     </tr>
