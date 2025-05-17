@@ -12,23 +12,27 @@ class DashboardController extends Controller
 {
     public function index()
     {
-         // Fetch the most available item(s) based on quantity
-         $mostAvailableItems = Item::where('is_archived', false)
-         ->orderBy('quantity', 'desc')
-         ->take(1)
-         ->get();
+    $allMostAvailableItems = Item::where('is_archived', false)
+    ->where('quantity', '>=', 30) // adjust threshold
+    ->orderBy('quantity', 'desc')
+    ->get();
+    $mostAvailableItems = $allMostAvailableItems->take(1);
+         
  
-     // Fetch critical stock items (items with the lowest quantity)
-     $criticalStockItems = Item::where('is_archived', false)
-         ->orderBy('quantity', 'asc')
-         ->take(1)
-         ->get();
- 
+
+// All critical items (e.g., quantity <= 5)
+$allCriticalStockItems = Item::where('is_archived', false)
+    ->where('quantity', '<=', 5) // adjust threshold
+    ->orderBy('quantity', 'asc')
+    ->get();
+ $criticalStockItems = $allCriticalStockItems->take(1);
+
      // Fetch the most recent deployment (borrowed item)
-     $recentDeploymentFirst = BorrowedItem::with('item') 
+     $allRecentDeployments = BorrowedItem::with('item') 
          ->orderBy('borrow_date', 'desc')
-         ->take(1)
          ->get();
+     $recentDeploymentFirst = $allRecentDeployments->take(1);
+
  
      // Fetch top 3 low stock items
      $lowStockItems = Item::where('is_archived', false)
@@ -36,10 +40,14 @@ class DashboardController extends Controller
          ->take(3)
          ->get();
  
-     // Fetch items that need repair
-     $itemsNeedingRepair = Item::where('status', 'Needs Repair')
-         ->where('is_archived', false)
-         ->get();
+        // Fetch items that need repair
+    $allItemsNeedingRepair = Item::where('status', 'Needs Repair')
+    ->orderBy('quantity', 'asc')
+    ->get();
+$itemsNeedingRepair = $allItemsNeedingRepair->take(1);
+
+
+
  
      // Fetch the next 10 recent deployments
      $recentDeploymentsNext = BorrowedItem::with('item') 
@@ -56,7 +64,6 @@ class DashboardController extends Controller
      $mostBorrowedItems = DB::table('borrowed_items')
      ->join('items', 'borrowed_items.item_id', '=', 'items.id')
      ->select('items.name as item_name', DB::raw('SUM(borrowed_items.quantity_borrowed) as total_borrowed'))
-     ->where('borrowed_items.status', 'Borrowed') // Only include items with status 'Borrowed'
      ->groupBy('items.name')
      ->orderBy('total_borrowed', 'desc')
      ->get();
@@ -76,10 +83,14 @@ class DashboardController extends Controller
      return view('home', compact(
     
          'mostAvailableItems',
+         'allMostAvailableItems',
          'criticalStockItems',
+         'allCriticalStockItems',
          'recentDeploymentFirst',
+         'allRecentDeployments',
          'lowStockItems',
          'itemsNeedingRepair',
+        'allItemsNeedingRepair',
          'recentDeploymentsNext',
          'equipment', // Ensure equipment is passed to the view
          'mostBorrowedItems',

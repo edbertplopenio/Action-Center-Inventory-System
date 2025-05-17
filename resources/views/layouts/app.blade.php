@@ -130,8 +130,8 @@
             <!-- Navigation Menu -->
             <div class="flex-1 mt-5">
                 <ul class="space-y-2">
-                    <!-- Dashboard: Visible only to Admin -->
-                    @if(Auth::user()->user_role == 'Admin')
+                    <!-- Dashboard: Visible to Admin and Supervisor -->
+                    @if(in_array(Auth::user()->user_role, ['Admin', 'Supervisor']))
                     <li class="{{ Request::routeIs('home') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                         <a href="{{ route('home') }}" class="flex items-center gap-3 p-3 rounded-xl">
                             <i class="ph-bold ph-garage text-xl" style="margin-right: 5px;"></i>
@@ -140,8 +140,8 @@
                     </li>
                     @endif
 
-                    <!-- Admin Inventory Management: Visible only to Admin -->
-                    @if(Auth::user()->user_role == 'Admin')
+                    <!-- Admin Inventory Management: Visible to Admin and Supervisor -->
+                    @if(in_array(Auth::user()->user_role, ['Admin', 'Supervisor']))
                     <li class="{{ Request::routeIs('admin.inventory.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                         <a href="{{ route('admin.inventory.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
                             <i class="ph-bold ph-archive text-xl"></i>
@@ -149,7 +149,7 @@
                         </a>
                     </li>
 
-                    <!-- Records: Visible only to Admin -->
+                    <!-- Records: Visible to Admin and Supervisor -->
                     <li class="{{ Request::routeIs('records.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                         <a href="{{ route('records.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
                             <i class="ph-bold ph-file-text text-xl"></i>
@@ -158,10 +158,8 @@
                     </li>
                     @endif
 
-
-
-                    <!-- Borrowing Request: Visible only to Admin -->
-                    @if(Auth::user()->user_role == 'Admin')
+                    <!-- Borrowing Request: Visible to Admin and Supervisor -->
+                    @if(in_array(Auth::user()->user_role, ['Admin', 'Supervisor']))
                     <li class="{{ Request::routeIs('admin.borrowing-request.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                         <a href="{{ route('admin.borrowing-request.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
                             <i class="ph-bold ph-clipboard text-xl"></i>
@@ -172,8 +170,7 @@
                         </a>
                     </li>
 
-
-                    <!-- Returning Items: Visible only to Admin -->
+                    <!-- Returning Items: Visible to Admin and Supervisor -->
                     <li class="{{ Request::routeIs('admin.return-items.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                         <a href="{{ route('admin.return-items.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
                             <i class="ph-bold ph-key-return text-xl" style="margin-right: 5px;"></i>
@@ -182,29 +179,25 @@
                     </li>
                     @endif
 
-
-
-
                     <!-- Borrowing Sections -->
                     <div class="mt-auto">
-                        @if(Auth::user()->user_role == 'Admin')
+                        @if(in_array(Auth::user()->user_role, ['Admin', 'Supervisor']))
                         <p class="mt-4 mb-3" style="font-size: 9px; text-transform: uppercase; color: #6b7280;">Borrowing</p>
                         @endif
 
-
                         <ul class="space-y-2">
-                            <!-- Borrower Inventory Management: Visible only to Borrower and Admin -->
-                            @if(Auth::user()->user_role == 'Borrower' || Auth::user()->user_role == 'Admin')
+                            <!-- Borrower Inventory Management: Visible to Borrower, Admin, and Supervisor -->
+                            @if(in_array(Auth::user()->user_role, ['Borrower', 'Admin', 'Supervisor']))
                             <li class="{{ Request::routeIs('borrower.inventory.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                                 <a href="{{ route('borrower.inventory.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
                                     <i class="ph-bold ph-treasure-chest text-xl" style="margin-right: 5px;"></i>
-                                    <span style="font-size: 11px;">Equipment Inventory</span>
+                                    <span style="font-size: 11px;">Equipment List</span>
                                 </a>
                             </li>
                             @endif
 
-                            <!-- Borrow Equipment: Visible only to Borrower and Admin -->
-                            @if(Auth::user()->user_role == 'Borrower' || Auth::user()->user_role == 'Admin')
+                            <!-- Borrow Equipment: Visible to Borrower, Admin, and Supervisor -->
+                            @if(in_array(Auth::user()->user_role, ['Borrower', 'Admin', 'Supervisor']))
                             <li class="{{ Request::routeIs('borrower.borrow-equipment.index') ? 'bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 text-white rounded-xl' : 'text-gray-600' }}">
                                 <a href="{{ route('borrower.borrow-equipment.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
                                     <i class="ph-bold ph-box-arrow-down text-xl" style="margin-right: 5px;"></i>
@@ -214,8 +207,6 @@
                             @endif
                         </ul>
                     </div>
-
-
                 </ul>
             </div>
 
@@ -257,8 +248,8 @@
             <div class="mt-auto">
                 <p class="mt-4 mb-3" style="font-size: 9px; text-transform: uppercase; color: #6b7280;">Account</p>
                 <ul class="space-y-2">
-                    <!-- Show 'Users Management' only for Admin -->
-                    @if(Auth::user()->user_role == 'Admin')
+                    <!-- Show 'Users Management' for both Admin and Supervisor -->
+                    @if(in_array(Auth::user()->user_role, ['Admin', 'Supervisor']))
                     <li class="{{ Request::routeIs('users.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                         <a href="{{ route('users.index') }}" class="flex items-center gap-3 p-3 rounded-xl">
                             <i class="ph-bold ph-users text-xl"></i>
@@ -267,7 +258,7 @@
                     </li>
                     @endif
 
-                    <!-- Show 'Profile' only for Borrowers -->
+                    <!-- Show 'Profile' for Borrowers (and optionally for Supervisor if needed) -->
                     @if(Auth::user()->user_role == 'Borrower')
                     <li class="{{ Request::routeIs('profile.index') ? 'bg-[#7CD2F8] text-white rounded-xl' : 'text-gray-600' }}">
                         <a href="{{ route('profile.index') }}" class="flex items-center gap-3 p-3 rounded-xl">

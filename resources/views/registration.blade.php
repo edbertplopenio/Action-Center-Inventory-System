@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.0.3/src/regular/style.css">
 
 <div class="relative min-h-screen flex justify-center items-center px-6">
-  <img class="absolute w-full h-full object-cover" src="{{ asset('Images/REGBG.png') }}" alt="Background Image">
+  <img class="absolute w-full h-full object-cover" src="{{ asset('images/newbg.png') }}" alt="Background Image">
 
   <div class="relative z-10 bg-white bg-opacity-40 backdrop-blur-xl p-3 rounded-2xl shadow-lg min-h-[80px] flex flex-col items-center justify-center"
     style="width: calc(33.33% + 192px); transform: translateX(35%);">
@@ -74,42 +74,41 @@
             </div>
           </div>
 
-          <!-- Confirm Password -->
-          <div class="flex flex-col relative">
-            <label for="password_confirmation" class="text-xs font-medium text-white mb-1">Confirm Password</label>
-            <div class="w-64 relative">
-              <input type="password" name="password_confirmation" id="password_confirmation"
-                class="w-full pr-8 rounded-md border border-gray-300 px-2 py-1.5 text-xs text-gray-900 focus:ring-2 focus:ring-red-600" required>
-              <button type="button" id="toggleConfirmPassword" class="absolute top-1/2 right-2 transform -translate-y-1/2">
-                <i id="eyeConfirmIcon" class="ph ph-eye text-black text-lg"></i>
-              </button>
-            </div>
-            @error('password_confirmation') <span class="text-red-600 text-xs">{{ $message }}</span> @enderror
-          </div>
-        </div>
+         <!-- Confirm Password -->
+<div class="flex flex-col relative">
+  <label for="password_confirmation" class="text-xs font-medium text-white mb-1">Confirm Password</label>
+  <div class="w-64 relative">
+    <input type="password" name="password_confirmation" id="password_confirmation"
+      class="w-full pr-8 rounded-md border border-gray-300 px-2 py-1.5 text-xs text-gray-900 focus:ring-2 focus:ring-red-600" required>
+    <button type="button" id="toggleConfirmPassword" class="absolute top-1/2 right-2 transform -translate-y-1/2">
+      <i id="eyeConfirmIcon" class="ph ph-eye text-black text-lg"></i>
+    </button>
+  </div>
+  <span id="confirmMessage" class="text-xs mt-1"></span>
+  @error('password_confirmation') <span class="text-red-600 text-xs">{{ $message }}</span> @enderror
+</div>
+
 
         <!-- Terms -->
-        <div class="flex items-center w-64">
-          <input type="checkbox" id="terms" name="terms"
-            class="h-3 w-3 rounded border-gray-300 text-red-600 focus:ring-red-500" required>
-          <label for="terms" class="ml-2 block text-xs text-white">Agree to terms and conditions</label>
-        </div>
+      
 
-        <!-- Submit -->
-        <div class="w-64">
-          <button type="submit" class="w-full flex justify-center rounded-md px-6 py-2 text-xs font-semibold text-white hover:bg-blue-600 focus:ring-2 focus:ring-red-600"
-            style="background-color: #780000;">
-            Register
-          </button>
-        </div>
-      </form>
+<!-- Submit -->
+<div class="flex justify-start">
+  <div class="w-80 ml-72"> <!-- Adjusted width, slightly wider container -->
+    <button type="submit" class="w-full flex justify-center rounded-md px-7 py-3 text-sm font-semibold text-white hover:bg-blue-600 focus:ring-2 focus:ring-red-600"
+      style="background-color: #780000;">
+      Register
+    </button>
 
-      <p class="mt-3 text-center text-xs text-white">
-        Already a member? <a href="{{ route('login') }}" class="font-semibold text-blue-500 hover:text-blue-600">Sign in</a>
-      </p>
-    </div>
+    <p class="mt-3 text-center text-xs text-white">
+      Already a member? <a href="{{ route('login') }}" class="font-semibold text-blue-500 hover:text-blue-600">Sign in</a>
+    </p>
   </div>
 </div>
+</form>
+
+
+
 
 <!-- Remove browser's default eye icon -->
 <style>
@@ -130,14 +129,15 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-@if (session('status') == 'registration_success')
+{{-- Remove the original registration_success alert --}}
+@if (session('status') == 'verification_pending')
 <script>
   Swal.fire({
-    icon: 'success',
-    title: 'Registration Successful!',
-    text: 'You can now log in to your account.',
-    showConfirmButton: false,
-    timer: 1500
+    icon: 'info',
+    title: 'Account Activation Required',
+    html: 'To activate your account, we will send a verification link to your email address. Please check your inbox and follow the instructions to activate your account.',
+    confirmButtonText: 'OK',
+    confirmButtonColor: '#780000',
   });
 </script>
 @endif
@@ -146,10 +146,9 @@
 <script>
   Swal.fire({
     icon: 'error',
-    title: 'Oops...',
-    text: 'There was an issue with the registration. Please try again.',
-    showConfirmButton: false,
-    timer: 1500
+    title: 'Registration Failed',
+    text: 'There was an issue processing your registration. Please try again.',
+    confirmButtonColor: '#780000',
   });
 </script>
 @endif
@@ -196,6 +195,30 @@
     icon.style.fontWeight = passed ? 'bold' : 'normal';
     icon.style.textShadow = passed ? '0 0 3px #ff3b3b' : 'none';
   }
-</script>
 
+  // ✅ Confirm password live validation
+  const passwordInput = document.getElementById('password');
+  const confirmInput = document.getElementById('password_confirmation');
+  const confirmMessage = document.getElementById('confirmMessage');
+
+  confirmInput.addEventListener('input', function () {
+    const password = passwordInput.value;
+    const confirmPassword = confirmInput.value;
+
+    if (confirmPassword.length === 0) {
+      confirmMessage.textContent = '';
+      return;
+    }
+
+    if (password === confirmPassword) {
+      confirmMessage.textContent = '✅ Passwords match';
+      confirmMessage.classList.remove('text-red-500');
+      confirmMessage.classList.add('text-green-500');
+    } else {
+      confirmMessage.textContent = '❌ Passwords do not match';
+      confirmMessage.classList.remove('text-green-500');
+      confirmMessage.classList.add('text-red-500');
+    }
+  });
+</script>
 @endsection

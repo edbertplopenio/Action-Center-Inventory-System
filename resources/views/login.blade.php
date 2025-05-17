@@ -7,7 +7,7 @@
 <div class="relative min-h-screen flex justify-center items-center bg-gray-100">
   <!-- Background Image Covering Full Screen -->
   <div class="absolute inset-0 w-full h-full">
-    <img class="w-full h-full object-cover" src="{{ asset('Images/bgs.png') }}" alt="Background Image">
+    <img class="w-full h-full object-cover" src="{{ asset('images/BG.png') }}" alt="Background Image">
   </div>
 
   <!-- Login Form Container (Blurred Background but Sharp Text) -->
@@ -15,12 +15,42 @@
     style="backdrop-filter: blur(10px); transform: translateX(45%);">
 
 
+    @if(session('status') == 'login_error')
+    <script>
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: 'Invalid credentials. Please try again.'
+      });
+    </script>
+    @endif
+
+    @if(session('status') == 'inactive_account')
+    <script>
+      Swal.fire({
+        icon: 'warning',
+        title: 'Account Inactive',
+        text: 'Please verify your email before logging in.'
+      });
+    </script>
+    @endif
+
+    @if(session('status') == 'verification_success')
+    <script>
+      Swal.fire({
+        icon: 'success',
+        title: 'Email Verified!',
+        text: 'Your account has been activated. You may now log in.'
+      });
+    </script>
+    @endif
+
 
     <!-- Display Validation Errors -->
     @if ($errors->any())
     <script>
       let errorMessages = `
-      <ul style='text-align: left;'>
+      <ul style='text-align: center;'>
           @foreach ($errors->all() as $error)
               <li>{{ $error }}</li>
           @endforeach
@@ -95,6 +125,17 @@
     text: 'There was an issue with the registration. Please try again.',
     showConfirmButton: false,
     timer: 1500
+  });
+</script>
+@endif
+
+@if (session('status') == 'account_inactive')
+<script>
+  Swal.fire({
+    icon: 'error',
+    title: 'Account Inactive',
+    text: 'Your account is inactive. Please contact an administrator.',
+    confirmButtonText: 'OK'
   });
 </script>
 @endif

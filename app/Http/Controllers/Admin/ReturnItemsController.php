@@ -5,89 +5,174 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\BorrowedItem;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ReturnItemsController extends Controller
 {
     // Display the list of borrowed and returned items
-// ReturnItemsController.php
+    // ReturnItemsController.php
 
-public function index()
-{
-    // Eager load borrower, item, individualItems relationships, along with their return dates
-    $borrowedItems = BorrowedItem::with('borrower', 'item', 'individualItems', 'individualItemReturns')  
-        ->whereIn('status', ['Borrowed', 'Returned'])  // Show items with Borrowed or Returned status
-        ->get();
+    public function index()
+    {
+        $borrowedItems = BorrowedItem::with('borrower', 'item', 'individualItems', 'individualItemReturns')
+            ->whereIn('status', ['Borrowed', 'Returned', 'Pending'])
+            ->get();
 
-    return view('admin.return-items.index', compact('borrowedItems'));
-}
+        $isSupervisor = Auth::check() && Auth::user()->user_role === 'Supervisor';
+
+        return view('admin.return-items.index', compact('borrowedItems', 'isSupervisor'));
+    }
+
+
+
+    public function approveAllPending($id)
+    {
+        $borrowedItem = BorrowedItem::findOrFail($id);
+
+        if ($borrowedItem->status !== 'Pending') {
+            return response()->json(['message' => 'This item is not in pending status.'], 400);
+        }
+
+        // Get all individual items still marked as Pending
+        $pendingItems = $borrowedItem->individualItems()->where('status', 'Pending')->get();
+
+        $returnedCount = 0;
+
+        foreach ($pendingItems as $item) {
+            // Mark as Available
+            $item->status = 'Available';
+            $item->save();
+
+            // Update latest return record
+            $latestReturn = \App\Models\IndividualItemReturn::where('individual_item_id', $item->id)
+                ->latest()
+                ->first();
+
+            if ($latestReturn) {
+                $latestReturn->remarks = 'Good'; // ✅ Or any allowed value
+
+                $latestReturn->save();
+            }
+
+            $returnedCount++;
+        }
+
+        // ✅ Update item stock (like markAsReturned)
+        $mainItem = $borrowedItem->item;
+        $mainItem->quantity += $returnedCount;
+        $mainItem->save();
+
+        // ✅ Update borrowed item status
+        $unreturnedCount = $borrowedItem->individualItems()
+            ->where('status', '!=', 'Available')
+            ->count();
+
+        $borrowedItem->status = $unreturnedCount > 0 ? 'Borrowed' : 'Returned';
+        $borrowedItem->save();
+
+        return response()->json(['message' => 'All pending items approved and stock updated.'], 200);
+    }
 
 
 
     // Mark an item as returned
     public function markAsReturned($id, Request $request)
     {
-        // Find the borrowed item by ID
         $borrowedItem = BorrowedItem::findOrFail($id);
-        
-        // Get the scanned QR codes from the request
-        $scannedQRCodes = $request->input('qr_codes'); // This should be an array of QR codes
-        $returnDates = $request->input('return_dates'); // This should be an array of return dates (optional for partial returns)
-        
-        if (!is_array($scannedQRCodes)) {
-            return response()->json(['message' => 'Invalid or missing QR codes.'], 400);
+        $scannedQRCodes = $request->input('qr_codes');
+        $returnDates = $request->input('return_dates');
+        $remarks = $request->input('remarks'); // Get remarks from the request
+
+        if (!is_array($scannedQRCodes) || !is_array($returnDates) || !is_array($remarks)) {
+            return response()->json(['message' => 'Invalid or missing QR codes, return dates, or remarks.'], 400);
         }
-        
+
         $returnedItems = [];
-        $totalItemsToReturn = $borrowedItem->quantity_borrowed; // Total items originally borrowed
-        
+
+        // Get the logged-in user's full name
+        $user = Auth::user();
+        $responsiblePerson = $user->first_name . ' ' . $user->last_name;  // Concatenate first and last name
+
         foreach ($scannedQRCodes as $index => $scannedQRCode) {
-            // Find the individual item that matches the scanned QR code
             $individualItem = $borrowedItem->individualItems()->where('qr_code', $scannedQRCode)->first();
-        
+
             if ($individualItem) {
                 // Mark the individual item as 'Available'
                 $individualItem->status = 'Available';
                 $individualItem->save();
-        
-                // Insert a record into the individual_item_returns table for this return
+
+                // Store return date and remarks in individual_item_returns
                 \App\Models\IndividualItemReturn::create([
                     'individual_item_id' => $individualItem->id,
                     'borrowed_item_id' => $borrowedItem->id,
-                    'return_date' => $returnDates[$index] ?? now(), // Use provided date or current date if not given
+                    'return_date' => $returnDates[$index] ?? now(),
+                    'remarks' => $remarks[$index] ?? 'Not Checked', // Default to 'Not Checked' if no remark
                 ]);
-                
-        
-                // Add to the returned items list
+
                 $returnedItems[] = $individualItem;
             } else {
-                // If an invalid QR code is found, return an error
                 return response()->json(['message' => "Invalid QR code: $scannedQRCode."], 400);
             }
         }
-        
+
+        // Update the return_responsible_person in the borrowed_items table
+        $borrowedItem->return_responsible_person = $responsiblePerson;
+        $borrowedItem->save();
+
         // Check if all individual items are now available
         $unreturnedItemsCount = $borrowedItem->individualItems()->where('status', '!=', 'Available')->count();
-        
+
         if ($unreturnedItemsCount == 0) {
             // If all items are marked as Available, update the borrowed item's status to 'Returned'
             $borrowedItem->status = 'Returned';
-            $borrowedItem->return_date = now(); // Set the return date for the whole borrowing record when all items are returned
             $borrowedItem->save();
         }
-        
+
         // Update the item stock
         $item = $borrowedItem->item;
         $item->quantity += count($returnedItems);
         $item->save();
-        
+
         return response()->json(['message' => 'Items marked as returned and stock updated!', 'returnedItems' => $returnedItems], 200);
     }
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+    public function markAsPending($id, Request $request)
+    {
+        $borrowedItem = BorrowedItem::findOrFail($id);
+        $scannedQRCodes = $request->input('qr_codes');
+        $returnDates = $request->input('return_dates');
+        $remarks = $request->input('remarks');
+
+        foreach ($scannedQRCodes as $index => $scannedQRCode) {
+            $individualItem = $borrowedItem->individualItems()->where('qr_code', $scannedQRCode)->first();
+
+            if ($individualItem && $individualItem->status !== 'Available') {
+                // Only mark as Pending if not already Available
+                $individualItem->status = 'Pending';
+                $individualItem->save();
+
+                \App\Models\IndividualItemReturn::create([
+                    'individual_item_id' => $individualItem->id,
+                    'borrowed_item_id' => $borrowedItem->id,
+                    'return_date' => $returnDates[$index] ?? now(),
+                    'remarks' => $remarks[$index] ?? 'Not Checked',
+                    'status' => 'Pending'
+                ]);
+            }
+        }
+
+        // Update parent status to Pending
+        $borrowedItem->status = 'Pending';
+        $borrowedItem->save();
+
+        return response()->json(['message' => 'Items marked as pending for approval!'], 200);
+    }
+
+
 
 
 
@@ -105,5 +190,45 @@ public function index()
         return response()->json([
             'borrowedItems' => $borrowedIndividualItems
         ]);
+    }
+
+    public function rejectPending($id)
+    {
+        $borrowedItem = BorrowedItem::findOrFail($id);
+
+        if ($borrowedItem->status !== 'Pending') {
+            return response()->json(['message' => 'Item is not pending approval.'], 400);
+        }
+
+        // Get all individual items currently marked as 'Pending'
+        $pendingItems = $borrowedItem->individualItems()
+            ->where('status', 'Pending')
+            ->get();
+
+        foreach ($pendingItems as $item) {
+            // Revert item status back to 'Borrowed'
+            $item->status = 'Borrowed';
+            $item->save();
+
+            // Delete latest return record (no status column!)
+            $latestReturn = \App\Models\IndividualItemReturn::where('borrowed_item_id', $borrowedItem->id)
+                ->where('individual_item_id', $item->id)
+                ->latest()
+                ->first();
+
+            if ($latestReturn) {
+                $latestReturn->delete();
+            }
+        }
+
+        // Update the borrowed item's overall status
+        $unreturnedExists = $borrowedItem->individualItems()
+            ->where('status', '!=', 'Available')
+            ->exists();
+
+        $borrowedItem->status = $unreturnedExists ? 'Borrowed' : 'Returned';
+        $borrowedItem->save();
+
+        return response()->json(['message' => 'Pending items reverted to borrowed and return records deleted.'], 200);
     }
 }

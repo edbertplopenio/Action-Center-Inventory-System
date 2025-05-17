@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Records')
+@section('title', 'User Management')
 
 @section('content')
 
@@ -248,6 +248,7 @@
             <table id="userTable" class="display" style="width:100%">
                 <thead>
                     <tr>
+                        <th style="display:none;">ID</th> <!-- Hidden ID column -->
                         <th>Name</th>
                         <th>Email</th>
                         <th>Role</th>
@@ -257,44 +258,46 @@
                     </tr>
                 </thead>
                 <tbody>
-                @foreach ($users as $user)
-<tr class="user-row cursor-pointer"
-    data-id="{{ $user->id }}"
-    data-first_name="{{ $user->first_name }}"
-    data-last_name="{{ $user->last_name }}"
-    data-email="{{ $user->email }}"
-    data-role="{{ $user->user_role }}"
-    data-department="{{ $user->department ?? 'N/A' }}"
-    data-profile_picture="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : '' }}"
-    data-created_at="{{ $user->created_at }}"
-    data-last_login="{{ $user->last_login ?? 'N/A' }}"
-    data-created_by="{{ $user->created_by ?? 'N/A' }}"
-    data-updated_at="{{ $user->updated_at }}">
+                    @foreach ($users as $user)
+                    <tr class="user-row cursor-pointer"
+                        data-id="{{ $user->id }}"
+                        data-first_name="{{ $user->first_name }}"
+                        data-last_name="{{ $user->last_name }}"
+                        data-email="{{ $user->email }}"
+                        data-role="{{ $user->user_role }}"
+                        data-department="{{ $user->department ?? 'N/A' }}"
+                        data-profile_picture="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : '' }}"
+                        data-created_at="{{ $user->created_at }}"
+                        data-last_login="{{ $user->last_login ?? 'N/A' }}"
+                        data-created_by="{{ $user->created_by ?? 'N/A' }}"
+                        data-updated_at="{{ $user->updated_at }}">
 
-    <td>{{ $user->first_name }} {{ $user->last_name }}</td>
-    <td>{{ $user->email }}</td>
-    <td>{{ $user->user_role }}</td>
-    <td>{{ $user->department ?? 'N/A' }}</td>
-    <td>{{ ucfirst($user->status) }}</td>
-    <td>
-        <!-- Edit button, disabled if not the logged-in user -->
-        <button class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24"
-            data-id="{{ $user->id }}"
-            {{ $user->id !== $loggedInUserId ? 'disabled' : '' }}
-            @if($user->id !== $loggedInUserId) style="opacity: 0.5; cursor: not-allowed;" @endif> Edit
-        </button>
+                        <td style="display:none;">{{ $user->id }}</td> <!-- Hidden ID value -->
 
-        <!-- Deactivate/Activate buttons -->
-        @if($user->status === 'active')
-        <button class="deactivate-btn px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24"
-            data-id="{{ $user->id }}">Deactivate</button>
-        @else
-        <button class="activate-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24"
-            data-id="{{ $user->id }}">Activate</button>
-        @endif
-    </td>
-</tr>
-@endforeach
+                        <td>{{ $user->first_name }} {{ $user->last_name }}</td>
+                        <td>{{ $user->email }}</td>
+                        <td>{{ $user->user_role }}</td>
+                        <td>{{ $user->department ?? 'N/A' }}</td>
+                        <td>{{ ucfirst($user->status) }}</td>
+                        <td>
+                            <!-- Edit button, disabled if not the logged-in user -->
+                            <button class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24"
+                                data-id="{{ $user->id }}"
+                                {{ $user->id !== $loggedInUserId ? 'disabled' : '' }}
+                                @if($user->id !== $loggedInUserId) style="opacity: 0.5; cursor: not-allowed;" @endif> Edit
+                            </button>
+
+                            <!-- Deactivate/Activate buttons -->
+                            @if($user->status === 'active')
+                            <button class="deactivate-btn px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24"
+                                data-id="{{ $user->id }}">Deactivate</button>
+                            @else
+                            <button class="activate-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24"
+                                data-id="{{ $user->id }}">Activate</button>
+                            @endif
+                        </td>
+                    </tr>
+                    @endforeach
 
                 </tbody>
             </table>
@@ -308,7 +311,7 @@
 
 
 
-<!--  Edit Modal Form  -->
+<!-- Edit Modal Form -->
 <div class="relative z-10" id="editUserModal" aria-labelledby="modal-title" role="dialog" aria-modal="true" style="display: none;">
     <!-- Backdrop -->
     <div class="fixed inset-0 bg-black/50 transition-opacity" aria-hidden="true"></div>
@@ -354,6 +357,7 @@
                                             <label for="edit_role" class="block text-xs font-medium text-gray-900">Role</label>
                                             <select name="role" id="edit_role" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
                                                 <option value="Admin">Admin</option>
+                                                <option value="Supervisor">Supervisor</option> <!-- Added Supervisor -->
                                                 <option value="Borrower">Borrower</option>
                                             </select>
                                         </div>
@@ -367,31 +371,37 @@
 
                                     <!-- Password -->
                                     <div class="sm:col-span-1">
-                                        <label for="edit_password" class="block text-xs font-medium text-gray-900"> New Password</label>
+                                        <label for="edit_password" class="block text-xs font-medium text-gray-900">New Password</label>
                                         <input type="password" name="password" id="edit_password" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter new password">
+                                        <div id="passwordChecklist" class="text-xs space-y-1 mt-2">
+                                            <p class="font-semibold text-red-500 mb-1">Password must contain:</p>
+                                            <div id="rule-length" class="flex items-center gap-2"><span>•</span> At least 8 characters</div>
+                                            <div id="rule-lower" class="flex items-center gap-2"><span>•</span> One lowercase letter (a–z)</div>
+                                            <div id="rule-upper" class="flex items-center gap-2"><span>•</span> One uppercase letter (A–Z)</div>
+                                            <div id="rule-number" class="flex items-center gap-2"><span>•</span> One number (0–9)</div>
+                                            <div id="rule-symbol" class="flex items-center gap-2"><span>•</span> One special symbol (!@#$...)</div>
+                                        </div>
                                     </div>
 
                                     <!-- Confirm Password -->
                                     <div class="sm:col-span-1">
                                         <label for="edit_password_confirmation" class="block text-xs font-medium text-gray-900">Confirm Password</label>
                                         <input type="password" name="password_confirmation" id="edit_password_confirmation" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Confirm new password">
+                                        <p id="passwordMatchMessage" class="text-xs mt-1"></p>
                                     </div>
 
                                     <div class="col-span-full">
                                         <label for="photo" class="block text-xs font-medium text-gray-900">Profile Picture</label>
                                         <div class="mt-2 grid grid-cols-2 items-center gap-x-4">
-                                            <!-- Image Preview & Placeholder (Left Column) -->
+                                            <!-- Image Preview & Placeholder -->
                                             <div class="relative flex justify-center items-center">
-                                                <!-- Placeholder Icon -->
                                                 <svg id="photoPlaceholder" class="size-12 text-gray-300 absolute" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                                     <path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" clip-rule="evenodd" />
                                                 </svg>
-
-                                                <!-- Image Preview -->
                                                 <img id="photoPreview" class="size-12 rounded-full hidden object-cover border border-gray-300 absolute" alt="Profile Picture Preview">
                                             </div>
 
-                                            <!-- Upload Button (Right Column) -->
+                                            <!-- Upload Button -->
                                             <div class="flex flex-col gap-y-2">
                                                 <input type="file" id="photoInput" name="photo" accept="image/png, image/jpeg, image/jpg" class="hidden">
                                                 <button type="button" id="addPhotoBtn" class="rounded-md bg-white px-1.5 py-0.5 text-xs font-medium text-gray-900 ring-1 shadow-xs ring-gray-300 hover:bg-gray-50">
@@ -401,14 +411,13 @@
                                             </div>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
 
                             <!-- Action Buttons -->
                             <div class="mt-6 flex items-center justify-end gap-x-6">
                                 <button type="button" class="text-xs font-semibold text-gray-900" id="closeEditUserModal">Cancel</button>
-                                <button type="submit" class="rounded-md bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-500">Update</button>
+                                <button type="submit" id="updateUserBtn" class="rounded-md bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-500">Update</button>
                             </div>
                         </div>
                     </form>
@@ -417,7 +426,6 @@
         </div>
     </div>
 </div>
-
 
 
 <!-- Edit JS -->
@@ -548,6 +556,36 @@
             reader.readAsDataURL(file);
         });
 
+        // Password strength validation logic
+        editPassword.addEventListener('input', function() {
+            let password = this.value;
+
+            // Length rule: At least 8 characters
+            const lengthValid = password.length >= 8;
+            document.getElementById('rule-length').classList.toggle('text-green-500', lengthValid);
+            document.getElementById('rule-length').classList.toggle('text-red-500', !lengthValid);
+
+            // Lowercase letter rule
+            const lowerValid = /[a-z]/.test(password);
+            document.getElementById('rule-lower').classList.toggle('text-green-500', lowerValid);
+            document.getElementById('rule-lower').classList.toggle('text-red-500', !lowerValid);
+
+            // Uppercase letter rule
+            const upperValid = /[A-Z]/.test(password);
+            document.getElementById('rule-upper').classList.toggle('text-green-500', upperValid);
+            document.getElementById('rule-upper').classList.toggle('text-red-500', !upperValid);
+
+            // Number rule
+            const numberValid = /\d/.test(password);
+            document.getElementById('rule-number').classList.toggle('text-green-500', numberValid);
+            document.getElementById('rule-number').classList.toggle('text-red-500', !numberValid);
+
+            // Symbol rule
+            const symbolValid = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+            document.getElementById('rule-symbol').classList.toggle('text-green-500', symbolValid);
+            document.getElementById('rule-symbol').classList.toggle('text-red-500', !symbolValid);
+        });
+
         // Handle form submission
         editUserForm.addEventListener("submit", function(event) {
             event.preventDefault(); // Prevent default form submission
@@ -642,7 +680,41 @@
             editModal.style.display = "none";
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.getElementById('edit_password');
+        const confirmPasswordInput = document.getElementById('edit_password_confirmation');
+        const message = document.getElementById('passwordMatchMessage');
+        const updateBtn = document.getElementById('updateUserBtn');
+
+        function checkPasswordMatch() {
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+
+            if (confirmPassword === '') {
+                message.textContent = '';
+                updateBtn.disabled = false;
+                return;
+            }
+
+            if (password === confirmPassword) {
+                message.textContent = 'Passwords match ✔';
+                message.classList.remove('text-red-500');
+                message.classList.add('text-green-500');
+                updateBtn.disabled = false;
+            } else {
+                message.textContent = 'Passwords do not match ✖';
+                message.classList.remove('text-green-500');
+                message.classList.add('text-red-500');
+                updateBtn.disabled = true;
+            }
+        }
+
+        passwordInput.addEventListener('input', checkPasswordMatch);
+        confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+    });
 </script>
+
 
 
 
@@ -1194,6 +1266,7 @@
                             <div class="border-b border-gray-900/10 pb-6">
                                 <p class="mt-1 text-xs text-gray-600">Fill in the user details.</p>
 
+
                                 <div class="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-1">
                                     <div class="grid grid-cols-2 gap-6">
                                         <!-- First Name -->
@@ -1219,8 +1292,9 @@
                                     <div class="sm:col-span-1">
                                         <label for="user_role" class="block text-xs font-medium text-gray-900">Role</label>
                                         <select name="user_role" id="user_role" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
-                                            <option value="">-- Select Role --</option> <!-- Prevent sending an empty role -->
+                                            <option value="">-- Select Role --</option>
                                             <option value="Admin">Admin</option>
+                                            <option value="Supervisor">Supervisor</option> <!-- Added Supervisor -->
                                             <option value="Borrower">Borrower</option>
                                         </select>
                                     </div>
@@ -1231,38 +1305,72 @@
                                         <input type="text" name="department" id="department" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter department">
                                     </div>
 
-                                    <!-- Removed Cellphone Number Section -->
-                                    <!-- <div class="sm:col-span-1">
-                                        <label for="contact_number" class="block text-xs font-medium text-gray-900">Cellphone Number</label>
-                                        <input type="text" name="contact_number" id="contact_number" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter cellphone number">
-                                    </div> -->
+                                    <!-- Password & Confirm Password -->
+                                    <div class="grid grid-cols-2 gap-3 w-full">
+                                        <!-- Password -->
+                                        <div class="flex flex-col relative">
+                                            <label for="password" class="block text-xs font-medium text-gray-900 mb-1">Password</label>
+                                            <div class="w-52 relative">
+                                                <input type="password" name="password" id="password"
+                                                    class="w-full pr-8 rounded-md border border-gray-300 px-2 py-1.5 text-xs text-gray-900 shadow-sm focus:ring-2 focus:ring-red-600 focus:outline-none"
+                                                    placeholder="Enter password" required>
+                                                <button type="button" id="togglePassword" class="absolute top-1/2 right-2 transform -translate-y-1/2">
+                                                    <i id="eyeIcon" class="ph ph-eye text-black text-lg"></i>
+                                                </button>
+                                            </div>
+                                            <div id="passwordChecklist" class="text-xs space-y-1 w-64 mt-2">
+                                                <p class="font-semibold text-red-500 mb-1">Password must contain:</p>
+                                                <div id="rule-length" class="flex items-center gap-2">
+                                                    <span class="check-icon text-red-500">•</span>
+                                                    <span class="text-red-500">At least 8 characters</span>
+                                                </div>
+                                                <div id="rule-lower" class="flex items-center gap-2">
+                                                    <span class="check-icon text-red-500">•</span>
+                                                    <span class="text-red-500">At least 1 lowercase letter (a–z)</span>
+                                                </div>
+                                                <div id="rule-upper" class="flex items-center gap-2">
+                                                    <span class="check-icon text-red-500">•</span>
+                                                    <span class="text-red-500">At least 1 uppercase letter (A–Z)</span>
+                                                </div>
+                                                <div id="rule-number" class="flex items-center gap-2">
+                                                    <span class="check-icon text-red-500">•</span>
+                                                    <span class="text-red-500">At least 1 number (0–9)</span>
+                                                </div>
+                                                <div id="rule-symbol" class="flex items-center gap-2">
+                                                    <span class="check-icon text-red-500">•</span>
+                                                    <span class="text-red-500">At least 1 special symbol (!@#$...)</span>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                    <!-- Password -->
-                                    <div class="sm:col-span-1">
-                                        <label for="password" class="block text-xs font-medium text-gray-900">Password</label>
-                                        <input type="password" name="password" id="password" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter password">
+                                        <!-- Confirm Password -->
+                                        <div class="flex flex-col relative">
+                                            <label for="password_confirmation" class="block text-xs font-medium text-gray-900 mb-1">Confirm Password</label>
+                                            <div class="w-52 relative">
+                                                <input type="password" name="password_confirmation" id="password_confirmation"
+                                                    class="w-full pr-8 rounded-md border border-gray-300 px-2 py-1.5 text-xs text-gray-900 shadow-sm focus:ring-2 focus:ring-red-600 focus:outline-none"
+                                                    placeholder="Confirm password" required>
+                                                <button type="button" id="toggleConfirmPassword" class="absolute top-1/2 right-2 transform -translate-y-1/2">
+                                                    <i id="eyeConfirmIcon" class="ph ph-eye text-black text-lg"></i>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
 
-                                    <!-- Confirm Password -->
-                                    <div class="sm:col-span-1">
-                                        <label for="confirm_password" class="block text-xs font-medium text-gray-900">Confirm Password</label>
-                                        <input type="password" name="password_confirmation" id="password_confirmation" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Confirm password">
+
+                                    <!-- Action Buttons -->
+                                    <div class="mt-6 flex items-center justify-end gap-x-6">
+                                        <button type="button" class="text-xs font-semibold text-gray-900" id="closeUserModal">Cancel</button>
+                                        <button type="submit" class="rounded-md bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-500">Save</button>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Action Buttons -->
-                            <div class="mt-6 flex items-center justify-end gap-x-6">
-                                <button type="button" class="text-xs font-semibold text-gray-900" id="closeUserModal">Cancel</button>
-                                <button type="submit" class="rounded-md bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-500">Save</button>
-                            </div>
-                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 
 
 
@@ -1281,13 +1389,22 @@
 
         // Table DataTable initialization
         const userTable = $('#userTable').DataTable({
-            "scrollY": "425px", // Enable vertical scrolling with a fixed height
-            "scrollCollapse": true, // Collapse height when content is less
-            "scrollX": false, // Disable horizontal scrolling
-            "paging": true, // Enable pagination
-            "searching": true, // Enable search
-            "ordering": true // Enable sorting
+            "scrollY": "425px",
+            "scrollCollapse": true,
+            "scrollX": false,
+            "paging": true,
+            "searching": true,
+            "ordering": true,
+            "order": [
+                [0, "desc"]
+            ], // Sort by hidden ID column (index 0)
+            "columnDefs": [{
+                    "targets": 0,
+                    "visible": false
+                } // Hide ID column
+            ]
         });
+
 
         // Open modal when the "Add Record" button is clicked
         openModalBtn.addEventListener("click", function() {
@@ -1360,16 +1477,25 @@
                     }).then(() => {
                         modal.style.display = "none";
                         form.reset();
+
+                        // Add new row with ID as the first hidden column
                         userTable.row.add([
+                            result.user.id, // Hidden ID column for sorting
                             `${result.user.first_name} ${result.user.last_name}`,
                             result.user.email,
                             result.user.user_role,
                             result.user.department || 'N/A',
-                            // Removed contact_number
-                            // result.user.contact_number || 'N/A',
-                            `<button class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24">Edit</button>
-                             <button class="px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24">Deactivate</button>`
-                        ]).draw(false);
+                            result.user.status || 'N/A',
+                            `<button class="edit-record-btn px-2 py-1 m-1 bg-[#4cc9f0] text-white rounded hover:bg-[#36a9c1] text-xs w-24"
+                 data-id="${result.user.id}">Edit</button>
+         <button class="deactivate-btn px-2 py-1 m-1 bg-[#f0b84c] text-white rounded hover:bg-[#d19b3f] text-xs w-24"
+                 data-id="${result.user.id}">Deactivate</button>`
+                        ]).draw();
+
+                        // Reapply sorting so new user appears at the top
+                        userTable.order([0, 'desc']).draw();
+
+
                     });
                 } else {
                     // Show error notification using SweetAlert
@@ -1391,7 +1517,47 @@
                 });
             }
         });
+        // Toggle password visibility
+        const togglePassword = document.getElementById("togglePassword");
+        const toggleConfirm = document.getElementById("toggleConfirmPassword");
+        const passwordInput = document.getElementById("password");
+        const confirmInput = document.getElementById("password_confirmation");
+        const eyeIcon = document.getElementById("eyeIcon");
+        const eyeConfirmIcon = document.getElementById("eyeConfirmIcon");
 
+        togglePassword.addEventListener("click", () => {
+            passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+            eyeIcon.classList.toggle("ph-eye");
+            eyeIcon.classList.toggle("ph-eye-slash");
+        });
+
+        toggleConfirm.addEventListener("click", () => {
+            confirmInput.type = confirmInput.type === "password" ? "text" : "password";
+            eyeConfirmIcon.classList.toggle("ph-eye");
+            eyeConfirmIcon.classList.toggle("ph-eye-slash");
+        });
+
+        // Live password checklist
+        passwordInput.addEventListener("input", () => {
+            const val = passwordInput.value;
+
+            const updateRule = (id, isValid) => {
+                const rule = document.getElementById(id);
+                const icon = rule.querySelector("span.check-icon");
+                const text = rule.querySelectorAll("span")[1];
+
+                icon.classList.toggle("text-green-500", isValid);
+                icon.classList.toggle("text-red-500", !isValid);
+                text.classList.toggle("text-green-500", isValid);
+                text.classList.toggle("text-red-500", !isValid);
+            };
+
+            updateRule("rule-length", val.length >= 8);
+            updateRule("rule-lower", /[a-z]/.test(val));
+            updateRule("rule-upper", /[A-Z]/.test(val));
+            updateRule("rule-number", /\d/.test(val));
+            updateRule("rule-symbol", /[\W_]/.test(val));
+        });
     });
 </script>
 

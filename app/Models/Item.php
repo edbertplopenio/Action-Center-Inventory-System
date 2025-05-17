@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;  // Import Carbon for date manipulation
 
 class Item extends Model
 {
@@ -26,6 +27,7 @@ class Item extends Model
         'image_url',
         'archived',
         'is_archived',
+        'added_at', // Add this field here for mass assignment
     ];
 
     // Specify timestamps (if your table uses 'created_at' and 'updated_at' fields)
@@ -35,6 +37,21 @@ class Item extends Model
     public function individualItems()
     {
         return $this->hasMany(IndividualItem::class);
+    }
+
+    /**
+     * Boot method to handle auto-setting of added_at timestamp when creating an item.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Automatically set 'added_at' to the current time when creating a new item
+        static::creating(function ($item) {
+            if (!$item->added_at) {
+                $item->added_at = Carbon::now();  // Set added_at to the current time if it's not provided
+            }
+        });
     }
 
     /**
@@ -65,5 +82,28 @@ class Item extends Model
         if (isset($data['quantity']) && $data['quantity'] < 0) {
             throw new \Exception('Quantity cannot be negative');
         }
+    }
+
+    /**
+     * Scope to retrieve items ordered by the added_at timestamp in descending order.
+     * This scope can be used when fetching items to ensure the most recent items appear first.
+     *
+     * @param $query
+     * @return mixed
+     */
+    public function scopeNewestFirst($query)
+    {
+        return $query->orderBy('added_at', 'desc');  // Use added_at instead of created_at
+    }
+
+    /**
+     * Check if the item is "new" (added within the last 5 days).
+     *
+     * @return bool
+     */
+    public function isNew()
+    {
+        // Calculate if the item is new by comparing 'added_at' with the current date
+        return Carbon::parse($this->added_at)->diffInDays(now()) <= 5;
     }
 }

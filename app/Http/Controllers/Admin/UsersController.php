@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Validation\Rule;
 class UsersController extends Controller
 {
     /**
@@ -101,22 +101,29 @@ public function index()
      */
     public function update(Request $request, $id)
     {
-        // Validate request with the correct email regex
+        // Get the user first
+        $user = User::findOrFail($id);
+    
+        // Then create validator with the user's ID
         $validator = Validator::make($request->all(), [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
-            'email' => ['required', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/', 'unique:users,email'],
+            'email' => [
+                'required',
+                'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/',
+                Rule::unique('users')->ignore($user->id)
+            ],
             'user_role' => 'required|string',
             'department' => 'nullable|string|max:255',
             'password' => [
                 'nullable',
                 'min:6',
                 'confirmed',
-                'regex:/[A-Z]/',  // At least one uppercase letter
-                'regex:/[0-9]/',  // At least one number
-                'regex:/[\W_]/',  // At least one special character
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
+                'regex:/[\W_]/',
             ],
-            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Max size: 2MB
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         if ($validator->fails()) {

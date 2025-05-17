@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\VerificationEmail;
+use Illuminate\Support\Str;
+
 
 class AuthManager extends Controller
 {
@@ -22,54 +26,63 @@ class AuthManager extends Controller
         return view('registration');
     }
 
-   // Handle login request
-   public function loginPost(Request $request)
-   {
-       $request->validate([
-           'email'    => ['required', 'email', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/'],
-           'password' => 'required'
-       ]);
-   
-       $credentials = $request->only('email', 'password');
-   
-       if (Auth::attempt($credentials)) {
-           $user = Auth::user();
-   
-           // Redirect borrowers to Equipment Inventory
-           if ($user->user_role === 'Borrower') {
-               return redirect()->route('borrower.inventory.index')->with("status", "login_success");
-           }
-   
-           // Other roles go to dashboard/home
-           return redirect()->route('home')->with("status", "login_success");
-       }
-   
-       return redirect()->route('login')->with("status", "login_error");
-   }
-   
+    // Handle login request
+    public function loginPost(Request $request)
+    {
+        $request->validate([
+            'email'    => ['required', 'email', 'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/'],
+            'password' => 'required'
+        ]);
+
+        // Find user first
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return redirect()->route('login')->with("status", "login_error");
+        }
+
+        // Check if user is inactive
+        if ($user->status !== 'active') {
+            return redirect()->route('login')->with("status", "inactive_account");
+        }
+
+        // Login the user
+        Auth::login($user);
+
+        // Redirect based on role
+        if ($user->user_role === 'Borrower') {
+            return redirect()->route('borrower.inventory.index')->with("status", "login_success");
+        }
+
+        return redirect()->route('home')->with("status", "login_success");
+    }
+
+
 
 
     // Handle registration request
     public function registrationPost(Request $request)
     {
-        // Validate registration data using array format for regex rules
         $request->validate([
             'first_name'     => 'required|string|max:100',
             'last_name'      => 'required|string|max:100',
-            'email' => ['required', 'regex:/^\d{2}-\d{5}@g\\.batstate-u\\.edu\\.ph$/', 'unique:users,email'], // Email regex rule in array format
+            'email' => [
+                'required',
+                'regex:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/',
+                'unique:users,email'
+            ],
             'password' => [
                 'required',
                 'confirmed',
                 'min:8',
-                'regex:/[A-Z]/',  // Ensures password contains at least one uppercase letter
-                'regex:/[0-9]/',  // Ensures password contains at least one number
-                'regex:/[\W_]/',  // Ensures password contains at least one special character
+                'regex:/[A-Z]/',
+                'regex:/[0-9]/',
+                'regex:/[\W_]/',
             ],
             'department'     => 'nullable|string|max:255',
-            'contact_number' => ['nullable', 'regex:/^(09|\+639)\d{9}$/'],  // Contact number regex rule in array format
+            'contact_number' => ['nullable', 'regex:/^(09|\+639)\d{9}$/'],
         ]);
 
-        // Create new user
         $user = User::create([
             'first_name'     => $request->first_name,
             'last_name'      => $request->last_name,
@@ -77,16 +90,39 @@ class AuthManager extends Controller
             'password'       => Hash::make($request->password),
             'department'     => $request->department,
             'contact_number' => $request->contact_number,
+            'active'         => 0,
+            'verification_token' => \Illuminate\Support\Str::random(40),
+
         ]);
 
-        // Inside registrationPost method
         if (!$user) {
             return redirect()->route('registration')->with("status", "error");
         }
 
-        // Use a unique status message for registration success
-        return redirect()->route('login')->with("status", "registration_success");
+        // Send verification email
+        Mail::to($user->email)->send(new VerificationEmail($user));
+
+        return redirect()->route('registration')->with("status", "verification_pending");
     }
+
+    // Add verification method
+    public function verifyEmail($token)
+    {
+        $user = User::where('verification_token', $token)->first();
+
+        if (!$user) {
+            return redirect()->route('login')->with('status', 'invalid_token');
+        }
+
+        $user->update([
+            'status' => 'active', // ✅ correct column
+            'verification_token' => null,
+            'email_verified_at' => now(),
+        ]);
+
+        return redirect()->route('login')->with('status', 'verification_success');
+    }
+
 
     // Handle logout request
     public function logout()
@@ -125,6 +161,4 @@ class AuthManager extends Controller
         // If user does not exist, send failure response
         return response()->json(['success' => false]);
     }
-
-
 }

@@ -221,6 +221,7 @@
             <table id="requestsTable" class="display" style="width: 100%">
                 <thead>
                     <tr>
+                        <th style="display:none;">ID</th> <!-- Hidden ID column -->
                         <th>Borrower</th>
                         <th>Item Name</th>
                         <th>Quantity</th>
@@ -240,6 +241,8 @@
                         data-borrow-date="{{ \Carbon\Carbon::parse($request->borrow_date)->format('Y-m-d') }}"
                         data-due-date="{{ \Carbon\Carbon::parse($request->due_date)->format('Y-m-d') }}"
                         data-status="{{ $request->status }}">
+
+                        <td style="display:none;">{{ $request->id }}</td> <!-- Hidden ID value -->
 
                         <!-- Borrower -->
                         <td>
@@ -331,9 +334,12 @@
             paging: true,
             searching: true,
             ordering: true,
+            order: [
+                [0, "desc"]
+            ], // Sort by hidden ID column (index 0) in descending order
             columnDefs: [{
-                orderable: false,
-                targets: -1 // Disable ordering for the last column (usually the action column)
+                targets: 0,
+                visible: false // Hide the ID column
             }]
         });
 
@@ -534,104 +540,113 @@
         let invalidQRCodeAlertShown = false; // Flag to prevent repeated SweetAlert for invalid QR codes
 
         function scanQRCode() {
-    // If the scanned count matches or exceeds the requested quantity, stop scanning
-    if (scannedCount >= totalRequestQuantity) {
-        resultText.textContent = 'Scanning complete. All required QR codes have been scanned.';
-        isScanning = false; // Stop scanning
+            // If the scanned count matches or exceeds the requested quantity, stop scanning
+            if (scannedCount >= totalRequestQuantity) {
+                resultText.textContent = 'Scanning complete. All required QR codes have been scanned.';
+                isScanning = false; // Stop scanning
 
-        // Enable the Approve button once scanning is complete
-        document.getElementById('approveButton').disabled = false; // Enable Approve button
+                // Enable the Approve button once scanning is complete
+                document.getElementById('approveButton').disabled = false; // Enable Approve button
 
-        return;
-    }
-
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-
-    const scanInterval = setInterval(() => {
-        if (!isScanning) {
-            clearInterval(scanInterval); // Stop scanning if flag is set to false
-            return;
-        }
-
-        // If scanned count is already >= total request quantity, stop scanning and do nothing
-        if (scannedCount >= totalRequestQuantity) {
-            resultText.textContent = 'Scanning complete. All required QR codes have been scanned.';
-            isScanning = false;
-            clearInterval(scanInterval); // Stop the scanning interval
-
-            // Enable the Approve button once scanning is complete
-            document.getElementById('approveButton').disabled = false; // Enable Approve button
-
-            return;
-        }
-
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-        const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
-
-        if (qrCode) {
-            resultText.textContent = 'QR Code detected: ' + qrCode.data;
-
-            // If QR code is valid and not already scanned, highlight and add it
-            if (!scannedQRCodeList.includes(qrCode.data)) {
-                // Check if the QR code exists in any of the table rows (across all pages)
-                let rowFound = false;
-
-                // Iterate through all rows in the table (even the ones on other pages)
-                const allRows = $('#codeTable').DataTable().rows().nodes(); // Get all rows from the DataTable
-                $(allRows).each(function(index, row) {
-                    const qrCodeCell = row.cells[0]; // QR Code is in the first column
-                    const statusCell = row.cells[1]; // Status is in the second column
-
-                    if (qrCodeCell && qrCodeCell.textContent === qrCode.data) {
-                        rowFound = true;
-
-                        // If the item is already "Borrowed", do not count it and show a message
-                        if (statusCell.textContent === 'Borrowed') {
-                            resultText.textContent = 'This item is already borrowed.';
-                            return;
-                        }
-
-                        scannedQRCodeList.push(qrCode.data); // Add scanned QR code to the list
-                        highlightAndMoveRow(qrCode.data);
-                        updateItemStatus(qrCode.data); // Update status when a valid QR code is scanned
-
-                        // Only update the scanned count if the QR code is valid (exists in the table)
-                        scannedCount++;
-                        document.getElementById('request-counter').textContent = `${scannedCount}/${totalRequestQuantity}`;
-
-                        // Change the color of the counter text to green if the scanned count reaches or exceeds the target
-                        if (scannedCount >= totalRequestQuantity) {
-                            document.getElementById('request-counter').style.color = 'green';
-                            // Enable the Approve button once scanning is complete
-                            document.getElementById('approveButton').disabled = false; // Enable Approve button
-                        }
-
-                        // Enable Undo button once a scan is done
-                        document.getElementById('undoButton').disabled = false; // Enable Undo button
-                    }
-                });
-
-                // If no matching row was found (invalid QR code)
-                if (!rowFound && !invalidQRCodeAlertShown) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Invalid QR Code',
-                        text: 'The scanned QR code does not exist in the table.',
-                    });
-
-                    invalidQRCodeAlertShown = true; // Set the flag to prevent repeating the alert
-                }
+                return;
             }
-        } else {
-            resultText.textContent = 'Scanning for QR code...';
+
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+
+            const scanInterval = setInterval(() => {
+                if (!isScanning) {
+                    clearInterval(scanInterval); // Stop scanning if flag is set to false
+                    return;
+                }
+
+                // If scanned count is already >= total request quantity, stop scanning and do nothing
+                if (scannedCount >= totalRequestQuantity) {
+                    resultText.textContent = 'Scanning complete. All required QR codes have been scanned.';
+                    isScanning = false;
+                    clearInterval(scanInterval); // Stop the scanning interval
+
+                    // Enable the Approve button once scanning is complete
+                    document.getElementById('approveButton').disabled = false; // Enable Approve button
+
+                    return;
+                }
+
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+
+                if (qrCode) {
+                    resultText.textContent = 'QR Code detected: ' + qrCode.data;
+
+                    // If QR code is valid and not already scanned, highlight and add it
+                    if (!scannedQRCodeList.includes(qrCode.data)) {
+                        // Check if the QR code exists in any of the table rows (across all pages)
+                        let rowFound = false;
+
+                        // Iterate through all rows in the table (even the ones on other pages)
+                        const allRows = $('#codeTable').DataTable().rows().nodes(); // Get all rows from the DataTable
+                        $(allRows).each(function(index, row) {
+                            const qrCodeCell = row.cells[0]; // QR Code is in the first column
+                            const statusCell = row.cells[1]; // Status is in the second column
+
+                            if (qrCodeCell && qrCodeCell.textContent === qrCode.data) {
+                                rowFound = true;
+
+                                function showItemStatusMessage(status) {
+                                    if (status === 'Borrowed') {
+                                        resultText.textContent = 'This item is already borrowed.';
+                                    } else if (status === 'Pending') {
+                                        resultText.textContent = 'This item is already pending.';
+                                    }
+                                }
+
+                                // If the item is already "Borrowed", do not count it and show a message
+                                if (statusCell.textContent === 'Borrowed' || statusCell.textContent === 'Pending') {
+                                    showItemStatusMessage(statusCell.textContent);
+                                    return;
+                                }
+
+
+                                scannedQRCodeList.push(qrCode.data); // Add scanned QR code to the list
+                                highlightAndMoveRow(qrCode.data);
+                                updateItemStatus(qrCode.data); // Update status when a valid QR code is scanned
+
+                                // Only update the scanned count if the QR code is valid (exists in the table)
+                                scannedCount++;
+                                document.getElementById('request-counter').textContent = `${scannedCount}/${totalRequestQuantity}`;
+
+                                // Change the color of the counter text to green if the scanned count reaches or exceeds the target
+                                if (scannedCount >= totalRequestQuantity) {
+                                    document.getElementById('request-counter').style.color = 'green';
+                                    // Enable the Approve button once scanning is complete
+                                    document.getElementById('approveButton').disabled = false; // Enable Approve button
+                                }
+
+                                // Enable Undo button once a scan is done
+                                document.getElementById('undoButton').disabled = false; // Enable Undo button
+                            }
+                        });
+
+                        // If no matching row was found (invalid QR code)
+                        if (!rowFound && !invalidQRCodeAlertShown) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Invalid QR Code',
+                                text: 'The scanned QR code does not exist in the table.',
+                            });
+
+                            invalidQRCodeAlertShown = true; // Set the flag to prevent repeating the alert
+                        }
+                    }
+                } else {
+                    resultText.textContent = 'Scanning for QR code...';
+                }
+            }, 100); // Scan every 100ms
         }
-    }, 100); // Scan every 100ms
-}
 
 
 

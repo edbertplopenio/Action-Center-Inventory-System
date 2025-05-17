@@ -17,4 +17,5 @@ class InventoryController extends Controller
         // Pass the items data to the view
         return view('borrower.inventory.index', compact('items'));  // Points to the Borrower Inventory view
     }
+    
 }

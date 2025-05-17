@@ -3,16 +3,15 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthManager;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Borrower\InventoryController as BorrowerInventoryController;  // Import Borrower Inventory Controller
 use App\Http\Controllers\Admin\InventoryController as AdminInventoryController;  // Import Admin Inventory Controller
 use App\Http\Controllers\Borrower\InventoryController;
 use App\Http\Controllers\Borrower\BorrowedEquipmentController;
-use App\Http\Controllers\Borrower\BorrowEquipmentController; 
+use App\Http\Controllers\Borrower\BorrowEquipmentController;
 use App\Http\Controllers\Admin\RecordsController;
 use App\Http\Controllers\Admin\UsersController;
 use App\Http\Controllers\Borrower\ProfileController;  // Import the ProfileController
-
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\InventoryRequestController;
 
 
@@ -138,7 +137,7 @@ Route::prefix('borrower')->middleware(['auth'])->group(function () {
 
 
 // Borrowed Items Routes
-Route::middleware('auth')->group(function() {
+Route::middleware('auth')->group(function () {
     // Store a new borrow request
     Route::post('/borrow-item', [BorrowEquipmentController::class, 'store'])->name('borrow.item');
 
@@ -191,22 +190,26 @@ Route::get('/admin/borrowing-requests/count', [InventoryRequestController::class
 // Inventory Routes (ItemController)
 // ===========================
 use App\Http\Controllers\ItemController;
+
 Route::controller(ItemController::class)->group(function () {
     // Display all items in the inventory
-    Route::get('/inventory', 'index')->name('inventory'); 
-    
+    Route::get('/inventory', 'index')->name('inventory');
+
 
     // Store a new item (this is the route to save both the `items` and `individual_items`)
     Route::post('/items/store', 'store')->name('items.store'); // Explicitly define post for storing items
 
     // Show edit form for an item
-    Route::get('/items/{id}/edit', 'editItem')->name('items.edit'); 
+    Route::get('/items/{id}/edit', 'editItem')->name('items.edit');
+
 
     // Update item details
-    Route::put('/items/{id}', 'update')->name('items.update'); 
+    Route::put('/items/{id}', 'update')->name('items.update');  // Updated to use PUT
+
+    Route::get('/items/{id}', [ItemController::class, 'getItemData']); // Fe
 
     // Permanently delete item
-    Route::delete('/items/{id}', 'deletePermanently')->name('items.destroy'); 
+    Route::delete('/items/{id}', 'deletePermanently')->name('items.destroy');
 
     // Routes for Archiving (Soft Delete), Restoring, and Permanently Deleting Items
     Route::post('/archive-item/{id}', 'archiveItem')->name('archive.item');    // Archive (soft delete)
@@ -215,9 +218,68 @@ Route::controller(ItemController::class)->group(function () {
 
     // Route for fetching item data for editing
     Route::get('/get-item/{id}', 'editItem')->name('get.item.data'); // Fetch item data for editing
-    
+
     // Route for searching an item by its name
     Route::get('/search-item/{name}', 'searchItem')->name('search.item'); // Search item by name
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    Route::get('/home', [ItemController::class, 'index'])->name('home');
+
+    Route::get('/api/items', [ItemController::class, 'getItems']);
+    Route::get('/api/usage-rate/{itemId}', [ItemController::class, 'getUsageRateData']);
+
+    // routes/web.php
+    Route::get('/most-borrowed-items', [ItemController::class, 'mostBorrowedItems']);
+    Route::get('/equipment-quantity-by-category', [ItemController::class, 'quantityByCategory']);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Route for About Us page
+    Route::get('/about', function () {
+        return view('about'); // This assumes you have an 'about.blade.php' view
+    })->name('about');
+});
+
+
+Route::post('/validate-email', [AuthManager::class, 'validateEmail']);
+
 
 Route::get('/home', [DashboardController::class, 'index'])->name('home');
 
@@ -227,36 +289,52 @@ Route::get('/api/usage-rate/{itemId}', [DashboardController::class, 'getUsageRat
 // routes/web.php
 Route::get('/most-borrowed-items', [DashboardController::class, 'mostBorrowedItems']);
 Route::get('/equipment-quantity-by-category', [DashboardController::class, 'quantityByCategory']);
-
-//eto ulit
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Route for About Us page
-Route::get('/about', function () {
-    return view('about'); // This assumes you have an 'about.blade.php' view
-})->name('about');
-
-});
-
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
+// View profile
+Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+
+// Update profile
+Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+
+
+
+
+
+
+
+
+
+
+
+
+
 Route::get('/borrower/borrow-equipment/report-preview', [BorrowedItemsController::class, 'reportPreview'])->name('borrow-equipment.report-preview');
+
+Route::post('/admin/return-items/pending/{id}', [ReturnItemsController::class, 'markAsPending'])
+    ->name('admin.return-items.pending');
+
+
+
+Route::post('/admin/return-items/approve-pending/{id}', [ReturnItemsController::class, 'approvePending'])
+    ->name('admin.return-items.approve-pending');
+
+Route::post('/admin/return-items/approve-pending/{id}', [ReturnItemsController::class, 'approveAllPending']);
+
+
+Route::get('/verify-email/{token}', [AuthManager::class, 'verifyEmail'])->name('verify.email');
+
+// In routes/web.php
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+});
+
+
+// routes/web.php
+Route::post('/admin/return-items/reject-pending/{id}', [ReturnItemsController::class, 'rejectPending'])
+    ->name('admin.return-items.reject-pending');
+
+
+    Route::get('/get-qr-codes/{itemCode}', [ItemController::class, 'getQrCodes']);
+    Route::get('/items/search', [ItemController::class, 'searchItem'])->name('items.searchItem');

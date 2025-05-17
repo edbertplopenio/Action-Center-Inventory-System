@@ -7,56 +7,63 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\User;
+
 
 class ProfileController extends Controller
 {
     /**
-     * Display the profile form for editing.
+     * Show the form for editing the profile.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        // Fetch the logged-in user
-        $user = auth()->user();
-
-        // Return the view with the user data
+$user = Auth::user();
         return view('borrower.profile.index', compact('user'));
     }
 
     /**
-     * Update the profile information.
+     * Update the user's profile information.
      *
-     * @param \Illuminate\Http\Request $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+ public function update(Request $request)
 {
+    // Validate input
     $request->validate([
         'first_name' => 'required|string|max:255',
-        'last_name' => 'required|string|max:255',
-        'email' => 'required|email|max:255',
-        'password' => 'nullable|confirmed|min:8',
-        'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // Validation for image
+        'last_name'  => 'required|string|max:255',
+        'email'      => 'required|email|max:255',
+        'department' => 'nullable|string|max:255',
+        'password'   => 'nullable|confirmed|min:8',
+        'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
     ]);
 
-    $user = auth()->user();
+    $user = Auth::user();
+
+    // Update basic info
+    $user->first_name = $request->first_name;
+    $user->last_name  = $request->last_name;
+    $user->email      = $request->email;
+    $user->department = $request->department;
+
+    // Update password if provided
+    if (!empty($request->password)) {
+        $user->password = Hash::make($request->password);
+    }
 
     // Handle profile image upload
     if ($request->hasFile('profile_image')) {
-        // Store the new profile image
-        $path = $request->file('profile_image')->store('profile_images', 'public');
-        $user->profile_image = $path;
-    }
-
-    // Handle other fields (name, email, etc.)
-    $user->first_name = $request->first_name;
-    $user->last_name = $request->last_name;
-    $user->email = $request->email;
-    $user->department = $request->department;
-
-    if ($request->password) {
-        $user->password = bcrypt($request->password);
+        // Delete old image if exists
+        if ($user->profile_picture) {
+            Storage::disk('public')->delete($user->profile_picture);
+        }
+        
+        // Store new image
+        $path = $request->file('profile_image')->store('profile_pictures', 'public');
+        $user->profile_picture = $path;
     }
 
     $user->save();

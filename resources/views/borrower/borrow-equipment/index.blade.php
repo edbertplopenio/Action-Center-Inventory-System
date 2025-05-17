@@ -209,76 +209,79 @@
                         <th>Due Date</th>
                         <th>Return Date</th>
                         <th>Status</th>
-                        <th style="min-width: 150px;">
-                            Responsible Person <br>
+                        <th style="min-width: 150px; text-align: center;">
+                            <div>Responsible Person</div>
                             <span style="display: flex; justify-content: space-between; font-weight: normal;">
                                 <span>Request</span>
                                 <span>Return</span>
                             </span>
                         </th>
+
                         <th>Image</th>
                     </tr>
                 </thead>
                 <tbody>
-    @forelse($borrowed_items as $borrowed)
-    <tr class="borrowed-row cursor-pointer"
-        data-id="{{ $borrowed->id }}"
-        data-item-name="{{ $borrowed->item->name }}"
-        data-category="{{ $borrowed->item->category }}"
-        data-quantity="{{ $borrowed->quantity_borrowed }}"
-        data-unit="{{ $borrowed->item->unit }}"
-        data-borrow-date="{{ $borrowed->borrow_date }}"
-        data-due-date="{{ $borrowed->due_date }}"
-        data-return-date="{{ $borrowed->return_date ?? 'Not Returned' }}"
-        data-status="{{ $borrowed->status }}"
-        data-responsible-person="{{ $borrowed->responsible_person }}"
-        data-image-url="{{ $borrowed->item->image_url }}">
+                    @forelse($borrowed_items as $borrowed)
+                    <tr class="borrowed-row cursor-pointer"
+                        data-id="{{ $borrowed->id }}"
+                        data-item-name="{{ $borrowed->item->name }}"
+                        data-category="{{ $borrowed->item->category }}"
+                        data-quantity="{{ $borrowed->quantity_borrowed }}"
+                        data-unit="{{ $borrowed->item->unit }}"
+                        data-borrow-date="{{ $borrowed->borrow_date }}"
+                        data-due-date="{{ $borrowed->due_date }}"
+                        data-return-date="{{ $borrowed->return_date ?? 'Not Returned' }}"
+                        data-status="{{ $borrowed->status }}"
+                        data-responsible-person="{{ $borrowed->responsible_person }}"
+                        data-image-url="{{ $borrowed->item->image_url }}">
 
-        <td style="display:none;">{{ $borrowed->id }}</td> <!-- Hidden ID column -->
-        <td>{{ $borrowed->item->name }}</td>
-        <td>{{ $borrowed->item->category }}</td>
-        <td>{{ $borrowed->quantity_borrowed }}</td>
-        <td>{{ $borrowed->item->unit }}</td>
-        <td>{{ $borrowed->borrow_date }}</td>
-        <td>{{ $borrowed->due_date }}</td>
-        <td>{{ $borrowed->return_date ?? 'Not Returned' }}</td>
-        <td>
-            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                        <td style="display:none;">{{ $borrowed->id }}</td> <!-- Hidden ID column -->
+                        <td>{{ $borrowed->item->name }}</td>
+                        <td>{{ $borrowed->item->category }}</td>
+                        <td>{{ $borrowed->quantity_borrowed }}</td>
+                        <td>{{ $borrowed->item->unit }}</td>
+                        <td>{{ \Carbon\Carbon::parse($borrowed->borrow_date)->format('Y-m-d') }}</td>
+                        <td>{{ \Carbon\Carbon::parse($borrowed->due_date)->format('Y-m-d') }}</td>
+                        <td>
+                            {{ $borrowed->return_date ? \Carbon\Carbon::parse($borrowed->return_date)->format('Y-m-d') : 'Not Returned' }}
+                        </td>
+
+                        <td>
+                            <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
                 {{ $borrowed->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
                 {{ $borrowed->status == 'Approved' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
                 {{ $borrowed->status == 'Rejected' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
                 {{ $borrowed->status == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
                 {{ $borrowed->status == 'Returned' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
                 {{ $borrowed->status == 'Overdue' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
-                {{ $borrowed->status }}
-            </span>
-        </td>
-        <td>
-            <div style="display: flex; justify-content: space-between; width: 100%;">
-                <div style="flex: 1; text-align: center;">
+                                {{ $borrowed->status }}
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display: flex; justify-content: space-between; width: 100%;">
+                                <div style="flex: 1; text-align: center;">
+                                    {!! str_replace(' ', '<br>', $borrowed->request_responsible_person ?? 'N/A') !!}
+                                </div>
+                                <div style="flex: 1; text-align: center;">
+                                    {!! str_replace(' ', '<br>', $borrowed->return_responsible_person ?? 'N/A') !!}
+                                </div>
+                            </div>
+                        </td>
 
-                    {{ $borrowed->request_responsible_person ?? 'N/A' }}
-                </div>
-                <div style="flex: 1; text-align: center;">
-
-                    {{ $borrowed->return_responsible_person ?? 'N/A' }}
-                </div>
-            </div>
-        </td>
-        <td>
-            @if($borrowed->item->image_url)
-                <img src="{{ asset($borrowed->item->image_url) }}" alt="Item Image" style="width: 50px; height: 50px;">
-            @else
-                No Image
-            @endif
-        </td>
-    </tr>
-    @empty
-    <tr id="noRecordsRow">
-        <td colspan="10" class="text-center">No borrowed items found.</td>
-    </tr>
-    @endforelse
-</tbody>
+                        <td>
+                            @if($borrowed->item->image_url)
+                            <img src="{{ asset($borrowed->item->image_url) }}" alt="Item Image" style="width: 50px; height: 50px;">
+                            @else
+                            No Image
+                            @endif
+                        </td>
+                    </tr>
+                    @empty
+                    <tr id="noRecordsRow">
+                        <td colspan="10" class="text-center">No borrowed items found.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
 
 
             </table>
@@ -299,9 +302,7 @@
 
     <!-- Modal Content -->
     <div class="fixed inset-0 flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg shadow-2xl w-full max-w-3xl overflow-hidden transform transition-all text-base">
-
-
+        <div class="bg-white rounded-lg shadow-2xl w-full max-w-3xl overflow-hidden transform transition-all">
             <!-- Modal Header -->
             <div class="px-6 py-4 border-b">
                 <h3 class="text-lg font-semibold text-gray-900" id="modal-title">Generate Report</h3>
@@ -328,12 +329,12 @@
                         <option value="all">All</option>
                         <option value="Borrowed">Borrowed</option>
                         <option value="Pending">Pending</option>
+                        <option value="Returned">Returned</option>
                     </select>
                 </div>
 
                 <!-- Report Preview -->
-                <div id="reportContent" class="p-4 border rounded bg-gray-50 text-sm">
-
+                <div id="reportContent" class="p-4 border rounded bg-gray-100 text-sm">
                     <p class="text-gray-700"></p>
                 </div>
             </div>
@@ -353,89 +354,91 @@
 
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    let reportData = [];
+    document.addEventListener('DOMContentLoaded', function() {
+        let reportData = [];
 
-    const statusFilter = document.getElementById('statusFilter');
-    const startDateInput = document.getElementById('startDate');
-    const endDateInput = document.getElementById('endDate');
-    const reportDiv = document.getElementById('reportContent');
-    const openModalBtn = document.getElementById("openModal");
-    const modal = document.getElementById("myModal");
-    const closeModalBtn = document.getElementById("closeModal");
-    const printBtn = document.getElementById("printReport");
+        const statusFilter = document.getElementById('statusFilter');
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+        const reportDiv = document.getElementById('reportContent');
+        const openModalBtn = document.getElementById("openModal");
+        const modal = document.getElementById("myModal");
+        const closeModalBtn = document.getElementById("closeModal");
+        const printBtn = document.getElementById("printReport");
 
-    // Fetch and render data
-    function fetchAndRenderData() {
-        const startDate = startDateInput.value;
-        const endDate = endDateInput.value;
+        // Fetch and render data
+        function fetchAndRenderData() {
+            const startDate = startDateInput.value;
+            const endDate = endDateInput.value;
 
-        let url = '/borrower/borrow-equipment/report-preview';
-        if (startDate && endDate) {
-            url += `?startDate=${startDate}&endDate=${endDate}`;
+            let url = '/borrower/borrow-equipment/report-preview';
+            if (startDate && endDate) {
+                url += `?startDate=${startDate}&endDate=${endDate}`;
+            }
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    reportData = data;
+                    applyFilters();
+                });
         }
 
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                reportData = data;
-                applyFilters();
-            });
-    }
+        function applyFilters() {
+            const selectedStatus = statusFilter.value;
+            const start = new Date(startDateInput.value);
+            const end = new Date(endDateInput.value);
 
-    function applyFilters() {
-        const selectedStatus = statusFilter.value;
-        const start = new Date(startDateInput.value);
-        const end = new Date(endDateInput.value);
+            let filteredData = reportData;
 
-        let filteredData = reportData;
+            if (selectedStatus !== "all") {
+                filteredData = filteredData.filter(item => item.status === selectedStatus);
+            }
 
-        if (selectedStatus !== "all") {
-            filteredData = filteredData.filter(item => item.status === selectedStatus);
+            if (startDateInput.value && endDateInput.value) {
+                filteredData = filteredData.filter(item => {
+                    const borrowDate = new Date(item.borrow_date);
+                    return borrowDate >= start && borrowDate <= end;
+                });
+            }
+
+            renderReport(filteredData);
         }
 
-        if (startDateInput.value && endDateInput.value) {
-            filteredData = filteredData.filter(item => {
-                const borrowDate = new Date(item.borrow_date);
-                return borrowDate >= start && borrowDate <= end;
-            });
-        }
+        function renderReport(data) {
+            if (!data || data.length === 0) {
+                reportDiv.innerHTML = '<p class="text-gray-700" style="font-size: 15px;">No data available.</p>';
+                return;
+            }
 
-        renderReport(filteredData);
-    }
-
-    function renderReport(data) {
-        if (!data || data.length === 0) {
-            reportDiv.innerHTML = '<p class="text-gray-700" style="font-size: 15px;">No data available.</p>';
-            return;
-        }
-
-        let html = `<table class="table-auto w-full text-sm text-left text-gray-700 border" style="font-size: 10px;>
+            let html = `<table class="table-auto w-full text-sm text-left text-gray-700 border" style="font-size: 10px;>
             <thead>
                 <tr class="bg-gray-200">
                     <th class="p-2 border">Item Name</th>
                     <th class="p-2 border">Quantity</th>
                     <th class="p-2 border">Borrow Date</th>
                     <th class="p-2 border">Return Date</th>
-                    <th class="p-2 border" style="min-width: 150px;">
-                        Responsible Person <br>
-                        <span style="display: flex; justify-content: space-between; font-weight: normal;">
-                            <span>Request</span>
-                            <span>Return</span>
-                        </span>
-                    </th>
+<th class="p-2 border" style="min-width: 150px; text-align: center;">
+    <div style="text-align: center;">Responsible Person</div>
+    <span style="display: flex; justify-content: space-between; font-weight: normal;">
+        <span>Request</span>
+        <span>Return</span>
+    </span>
+</th>
+
                 </tr>
             </thead>
             <tbody>`;
 
-        data.forEach(item => {
-            if (!item.item || !item.item.name || item.quantity_borrowed <= 0) return;
+            data.forEach(item => {
+                if (!item.item || !item.item.name || item.quantity_borrowed <= 0) return;
 
-            html += `<tr>
+                html += `<tr>
                 <td class="p-2 border">${item.item.name}</td>
                 <td class="p-2 border">${item.quantity_borrowed}</td>
-                <td class="p-2 border">${item.borrow_date}</td>
-                <td class="p-2 border">${item.due_date}</td>
+<td class="p-2 border">${new Date(item.borrow_date).toISOString().split('T')[0]}</td>
+<td class="p-2 border">${item.return_date ? new Date(item.return_date).toISOString().split('T')[0] : 'Not Returned'}</td>
+
                 <td class="p-2 border">
                     <div style="display: flex; justify-content: space-between;">
                         <span>${item.request_responsible_person || ''}</span>
@@ -443,32 +446,32 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
                 </td>
             </tr>`;
+            });
+
+            html += '</tbody></table>';
+            reportDiv.innerHTML = html;
+        }
+
+        // Modal and print controls
+        openModalBtn.addEventListener("click", () => modal.style.display = "block");
+        closeModalBtn.addEventListener("click", () => modal.style.display = "none");
+        printBtn.addEventListener("click", () => {
+            const printContent = reportDiv.innerHTML;
+            const printWindow = window.open("", "", "width=800,height=600");
+            printWindow.document.write(`<html><head><title>Print Report</title></head><body>${printContent}</body></html>`);
+            printWindow.document.close();
+            printWindow.print();
         });
 
-        html += '</tbody></table>';
-        reportDiv.innerHTML = html;
-    }
+        // Filter listeners
+        statusFilter.addEventListener('change', applyFilters);
+        startDateInput.addEventListener('change', fetchAndRenderData);
+        endDateInput.addEventListener('change', fetchAndRenderData);
 
-    // Modal and print controls
-    openModalBtn.addEventListener("click", () => modal.style.display = "block");
-    closeModalBtn.addEventListener("click", () => modal.style.display = "none");
-    printBtn.addEventListener("click", () => {
-        const printContent = reportDiv.innerHTML;
-        const printWindow = window.open("", "", "width=800,height=600");
-        printWindow.document.write(`<html><head><title>Print Report</title></head><body>${printContent}</body></html>`);
-        printWindow.document.close();
-        printWindow.print();
+
+
+        fetchAndRenderData();
     });
-
-    // Filter listeners
-    statusFilter.addEventListener('change', applyFilters);
-    startDateInput.addEventListener('change', fetchAndRenderData);
-    endDateInput.addEventListener('change', fetchAndRenderData);
-
-
-
-    fetchAndRenderData();
-});
 </script>
 
 <script>

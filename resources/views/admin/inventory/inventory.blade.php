@@ -1,6 +1,9 @@
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
@@ -10,291 +13,437 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/phosphor-icons@1.4.2/dist/phosphor-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.1/moment.min.js"></script>
 
-    <style>
+<style>
+    html,
+    body {
+        overflow: hidden;
+        /* Prevent scrolling on the entire page */
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
 
-        html, body {
-            overflow: hidden; /* Prevent scrolling on the entire page */
-            height: 100%;
-            margin: 0;
-            padding: 0;
-        }
+    
 
-        /* Hide all tables by default, only show the active tab's table */
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
+    /* Hide all tables by default, only show the active tab's table */
+    .tab-content {
+        display: none;
+    }
 
-        /* Custom tab color styles */
-        .tab-button {
-            padding: 0.3rem 1rem; /* Reduced padding */
-            font-size: 0.8rem; /* Reduced font size */
-            font-weight: 500;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            border: none; /* Remove default button border */
-            border-radius: 0.375rem; /* Consistent border radius */
-        }
-        .tab-button:hover {
-            opacity: 0.8;
-        }
+    .tab-content.active {
+        display: block;
+    }
 
-        .tab-button.active {
-            font-weight: bold;
-            background-color: #4A90E2; /* Active tab background color */
-        }
+    /* Custom tab color styles */
+    .tab-button {
+        padding: 0.3rem 1rem;
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        border: none;
+        border-radius: 0.375rem;
+    }
 
-        /* Flex container for Tabs and Add Item Button */
-        .tab-container {
-            display: flex;
-            align-items: center;
-            margin-bottom: -0.5rem; /* Slightly smaller margin */
-            margin-top: .5rem;
-        }
-                .tab-button-container {
-            display: flex;
-        }
+    .tab-button:hover {
+        opacity: 0.8;
+    }
 
-        .tab-button + .tab-button {
-            margin-left: 0.4rem; /* Reduced margin between tabs */
-        }
+    .tab-button.active {
+        font-weight: bold;
+        background-color: #4A90E2;
+    }
 
-        #add-item-btn {
-            padding: 0.4rem 0.8rem; /* Reduced padding */
-            font-size: 0.9rem; /* Slightly smaller font */
-        }
+    /* Flex container for Tabs and Add Item Button */
+    .tab-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: -0.5rem;
+        /* Slightly smaller margin */
+        margin-top: 1.5rem;
+    }
 
-        /* Position the Add Item button to the right side of the tabs */
-        #add-item-btn {
-            margin-left: auto; /* Push the button to the far right */
-            background-color:rgb(21, 183, 75); /* Green */
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
+    .tab-button-container {
+        display: flex;
+    }
 
-        #add-item-btn {
-            margin-left: auto; /* Push the button to the far right */
-            background-color: rgb(21, 183, 75); /* Green */
-            color: white;
-            padding: 0.3rem 0.6rem; /* Reduced padding */
-            font-size: 0.8rem; /* Slightly smaller font */
-            border-radius: 0.375rem; /* Consistent border radius with tabs */
-            cursor: pointer;
-            transition: background-color 0.3s, opacity 0.3s ease;
-        }
+    .tab-button+.tab-button {
+        margin-left: 0.4rem;
+        /* Reduced margin between tabs */
+    }
 
-        #add-item-btn:hover {
-            background-color: #2F9C5A; /* Darker green for hover effect */
-            opacity: 0.8; /* Slight opacity change on hover */
-        }
 
-        /* Custom Tab Colors */
-        .equipment-tab {
-            background-color: rgb(255 102 102); /* Blue */
-        }
+    #add-item-btn {
+        font-size: 0.9rem;
+        /* Slightly smaller font */
+        margin-left: auto;
+        /* Push the button to the far right */
+        background-color: #4cc9f0;
+        ;
+        /* Green */
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 60px 60px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
 
-        .office-supplies-tab {
-            background-color: #ff4242; /* Orange */
-        }
+    #add-item-btn:hover {
+        background-color: #3fb3d1;
+        /* Darker green for hover effect */
+        opacity: 0.8;
+        /* Slight opacity change on hover */
+    }
 
-        .emergency-kits-tab {
-            background-color: #ff1e1e; /* Red */
-        }
+    /* Custom Tab Colors */
+    .equipment-tab {
+        background-color: #B79CED;
+        /* Blue */
+    }
 
-        /* Table Styles */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 2rem;
-            margin-bottom: -2rem;
-        }
+    .office-supplies-tab {
+        background-color: #B79CED;
+        /* Orange */
+    }
 
-        table th, table td {
-            padding: 0.5rem; /* Reduced padding for better alignment */
-            text-align: left;
-            border-bottom: 1px solid #E5E5E5;
-            font-size: 0.8rem; /* Reduced font size */
-            text-align: center;
-        }
-        table th {
-    background-color: transparent;  /* Remove background color */
-    color: inherit;  /* Inherit text color from the parent or default styling */
+    .emergency-kits-tab {
+        background-color: #B79CED;
+        /* Red */
+    }
+
+    /* Table Styles */
+    table {
+        width: 100%;
+    border-collapse: collapse;
+    margin-top: 2rem;
+    margin-bottom: -2rem;
+    height: 100%;
+    table-layout: fixed; /* Changed to auto for dynamic sizing */
+    }
+
+    table th, table td {
+        padding: 8px;
     text-align: center;
+    border-bottom: 1px solid #E5E5E5;
+    font-size: 12px;
+    height: 20px !important;
+    vertical-align: middle;
+    width: auto;
+    }
+
+    table td {
+        height: 80px !important;
+        /* Apply height with higher priority */
+        position: relative;
+    }
+
+    /* Hover effect only on the table header cell being hovered over */
+    table th {
+        background-color: transparent;
+        color: #4a5568;
+        font-weight: bold;
+    }
+
+    table th:hover {
+        background-color: #f0f0f0;
+        color: #2D3748;
+        cursor: pointer;
+    }
+
+    /* Add hover effect for rows */
+    table tr:hover {
+        background-color: transparent;
+        /* Match hover effect from the second code */
+    }
+
+    table td:hover {
+        background-color: transparent;
+    }
+
+    .table-container {
+        width: 100%;
+max-height: 850px; /* Set max height for the table container */
+overflow-x: auto; /* Allow horizontal scrolling if necessary */
+overflow-y: auto; /* Allow vertical scrolling if necessary */
+margin-top: 0.3rem;
+margin-bottom: -2rem;
+
+    }
+
+    .table td .action-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative; /* Ensures buttons are positioned relative to this container */
+    height: 100%;
+    gap: 5px;
 }
 
-/* Hover effect on table headers */
-table th:hover {
-    background-color: #f0f0f0; /* Light grey background color on hover */
-    color: #2D3748; /* Dark text color on hover */
-    cursor: pointer; /* Pointer cursor to indicate interactivity */
-}
 
-        .table-container {
-            width: 100%; /* Ensure it takes full width */
-            height: auto; /* Fixed height for vertical scrolling */
-            overflow-x: auto; /* Enable horizontal scrolling only */
-            overflow-y: hidden; /* Prevent vertical scrollbar in outer container */
-            margin-top: 0.3rem; /* Adjust margin for spacing */  
-            margin-bottom: -1.7rem;  
-            
-        }
 
-        /* Form row layout (two fields per row) */
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* 2 columns */
-            gap: 1rem; /* Space between columns */
-        }
+    /* Form row layout (two fields per row) */
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        /* 2 columns */
+        gap: 1rem;
+        /* Space between columns */
+    }
 
-        .form-row > div {
-            margin-bottom: 1rem; /* Margin for each field */
-        }
+    .form-row>div {
+        margin-bottom: 1rem;
+        /* Margin for each field */
+    }
 
-        .archives-tab {
-            background-color: #d60000; /* Blue color for the Archives tab */
-        }
+    .archives-tab {
+        background-color: #B79CED;
+        /* Blue color for the Archives tab */
+    }
 
-        .restore-btn {
-        background-color: rgb(21, 183, 75);  /* Purple */
+    .restore-btn {
+        background-color: rgb(21, 183, 75);
+        /* Purple */
         color: white;
         border-radius: 4px;
         font-size: 14px;
-        padding: 6px 12px;  /* Same padding as the other buttons */
+        padding: 6px 12px;
+        /* Same padding as the other buttons */
         width: auto;
         cursor: pointer;
         text-align: center;
         margin-bottom: 5px;
         margin-top: 2px;
-        transition: background-color 0.3s, transform 0.2s; /* Added transition for smooth hover effect */
+        transition: background-color 0.3s, transform 0.2s;
+        /* Added transition for smooth hover effect */
     }
 
     .restore-btn:hover {
-        background-color: rgb(81, 166, 109);  /* Darker shade of purple for hover effect */
-        transform: scale(1.05);  /* Slight scaling effect on hover for better interactivity */
+        background-color: rgb(81, 166, 109);
+        /* Darker shade of purple for hover effect */
+        transform: scale(1.05);
+        /* Slight scaling effect on hover for better interactivity */
     }
 
     #myTable {
         width: 100%;
-        overflow-x: auto;  /* Enable horizontal scrolling */
-        overflow-y: auto;  /* Enable vertical scrolling */
+        overflow-x: auto;
+        /* Enable horizontal scrolling */
+        overflow-y: auto;
+        /* Enable vertical scrolling */
     }
 
     .all-items-tab {
-        background-color: #ff8989; /* Gray */
+        background-color: #B79CED;
+        /* Gray */
     }
 
     .other-items-tab {
-        background-color: #F90000; /* Yellow */
+        background-color: #B79CED;
+        /* Yellow */
     }
 
-    table th:nth-child(11), table td:nth-child(11) {
-    width: 180px !important;  /* Set a fixed width for the action column */
-    padding: 0.6rem;  /* Ensure padding is consistent */
+    table td img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 70px;
+        max-height: 65px;
     }
+
+    /** Fix specific column width for image and action columns 
+    table th:nth-child(11),
+    table td:nth-child(11) {
+        width: 140px !important;
+    }
+
+    table th:nth-child(12),
+    table td:nth-child(12) {
+        width: 160px !important;
+    }
+        */
+
+     /* Ensuring all columns behave consistently */
+     table th:nth-child(1),
+    table td:nth-child(1) { width: 80px; }
+
+    table th:nth-child(2),
+    table td:nth-child(2) { width: 80px; }
+
+    table th:nth-child(3),
+    table td:nth-child(3) { width: 100px; }
+
+    table th:nth-child(4),
+    table td:nth-child(4) { width: 100px; }
+
+    table th:nth-child(5),
+    table td:nth-child(5) { width: 100px; }
+
+    table th:nth-child(6),
+    table td:nth-child(6) { width: 100px; }
+
+    table th:nth-child(7),
+    table td:nth-child(7) { width: 120px; }
+
+    table th:nth-child(8),
+    table td:nth-child(8) { width: 100px; }
+
+    table th:nth-child(9),
+    table td:nth-child(9) { width: 100px; }
+
+    table th:nth-child(10),
+    table td:nth-child(10) { width: 100px; }
+
+    table th:nth-child(11),
+    table td:nth-child(11) { width: 100px; }
+
+    table th:nth-child(12),
+    table td:nth-child(12) { width: 140px; }
+
+    table th:nth-child(13),
+    table td:nth-child(13) { width: 120px; }
+
+    table th:nth-child(14),
+    table td:nth-child(14) { width: 110px; }
+
+    table th:nth-child(15),
+    table td:nth-child(15) { width: 120px; }
+
+    table th:nth-child(16),
+    table td:nth-child(16) { width: 120px; }
+
     table td .action-buttons {
         display: flex;
-        justify-content: center;
+        justify-content: space-around;
         align-items: center;
         height: 100%;
+        gap: 5px;
+        /* Space between buttons */
     }
 
     /* Styling for the Action Buttons */
-        .action-buttons {
+    .action-buttons {
         display: flex;
-        justify-content: center;
+        justify-content: space-around;
+        /* Space between buttons */
         align-items: center;
-        gap: 4px; /* Smaller gap between buttons */
+        height: 100%;
+        gap: 5px
     }
 
+    .button-container {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
 
+    .edit-btn,
+.archive-btn {
+    padding: 6px 20px; /* Consistent padding for buttons */
+    font-size: 12px; /* Ensure font size is consistent */
+    text-align: center; /* Align the text inside the button */
+    white-space: nowrap; /* Prevent button text from overflowing */
+}
 
-    /* Edit Button Style */
-    .edit-btn {
-    background-color: rgb(21, 183, 75);
+/* Edit Button */
+.edit-btn {
+    position: absolute;
+    top: 0; /* Position at the top */
+    background-color: #4cc9f0;
     color: white;
-    padding: 3px 8px; /* Smaller padding */
-    border-radius: 3px; /* Slightly smaller rounded corners */
-    font-size: 0.7rem; /* Slightly smaller font size */
-    font-weight: normal; /* Regular font weight */
+    padding: 6px 17px; /* Same padding as Archive button */
+    font-size: 12px; /* Same font size as Archive button */
+    text-align: center;
+    white-space: nowrap;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s ease; /* Transition for color and scale */
-    margin-top: 0.6rem;
-    margin-bottom: 0.6rem;
+    margin-top: 5px;
+    width: 100%; /* Ensure Edit button takes full width */
+    box-sizing: border-box; /* Prevents padding from breaking layout */
 }
 
 .edit-btn:hover {
-    background-color: #38a169; /* Darker green on hover */
-    transform: scale(1.05); /* Slight scaling effect */
+    background-color: #36a9c1;
+    transform: scale(1.05);
 }
 
-    /* Archive button style */
-    .archive-btn {
-    background-color: #f56565; /* Red background */
+/* Archive Button */
+.archive-btn {
+    position: absolute;
+    top: 40px; /* Position below the Edit button */
+    background-color: #57cc99;
     color: white;
-    padding: 3px 8px; /* Smaller padding */
-    border-radius: 3px; /* Slightly smaller rounded corners */
-    font-size: 0.7rem; /* Slightly smaller font size */
-    font-weight: normal; /* Regular font weight */
+    padding: 6px 17px; /* Same padding as Edit button */
+    font-size: 12px; /* Same font size as Edit button */
+    text-align: center;
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s ease; /* Transition for color and scale */
-    margin-top: 0.6rem;
-    margin-bottom: 0.6rem;
+    width: 100%; /* Ensure Archive button takes full width */
+    box-sizing: border-box; /* Prevents padding from breaking layout */
 }
 
 .archive-btn:hover {
-    background-color: #e53e3e; /* Darker red on hover */
-    transform: scale(1.05); /* Slight scaling effect */
+    background-color: #36a9c1;
+    transform: scale(1.05);
 }
 
-    /* Restore button style for archived items */
-    .restore-btn {
-    background-color: rgb(21, 183, 75);
-    color: white;
-    padding: 3px 8px; /* Smaller padding */
-    border-radius: 3px; /* Slightly smaller rounded corners */
-    font-size: 0.7rem; /* Slightly smaller font size */
-    font-weight: normal; /* Regular font weight */
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s ease; /* Transition for color and scale */
-    margin-top: 0.6rem;
-    margin-bottom: 0.6rem;        
-    transition: background-color 0.3s, transform 0.2s;
+
+    /* Default Styles for Table Header */
+    table thead th {
+        background-color: transparent;
+        /* No background color */
+        border: 1px solid transparent;
+        /* Default border color */
+        padding: 10px;
+        font-size: 11px;
+        text-align: center;
+        color: #4a5568;
+    font-weight: bold;
+    position: sticky;
+    top: 0;  /* Stick to the top of the table */
+    z-index: 1;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
     }
 
-    .restore-btn:hover {
-        background-color: rgb(81, 166, 109);  /* Darker shade of green for hover effect */
-        transform: scale(1.05);  /* Slight scaling effect */
+
+    /* Hover Effect */
+    table thead th:hover {
+        border-color: gray;
+        /* Change border to gray on hover */
     }
 
-/* Change font size for table headers */
+    /* Change font size for table headers */
+    table.dataTable thead th {
+        font-size: 11px;
+        /* Adjust the font size for the headers */
+        text-align: center;
+
+    }
+
+    /* Change font size for table cells */
+    table.dataTable tbody td {
+        font-size: 12px;
+        /* Adjust the font size for table data cells */
+        text-align: center;
+    }
+/* Ensure font size remains consistent for all table rows */
+table.dataTable tbody td, 
 table.dataTable thead th {
-    font-size: 11px;  /* Adjust the font size for the headers */
-    text-align: center; 
+    font-size: 12px !important;  /* Reset the font size */
 }
 
-/* Change font size for table cells */
-table.dataTable tbody td {
-    font-size: 14px;  /* Adjust the font size for table data cells */
-    text-align: center; 
-}
-
-/**/ 
-/**/
-/* Style the container */
- /* Entries per page Dropdown */
- .dataTables_length {
+    /**/
+    /**/
+    /* Style the container */
+    /* Entries per page Dropdown */
+    .dataTables_length {
         display: flex;
         align-items: center;
-        gap: 4px; /* Smaller gap */
+        gap: 4px;
+        /* Smaller gap */
         font-family: 'Inter', sans-serif;
-        font-size: 10px; /* Smaller font size */
+        font-size: 10px;
+        /* Smaller font size */
         margin-bottom: 6px;
         padding: 2px 4px;
         background-color: #e6f7ff;
@@ -312,7 +461,8 @@ table.dataTable tbody td {
         cursor: pointer;
         outline: none;
         transition: all 0.2s ease-in-out;
-        width: 50px; /* Reduced width */
+        width: 50px;
+        /* Reduced width */
     }
 
     /* Adjust Search Box */
@@ -325,12 +475,17 @@ table.dataTable tbody td {
         font-size: 10px;
         cursor: text;
         outline: none;
-        width: 150px; /* Make the search box smaller */
+        width: 150px;
+        /* Make the search box smaller */
     }
-    .dataTables_length select, .dataTables_filter input {
-    font-size: 9px; /* Reduced font size */
-    padding: 3px 6px; /* Reduced padding */
-}
+
+    .dataTables_length select,
+    .dataTables_filter input {
+        font-size: 9px;
+        /* Reduced font size */
+        padding: 3px 6px;
+        /* Reduced padding */
+    }
 
     /* Pagination Controls */
     .dataTables_paginate {
@@ -340,9 +495,11 @@ table.dataTable tbody td {
     }
 
     .dataTables_paginate a {
-    padding: 3px 6px; /* Reduced padding */
-    font-size: 9px; /* Smaller font size */
-}
+        padding: 3px 6px;
+        /* Reduced padding */
+        font-size: 9px;
+        /* Smaller font size */
+    }
 
     .dataTables_paginate a {
         padding: 4px 8px;
@@ -350,7 +507,8 @@ table.dataTable tbody td {
         color: white;
         border-radius: 4px;
         cursor: pointer;
-        font-size: 10px; /* Smaller font size */
+        font-size: 10px;
+        /* Smaller font size */
         transition: background-color 0.2s ease;
     }
 
@@ -360,356 +518,561 @@ table.dataTable tbody td {
 
     /* Scrollable tbody */
     .dataTables_scrollBody {
-        max-height: 400px; /* Adjust height as needed */
+        max-height: 400px;
+        /* Adjust height as needed */
         overflow-y: auto;
     }
 
-/* Shrink DataTable control elements consistently */
-.dt-length,
-.dt-search,
-.dt-info,
-.dt-paging {
-    font-size: 10px !important;
-    padding: 2px 5px !important;
-}
+    /* Shrink DataTable control elements consistently */
+    .dt-length,
+    .dt-search,
+    .dt-info,
+    .dt-paging {
+        font-size: 10px !important;
+        padding: 2px 5px !important;
+    }
 
-/* Dropdown for entries per page */
-.dt-length select {
-    font-size: 10px !important;
-    padding: 2px 4px !important;
-}
+    /* Dropdown for entries per page */
+    .dt-length select {
+        font-size: 10px !important;
+        padding: 2px 4px !important;
+    }
 
-/* Search bar input */
-.dt-search input[type="search"] {
-    font-size: 10px !important;
-    padding: 4px 6px !important;
-}
+    /* Search bar input */
+    .dt-search input[type="search"] {
+        font-size: 10px !important;
+        padding: 4px 6px !important;
+    }
 
-/* Pagination buttons */
-.dt-paging .paginate_button {
-    font-size: 10px !important;
-    padding: 2px 5px !important;
-}
-
+    /* Pagination buttons */
+    .dt-paging .paginate_button {
+        font-size: 10px !important;
+        padding: 2px 5px !important;
+    }
 </style>
 
 
 <style>
-        /* Center table header and body content */
-        #allItemsTable th,
-        #allItemsTable td {
-            text-align: center;
-        }
-    </style>
-</head>
-<body class="bg-gray-100">
-<!-- Main Content -->
-        <!-- Tabs -->
-        <div class="tab-container">
-            <div class="tab-button-container">
-                <button id="all-items-tab" class="tab-button all-items-tab ml-2" onclick="switchTab('all-items')">All Items</button>
-                <button id="equipment-tab" class="tab-button equipment-tab" onclick="switchTab('equipment')">DRRM Equipment</button>
-                <button id="office-supplies-tab" class="tab-button office-supplies-tab ml-2" onclick="switchTab('office-supplies')">Office Supplies</button>
-                <button id="emergency-kits-tab" class="tab-button emergency-kits-tab ml-2" onclick="switchTab('emergency-kits')">Emergency Kits</button>
-                <button id="other-items-tab" class="tab-button other-items-tab ml-2" onclick="switchTab('other-items')">Other Items</button>
-                <button id="archives-tab" class="tab-button archives-tab ml-2" onclick="switchTab('archives')">Archives</button>
-            </div>
-            <!-- Add Item Button (Right Aligned) -->
-            <button id="add-item-btn" class="tab-button add-item-btn">
-                + Add Item
-            </button>
-        </div>
+    /* Center table header and body content */
+    #allItemsTable th,
+    #allItemsTable td {
+        text-align: center;
+    }
+</style>
 
-<!-- All Items Tab -->
+<style>
+    .new-indicator {
+        position: absolute;
+        top: -5px;
+        left: 0;
+        background-color: rgb(143, 234, 146);
+        color: white;
+        font-size: 0.8rem;
+        padding: 2px 6px;
+        border-radius: 3px;
+    }
+
+    .new-item {
+        position: relative;
+        /* Ensure the row can hold the absolute positioned label */
+    }
+
+    /* For DRRM Equipment Table */
+    #equipmentTable th,
+    #equipmentTable td {
+        font-family: 'Arial', sans-serif;
+        /* Set a consistent font family */
+        font-size: 12px;
+        /* Ensure a uniform font size */
+    }
+
+    /* For Office Supplies Table */
+    #officeSuppliesTable th,
+    #officeSuppliesTable td {
+        font-family: 'Arial', sans-serif;
+        /* Set a consistent font family */
+        font-size: 12px;
+        /* Ensure a uniform font size */
+    }
+
+    /* For Emergency Kits Table */
+    #emergencyKitsTable th,
+    #emergencyKitsTable td {
+        font-family: 'Arial', sans-serif;
+        /* Set a consistent font family */
+        font-size: 12px;
+        /* Ensure a uniform font size */
+    }
+
+    /* For Other Items Table */
+    #otherItemsTable th,
+    #otherItemsTable td {
+        font-family: 'Arial', sans-serif;
+        /* Set a consistent font family */
+        font-size: 12px;
+        /* Ensure a uniform font size */
+    }
+
+    /* For Archives Table */
+    #archivesTable th,
+    #archivesTable td {
+        font-family: 'Arial', sans-serif;
+        /* Set a consistent font family */
+        font-size: 12px;
+        /* Ensure a uniform font size */
+    }
+
+    /* Ensuring all DataTable controls fit well within container */
+    .dataTables_wrapper .dataTables_scroll {
+        overflow-x: auto !important;
+        table-layout: fixed;
+    }
+
+    .dataTables_wrapper .dataTables_paginate {
+        font-size: 12px !important;
+    }
+
+    table.dataTable tbody td {
+        font-size: 12px;
+        /* Make sure the font size remains consistent */
+    }
+
+
+/* Style for the image modal */
+        /* Modal styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1000; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+        }
+
+        .modal-content {
+            margin: 15% auto; /* 15% from the top and centered */
+            display: block;
+            width: 80%; /* Could be more or less, depending on screen size */
+            max-width: 400px; /* Max width for larger screens */
+            max-height: 500px
+            
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+</style>
+
+</head>
+
+<body class="bg-gray-100">
+    <!-- Main Content -->
+    <!-- Tabs -->
+    <div class="tab-container">
+        <div class="tab-button-container">
+            <button id="all-items-tab" class="tab-button all-items-tab ml-2" onclick="switchTab('all-items')">All Items</button>
+            <button id="equipment-tab" class="tab-button equipment-tab" onclick="switchTab('equipment')">DRRM Equipment</button>
+            <button id="office-supplies-tab" class="tab-button office-supplies-tab ml-2" onclick="switchTab('office-supplies')">Office Supplies</button>
+            <button id="emergency-kits-tab" class="tab-button emergency-kits-tab ml-2" onclick="switchTab('emergency-kits')">Emergency Kits</button>
+            <button id="other-items-tab" class="tab-button other-items-tab ml-2" onclick="switchTab('other-items')">Other Items</button>
+            <button id="archives-tab" class="tab-button archives-tab ml-2" onclick="switchTab('archives')">Archives</button>
+        </div>
+        <!-- Add Item Button (Right Aligned) -->
+        <button id="add-item-btn" class="tab-button add-item-btn">
+            + Add Item
+        </button>
+    </div>
+
+<!-- All Items Table -->
 <div id="all-items-content" class="tab-content active">
-    <!--<h3 class="text-xl font-semibold mb-4">All Items</h3>-->
     <div class="table-container">
         <table id="allItemsTable" class="display">
             <thead>
                 <tr>
-                    <th>Item Code</th>
                     <th>Item Name</th>
+                    <th>Item Code</th>
+                    <th>Brand</th>
                     <th>Quantity</th>
                     <th>Unit</th>
                     <th>Category</th>
                     <th>Description</th>
                     <th>Storage Location</th>
                     <th>Arrival Date</th>
-                    <th>Date Purchased</th>
+                    <th>Inventory Date</th>
+                    <th>Expiration Date</th>
+                    <th>Date Tested/Inspected</th>
                     <th>Status</th>
+                    <th>Consumable</th> <!-- New Consumable Column -->
                     <th>Image</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($allItems as $item)
-                    <tr id="item-{{ $item->id }}">
-                        <td>{{ $item->item_code }}</td>
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->quantity }}</td>
-                        <td>{{ $item->unit }}</td>
-                        <td>{{ $item->category }}</td>
-                        <td>{{ $item->description }}</td>
-                        <td>{{ $item->storage_location }}</td>
-                        <td>{{ $item->arrival_date }}</td>
-                        <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
-                        <td class="action-buttons">
+                <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
+                <td>{{ $item->name }}</td>
+                <td>{{ $item->item_code }}</td>
+                    <td>{{ $item->brand }}</td>
+                    <td>{{ $item->quantity }}</td>
+                    <td>{{ $item->unit }}</td>
+                    <td>{{ $item->category }}</td>
+                    <td>{{ $item->description }}</td>
+                    <td>{{ $item->storage_location }}</td>
+                    <td>{{ $item->arrival_date }}</td>
+                    <td>{{ $item->inventory_date ?? 'N/A' }}</td>
+                    <td>{{ $item->expiration_date ?? 'N/A' }}</td>
+                    <td>{{ $item->date_tested_inspected ?? 'N/A' }}</td>
+                    <td>
+                        <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                        {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                        {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                        {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                        {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                        {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                            {{ $item->status }}
+                        </span>
+                    </td>
+                    <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
+                    <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
+                    <td class="action-buttons">
                         <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-
-                            <!-- Archive Button: AJAX for archiving -->
-                            <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-
-                        </td>
-                    </tr>
+                        <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+                    </td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
 </div>
 
-<!-- DRRM Equipment Tab -->
+<!-- Equipment Table -->
 <div id="equipment-content" class="tab-content">
-    <!--<h3 class="text-xl font-semibold mb-4">DRRM Equipment</h3>--->
     <div class="table-container">
         <table id="equipmentTable" class="display">
             <thead>
                 <tr>
+                <th>Item Name</th>
                     <th>Item Code</th>
-                    <th>Item Name</th>
+                    <th>Brand</th>
                     <th>Quantity</th>
                     <th>Unit</th>
+                    <th>Category</th>
                     <th>Description</th>
                     <th>Storage Location</th>
                     <th>Arrival Date</th>
-                    <th>Date Purchased</th>
+                    <th>Inventory Date</th>
+                    <th>Expiration Date</th>
+                    <th>Date Tested/Inspected</th>
                     <th>Status</th>
+                    <th>Consumable</th> <!-- New Consumable Column -->
                     <th>Image</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($drrmItems as $item)
-                    <tr id="item-{{ $item->id }}">
-                    <td>{{ $item->item_code }}</td>
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->quantity }}</td>
-                        <td>{{ $item->unit }}</td>
-                        <td>{{ $item->description }}</td>
-                        <td>{{ $item->storage_location }}</td>
-                        <td>{{ $item->arrival_date }}</td>
-                        <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
-                        <td class="action-buttons">
+                <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
+                <td>{{ $item->name }}</td>    
+                <td>{{ $item->item_code }}</td>
+                    <td>{{ $item->brand }}</td>
+                    <td>{{ $item->quantity }}</td>
+                    <td>{{ $item->unit }}</td>
+                    <td>{{ $item->category }}</td>
+                    <td>{{ $item->description }}</td>
+                    <td>{{ $item->storage_location }}</td>
+                    <td>{{ $item->arrival_date }}</td>
+                    <td>{{ $item->inventory_date ?? 'N/A' }}</td>
+                    <td>{{ $item->expiration_date ?? 'N/A' }}</td>
+                    <td>{{ $item->date_tested_inspected ?? 'N/A' }}</td>
+                    <td>
+                        <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                        {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                        {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                        {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                        {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                        {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                            {{ $item->status }}
+                        </span>
+                    </td>
+                    <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
+                    <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
+                    <td class="action-buttons">
                         <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-<!-- Archive Button: AJAX for archiving -->
-<button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-
-                        </td>
-                    </tr>
+                        <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+                    </td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
 </div>
 
-
-<!-- Office Supplies Tab -->
+<!-- Office Supplies Table -->
 <div id="office-supplies-content" class="tab-content">
-    <!--<h3 class="text-xl font-semibold mb-4">Office Supplies</h3>--->
     <div class="table-container">
         <table id="officeSuppliesTable" class="display">
             <thead>
                 <tr>
+                <th>Item Name</th>
                     <th>Item Code</th>
-                    <th>Item Name</th>
+                    <th>Brand</th>
                     <th>Quantity</th>
                     <th>Unit</th>
+                    <th>Category</th>
                     <th>Description</th>
                     <th>Storage Location</th>
                     <th>Arrival Date</th>
-                    <th>Date Purchased</th>
+                    <th>Inventory Date</th>
+                    <th>Expiration Date</th>
+                    <th>Date Tested/Inspected</th>
                     <th>Status</th>
+                    <th>Consumable</th> <!-- New Consumable Column -->
                     <th>Image</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($officeItems as $item)
-                    <tr id="item-{{ $item->id }}">
-                    <td>{{ $item->item_code }}</td>
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->quantity }}</td>
-                        <td>{{ $item->unit }}</td>
-                        <td>{{ $item->description }}</td>
-                        <td>{{ $item->storage_location }}</td>
-                        <td>{{ $item->arrival_date }}</td>
-                        <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
-                        <td class="action-buttons">
+                <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
+                <td>{{ $item->name }}</td>    
+                <td>{{ $item->item_code }}</td>
+                    <td>{{ $item->brand }}</td>
+                    <td>{{ $item->quantity }}</td>
+                    <td>{{ $item->unit }}</td>
+                    <td>{{ $item->category }}</td>
+                    <td>{{ $item->description }}</td>
+                    <td>{{ $item->storage_location }}</td>
+                    <td>{{ $item->arrival_date }}</td>
+                    <td>{{ $item->inventory_date ?? 'N/A' }}</td>
+                    <td>{{ $item->expiration_date ?? 'N/A' }}</td>
+                    <td>{{ $item->date_tested_inspected ?? 'N/A' }}</td>
+                    <td>
+                        <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                        {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                        {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                        {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                        {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                        {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                            {{ $item->status }}
+                        </span>
+                    </td>
+                    <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
+                    <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
+                    <td class="action-buttons">
                         <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-<!-- Archive Button: AJAX for archiving -->
-<button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-
-                        </td>
-                    </tr>
+                        <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+                    </td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
 </div>
 
-
-<!-- Emergency Kits Tab -->
+<!-- Emergency Kits Table -->
 <div id="emergency-kits-content" class="tab-content">
-    <!--<h3 class="text-xl font-semibold mb-4">Emergency Kits</h3>-->
     <div class="table-container">
         <table id="emergencyKitsTable" class="display">
             <thead>
                 <tr>
-                <th>Item Code</th>
-                    <th>Item Name</th>
+                <th>Item Name</th>
+                    <th>Item Code</th>
+                    <th>Brand</th>
                     <th>Quantity</th>
                     <th>Unit</th>
+                    <th>Category</th>
                     <th>Description</th>
                     <th>Storage Location</th>
                     <th>Arrival Date</th>
-                    <th>Date Purchased</th>
+                    <th>Inventory Date</th>
+                    <th>Expiration Date</th>
+                    <th>Date Tested/Inspected</th>
                     <th>Status</th>
+                    <th>Consumable</th> <!-- New Consumable Column -->
                     <th>Image</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($emergencyItems as $item)
-                    <tr id="item-{{ $item->id }}">
-                    <td>{{ $item->item_code }}</td>
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->quantity }}</td>
-                        <td>{{ $item->unit }}</td>
-                        <td>{{ $item->description }}</td>
-                        <td>{{ $item->storage_location }}</td>
-                        <td>{{ $item->arrival_date }}</td>
-                        <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
-                        <td class="action-buttons">
+                <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
+                <td>{{ $item->name }}</td>    
+                <td>{{ $item->item_code }}</td>
+                    <td>{{ $item->brand }}</td>
+                    <td>{{ $item->quantity }}</td>
+                    <td>{{ $item->unit }}</td>
+                    <td>{{ $item->category }}</td>
+                    <td>{{ $item->description }}</td>
+                    <td>{{ $item->storage_location }}</td>
+                    <td>{{ $item->arrival_date }}</td>
+                    <td>{{ $item->inventory_date ?? 'N/A' }}</td>
+                    <td>{{ $item->expiration_date ?? 'N/A' }}</td>
+                    <td>{{ $item->date_tested_inspected ?? 'N/A' }}</td>
+                    <td>
+                        <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                        {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                        {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                        {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                        {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                        {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                            {{ $item->status }}
+                        </span>
+                    </td>
+                    <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
+                    <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
+                    <td class="action-buttons">
                         <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-<!-- Archive Button: AJAX for archiving -->
-<button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-
-                        </td>
-                    </tr>
+                        <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+                    </td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
 </div>
 
-<!-- Other Items Tab -->
+<!-- Other Items Table -->
 <div id="other-items-content" class="tab-content">
-    <!--<h3 class="text-xl font-semibold mb-4">Other Items</h3>--->
     <div class="table-container">
         <table id="otherItemsTable" class="display">
             <thead>
                 <tr>
-                <th>Item Code</th>
-                    <th>Item Name</th>
+                <th>Item Name</th>
+                    <th>Item Code</th>
+                    <th>Brand</th>
                     <th>Quantity</th>
                     <th>Unit</th>
+                    <th>Category</th>
                     <th>Description</th>
                     <th>Storage Location</th>
                     <th>Arrival Date</th>
-                    <th>Date Purchased</th>
+                    <th>Inventory Date</th>
+                    <th>Expiration Date</th>
+                    <th>Date Tested/Inspected</th>
                     <th>Status</th>
+                    <th>Consumable</th> <!-- New Consumable Column -->
                     <th>Image</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($otherItems as $item)
-                    <tr id="item-{{ $item->id }}">
-                    <td>{{ $item->item_code }}</td>
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->quantity }}</td>
-                        <td>{{ $item->unit }}</td>
-                        <td>{{ $item->description }}</td>
-                        <td>{{ $item->storage_location }}</td>
-                        <td>{{ $item->arrival_date }}</td>
-                        <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
-                        <td class="action-buttons">
+                <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
+                <td>{{ $item->name }}</td>
+                <td>{{ $item->item_code }}</td>
+                    <td>{{ $item->brand }}</td>
+                    <td>{{ $item->quantity }}</td>
+                    <td>{{ $item->unit }}</td>
+                    <td>{{ $item->category }}</td>
+                    <td>{{ $item->description }}</td>
+                    <td>{{ $item->storage_location }}</td>
+                    <td>{{ $item->arrival_date }}</td>
+                    <td>{{ $item->inventory_date ?? 'N/A' }}</td>
+                    <td>{{ $item->expiration_date ?? 'N/A' }}</td>
+                    <td>{{ $item->date_tested_inspected ?? 'N/A' }}</td>
+                    <td>
+                        <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                        {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                        {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                        {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                        {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                        {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                            {{ $item->status }}
+                        </span>
+                    </td>
+                    <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
+                    <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
+                    <td class="action-buttons">
                         <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-<!-- Archive Button: AJAX for archiving -->
-<button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
-
-                        </td>
-                    </tr>
+                        <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+                    </td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
 </div>
 
-<!-- Archives Tab -->
+<!-- Archives Table -->
 <div id="archives-content" class="tab-content">
-    <!--<h3 class="text-xl font-semibold mb-4">Archives</h3>-->
     <div class="table-container">
         <table id="archivesTable" class="display">
             <thead>
                 <tr>
-                <th>Item Code</th>
-                    <th>Item Name</th>
-                    <th>Category</th>
+                <th>Item Name</th>
+                    <th>Item Code</th>
+                    <th>Brand</th>
                     <th>Quantity</th>
                     <th>Unit</th>
+                    <th>Category</th>
                     <th>Description</th>
                     <th>Storage Location</th>
                     <th>Arrival Date</th>
-                    <th>Date Purchased</th>
+                    <th>Inventory Date</th>
+                    <th>Expiration Date</th>
+                    <th>Date Tested/Inspected</th>
                     <th>Status</th>
+                    <th>Consumable</th> <!-- New Consumable Column -->
                     <th>Image</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($archivedItems as $item)
-                    <tr id="archived-{{ $item->id }}">
-                    <td>{{ $item->item_code }}</td>
-                        <td>{{ $item->name }}</td>
-                        <td>{{ $item->category }}</td>
-                        <td>{{ $item->quantity }}</td>
-                        <td>{{ $item->unit }}</td>
-                        <td>{{ $item->description }}</td>
-                        <td>{{ $item->storage_location }}</td>
-                        <td>{{ $item->arrival_date }}</td>
-                        <td>{{ $item->date_purchased }}</td>
-                        <td>{{ $item->status }}</td>
-                        <td><img src="{{ $item->image_url }}" alt="{{ $item->name }}" class="w-10 h-10"></td>
-                        <td class="action-buttons">
-                            <!-- Restore Button: Form for restoring an archived item -->
-                            <form action="{{ route('restore.item', $item->id) }}" method="POST" class="inline-block">
-                                @csrf
-                                <button type="submit" class="restore-btn">Restore</button>
-                            </form>
-                        </td>
-                    </tr>
+                <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
+                <td>{{ $item->name }}</td>    
+                <td>{{ $item->item_code }}</td>
+                    <td>{{ $item->brand }}</td>
+                    <td>{{ $item->quantity }}</td>
+                    <td>{{ $item->unit }}</td>
+                    <td>{{ $item->category }}</td>
+                    <td>{{ $item->description }}</td>
+                    <td>{{ $item->storage_location }}</td>
+                    <td>{{ $item->arrival_date }}</td>
+                    <td>{{ $item->inventory_date ?? 'N/A' }}</td>
+                    <td>{{ $item->expiration_date ?? 'N/A' }}</td>
+                    <td>{{ $item->date_tested_inspected ?? 'N/A' }}</td>
+                    <td>
+                        <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                        {{ $item->status == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                        {{ $item->status == 'Unavailable' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                        {{ $item->status == 'Pending' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                        {{ $item->status == 'Approved' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                        {{ $item->status == 'In Progress' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                            {{ $item->status }}
+                        </span>
+                    </td>
+                    <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
+                    <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
+                    <td class="action-buttons">
+                        <!-- Restore Button: Form for restoring an archived item -->
+                        <form action="{{ route('restore.item', $item->id) }}" method="POST" class="inline-block">
+                            @csrf
+                            <button type="submit" class="restore-btn">Restore</button>
+                        </form>
+                    </td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
 </div>
 
-
-    </div>
+</div>
 </div>
 <script>
     function switchTab(tab) {
-        console.log("Switching to tab: ", tab);  // For debugging
+        console.log("Switching to tab: ", tab); // For debugging
 
         // Hide all tabs and remove 'active' class
         var tabs = document.querySelectorAll('.tab-content');
@@ -737,10 +1100,61 @@ table.dataTable tbody td {
 
 
     // Ensure DataTables is initialized when the page loads
-    $(document).ready(function () {
+    $(document).ready(function() {
         initializeDataTables();
     });
 </script>
+
+<script>
+    $(document).ready(function() {
+        var currentDate = new Date(); // Get the current date (this is your "now")
+
+        // Loop through all items in the table
+        $('#allItemsTable tbody tr').each(function() {
+            var addedDate = $(this).data('added-at'); // Get the 'added_at' from data attribute
+
+            // Parse the addedDate into a proper Date object
+            var addedDateObj = new Date(addedDate); // Parse the string into a Date object
+
+            // Check if the date is invalid (NaN) after parsing
+            if (isNaN(addedDateObj.getTime())) {
+                console.log("Invalid date format: " + addedDate);
+                return; // Skip this item if the date is invalid
+            }
+
+            // Calculate the time difference in milliseconds between the current time and added time
+            var timeDiff = currentDate - addedDateObj; // This gives the difference in milliseconds
+
+            // Calculate hours and minutes from the time difference in milliseconds
+            var hoursDiff = Math.floor(timeDiff / (1000 * 60 * 60)); // Calculate the full hours
+            var minutesDiff = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60)); // Calculate the remaining minutes
+
+            // Add the "New!" indicator if the item was added within the last 5 days
+            var daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24)); // Convert milliseconds to days
+            if (daysDiff <= 5) {
+                $(this).addClass('new-item'); // Add the "new-item" class
+
+                // Check if the "New!" indicator is already appended to prevent duplicates
+                if (!$(this).find('.new-indicator').length) {
+                    // Add the "New!" indicator in the first column (Item Code)
+                    var indicator = '<span class="new-indicator">New!</span>';
+                    $(this).find('td:first').append(indicator); // Append "New!" next to the Item Code column
+                }
+            }
+
+            // Add hover effect to show the time difference (including hours and minutes) when hovering over the "New!" label
+            $(this).find('.new-indicator').hover(function() {
+                // Format the time difference
+                var elapsedTime = hoursDiff + " hours and " + minutesDiff + " minutes ago";
+
+                // Set the "added_at" value as the tooltip text (this will show the time difference on hover)
+                $(this).attr('title', 'Item added: ' + elapsedTime); // Show the time difference on hover
+            });
+        });
+    });
+</script>
+
+
 
 <!-- DataTables JS -->
 <script src="https://cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
@@ -750,310 +1164,397 @@ table.dataTable tbody td {
 <script>
     $(document).ready(function() {
         $('.tab-button').click(function() {
-            var targetTab = $(this).data('target');  // data-target is an attribute set to target tab
+            var targetTab = $(this).data('target'); // data-target is an attribute set to target tab
             $('.tab-content').removeClass('active');
             $('#' + targetTab).addClass('active');
         });
     });
 </script>
 
-<script> 
-    $(document).ready(function () {
-        $('#allItemsTable').DataTable({
-            scrollY: '425px', 
-            scrollCollapse: true,
-            paging: true,
-            searching: true,
-            ordering: true,
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            "pageLength": 10,
-            "initComplete": function(settings, json) {
-                $('#allItemsTable').css('font-size', '12px');
-                $('#allItemsTable thead th').css('font-size', '10px');
-                $('#allItemsTable tbody td').css('font-size', '10px');
+<script>
+    $(document).ready(function() {
+        // Function to initialize DataTables for a specific table
+        function initializeDataTable(tableId) {
+            return $(tableId).DataTable({
+                scrollY: '425px',
+                scrollCollapse: true,
+                paging: true,
+                searching: true,
+                ordering: true,
+                "lengthMenu": [
+                    [10, 25, 50, -1],
+                    [10, 25, 50, "All"]
+                ],
+                "pageLength": 10,
+                "order": [
+                    [8, 'desc']
+                ], 
+                "initComplete": function(settings, json) {
+                    // Set the font size for the table after initialization
+                    $(tableId).css('font-size', '12px');
+                    $(tableId + ' thead th').css('font-size', '10px');
+                    $(tableId + ' tbody td').css('font-size', '10px');
+                },
+                "drawCallback": function(settings) {
+                    // Reset font size whenever DataTable is redrawn (e.g., after pagination or page size change)
+                    $(tableId + ' tbody td').css('font-size', '12px');
+                    $(tableId + ' thead th').css('font-size', '10px');
+
+                    // Reinitialize the image click event after the table is redrawn
+                    $('table img').on('click', function() {
+                        var imgSrc = $(this).attr('src'); // Get the source of the clicked image
+                        $('#img01').attr('src', imgSrc); // Set the source of the modal image
+                        $('#myModal').css('display', 'block'); // Show the modal
+                    });
+                }
+            });
+        }
+
+        // Initialize DataTables for each table
+        var allItemsTable = initializeDataTable('#allItemsTable');
+        var equipmentTable = initializeDataTable('#equipmentTable');
+        var officeSuppliesTable = initializeDataTable('#officeSuppliesTable');
+        var emergencyKitsTable = initializeDataTable('#emergencyKitsTable');
+        var otherItemsTable = initializeDataTable('#otherItemsTable');
+        var archivesTable = initializeDataTable('#archivesTable');
+
+        // Hide all tables initially
+        $('.tab-content').hide();
+
+        // Function to switch tabs and initialize DataTable for the active tab
+        function switchTab(tab) {
+            // Hide all tabs and remove 'active' class
+            var tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tabContent => {
+                tabContent.classList.remove('active');
+                tabContent.style.display = 'none';
+            });
+
+            // Show the selected tab and add 'active' class
+            var activeTabContent = document.getElementById(tab + '-content');
+            if (activeTabContent) {
+                activeTabContent.classList.add('active');
+                activeTabContent.style.display = 'block';
+            }
+
+            // Reinitialize the DataTable for the newly displayed table
+            switch (tab) {
+                case 'all-items':
+                    allItemsTable.ajax.reload();
+                    break;
+                case 'equipment':
+                    equipmentTable.ajax.reload();
+                    break;
+                case 'office-supplies':
+                    officeSuppliesTable.ajax.reload();
+                    break;
+                case 'emergency-kits':
+                    emergencyKitsTable.ajax.reload();
+                    break;
+                case 'other-items':
+                    otherItemsTable.ajax.reload();
+                    break;
+                case 'archives':
+                    archivesTable.ajax.reload();
+                    break;
+            }
+
+            // Remove 'active' class from all tab buttons and add 'active' class to the clicked tab
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            var activeTabButton = document.getElementById(tab + '-tab');
+            if (activeTabButton) {
+                activeTabButton.classList.add('active');
+            }
+        }
+
+        // Initialize the first tab by default (you can change it to whichever tab you want to show first)
+        switchTab('all-items');
+
+        // Event listeners for tab switching
+        $('#all-items-tab').click(function() {
+            switchTab('all-items');
+        });
+        $('#equipment-tab').click(function() {
+            switchTab('equipment');
+        });
+        $('#office-supplies-tab').click(function() {
+            switchTab('office-supplies');
+        });
+        $('#emergency-kits-tab').click(function() {
+            switchTab('emergency-kits');
+        });
+        $('#other-items-tab').click(function() {
+            switchTab('other-items');
+        });
+        $('#archives-tab').click(function() {
+            switchTab('archives');
+        });
+
+        // Modal logic to close modal when clicked outside of image
+        $(window).on('click', function(event) {
+            if (event.target == document.getElementById('myModal')) {
+                $('#myModal').css('display', 'none');
             }
         });
 
-        $('#equipmentTable').DataTable({
-            scrollY: '425px',
-            scrollCollapse: true,
-            paging: true,
-            searching: true,
-            ordering: true,
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            "pageLength": 10,
-            "initComplete": function(settings, json) {
-                $('#equipmentTable').css('font-size', '12px');
-                $('#equipmentTable thead th').css('font-size', '10px');
-                $('#equipmentTable tbody td').css('font-size', '10px');
-            }
-        });
-
-        $('#officeSuppliesTable').DataTable({
-            scrollY: '425px',
-            scrollCollapse: true,
-            paging: true,
-            searching: true,
-            ordering: true,
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            "pageLength": 10,
-            "initComplete": function(settings, json) {
-                $('#officeSuppliesTable').css('font-size', '12px');
-                $('#officeSuppliesTable thead th').css('font-size', '10px');
-                $('#officeSuppliesTable tbody td').css('font-size', '10px');
-            }
-        });
-
-        $('#emergencyKitsTable').DataTable({
-            scrollY: '425px',
-            scrollCollapse: true,
-            paging: true,
-            searching: true,
-            ordering: true,
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            "pageLength": 10,
-            "initComplete": function(settings, json) {
-                $('#emergencyKitsTable').css('font-size', '12px');
-                $('#emergencyKitsTable thead th').css('font-size', '10px');
-                $('#emergencyKitsTable tbody td').css('font-size', '10px');
-            }
-        });
-
-        $('#otherItemsTable').DataTable({
-            scrollY: '425px',
-            scrollCollapse: true,
-            paging: true,
-            searching: true,
-            ordering: true,
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            "pageLength": 10,
-            "initComplete": function(settings, json) {
-                $('#otherItemsTable').css('font-size', '12px');
-                $('#otherItemsTable thead th').css('font-size', '10px');
-                $('#otherItemsTable tbody td').css('font-size', '10px');
-            }
-        });
-
-        $('#archivesTable').DataTable({
-            scrollY: '425px',
-            scrollCollapse: true,
-            paging: true,
-            searching: true,
-            ordering: true,
-            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
-            "pageLength": 10,
-            "initComplete": function(settings, json) {
-                $('#archivesTable').css('font-size', '12px');
-                $('#archivesTable thead th').css('font-size', '10px');
-                $('#archivesTable tbody td').css('font-size', '10px');
-            }
+        // Close the modal when the close button is clicked
+        $('.close').on('click', function() {
+            $('#myModal').css('display', 'none');
         });
     });
-</script>
+    </script>
 
 
-<!-- Add item JavaScript for Modal Control -->
+
+<!--Add item Modal-->
 <script>
-$(document).ready(function () {
-    // Show the Add Item Modal when the button is clicked
-    $("#add-item-btn").click(function () {
+$(document).ready(function() {
+    // Open modal when "Add Item" button is clicked
+    $("#add-item-btn").click(function() {
         $("#addItemModal").removeClass("hidden");
     });
 
-    // Validate quantity to ensure it is not 0 or empty
-    $('#quantity').on('input', function () {
+    // Enable Save button only if quantity is greater than 0
+    $('#quantity').on('input', function() {
         var quantity = $(this).val();
-        if (quantity == 0 || quantity == "") {
-            $("#saveButton").prop('disabled', true); // Disable save button if quantity is 0 or empty
-        } else {
-            $("#saveButton").prop('disabled', false); // Enable save button
-        }
+        $("#saveButton").prop('disabled', quantity == 0 || quantity === "");
     });
 
-    // Storage location dropdown logic
-    $('#storage_location').on('change', function () {
-        if ($(this).val() == 'Other') {
-            $('#other_storage_location').removeClass('hidden'); // Show input if "Other" is selected
-        } else {
-            $('#other_storage_location').addClass('hidden'); // Hide input if not "Other"
-        }
+    // Show input field for other storage location if 'Other' is selected
+    $('#storage_location').on('change', function() {
+        $('#other_storage_location').toggleClass('hidden', $(this).val() !== 'Other');
     });
 
-    // Unit dropdown logic: Show input field inline next to "Other"
-    $('#unit').on('change', function () {
-        if ($(this).val() == 'Other') {
-            $('#other_unit').removeClass('hidden'); // Show inline input if "Other" is selected
-        } else {
-            $('#other_unit').addClass('hidden'); // Hide inline input if not "Other"
-        }
+    // Show input field for other unit if 'Other' is selected
+    $('#unit').on('change', function() {
+        $('#other_unit').toggleClass('hidden', $(this).val() !== 'Other');
     });
 
-    // Ensure no future dates can be selected for Arrival Date and Date Purchased
-    const today = new Date().toISOString().split('T')[0];
-    $('#arrival_date, #date_purchased').attr('max', today);
+    // Ensure consumable checkbox updates the form value correctly
+    $('#consumable').on('change', function() {
+        // This updates the form data with '1' for checked and '0' for unchecked
+        $('input[name="consumable"]').val($(this).is(':checked') ? '1' : '0');
+    });
 
-    // On form submission, submit the data to save both items and individual items
-    $("#itemForm").submit(function (e) {
-        e.preventDefault();  // Prevent default form submission
+    // Handle form submission
+    $("#itemForm").submit(function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
 
-        // Grabs the form data and explicitly append required fields
-        var formData = new FormData(this);  // Grabs the form data
-        
-        // Explicitly append required fields if they aren't automatically added
-        formData.append('name', $('#name').val());  // Add 'name' field
-        formData.append('unit', $('#unit').val());  // Add 'unit' field
-        formData.append('category', $('#category').val());  // Add 'category' field
+        // Ensure essential fields are appended
+        formData.append('name', $('#name').val());
+        formData.append('brand', $('#brand').val());
+        formData.append('unit', $('#unit').val());
+        formData.append('category', $('#category').val());
+        formData.append('status', 'Available');
+        formData.append('consumable', $('#consumable').is(':checked') ? 1 : 0);  // This sends '1' for checked, '0' for unchecked
+        formData.append('inventory_date', $('#inventory_date').val());
 
-        // If "Other" is selected for unit, append the value from other_unit field
+        // Handle conditional fields
         if ($('#unit').val() === 'Other') {
-            formData.append('unit', $('#other_unit').val());  // Add custom unit if "Other" is selected
+            formData.set('unit', $('#other_unit').val());
+        }
+        if ($('#storage_location').val() === 'Other') {
+            formData.set('storage_location', $('#other_storage_location').val());
         }
 
-        // Optional: Log the FormData to check what is being sent
-        console.log(formData);  // This will print the form data in the browser console
+        // NEW: Append optional fields
+        formData.append('expiration_date', $('#expiration_date').val());
+        formData.append('date_tested_inspected', $('#date_tested_inspected').val());
 
-        // Proceed with the AJAX request to submit the form data
+        // Show loading state with Swal
+        Swal.fire({
+            title: 'Saving...',
+            text: 'Please wait while we save the item.',
+            icon: 'info',
+            showConfirmButton: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        // Send data to the server using AJAX
         $.ajax({
-            url: "{{ route('items.store') }}",  // Your URL for item saving
+            url: "{{ route('items.store') }}", // Make sure this route is correct
             method: 'POST',
             data: formData,
-            processData: false,  // Don't process the data (since it's FormData)
-            contentType: false,  // Set content type to false to let FormData handle it
+            processData: false,
+            contentType: false,
             success: function(response) {
-                alert('Item saved successfully!');
-                $("#addItemModal").addClass("hidden");
-                location.reload();  // Reload the page to see the new items
+                Swal.fire({
+                    title: 'Success!',
+                    text: 'Item saved successfully!',
+                    icon: 'success',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    willClose: () => location.reload() // Reload the page to reflect the new item
+                });
             },
-            error: function(xhr, status, error) {
-                console.log(xhr.responseJSON);  // Log the error to the console for debugging
-                alert('There was an error saving the item.');
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'There was an error saving the item.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
             }
         });
     });
 
-    // Search functionality for existing items
-    $('#search-item').on('input', function () {
-        var itemName = $(this).val();
-        if (itemName.length > 0) {
-            $.ajax({
-                url: '/search-item/' + itemName,  // Replace with your search route
-                method: 'GET',
-                success: function (data) {
-                    if (data) {
-                        // Fill in the form with the existing item data
-                        $('#name').val(data.name).prop('disabled', true);
-                        $('#category').val(data.category).prop('disabled', true);
-                        $('#unit').val(data.unit).prop('disabled', true);
-                        $('#description').val(data.description).prop('disabled', true);
-                        $('#image_url').prop('disabled', true);
-
-                        // Make editable fields available
-                        $('#quantity').val('').prop('disabled', false);
-                        $('#storage_location').val('').prop('disabled', false);
-                        $('#arrival_date').val('').prop('disabled', false);
-                        $('#date_purchased').val('').prop('disabled', false);
-                        $('#status').val('Available').prop('disabled', false);
-                    } else {
-                        // Reset the form if no item found
-                        $('#name').val('').prop('disabled', false);
-                        $('#category').val('').prop('disabled', false);
-                        $('#unit').val('').prop('disabled', false);
-                        $('#description').val('').prop('disabled', false);
-                        $('#image_url').prop('disabled', false);
-
-                        $('#quantity').val('').prop('disabled', false);
-                        $('#storage_location').val('').prop('disabled', false);
-                        $('#arrival_date').val('').prop('disabled', false);
-                        $('#date_purchased').val('').prop('disabled', false);
-                        $('#status').val('Available').prop('disabled', false);
-                    }
-                }
-            });
-        } else {
-            // If the input is empty, reset the form
-            $('#name').val('').prop('disabled', false);
-            $('#category').val('').prop('disabled', false);
-            $('#unit').val('').prop('disabled', false);
-            $('#description').val('').prop('disabled', false);
-            $('#image_url').prop('disabled', false);
-
-            $('#quantity').val('').prop('disabled', false);
-            $('#storage_location').val('').prop('disabled', false);
-            $('#arrival_date').val('').prop('disabled', false);
-            $('#date_purchased').val('').prop('disabled', false);
-            $('#status').val('Available').prop('disabled', false);
-        }
+    // Close the modal when the cancel button is clicked
+    $("#cancelModal").click(function() {
+        $("#addItemModal").addClass("hidden");
     });
 
-    // Cancel button functionality for Add Item modal
-    $("#cancelModal").click(function () {
-        $("#addItemModal").addClass("hidden");  // Hide the modal when cancel is clicked
-    });
-
-    // Clear button functionality for the Add Item modal
-    $("#clearForm").click(function () {
-        // Clear all input fields and reset the dropdowns to their default value
+    // Clear the form when the clear button is clicked
+    $("#clearForm").click(function() {
         $('#itemForm').find('input[type="text"], input[type="number"], input[type="date"], input[type="file"], textarea').val('');
-        $('#itemForm').find('select').prop('selectedIndex', 0); // Reset all dropdowns to the first option
-
-        // If you have a field for "Other" input (for unit or storage location), hide them and clear their values
-        $('#other_unit').addClass('hidden').val('');
-        $('#other_storage_location').addClass('hidden').val('');
-
-        // Clear the search bar field and reset it to an empty state
-        $('#search-item').val('');
-
-        // Re-enable the input fields to make them editable again
+        $('#itemForm').find('select').prop('selectedIndex', 0);
+        $('#other_unit, #other_storage_location').addClass('hidden').val('');
         $('#itemForm').find('input, select, textarea').prop('disabled', false);
+        $('#saveButton').prop('disabled', true); // Disable save button when clearing
     });
+
+    // Remove the min/max validation for arrival date field
+    $('#arrival_date').removeAttr('min max');
 });
+
 </script>
 
 <SCRIPT>
     //ARCHIVES
     function archiveItem(itemId) {
-    $.ajax({
-        url: '/archive-item/' + itemId,
-        type: 'POST',
-        data: {
-            _token: $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function(response) {
-            alert('Item archived successfully.');
-            $('#item-' + itemId).remove(); // Remove the item row from the table
-        },
-        error: function(xhr) {
-            alert('Error archiving item.');
+    // Show the SweetAlert confirmation dialog for archiving
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this action!",
+        icon: 'warning',
+        showCancelButton: true, // Show the Cancel button
+        confirmButtonText: 'Yes, archive it!',
+        cancelButtonText: 'No, cancel!',
+        reverseButtons: true // Ensure the "No" button is on the right
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // If the user clicked "Yes", proceed with archiving the item
+            $.ajax({
+                url: '/archive-item/' + itemId,
+                type: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                beforeSend: function() {
+                    // Show SweetAlert loading spinner before archiving the item
+                    Swal.fire({
+                        title: 'Archiving...',
+                        text: 'Please wait while we archive the item.',
+                        icon: 'info',
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                },
+                success: function(response) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Item archived successfully.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                    $('#item-' + itemId).remove(); // Remove the item row from the table
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Error archiving item.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+        } else {
+            // If the user clicked "No", do nothing and show a cancellation message
+            Swal.fire({
+                title: 'Cancelled',
+                text: 'The item was not archived.',
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
         }
     });
 }
 
 function restoreItem(itemId) {
-    $.ajax({
-        url: '/restore-item/' + itemId,
-        type: 'POST',
-        data: {
-            _token: $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function(response) {
-            alert('Item restored successfully.');
-            location.reload(); // Reload the page to update the table
-        },
-        error: function(xhr) {
-            alert('Error restoring item.');
+    // Show the SweetAlert confirmation dialog for restoring
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You want to restore this item?",
+        icon: 'warning',
+        showCancelButton: true, // Show the Cancel button
+        confirmButtonText: 'Yes, restore it!',
+        cancelButtonText: 'No, cancel!',
+        reverseButtons: true // Ensure the "No" button is on the right
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // If the user clicked "Yes", proceed with restoring the item
+            $.ajax({
+                url: '/restore-item/' + itemId,
+                type: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                },
+                beforeSend: function() {
+                    // Show SweetAlert loading spinner before restoring the item
+                    Swal.fire({
+                        title: 'Restoring...',
+                        text: 'Please wait while we restore the item.',
+                        icon: 'info',
+                        showConfirmButton: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                },
+                success: function(response) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Item restored successfully.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    });
+                    location.reload(); // Reload the page to update the table
+                },
+                error: function(xhr) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Error restoring item.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            });
+        } else {
+            // If the user clicked "No", do nothing and show a cancellation message
+            Swal.fire({
+                title: 'Cancelled',
+                text: 'The item was not restored.',
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
         }
     });
 }
-
 </script>
 
 <script>
 // Open the Edit Modal and populate fields with item data
 function openEditModal(itemId) {
     $.ajax({
-        url: '/get-item/' + itemId, // Fetch item data for the given itemId
+        url: '/get-item/' + itemId,
         method: 'GET',
         success: function(item) {
+            // Set today's date for max validation
+            const today = new Date().toISOString().split('T')[0];
+
             // Populate the form fields with the item data
             $('#edit_item_id').val(item.id);
             $('#edit_item_name').val(item.name);
@@ -1063,50 +1564,269 @@ function openEditModal(itemId) {
             $('#edit_description').val(item.description);
             $('#edit_storage_location').val(item.storage_location);
             $('#edit_arrival_date').val(item.arrival_date);
-            $('#edit_date_purchased').val(item.date_purchased);
             $('#edit_status').val(item.status);
 
-            // Dynamically set the form's action URL to include the itemId
-            var formAction = "{{ route('items.update', ['id' => '__ID__']) }}".replace('__ID__', item.id);
-            $('#editItemForm').attr('action', formAction); // Set the action URL for form
+            // Populate new fields with the item data
+            $('#edit_brand').val(item.brand);
+            $('#edit_expiration_date').val(item.expiration_date);
+            $('#edit_date_tested_inspected').val(item.date_tested_inspected);
+            $('#edit_inventory_date').val(item.inventory_date);
+            $('#edit_consumable').prop('checked', item.is_consumable); // Check if consumable
+
+            // Set date constraints
+            $('#edit_arrival_date').attr({
+                'min': item.date_purchased,
+                'max': today
+            });
+
+            // Set form action URL for updating the item (use PUT method)
+            $('#editItemForm').attr('action', "/items/" + item.id); // Correct URL
+
+            // Make fields editable
+            $('#edit_item_name').attr('readonly', false);
+            $('#edit_category').attr('disabled', false);
+            $('#edit_unit').attr('disabled', false);
+            $('#edit_description').attr('disabled', false);
+            $('#edit_storage_location').attr('disabled', false);
+            $('#edit_arrival_date').attr('disabled', false);
+            $('#edit_status').attr('disabled', false);
+            $('#edit_image').attr('disabled', false);
+            $('#edit_brand').attr('disabled', false);
+            $('#edit_expiration_date').attr('disabled', false);
+            $('#edit_date_tested_inspected').attr('disabled', false);
+            $('#edit_inventory_date').attr('disabled', false);
+            $('#edit_consumable').attr('disabled', false);
 
             // Show the modal
             $('#editItemModal').removeClass('hidden');
         },
         error: function(xhr) {
-            alert('Error fetching item data.');
+            Swal.fire({
+                title: 'Error!',
+                text: 'Error fetching item data. Please try again.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
         }
     });
 }
 
-// Save the updated item data when the form is submitted
-$('#editItemForm').submit(function(e) {
-    e.preventDefault();  // Prevent default form submission
-    
-    // Send the form data using AJAX
-    $.ajax({
-        url: $(this).attr('action'),  // Get the form's action URL
-        method: 'POST',  // Use 'POST' for the AJAX request
-        data: $(this).serialize(),   // Serialize the form data
-        success: function(response) {
-            alert('Item updated successfully!');
-            $('#editItemModal').addClass('hidden');
-            location.reload();  // Refresh the page to show the updated data
-        },
-        error: function(xhr) {
-            alert('Error updating item.');
+// Date validation for Edit Modal
+$(document).ready(function() {
+    // When arrival date changes in edit modal
+    $('#edit_arrival_date').on('change', function() {
+        const arrivalDate = $(this).val();
+        const purchasedDate = $('#edit_date_purchased').val();
+
+        if (purchasedDate && new Date(arrivalDate) < new Date(purchasedDate)) {
+            Swal.fire({
+                title: 'Invalid Date',
+                text: 'Arrival Date cannot be earlier than the Date Purchased.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            $(this).val('');
         }
+    });
+
+    // When expiration date or tested date changes
+    $('#edit_expiration_date, #edit_date_tested_inspected').on('change', function() {
+        const expirationDate = $('#edit_expiration_date').val();
+        const testedDate = $('#edit_date_tested_inspected').val();
+
+        if (expirationDate && testedDate && new Date(expirationDate) < new Date(testedDate)) {
+            Swal.fire({
+                title: 'Invalid Date',
+                text: 'Expiration Date cannot be earlier than the Date Tested/Inspected.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            $(this).val('');
+        }
+    });
+
+    // Form submission handler with date validation
+    $('#editItemForm').submit(function(e) {
+        e.preventDefault();
+
+        // Validate dates
+        const arrivalDate = $("#edit_arrival_date").val();
+        const purchasedDate = $("#edit_date_purchased").val();
+        const expirationDate = $("#edit_expiration_date").val();
+        const testedDate = $("#edit_date_tested_inspected").val();
+
+        if (purchasedDate && arrivalDate && new Date(arrivalDate) < new Date(purchasedDate)) {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Arrival Date cannot be earlier than the Date Purchased.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+
+        if (expirationDate && testedDate && new Date(expirationDate) < new Date(testedDate)) {
+            Swal.fire({
+                title: 'Error!',
+                text: 'Expiration Date cannot be earlier than the Date Tested/Inspected.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return false;
+        }
+
+        // Show loading indicator
+        Swal.fire({
+            title: 'Updating...',
+            text: 'Please wait while we update the item.',
+            icon: 'info',
+            showConfirmButton: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        // Submit the form via AJAX
+        $.ajax({
+            url: $(this).attr('action'),
+            method: 'PUT', // Use PUT request for update
+            data: $(this).serialize(),
+            success: function(response) {
+                if (response.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: response.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                        willClose: () => {
+                            $('#editItemModal').addClass('hidden');
+                            // Reload the page to reflect changes
+                            location.reload();  // Automatically reload the page
+                        }
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: response.message || 'There was an issue updating the item.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: xhr.responseJSON?.message || 'Error updating item. Please try again.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        });
+    });
+
+    // Cancel button handler
+    $("#cancelEditModal").click(function() {
+        $("#editItemModal").addClass("hidden");
     });
 });
 
-// Close the Edit Item Modal when clicking the "Cancel" button or the "Close" button (×)
-$(document).ready(function () {
-    $("#cancelEditModal, #closeEditModal").click(function () {
-        $("#editItemModal").addClass("hidden");  // Hide the modal
+</script>
+
+<script>
+$(document).ready(function() {
+    // When the item code is clicked
+    $('#allItemsTable').on('click', 'td:nth-child(2)', function() {
+        var itemCodePrefix = $(this).text().trim();  // Get the item code from the second column (Item Code)
+
+        // Strip any extra text like "New!" from the item code
+        itemCodePrefix = itemCodePrefix.replace(/[^A-Za-z0-9-]/g, '');  // Remove non-alphanumeric characters
+
+        console.log("Clicked itemCode prefix:", itemCodePrefix);  // Log the clicked item code prefix
+
+        // Fetch QR codes for the clicked item code prefix
+        $.ajax({
+            url: '/get-qr-codes/' + encodeURIComponent(itemCodePrefix),  // Pass the base item code prefix
+            method: 'GET',
+            success: function(data) {
+                console.log("QR codes fetched:", data);  // Log the fetched QR codes
+
+                if (data.length > 0) {
+                    var qrListHtml = '<ul>';
+                    var newlyAddedQrCodes = []; // To store newly added QR codes
+
+                    // Get the current date for comparison
+                    var currentDate = new Date();
+                    
+                    // Loop through all fetched QR codes and identify the new ones
+                    data.forEach(function(qrCode) {
+                        var qrCodeDate = new Date(qrCode.timestamp);  // Use the timestamp provided by the backend
+
+                        // Calculate the difference between now and the QR code creation date
+                        var timeDiff = currentDate - qrCodeDate;
+                        var daysDiff = timeDiff / (1000 * 3600 * 24);  // Convert milliseconds to days
+
+                        // If the QR code was added within the last 2 days, mark it as "New"
+                        if (daysDiff <= 2) {
+                            newlyAddedQrCodes.push(qrCode);  // Add to newly added list
+                            qrListHtml += '<li style="color: green;">' + qrCode.qr_code + ' (New)</li>';  // Highlight new QR code
+                        } else {
+                            qrListHtml += '<li>' + qrCode.qr_code + '</li>';  // Normal QR code
+                        }
+                    });
+
+                    qrListHtml += '</ul>';
+                    
+                    // Show the QR codes in a SweetAlert modal or overlay
+                    Swal.fire({
+                        title: 'QR Codes for ' + itemCodePrefix,
+                        html: qrListHtml,  // Display the list of QR codes in the modal
+                        icon: 'info'
+                    });
+
+                    // Log the newly added QR codes
+                    if (newlyAddedQrCodes.length > 0) {
+                        console.log("Newly Added QR Codes:", newlyAddedQrCodes);
+                    }
+                } else {
+                    Swal.fire({
+                        title: 'No QR Codes Found',
+                        text: 'There are no QR codes for this item.',
+                        icon: 'warning'
+                    });
+                }
+            },
+            error: function(xhr) {
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Something went wrong. Please try again later.',
+                    icon: 'error'
+                });
+            }
+        });
     });
 });
 </script>
 
+<script>
+    $(document).ready(function(){
+        // When an image is clicked
+        $('table img').on('click', function(){
+            var imgSrc = $(this).attr('src'); // Get the source of the clicked image
+            $('#img01').attr('src', imgSrc); // Set the source of the modal image
+            $('#myModal').css('display', 'block'); // Show the modal
+        });
+
+        // Close the modal when the close button is clicked
+        $('.close').on('click', function() {
+            $('#myModal').css('display', 'none');
+        });
+
+        // Close the modal when clicking anywhere outside of the image
+        $(window).on('click', function(event) {
+            if (event.target == document.getElementById('myModal')) {
+                $('#myModal').css('display', 'none');
+            }
+        });
+    });
+</script>
 
 
 <!-- Modal Overlay for Adding Item -->
@@ -1115,22 +1835,18 @@ $(document).ready(function () {
         <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full" style="max-width: 90%; height: auto;">
             <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Item</h3>
-
-                <!-- Search for Item -->
-                <div class="mb-4">
-                    <label for="search-item" class="block text-xs font-medium text-gray-900">Search Item by Name</label>
-                    <input type="text" id="search-item" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Search Item Name">
-                </div>
-
                 <form id="itemForm" action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="space-y-6">
                         <div class="grid grid-cols-2 gap-4">
+                            <!-- Item Name -->
                             <div>
                                 <label for="name" class="block text-xs font-medium text-gray-900">Item Name</label>
-                                <input type="text" id="name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                <input type="text" id="name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter Item Name" required>
                             </div>
 
+
+                            <!-- Category -->
                             <div>
                                 <label for="category" class="block text-xs font-medium text-gray-900">Category</label>
                                 <select id="category" name="category" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
@@ -1141,11 +1857,20 @@ $(document).ready(function () {
                                 </select>
                             </div>
 
+                            <!-- Consumable Checkbox -->
+                            <div class="col-span-2">
+                                <input type="checkbox" id="consumable" name="consumable" value="1" class="form-checkbox">
+                                <label for="consumable" class="text-xs font-medium text-gray-900">Consumable</label>
+                                <input type="hidden" name="consumable" value="0">
+                            </div>
+
+                            <!-- Quantity -->
                             <div>
                                 <label for="quantity" class="block text-xs font-medium text-gray-900">Quantity</label>
                                 <input type="number" id="quantity" name="quantity" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
                             </div>
 
+                            <!-- Unit -->
                             <div>
                                 <label for="unit" class="block text-xs font-medium text-gray-900">Unit</label>
                                 <div class="flex items-center">
@@ -1155,54 +1880,63 @@ $(document).ready(function () {
                                         <option value="Box">Box</option>
                                         <option value="Other">Other</option>
                                     </select>
-                                    <!-- Inline input field next to 'Other' -->
                                     <input type="text" id="other_unit" name="other_unit" class="mt-1 ml-2 hidden py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs w-20" maxlength="12" placeholder="Type unit">
                                 </div>
                             </div>
 
+                            <!-- Description -->
                             <div>
                                 <label for="description" class="block text-xs font-medium text-gray-900">Description</label>
-                                <textarea id="description" name="description" rows="3" maxlength="50" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs"></textarea>
+                                <textarea id="description" name="description" rows="3" maxlength="250" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs"></textarea>
                             </div>
 
+                            <!-- Storage Location -->
                             <div>
                                 <label for="storage_location" class="block text-xs font-medium text-gray-900">Storage Location</label>
                                 <select id="storage_location" name="storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
                                     <option value="Shelf A">Shelf A</option>
                                     <option value="Shelf B">Shelf B</option>
                                     <option value="Shelf C">Shelf C</option>
+                                    <option value="Shelf D">Shelf D</option>
                                     <option value="Other">Other</option>
                                 </select>
                                 <input type="text" id="other_storage_location" name="other_storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs hidden" maxlength="12" placeholder="Type other location here">
                             </div>
 
+                            <!-- Arrival Date -->
                             <div>
                                 <label for="arrival_date" class="block text-xs font-medium text-gray-900">Arrival Date</label>
-                                <input type="date" id="arrival_date" name="arrival_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                <input type="date" id="arrival_date" name="arrival_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" min="2000-01-01" >
                             </div>
 
+                            <!-- Inventory Date -->
                             <div>
-                                <label for="date_purchased" class="block text-xs font-medium text-gray-900">Date Purchased</label>
-                                <input type="date" id="date_purchased" name="date_purchased" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                <label for="inventory_date" class="block text-xs font-medium text-gray-900">Inventory Date</label>
+                                <input type="date" id="inventory_date" name="inventory_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" min="2000-01-01">
                             </div>
 
-                            <div>
-                                <label for="status" class="block text-xs font-medium text-gray-900">Status</label>
-                                <select id="status" name="status" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
-                                    <option value="Available">Available</option>
-                                    <option value="Borrowed">Borrowed</option>
-                                    <option value="Reserved">Reserved</option>
-                                    <option value="Out of Stock">Out of Stock</option>
-                                    <option value="Needs Repair">Needs Repair</option>
-                                    <option value="Damaged">Damaged</option>
-                                    <option value="Lost">Lost</option>
-                                    <option value="Retired">Retired</option>
-                                </select>
-                            </div>
-
+                            <!-- Image -->
                             <div>
                                 <label for="image_url" class="block text-xs font-medium text-gray-900">Image</label>
-                                <input type="file" id="image_url" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="file" id="image_url" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" accept="image/*">
+                            </div>
+
+                            <!-- Brand Field -->
+                            <div>
+                                <label for="brand" class="block text-xs font-medium text-gray-900">Brand</label>
+                                <input type="text" id="brand" name="brand" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                            </div>
+
+                            <!-- Expiration Date -->
+                            <div>
+                                <label for="expiration_date" class="block text-xs font-medium text-gray-900">Expiration Date (Optional)</label>
+                                <input type="date" id="expiration_date" name="expiration_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                            </div>
+
+                            <!-- Date Tested/Inspected -->
+                            <div>
+                                <label for="date_tested_inspected" class="block text-xs font-medium text-gray-900">Date Tested/Inspected (Optional)</label>
+                                <input type="date" id="date_tested_inspected" name="date_tested_inspected" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
                             </div>
                         </div>
 
@@ -1210,10 +1944,9 @@ $(document).ready(function () {
                             <button type="button" id="cancelModal" class="text-xs font-semibold text-gray-900 px-4 py-2 bg-gray-400 rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
                                 Cancel
                             </button>
-                            <button type="submit" id="saveButton" class="rounded-md bg-green-400 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-green-600 hover:text-white">
+                            <button type="submit" id="saveButton" class="rounded-md bg-green-400 px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-green-600 hover:text-white" disabled>
                                 Save
                             </button>
-                            <!-- Clear Button -->
                             <button type="button" id="clearForm" class="text-xs font-semibold text-gray-900 px-4 py-2 bg-gray-400 rounded-md transition duration-300 hover:bg-gray-600 hover:text-white">
                                 Clear
                             </button>
@@ -1225,78 +1958,117 @@ $(document).ready(function () {
     </div>
 </div>
 
-
-<!-- Modal for Editing Item -->
+<!-- Edit Item Modal -->
 <div id="editItemModal" class="fixed inset-0 bg-black/50 hidden flex justify-center items-center z-50">
     <div class="relative z-10 flex items-center justify-center">
         <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full" style="max-width: 90%; height: auto;">
             <div class="bg-white px-6 py-5 sm:p-6 sm:pb-4">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Edit Item</h3>
 
-                <form id="editItemForm" action="{{ route('items.update', ['id' => '__ID__']) }}" method="POST">
+                <!-- Edit Item Form -->
+                <form id="editItemForm" action="{{ route('items.update', ['id' => $item->id]) }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    @method('PUT')  <!-- Use PUT method for updates -->
-                    <input type="hidden" id="edit_item_id" name="item_id">
+                    @method('PUT') <!-- Use PUT method for updates -->
+                    <input type="hidden" id="edit_item_id" name="item_id" value="{{ $item->id }}">
 
                     <div class="space-y-6">
                         <div class="grid grid-cols-2 gap-4">
+                            <!-- Item Name -->
                             <div>
                                 <label for="edit_item_name" class="block text-xs font-medium text-gray-900">Item Name</label>
-                                <input type="text" id="edit_item_name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                <input type="text" id="edit_item_name" name="name" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->name }}" required>
                             </div>
 
+                            <!-- Category -->
                             <div>
                                 <label for="edit_category" class="block text-xs font-medium text-gray-900">Category</label>
                                 <select id="edit_category" name="category" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
-                                    <option value="DRRM Equipment">DRRM Equipment</option>
-                                    <option value="Office Supplies">Office Supplies</option>
-                                    <option value="Emergency Kits">Emergency Kits</option>
-                                    <option value="Other Items">Other Items</option>
+                                    <option value="DRRM Equipment" {{ $item->category == 'DRRM Equipment' ? 'selected' : '' }}>DRRM Equipment</option>
+                                    <option value="Office Supplies" {{ $item->category == 'Office Supplies' ? 'selected' : '' }}>Office Supplies</option>
+                                    <option value="Emergency Kits" {{ $item->category == 'Emergency Kits' ? 'selected' : '' }}>Emergency Kits</option>
+                                    <option value="Other Items" {{ $item->category == 'Other Items' ? 'selected' : '' }}>Other Items</option>
                                 </select>
                             </div>
 
+                            <!-- Consumable Checkbox -->
+                            <div>
+                                <input type="checkbox" id="edit_consumable" name="consumable" value="1" class="form-checkbox" {{ $item->is_consumable ? 'checked' : '' }}>
+                                <label for="edit_consumable" class="text-xs font-medium text-gray-900">Consumable</label>
+                            </div>
+
+                            <!-- Quantity -->
                             <div>
                                 <label for="edit_quantity" class="block text-xs font-medium text-gray-900">Quantity</label>
-                                <input type="number" id="edit_quantity" name="quantity" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                <input type="number" id="edit_quantity" name="quantity" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->quantity }}" required>
                             </div>
 
+                            <!-- Unit -->
                             <div>
                                 <label for="edit_unit" class="block text-xs font-medium text-gray-900">Unit</label>
-                                <input type="text" id="edit_unit" name="unit" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="text" id="edit_unit" name="unit" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->unit }}">
                             </div>
 
+                            <!-- Description -->
                             <div>
                                 <label for="edit_description" class="block text-xs font-medium text-gray-900">Description</label>
-                                <textarea id="edit_description" name="description" rows="3" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs"></textarea>
+                                <textarea id="edit_description" name="description" rows="3" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">{{ $item->description }}</textarea>
                             </div>
 
+                            <!-- Storage Location -->
                             <div>
                                 <label for="edit_storage_location" class="block text-xs font-medium text-gray-900">Storage Location</label>
-                                <input type="text" id="edit_storage_location" name="storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="text" id="edit_storage_location" name="storage_location" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->storage_location }}">
                             </div>
 
+                            <!-- Arrival Date -->
                             <div>
                                 <label for="edit_arrival_date" class="block text-xs font-medium text-gray-900">Arrival Date</label>
-                                <input type="date" id="edit_arrival_date" name="arrival_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="date" id="edit_arrival_date" name="arrival_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->arrival_date }}">
                             </div>
 
+                            <!-- Inventory Date -->
                             <div>
-                                <label for="edit_date_purchased" class="block text-xs font-medium text-gray-900">Date Purchased</label>
-                                <input type="date" id="edit_date_purchased" name="date_purchased" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <label for="edit_inventory_date" class="block text-xs font-medium text-gray-900">Inventory Date</label>
+                                <input type="date" id="edit_inventory_date" name="inventory_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->inventory_date }}">
+                            </div>
+
+                            <!-- Image -->
+                            <div>
+                                <label for="edit_image" class="block text-xs font-medium text-gray-900">Image</label>
+                                <input type="file" id="edit_image" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                            </div>
+
+                            <!-- Brand and Status fields on the same line (2 columns) -->
+                            <div>
+                                <label for="edit_brand" class="block text-xs font-medium text-gray-900">Brand</label>
+                                <input type="text" id="edit_brand" name="brand" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->brand }}" required>
                             </div>
 
                             <div>
                                 <label for="edit_status" class="block text-xs font-medium text-gray-900">Status</label>
                                 <select id="edit_status" name="status" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
-                                    <option value="Available">Available</option>
-                                    <option value="Unavailable">Unavailable</option>
+                                    <option value="Available" {{ $item->status == 'Available' ? 'selected' : '' }}>Available</option>
+                                    <option value="Borrowed" {{ $item->status == 'Borrowed' ? 'selected' : '' }}>Borrowed</option>
+                                    <option value="Reserved" {{ $item->status == 'Reserved' ? 'selected' : '' }}>Reserved</option>
+                                    <option value="Out Of Stock" {{ $item->status == 'Out Of Stock' ? 'selected' : '' }}>Out of Stock</option>
+                                    <option value="Needs Repair" {{ $item->status == 'Needs Repair' ? 'selected' : '' }}>Needs Repair</option>
+                                    <option value="Damage" {{ $item->status == 'Damage' ? 'selected' : '' }}>Damage</option>
+                                    <option value="Lost" {{ $item->status == 'Lost' ? 'selected' : '' }}>Lost</option>
+                                    <option value="Retired" {{ $item->status == 'Retired' ? 'selected' : '' }}>Retired</option>
                                 </select>
                             </div>
 
+                            <!-- Expiration Date and Date Tested fields on the same line (2 columns) -->
                             <div>
-                                <label for="edit_image" class="block text-xs font-medium text-gray-900">Image</label>
-                                <input type="file" id="edit_image" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <label for="edit_expiration_date" class="block text-xs font-medium text-gray-900">Expiration Date (Optional)</label>
+                                <input type="date" id="edit_expiration_date" name="expiration_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->expiration_date }}">
                             </div>
+
+                            <div>
+                                <label for="edit_date_tested_inspected" class="block text-xs font-medium text-gray-900">Date Tested/Inspected (Optional)</label>
+                                <input type="date" id="edit_date_tested_inspected" name="date_tested_inspected" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->date_tested_inspected }}">
+                            </div>
+
                         </div>
 
                         <div class="mt-6 flex items-center justify-end gap-x-6">
@@ -1312,6 +2084,15 @@ $(document).ready(function () {
             </div>
         </div>
     </div>
+</div>
+
+
+<!-- Existing HTML content omitted for brevity -->
+
+<!-- Modal for displaying large images -->
+<div id="myModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="img01">
 </div>
 
 </body>
