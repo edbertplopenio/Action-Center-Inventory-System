@@ -200,14 +200,13 @@ public function index()
         ]);
     }
 
-    public function deactivatedIndex()
-    {
-        // Fetch only deactivated users
-        $users = User::where('status', 'deactivated')->get();
-
-        // Pass deactivated users to the Blade view
-        return view('admin.users.deactivated', compact('users'));
-    }
+public function deactivatedIndex()
+{
+    // Fetch users with 'inactive' status
+    $users = User::where('status', 'inactive')->get();
+    
+    return view('admin.users.deactivated', compact('users'));
+}
 
     public function deactivate($id)
     {

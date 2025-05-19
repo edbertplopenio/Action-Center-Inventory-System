@@ -248,7 +248,7 @@
                         <th>Email</th>
                         <th>Role</th>
                         <th>Department</th>
-                        <th>Cellphone Number</th>
+                        <!-- <th>Cellphone Number</th> -->
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -261,7 +261,7 @@
                         data-email="{{ $user->email }}"
                         data-role="{{ $user->user_role }}"
                         data-department="{{ $user->department ?? 'N/A' }}"
-                        data-contact_number="{{ $user->contact_number ?? 'N/A' }}"
+
                         data-profile_picture="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : '' }}"
                         data-created_at="{{ $user->created_at }}"
                         data-last_login="{{ $user->last_login ?? 'N/A' }}"
@@ -272,7 +272,7 @@
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->user_role }}</td>
                         <td>{{ $user->department ?? 'N/A' }}</td>
-                        <td>{{ $user->contact_number ?? 'N/A' }}</td>
+                        <!-- <td>{{ $user->contact_number ?? 'N/A' }}</td> -->
                         <td>
                         <button class="activate-btn px-2 py-1 m-1 bg-[#40916c] text-white rounded hover:bg-[#347a58] text-xs w-24"
     data-id="{{ $user->id }}">
@@ -354,10 +354,10 @@
 
 
                                     <!-- Cellphone Number -->
-                                    <div class="sm:col-span-1">
+                                    <!-- <div class="sm:col-span-1">
                                         <label for="edit_contact_number" class="block text-xs font-medium text-gray-900">Cellphone Number</label>
                                         <input type="text" name="contact_number" id="edit_contact_number" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter cellphone number">
-                                    </div>
+                                    </div> -->
 
                                     <!-- Password -->
                                     <div class="sm:col-span-1">
@@ -1307,10 +1307,10 @@ document.addEventListener('DOMContentLoaded', function () {
                                     </div>
 
                                     <!-- Cellphone Number -->
-                                    <div class="sm:col-span-1">
+                                    <!-- <div class="sm:col-span-1">
                                         <label for="contact_number" class="block text-xs font-medium text-gray-900">Cellphone Number</label>
                                         <input type="text" name="contact_number" id="contact_number" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter cellphone number">
-                                    </div>
+                                    </div> -->
 
                                     <!-- Password -->
                                     <div class="sm:col-span-1">
