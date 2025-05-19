@@ -172,7 +172,14 @@
             /* Primary blue shade */
         }
     </style>
-
+<style>
+    <style>
+    /* Keep image modal hidden by default */
+    #imageModal {
+        display: none;
+        cursor: zoom-out;
+    }
+</style>
 
 </head>
 
@@ -373,7 +380,35 @@
 </div>
 
 
+<!-- Image Modal -->
+<div id="imageModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-75">
+    <span id="closeImageModal" class="absolute top-6 right-6 text-white text-3xl cursor-pointer font-bold select-none">&times;</span>
+    <img id="modalImage" src="" alt="Expanded Image" class="max-w-[90vw] max-h-[90vh] rounded shadow-lg" />
+</div>
 
+
+<script>
+    $(document).ready(function() {
+        // Open modal when clicking any image inside #myTable
+        $('#myTable').on('click', 'img', function() {
+            const src = $(this).attr('src');
+            $('#modalImage').attr('src', src);
+            $('#imageModal').css('display', 'flex');
+        });
+
+        // Close modal on clicking close button
+        $('#closeImageModal').on('click', function() {
+            $('#imageModal').css('display', 'none');
+        });
+
+        // Close modal when clicking outside the image
+        $('#imageModal').on('click', function(e) {
+            if (e.target.id === 'imageModal') {
+                $('#imageModal').css('display', 'none');
+            }
+        });
+    });
+</script>
 
 
 

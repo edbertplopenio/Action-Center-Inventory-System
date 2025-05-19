@@ -1775,8 +1775,8 @@ $(document).ready(function() {
 
 <script>
 $(document).ready(function() {
-    // When the item code is clicked
-    $('#allItemsTable').on('click', 'td:nth-child(2)', function() {
+    // Use event delegation for handling click on item code in all tables
+    $('table').on('click', 'td:nth-child(2)', function() {
         var itemCodePrefix = $(this).text().trim();  // Get the item code from the second column (Item Code)
 
         // Strip any extra text like "New!" from the item code
@@ -1846,30 +1846,32 @@ $(document).ready(function() {
         });
     });
 });
+
 </script>
 
 <script>
-    $(document).ready(function(){
-        // When an image is clicked
-        $('table img').on('click', function(){
-            var imgSrc = $(this).attr('src'); // Get the source of the clicked image
-            $('#img01').attr('src', imgSrc); // Set the source of the modal image
-            $('#myModal').css('display', 'block'); // Show the modal
-        });
-
-        // Close the modal when the close button is clicked
-        $('.close').on('click', function() {
-            $('#myModal').css('display', 'none');
-        });
-
-        // Close the modal when clicking anywhere outside of the image
-        $(window).on('click', function(event) {
-            if (event.target == document.getElementById('myModal')) {
-                $('#myModal').css('display', 'none');
-            }
-        });
+$(document).ready(function() {
+    // Use event delegation to handle clicks on images inside any table dynamically
+    $(document).on('click', 'table img', function() {
+        var imgSrc = $(this).attr('src'); // get clicked image source
+        $('#img01').attr('src', imgSrc); // set modal image source
+        $('#myModal').css('display', 'block'); // show the modal
     });
+
+    // Close the modal when the close button is clicked
+    $(document).on('click', '.close', function() {
+        $('#myModal').css('display', 'none');
+    });
+
+    // Close the modal when clicking outside the image (modal background)
+    $(window).on('click', function(event) {
+        if (event.target.id === 'myModal') {
+            $('#myModal').css('display', 'none');
+        }
+    });
+});
 </script>
+
 
 
 <!-- Modal Overlay for Adding Item -->
