@@ -181,6 +181,16 @@
         }
     </style>
 
+    <style>
+#imageModal {
+  display: none;  /* keep it hidden initially */
+  cursor: zoom-out;
+  /* do NOT set display:flex here */
+}
+
+</style>
+
+
 
 </head>
 
@@ -501,6 +511,34 @@
     });
 </script>
 
+<!-- Add this near the bottom of your Blade, outside other modals -->
+<div id="imageModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-75">
+    <span id="closeImageModal" class="absolute top-6 right-6 text-white text-3xl cursor-pointer font-bold">&times;</span>
+    <img id="modalImage" src="" alt="Expanded Image" class="max-w-[90vw] max-h-[90vh] rounded shadow-lg" />
+</div>
+
+
+<script>
+$(document).ready(function() {
+    $('#borrowedTable').on('click', 'img', function() {
+        const src = $(this).attr('src');
+        $('#modalImage').attr('src', src);
+        // Show modal with flex display (needed for centering)
+        $('#imageModal').css('display', 'flex');
+    });
+
+    $('#closeImageModal').on('click', function() {
+        $('#imageModal').css('display', 'none');
+    });
+
+    $('#imageModal').on('click', function(e) {
+        if (e.target.id === 'imageModal') {
+            $('#imageModal').css('display', 'none');
+        }
+    });
+});
+
+</script>
 
 
 @endsection
