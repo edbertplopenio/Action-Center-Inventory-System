@@ -19,124 +19,226 @@
     <!-- Grid Layout for Dashboard Items with 5 items in one row -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
 
-        <!-- Notifications -->
-        <div class="bg-[#e57373] p-2 shadow-lg rounded-lg border-l-4 border-[#e57373] relative font-inter">
-            <h2 class="text-xs font-semibold text-gray-200 leading-none mb-4">Borrowing Request</h2> <!-- Added mb-4 here -->
+<!-- Borrowing Request -->
+<div class="bg-[#e57373] p-2 shadow-lg rounded-lg border-l-4 border-[#e57373] relative font-inter">
+    <h2 class="text-xs font-semibold text-gray-200 leading-none mb-4">Borrowing Request</h2>
 
+    @php
+        $pendingRequests = $borrowedItems->where('status', 'Pending');
+    @endphp
+
+    @if($pendingRequests->count() > 0)
+        <div class="mb-2">
+            <p class="text-sm font-bold text-white leading-tight">
+    {{ $pendingRequests->count() }} pending {{ $pendingRequests->count() === 1 ? 'request' : 'requests' }}
+
+            </p>
+
+            <div class="absolute top-0 right-0 pt-7 pr-2">
+                <div class="icon bg-[#FAE7C3] text-white text-xl flex items-center justify-center w-8 h-8 rounded-full shadow-md">
+                    ⏳
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
             @php
-            $pendingRequests = $borrowedItems->where('status', 'Pending');
+                $firstPendingRequest = $pendingRequests->first();
             @endphp
 
-            @if($pendingRequests->count() > 0)
-            <div class="mb-2">
-                <p class="text-sm font-bold text-white leading-tight">
-                    {{ $pendingRequests->count() }} pending request(s)
-                </p>
-                <!-- Apply padding-top directly to the icon container -->
-                <div class="absolute top-0 right-0 pt-7 pr-2"> <!-- Added pr-10 for padding to the right -->
-                    <div class="icon bg-[#FAE7C3] text-white text-xl flex items-center justify-center w-8 h-8 rounded-full shadow-md">
-                        ⏳
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Display the first pending request's equipment and quantity with smaller font -->
-            <div class="mt-4">
-                @php
-                $firstPendingRequest = $pendingRequests->first(); // Get the first pending request
-                @endphp
-
-                @if($firstPendingRequest && $firstPendingRequest->item) <!-- Check if the first request has an item -->
-                <p class="text-xs text-white"> <!-- Changed from text-white to text-xs for smaller font size -->
+            @if($firstPendingRequest && $firstPendingRequest->item)
+                <p class="text-xs text-white">
                     <strong>Equipment:</strong> {{ $firstPendingRequest->item->name }}<br>
                     <strong>Quantity:</strong> {{ $firstPendingRequest->quantity_borrowed }}<br>
                 </p>
-                @endif
-            </div>
-
-            @else
-            <p class="text-white text-sm">No pending borrowing requests.</p>
             @endif
+
+            <!-- More Button -->
+            <button onclick="document.getElementById('pendingRequestsModal').classList.remove('hidden')"
+                class="text-white text-sm underline mt-2">More</button>
         </div>
+    @else
+        <p class="text-white text-sm">No pending borrowing requests.</p>
+    @endif
+</div>
 
+<!-- Modal Popup -->
+<div id="pendingRequestsModal"
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg p-4 w-96 max-h-[80vh] overflow-y-auto relative">
+        <button onclick="document.getElementById('pendingRequestsModal').classList.add('hidden')"
+            class="absolute top-2 right-2 text-gray-600 hover:text-red-500 text-lg">×</button>
+        <h3 class="text-lg font-bold mb-4">All Pending Requests</h3>
 
-
-
-
-        <!-- Most Available Equipment -->
-        <div class="bg-[#57cc99] p-2 shadow-lg rounded-lg border-l-4 border-[#57cc99] relative font-inter">
-            <h2 class="text-xs font-semibold text-gray-200 leading-none mb-4">Most Available Equipment</h2> <!-- Added mb-4 here -->
-
-            @if($mostAvailableItems->count() > 0)
-            @foreach($mostAvailableItems as $item)
-            <div class="mb-2 relative">
-                <p class="text-lg font-bold text-white leading-tight">{{ $item->name }}</p>
-                <span class="text-xs text-gray-200 block">⬆️ {{ $item->quantity }} units available</span>
-                <div class="icon bg-[#C3EDFA] text-white text-xl flex items-center justify-center w-8 h-8 rounded-full absolute top-0 right-2 shadow-md -mt-2">
-                    📦
+        @foreach($pendingRequests as $request)
+            @if($request->item)
+                <div class="mb-3">
+                    <p class="font-semibold">{{ $request->item->name }}</p>
+                    <p class="text-sm text-gray-700">📦 {{ $request->quantity_borrowed }} requested</p>
                 </div>
-            </div>
-            @endforeach
-            @else
-            <p class="text-white text-sm">No equipment available.</p>
             @endif
+        @endforeach
+    </div>
+</div>
+
+
+
+<!-- Most Available Equipment -->
+<div class="bg-[#57cc99] p-2 shadow-lg rounded-lg border-l-4 border-[#57cc99] relative font-inter">
+    <h2 class="text-xs font-semibold text-gray-200 leading-none mb-4">Most Available Equipment</h2>
+
+    @if($mostAvailableItems->count() > 0)
+    @foreach($mostAvailableItems as $item)
+    <div class="mb-2 relative">
+        <p class="text-lg font-bold text-white leading-tight">{{ $item->name }}</p>
+        <span class="text-xs text-gray-200 block">⬆️ {{ $item->quantity }} units available</span>
+        <div class="icon bg-[#C3EDFA] text-white text-xl flex items-center justify-center w-8 h-8 rounded-full absolute top-0 right-2 shadow-md -mt-2">
+            📦
         </div>
+    </div>
+    @endforeach
 
+       <!-- More button -->
+        <button onclick="openmostavailableModal()" class="mt-2 text-white text-xs underline hover:text-gray-300 transition">
+            More
+        </button>
+    @else
+        <p class="text-white text-sm">Most Available Equipment.</p>
+    @endif
+</div>
 
-        <!-- Critical Stock (Low Inventory) -->
-        <div class="bg-[#4cc9f0] p-2 shadow-lg rounded-lg border-l-4 border-[#4cc9f0] relative font-inter">
-            <h2 class="text-xs font-semibold text-gray-200 leading-none mb-4">Critical Stock</h2> <!-- Added mb-4 here -->
+<!-- Modal -->
+<div id="mostAvailableItemsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white w-full max-w-md max-h-[80vh] p-6 rounded-lg shadow-lg relative overflow-y-auto">
+        <h3 class="text-lg font-bold mb-4 text-[#4cc9f0]">Most Available Equipment</h3>
+        <button onclick="closemostavailableModal()" class="absolute top-2 right-2 text-gray-600 hover:text-red-500 text-lg">×</button>
 
-            @if($criticalStockItems->count() > 0)
-            @foreach($criticalStockItems as $item)
-            <div class="mb-2 relative">
-                <p class="text-lg font-bold text-white leading-tight">{{ $item->name }}</p>
-                <span class="text-xs text-gray-200 block">⚠️ {{ $item->quantity }} units left</span>
-                <div class="icon bg-[#C3EDFA] text-white text-xl flex items-center justify-center w-8 h-8 rounded-full absolute top-0 right-2 shadow-md -mt-2">
-                    ⚠️
-                </div>
-            </div>
-            @endforeach
-            @else
-            <p class="text-white text-sm">No critical stock available.</p>
-            @endif
+        @foreach($allMostAvailableItems as $item)
+        <div class="mb-3 border-b pb-2">
+            <p class="font-semibold text-gray-800">{{ $item->name }}</p>
+            <span class="text-sm text-red-600">
+                📦 {{ $item->quantity }} {{ $item->quantity <= 1 ? 'unit' : 'units' }} left
+            </span>
         </div>
+        @endforeach
+    </div>
+</div>
 
 
-        <!-- Equipment Needing Repair -->
-        <div class="bg-[#f0b84c] p-2 shadow-lg rounded-lg border-l-4 border-[#f0b84c] relative font-inter">
-            <h2 class="text-xs font-semibold text-gray-200 leading-none mb-4">Equipment Needing Repair</h2> <!-- Added mb-4 here -->
 
-            <p class="text-lg font-bold text-white mt-1 leading-tight">
-                {{ $itemsNeedingRepair->count() }} {{ Str::plural('Item', $itemsNeedingRepair->count()) }}
-            </p>
-            <p class="text-sm font-semibold text-white -mt-1">
-                Needs Repair
-            </p>
 
-            @if($itemsNeedingRepair->count() > 0)
-            <div class="absolute top-0 right-0 pt-7 p-1">
-                <div class="icon bg-[#FAE7C3] text-white text-xl flex items-center justify-center w-8 h-8 rounded-full shadow-md">
-                    🛠️
-                </div>
+
+
+
+<!-- Critical Stock (Low Inventory) -->
+<div class="bg-[#4cc9f0] p-2 shadow-lg rounded-lg border-l-4 border-[#4cc9f0] relative font-inter">
+    <h2 class="text-xs font-semibold text-gray-200 leading-none mb-4">Critical Stock</h2>
+
+    @if($criticalStockItems->count() > 0)
+        @foreach($criticalStockItems as $item)
+        <div class="mb-2 relative">
+            <p class="text-lg font-bold text-white leading-tight">{{ $item->name }}</p>
+            <span class="text-xs text-gray-200 block">
+                ⚠️ {{ $item->quantity }} {{ $item->quantity <= 1 ? 'unit' : 'units' }} left
+            </span>
+            <div class="icon bg-[#C3EDFA] text-white text-xl flex items-center justify-center w-8 h-8 rounded-full absolute top-0 right-2 shadow-md -mt-2">
+                ⚠️
             </div>
-
-            <div class="mt-3 space-y-1">
-                @foreach($itemsNeedingRepair as $item)
-                <div>
-                    <p class="text-lg font-bold text-white leading-tight">{{ $item->name }}</p>
-                </div>
-                @endforeach
-            </div>
-            @else
-            <!-- <p class="text-white mt-2 text-sm">No equipment needing repair.</p> -->
-            @endif
         </div>
+        @endforeach
+
+        <!-- More button -->
+        <button onclick="openModal()" class="mt-2 text-white text-xs underline hover:text-gray-300 transition">
+            More
+        </button>
+    @else
+        <p class="text-white text-sm">No critical stock available.</p>
+    @endif
+</div>
+
+<!-- Modal -->
+<div id="criticalStockModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white w-full max-w-md max-h-[80vh] p-6 rounded-lg shadow-lg relative overflow-y-auto">
+        <h3 class="text-lg font-bold mb-4 text-[#4cc9f0]">All Critical Stock Items</h3>
+        <button onclick="closeModal()" class="absolute top-2 right-2 text-gray-600 hover:text-red-500 text-lg">×</button>
+
+        @foreach($allCriticalStockItems as $item)
+        <div class="mb-3 border-b pb-2">
+            <p class="font-semibold text-gray-800">{{ $item->name }}</p>
+            <span class="text-sm text-red-600">
+                ⚠️ {{ $item->quantity }} {{ $item->quantity <= 1 ? 'unit' : 'units' }} left
+            </span>
+        </div>
+        @endforeach
+    </div>
+</div>
 
 
 
-        <!-- Recent Deployments -->
+
+<!-- Equipment Needing Repair -->
+ 
+<div class="bg-[#f0b84c] p-2 shadow-lg rounded-lg border-l-4 border-[#f0b84c] relative font-inter">
+    <h2 class="text-xs font-semibold text-gray-200 leading-none mb-4">Equipment Needing Repair</h2>
+
+@php
+    $totalNeedingRepair = $allItemsNeedingRepair->count();
+@endphp
+
+<p class="text-lg font-bold text-white mt-1 leading-tight">
+    {{ $totalNeedingRepair }} {{ Str::plural('Item', $totalNeedingRepair) }}
+</p>
+
+    <p class="text-sm font-semibold text-white -mt-1">
+        Needs Repair
+    </p>
+
+    @if($itemsNeedingRepair->count() > 0)
+    <div class="absolute top-0 right-0 pt-7 p-1">
+        <div class="icon bg-[#FAE7C3] text-white text-xl flex items-center justify-center w-8 h-8 rounded-full shadow-md">
+            🛠️
+        </div>
+    </div>
+
+    <div class="mt-3 space-y-1">
+        @foreach($itemsNeedingRepair as $item)
+        <div>
+            <p class="text-lg font-bold text-white leading-tight">{{ $item->name }}</p>
+        </div>
+        @endforeach
+
+        <!-- More Button -->
+        <button onclick="openRepairModal()" class="text-white text-xs underline hover:text-gray-300 transition mt-2">
+            More
+        </button>
+    </div>
+    @else
+    <p class="text-white mt-2 text-sm">No equipment needing repair.</p>
+    @endif
+</div>
+
+
+
+
+<!-- Modal for More Equipment Needing Repair -->
+<div id="repairModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white w-full max-w-md max-h-[80vh] p-6 rounded-lg shadow-lg relative overflow-y-auto">
+        <h3 class="text-lg font-bold mb-4 text-[#f0b84c]">All Equipment Needing Repair</h3>
+        <button onclick="closeRepairModal()" class="absolute top-2 right-2 text-gray-600 hover:text-red-500 text-lg">×</button>
+        
+        @foreach($allItemsNeedingRepair as $item)
+        <div class="mb-3 border-b pb-2">
+            <p class="font-semibold text-gray-800">{{ $item->name }}</p>
+            <span class="text-sm text-red-600">🛠️ Needs Repair</span>
+        </div>
+        @endforeach
+    </div>
+</div>
+
+
+
+
+<!-- Recent Deployments -->
         <div class="bg-[#b79ced] p-2 shadow-lg rounded-lg border-l-4 border-[#b79ced] relative font-inter">
             <h2 class="text-xs font-semibold text-gray-200 leading-none mb-4">Recent Deployments</h2> <!-- Added mb-4 here -->
 
@@ -150,14 +252,32 @@
                 </div>
             </div>
             @endforeach
-            @else
-            <p class="text-white text-sm">No recent deployments.</p>
-            @endif
+
+  <!-- More button -->
+        <button onclick="openDeploymentModal()" class="mt-2 text-white text-xs underline hover:text-gray-300 transition">
+            More
+        </button>
+    @else
+        <p class="text-white text-sm">No recent deployments.</p>
+    @endif
+</div>
+
+<!-- Modal -->
+<div id="deploymentModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white w-full max-w-md max-h-[80vh] p-6 rounded-lg shadow-lg relative overflow-y-auto">
+        <h3 class="text-lg font-bold mb-4 text-[#b79ced]">All Recent Deployments</h3>
+        <button onclick="closeDeploymentModal()" class="absolute top-2 right-2 text-gray-600 hover:text-red-500 text-lg">×</button>
+
+        @foreach($allRecentDeployments as $deployment)
+        <div class="mb-3 border-b pb-2">
+            <p class="font-semibold text-gray-800">{{ $deployment->item->name }}</p>
+            <span class="text-sm text-purple-600">
+                🚛 {{ $deployment->quantity_borrowed }} {{ $deployment->quantity_borrowed == 1 ? 'unit' : 'units' }} deployed
+            </span>
         </div>
-
-
+        @endforeach
     </div>
-
+</div>
 </div>
 
 
@@ -270,7 +390,7 @@
 
 
 
-    <!-- Initialize Charts -->
+  <!-- Initialize Charts -->
     <script>
         // most borrowed items Chart 
 
@@ -307,53 +427,53 @@
         });
 
 
-        // Low Stock Chart
-        var lowStockItemsNames = <?php echo json_encode($lowStockItems->pluck('name')->toArray()); ?>;
-        var lowStockItemsQuantities = <?php echo json_encode($lowStockItems->pluck('quantity')->toArray()); ?>;
+ // Low Stock Chart
+var lowStockItemsNames = <?php echo json_encode($lowStockItems->pluck('name')->toArray()); ?>;
+var lowStockItemsQuantities = <?php echo json_encode($lowStockItems->pluck('quantity')->toArray()); ?>;
 
-        // Define 3 different colors to rotate
-        var barColors = ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)'];
-        var backgroundColors = lowStockItemsQuantities.map((_, index) => barColors[index % 3]);
+// Define 3 different colors to rotate
+var barColors = ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)'];
+var backgroundColors = lowStockItemsQuantities.map((_, index) => barColors[index % 3]);
 
-        var ctx2 = document.getElementById('lowStockChart').getContext('2d');
-        var lowStockChart = new Chart(ctx2, {
-            type: 'bar',
-            data: {
-                labels: lowStockItemsNames,
-                datasets: [{
-                    label: 'Low Stock Items',
-                    data: lowStockItemsQuantities,
-                    backgroundColor: backgroundColors,
-                    borderColor: backgroundColors,
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                indexAxis: 'y',
-                plugins: {
-                    legend: {
-                        display: false // <-- This line hides the legend
-                    }
-                },
-                scales: {
-                    x: {
-                        beginAtZero: true
-                    },
-                    y: {
-                        beginAtZero: true
-                    }
-                }
+var ctx2 = document.getElementById('lowStockChart').getContext('2d');
+var lowStockChart = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+        labels: lowStockItemsNames,
+        datasets: [{
+            label: 'Low Stock Items',
+            data: lowStockItemsQuantities,
+            backgroundColor: backgroundColors,
+            borderColor: backgroundColors,
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        indexAxis: 'y',
+        plugins: {
+            legend: {
+                display: false // <-- This line hides the legend
             }
-        });
+        },
+        scales: {
+            x: {
+                beginAtZero: true
+            },
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
 
 
 
         // Quantity By Category Chart
 
         // Pass PHP data to JavaScript
-        var categoryCounts = <?php echo json_encode($categoryCounts); ?>;
+        var categoryCounts = @json($categoryCounts);
 
         // Extract category names and their corresponding total quantities
         var categories = categoryCounts.map(item => item.category);
@@ -460,4 +580,50 @@
             updateUsageRateChart(selectedItemId); // Fetch and update chart when user selects an item
         });
     </script>
+
+    <!-- Scripts -->
+
+<script>
+    function openModal() {
+        document.getElementById('criticalStockModal').classList.remove('hidden');
+        document.getElementById('criticalStockModal').classList.add('flex');
+    }
+
+    function closeModal() {
+        document.getElementById('criticalStockModal').classList.add('hidden');
+        document.getElementById('criticalStockModal').classList.remove('flex');
+    }
+
+    function openRepairModal() {
+        document.getElementById('repairModal').classList.remove('hidden');
+        document.getElementById('repairModal').classList.add('flex');
+    }
+
+    function closeRepairModal() {
+        document.getElementById('repairModal').classList.add('hidden');
+        document.getElementById('repairModal').classList.remove('flex');
+    }
+
+    
+    function openmostavailableModal() {
+        document.getElementById('mostAvailableItemsModal').classList.remove('hidden');
+        document.getElementById('mostAvailableItemsModal').classList.add('flex');
+    }
+
+    function closemostavailableModal() {
+        document.getElementById('mostAvailableItemsModal').classList.add('hidden');
+        document.getElementById('mostAvailableItemsModal').classList.remove('flex');
+    }
+
+        function openDeploymentModal() {
+        document.getElementById('deploymentModal').classList.remove('hidden');
+        document.getElementById('deploymentModal').classList.add('flex');
+    }
+    function closeDeploymentModal() {
+        document.getElementById('deploymentModal').classList.add('hidden');
+        document.getElementById('deploymentModal').classList.remove('flex');
+    }
+    
+
+</script>
     @endsection
