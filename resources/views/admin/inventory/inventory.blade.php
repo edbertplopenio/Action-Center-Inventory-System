@@ -345,6 +345,7 @@ margin-bottom: -2rem;
     font-size: 12px; /* Ensure font size is consistent */
     text-align: center; /* Align the text inside the button */
     white-space: nowrap; /* Prevent button text from overflowing */
+    gap: 5px;
 }
 
 /* Edit Button */
@@ -358,7 +359,7 @@ margin-bottom: -2rem;
     text-align: center;
     white-space: nowrap;
     cursor: pointer;
-    margin-top: 5px;
+    margin-top: 10px;
     width: 100%; /* Ensure Edit button takes full width */
     box-sizing: border-box; /* Prevents padding from breaking layout */
 }
@@ -380,6 +381,8 @@ margin-bottom: -2rem;
     cursor: pointer;
     width: 100%; /* Ensure Archive button takes full width */
     box-sizing: border-box; /* Prevents padding from breaking layout */
+    margin-bottom: 10px;
+    margin-top: 8px;
 }
 
 .archive-btn:hover {
@@ -1357,10 +1360,18 @@ $(document).ready(function() {
         $("#addItemModal").removeClass("hidden");
     });
 
-    // Enable Save button only if quantity is greater than 0
+    // Prevent negative quantity and enable Save button only if quantity > 0
     $('#quantity').on('input', function() {
         var quantity = $(this).val();
-        $("#saveButton").prop('disabled', quantity == 0 || quantity === "");
+
+        // If negative value, reset to 0
+        if (quantity < 0) {
+            $(this).val(0);
+            quantity = 0;
+        }
+
+        // Enable Save button only if quantity > 0 and not empty
+        $("#saveButton").prop('disabled', quantity <= 0 || quantity === "");
     });
 
     // Show input field for other storage location if 'Other' is selected
@@ -1472,8 +1483,8 @@ $(document).ready(function() {
         text: "You won't be able to revert this action!",
         icon: 'warning',
         showCancelButton: true, // Show the Cancel button
-        confirmButtonText: 'Yes, archive it!',
-        cancelButtonText: 'No, cancel!',
+        confirmButtonText: 'archive',
+        cancelButtonText: 'cancel',
         reverseButtons: true // Ensure the "No" button is on the right
     }).then((result) => {
         if (result.isConfirmed) {
@@ -1533,8 +1544,8 @@ function restoreItem(itemId) {
         text: "You want to restore this item?",
         icon: 'warning',
         showCancelButton: true, // Show the Cancel button
-        confirmButtonText: 'Yes, restore it!',
-        cancelButtonText: 'No, cancel!',
+        confirmButtonText: 'restore',
+        cancelButtonText: 'cancel',
         reverseButtons: true // Ensure the "No" button is on the right
     }).then((result) => {
         if (result.isConfirmed) {
@@ -1595,10 +1606,8 @@ function openEditModal(itemId) {
         url: '/get-item/' + itemId,
         method: 'GET',
         success: function(item) {
-            // Set today's date for max validation
             const today = new Date().toISOString().split('T')[0];
 
-            // Populate the form fields with the item data
             $('#edit_item_id').val(item.id);
             $('#edit_item_name').val(item.name);
             $('#edit_category').val(item.category);
@@ -1608,42 +1617,34 @@ function openEditModal(itemId) {
             $('#edit_storage_location').val(item.storage_location);
             $('#edit_arrival_date').val(item.arrival_date);
             $('#edit_status').val(item.status);
-
-            // Populate new fields with the item data
             $('#edit_brand').val(item.brand);
             $('#edit_expiration_date').val(item.expiration_date);
             $('#edit_date_tested_inspected').val(item.date_tested_inspected);
             $('#edit_inventory_date').val(item.inventory_date);
-            $('#edit_consumable').prop('checked', item.is_consumable); // Check if consumable
+            $('#edit_consumable').prop('checked', item.is_consumable);
 
-            // Set date constraints
-            $('#edit_arrival_date').attr({
-                'min': item.date_purchased,
-                'max': today
-            });
+            $('#edit_arrival_date').removeAttr('min max');
 
-            // Set form action URL for updating the item (use PUT method)
-            $('#editItemForm').attr('action', "/items/" + item.id); // Correct URL
+            $('#editItemForm').attr('action', "/items/" + item.id);
 
-            // Make fields editable
-            $('#edit_item_name').attr('readonly', false);
-            $('#edit_category').attr('disabled', false);
-            $('#edit_unit').attr('disabled', false);
-            $('#edit_description').attr('disabled', false);
-            $('#edit_storage_location').attr('disabled', false);
-            $('#edit_arrival_date').attr('disabled', false);
-            $('#edit_status').attr('disabled', false);
-            $('#edit_image').attr('disabled', false);
-            $('#edit_brand').attr('disabled', false);
-            $('#edit_expiration_date').attr('disabled', false);
-            $('#edit_date_tested_inspected').attr('disabled', false);
-            $('#edit_inventory_date').attr('disabled', false);
-            $('#edit_consumable').attr('disabled', false);
+            // Enable all fields for editing
+            $('#edit_item_name').prop('readonly', false);
+            $('#edit_category').prop('disabled', false);
+            $('#edit_unit').prop('disabled', false);
+            $('#edit_description').prop('disabled', false);
+            $('#edit_storage_location').prop('disabled', false);
+            $('#edit_arrival_date').prop('disabled', false);
+            $('#edit_status').prop('disabled', false);
+            $('#edit_image').prop('disabled', false);
+            $('#edit_brand').prop('disabled', false);
+            $('#edit_expiration_date').prop('disabled', false);
+            $('#edit_date_tested_inspected').prop('disabled', false);
+            $('#edit_inventory_date').prop('disabled', false);
+            $('#edit_consumable').prop('disabled', false);
 
-            // Show the modal
             $('#editItemModal').removeClass('hidden');
         },
-        error: function(xhr) {
+        error: function() {
             Swal.fire({
                 title: 'Error!',
                 text: 'Error fetching item data. Please try again.',
@@ -1654,25 +1655,8 @@ function openEditModal(itemId) {
     });
 }
 
-// Date validation for Edit Modal
 $(document).ready(function() {
-    // When arrival date changes in edit modal
-    $('#edit_arrival_date').on('change', function() {
-        const arrivalDate = $(this).val();
-        const purchasedDate = $('#edit_date_purchased').val();
-
-        if (purchasedDate && new Date(arrivalDate) < new Date(purchasedDate)) {
-            Swal.fire({
-                title: 'Invalid Date',
-                text: 'Arrival Date cannot be earlier than the Date Purchased.',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-            $(this).val('');
-        }
-    });
-
-    // When expiration date or tested date changes
+    // Date validation on expiration and tested dates
     $('#edit_expiration_date, #edit_date_tested_inspected').on('change', function() {
         const expirationDate = $('#edit_expiration_date').val();
         const testedDate = $('#edit_date_tested_inspected').val();
@@ -1688,26 +1672,13 @@ $(document).ready(function() {
         }
     });
 
-    // Form submission handler with date validation
+    // Form submission with image upload support
     $('#editItemForm').submit(function(e) {
         e.preventDefault();
 
-        // Validate dates
-        const arrivalDate = $("#edit_arrival_date").val();
-        const purchasedDate = $("#edit_date_purchased").val();
+        // Validate dates again on submit
         const expirationDate = $("#edit_expiration_date").val();
         const testedDate = $("#edit_date_tested_inspected").val();
-
-        if (purchasedDate && arrivalDate && new Date(arrivalDate) < new Date(purchasedDate)) {
-            Swal.fire({
-                title: 'Error!',
-                text: 'Arrival Date cannot be earlier than the Date Purchased.',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-            return false;
-        }
-
         if (expirationDate && testedDate && new Date(expirationDate) < new Date(testedDate)) {
             Swal.fire({
                 title: 'Error!',
@@ -1718,7 +1689,6 @@ $(document).ready(function() {
             return false;
         }
 
-        // Show loading indicator
         Swal.fire({
             title: 'Updating...',
             text: 'Please wait while we update the item.',
@@ -1727,11 +1697,17 @@ $(document).ready(function() {
             didOpen: () => Swal.showLoading()
         });
 
-        // Submit the form via AJAX
+        const formData = new FormData(this);
+
         $.ajax({
             url: $(this).attr('action'),
-            method: 'PUT', // Use PUT request for update
-            data: $(this).serialize(),
+            method: 'POST', // Override PUT via header
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+                'X-HTTP-Method-Override': 'PUT'
+            },
             success: function(response) {
                 if (response.success) {
                     Swal.fire({
@@ -1741,8 +1717,7 @@ $(document).ready(function() {
                         confirmButtonText: 'OK',
                         willClose: () => {
                             $('#editItemModal').addClass('hidden');
-                            // Reload the page to reflect changes
-                            location.reload();  // Automatically reload the page
+                            location.reload(); // Reload page to update image and data
                         }
                     });
                 } else {
@@ -1765,7 +1740,7 @@ $(document).ready(function() {
         });
     });
 
-    // Cancel button handler
+    // Cancel button to close edit modal
     $("#cancelEditModal").click(function() {
         $("#editItemModal").addClass("hidden");
     });
@@ -1912,7 +1887,7 @@ $(document).ready(function() {
                             <!-- Quantity -->
                             <div>
                                 <label for="quantity" class="block text-xs font-medium text-gray-900">Quantity</label>
-                                <input type="number" id="quantity" name="quantity" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
+                                <input type="number" id="quantity" name="quantity" min="0" step="1" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" required>
                             </div>
 
                             <!-- Unit -->
@@ -2080,15 +2055,16 @@ $(document).ready(function() {
                             <!-- Image -->
                             <div>
                                 <label for="edit_image" class="block text-xs font-medium text-gray-900">Image</label>
-                                <input type="file" id="edit_image" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
+                                <input type="file" id="edit_image" name="image_url" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" accept="image/*">
                             </div>
 
-                            <!-- Brand and Status fields on the same line (2 columns) -->
+                            <!-- Brand -->
                             <div>
                                 <label for="edit_brand" class="block text-xs font-medium text-gray-900">Brand</label>
                                 <input type="text" id="edit_brand" name="brand" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->brand }}" required>
                             </div>
 
+                            <!-- Status -->
                             <div>
                                 <label for="edit_status" class="block text-xs font-medium text-gray-900">Status</label>
                                 <select id="edit_status" name="status" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs">
@@ -2103,17 +2079,17 @@ $(document).ready(function() {
                                 </select>
                             </div>
 
-                            <!-- Expiration Date and Date Tested fields on the same line (2 columns) -->
+                            <!-- Expiration Date -->
                             <div>
                                 <label for="edit_expiration_date" class="block text-xs font-medium text-gray-900">Expiration Date (Optional)</label>
                                 <input type="date" id="edit_expiration_date" name="expiration_date" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->expiration_date }}">
                             </div>
 
+                            <!-- Date Tested/Inspected -->
                             <div>
                                 <label for="edit_date_tested_inspected" class="block text-xs font-medium text-gray-900">Date Tested/Inspected (Optional)</label>
                                 <input type="date" id="edit_date_tested_inspected" name="date_tested_inspected" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" value="{{ $item->date_tested_inspected }}">
                             </div>
-
                         </div>
 
                         <div class="mt-6 flex items-center justify-end gap-x-6">

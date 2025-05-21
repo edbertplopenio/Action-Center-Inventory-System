@@ -341,3 +341,12 @@ Route::post('/admin/return-items/reject-pending/{id}', [ReturnItemsController::c
 
     Route::post('/admin/inventory-requests/update-status/{id}', [InventoryRequestController::class, 'updateStatus'])
     ->name('admin.inventory-requests.update-status');
+
+
+
+
+
+
+
+    // Update item details
+ Route::put('/items/{id}', [ItemController::class, 'update'])->name('items.update');  // Updated to use PUT
