@@ -213,12 +213,15 @@
                         <td>{{ $item->quantity }}</td>
                         <td>{{ $item->unit }}</td>
                         <td>{{ $item->description }}</td>
-                        <td>
-                            @php
-                            // Determine displayed status based on quantity
-                            $displayStatus = $item->quantity <= 0 ? 'Borrowed' : $item->status;
-                                @endphp
-                                <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+<td>
+    @php
+    // Determine displayed status based on quantity and consumable status
+    $displayStatus = $item->is_consumable 
+        ? ($item->quantity <= 0 ? 'Out of Stock' : $item->status)
+        : ($item->quantity <= 0 ? 'Borrowed' : $item->status);
+    @endphp
+    
+    <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
         {{ $displayStatus == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
         {{ $displayStatus == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
         {{ $displayStatus == 'Reserved' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
@@ -227,9 +230,9 @@
         {{ $displayStatus == 'Damaged' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
         {{ $displayStatus == 'Lost' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
         {{ $displayStatus == 'Retired' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
-                                    {{ $displayStatus }}
-                                </span>
-                        </td>
+        {{ $displayStatus }}
+    </span>
+</td>
                         <td>
                             @if($item->image_url)
                             <img src="{{ asset($item->image_url) }}"
