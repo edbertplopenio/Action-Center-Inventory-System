@@ -1477,6 +1477,7 @@
                     }).then(() => {
                         modal.style.display = "none";
                         form.reset();
+                        location.reload();
 
                         // Add new row with ID as the first hidden column
                         userTable.row.add([
