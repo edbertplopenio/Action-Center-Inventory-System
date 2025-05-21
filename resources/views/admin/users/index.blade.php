@@ -373,13 +373,15 @@
                                     <div class="sm:col-span-1">
                                         <label for="edit_password" class="block text-xs font-medium text-gray-900">New Password</label>
                                         <input type="password" name="password" id="edit_password" class="mt-1 block w-full py-1.5 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-xs" placeholder="Enter new password">
+                                        <!-- In the edit modal's password checklist section -->
                                         <div id="passwordChecklist" class="text-xs space-y-1 mt-2">
-                                            <p class="font-semibold text-red-500 mb-1">Password must contain:</p>
-                                            <div id="rule-length" class="flex items-center gap-2"><span>•</span> At least 8 characters</div>
-                                            <div id="rule-lower" class="flex items-center gap-2"><span>•</span> One lowercase letter (a–z)</div>
-                                            <div id="rule-upper" class="flex items-center gap-2"><span>•</span> One uppercase letter (A–Z)</div>
-                                            <div id="rule-number" class="flex items-center gap-2"><span>•</span> One number (0–9)</div>
-                                            <div id="rule-symbol" class="flex items-center gap-2"><span>•</span> One special symbol (!@#$...)</div>
+                                            <p class="font-semibold text-blue-500 mb-1">Password must contain:</p>
+
+                                            <div id="edit-rule-length" class="flex items-center gap-2"><span>•</span> At least 8 characters</div>
+                                            <div id="edit-rule-lower" class="flex items-center gap-2"><span>•</span> One lowercase letter (a–z)</div>
+                                            <div id="edit-rule-upper" class="flex items-center gap-2"><span>•</span> One uppercase letter (A–Z)</div>
+                                            <div id="edit-rule-number" class="flex items-center gap-2"><span>•</span> One number (0–9)</div>
+                                            <div id="edit-rule-symbol" class="flex items-center gap-2"><span>•</span> One special symbol (!@#$...)</div>
                                         </div>
                                     </div>
 
@@ -427,6 +429,44 @@
     </div>
 </div>
 
+<script>
+    // Add this to your add modal script
+// Add this to your add modal script
+document.addEventListener("DOMContentLoaded", function() {
+    const addPasswordInput = document.getElementById('password');
+    const addConfirmInput = document.getElementById('password_confirmation');
+    const addMessage = document.getElementById('addPasswordMatchMessage');
+    const saveBtn = document.querySelector('#userForm button[type="submit"]');
+
+    function checkAddPasswordMatch() {
+        const password = addPasswordInput.value;
+        const confirm = addConfirmInput.value;
+
+        // Clear message if both fields are empty
+        if (password === "" && confirm === "") {
+            addMessage.textContent = '';
+            saveBtn.disabled = false;
+            return;
+        }
+
+        // Only show message when at least one field has content
+        if (password === confirm) {
+            addMessage.textContent = 'Passwords match ✔';
+            addMessage.classList.remove('text-red-500');
+            addMessage.classList.add('text-green-500');
+            saveBtn.disabled = false;
+        } else {
+            addMessage.textContent = 'Passwords do not match ✖';
+            addMessage.classList.remove('text-green-500');
+            addMessage.classList.add('text-red-500');
+            saveBtn.disabled = true;
+        }
+    }
+
+    addPasswordInput.addEventListener('input', checkAddPasswordMatch);
+    addConfirmInput.addEventListener('input', checkAddPasswordMatch);
+});
+</script>
 
 <!-- Edit JS -->
 <script>
@@ -557,38 +597,66 @@
         });
 
         // Password strength validation logic
+        // In the password strength validation logic
         editPassword.addEventListener('input', function() {
             let password = this.value;
 
             // Length rule: At least 8 characters
             const lengthValid = password.length >= 8;
-            document.getElementById('rule-length').classList.toggle('text-green-500', lengthValid);
-            document.getElementById('rule-length').classList.toggle('text-red-500', !lengthValid);
+            document.getElementById('edit-rule-length').classList.toggle('text-green-500', lengthValid);
+            document.getElementById('edit-rule-length').classList.toggle('text-red-500', !lengthValid);
 
             // Lowercase letter rule
             const lowerValid = /[a-z]/.test(password);
-            document.getElementById('rule-lower').classList.toggle('text-green-500', lowerValid);
-            document.getElementById('rule-lower').classList.toggle('text-red-500', !lowerValid);
+            document.getElementById('edit-rule-lower').classList.toggle('text-green-500', lowerValid);
+            document.getElementById('edit-rule-lower').classList.toggle('text-red-500', !lowerValid);
 
             // Uppercase letter rule
             const upperValid = /[A-Z]/.test(password);
-            document.getElementById('rule-upper').classList.toggle('text-green-500', upperValid);
-            document.getElementById('rule-upper').classList.toggle('text-red-500', !upperValid);
+            document.getElementById('edit-rule-upper').classList.toggle('text-green-500', upperValid);
+            document.getElementById('edit-rule-upper').classList.toggle('text-red-500', !upperValid);
 
             // Number rule
             const numberValid = /\d/.test(password);
-            document.getElementById('rule-number').classList.toggle('text-green-500', numberValid);
-            document.getElementById('rule-number').classList.toggle('text-red-500', !numberValid);
+            document.getElementById('edit-rule-number').classList.toggle('text-green-500', numberValid);
+            document.getElementById('edit-rule-number').classList.toggle('text-red-500', !numberValid);
 
             // Symbol rule
             const symbolValid = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-            document.getElementById('rule-symbol').classList.toggle('text-green-500', symbolValid);
-            document.getElementById('rule-symbol').classList.toggle('text-red-500', !symbolValid);
+            document.getElementById('edit-rule-symbol').classList.toggle('text-green-500', symbolValid);
+            document.getElementById('edit-rule-symbol').classList.toggle('text-red-500', !symbolValid);
         });
 
+        function isEditPasswordValid() {
+    const password = document.getElementById('edit_password').value;
+    if (password === "") return true; // Password is optional
+    
+    return (
+        password.length >= 8 &&
+        /[a-z]/.test(password) &&
+        /[A-Z]/.test(password) &&
+        /\d/.test(password) &&
+        /[\W_]/.test(password)
+    );
+}
+
+
         // Handle form submission
-        editUserForm.addEventListener("submit", function(event) {
-            event.preventDefault(); // Prevent default form submission
+// Update the edit form submission handler
+editUserForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+    
+    // Check password validity
+    if (editPassword.value.length > 0 && !isEditPasswordValid()) {
+        Swal.fire({
+            icon: "error",
+            title: "Invalid Password",
+            text: "New password does not meet complexity requirements",
+            confirmButtonColor: "#d33",
+            confirmButtonText: "OK",
+        });
+        return;
+    }
 
             const userId = editUserId.value;
             const formData = new FormData();
@@ -1318,25 +1386,27 @@
                                                     <i id="eyeIcon" class="ph ph-eye text-black text-lg"></i>
                                                 </button>
                                             </div>
+                                            <!-- Change checklist IDs in add modal -->
                                             <div id="passwordChecklist" class="text-xs space-y-1 w-64 mt-2">
-                                                <p class="font-semibold text-red-500 mb-1">Password must contain:</p>
-                                                <div id="rule-length" class="flex items-center gap-2">
+                                                <p class="font-semibold text-blue-500 mb-1">Password must contain:</p>
+
+                                                <div id="add-rule-length" class="flex items-center gap-2">
                                                     <span class="check-icon text-red-500">•</span>
                                                     <span class="text-red-500">At least 8 characters</span>
                                                 </div>
-                                                <div id="rule-lower" class="flex items-center gap-2">
+                                                <div id="add-rule-lower" class="flex items-center gap-2">
                                                     <span class="check-icon text-red-500">•</span>
                                                     <span class="text-red-500">At least 1 lowercase letter (a–z)</span>
                                                 </div>
-                                                <div id="rule-upper" class="flex items-center gap-2">
+                                                <div id="add-rule-upper" class="flex items-center gap-2">
                                                     <span class="check-icon text-red-500">•</span>
                                                     <span class="text-red-500">At least 1 uppercase letter (A–Z)</span>
                                                 </div>
-                                                <div id="rule-number" class="flex items-center gap-2">
+                                                <div id="add-rule-number" class="flex items-center gap-2">
                                                     <span class="check-icon text-red-500">•</span>
                                                     <span class="text-red-500">At least 1 number (0–9)</span>
                                                 </div>
-                                                <div id="rule-symbol" class="flex items-center gap-2">
+                                                <div id="add-rule-symbol" class="flex items-center gap-2">
                                                     <span class="check-icon text-red-500">•</span>
                                                     <span class="text-red-500">At least 1 special symbol (!@#$...)</span>
                                                 </div>
@@ -1344,7 +1414,8 @@
                                         </div>
 
                                         <!-- Confirm Password -->
-                                        <div class="flex flex-col relative">
+                                        <!-- In your add modal form, after confirm password field -->
+                                        <div class="sm:col-span-1">
                                             <label for="password_confirmation" class="block text-xs font-medium text-gray-900 mb-1">Confirm Password</label>
                                             <div class="w-52 relative">
                                                 <input type="password" name="password_confirmation" id="password_confirmation"
@@ -1354,6 +1425,7 @@
                                                     <i id="eyeConfirmIcon" class="ph ph-eye text-black text-lg"></i>
                                                 </button>
                                             </div>
+                                            <p id="addPasswordMatchMessage" class="text-xs mt-1"></p> <!-- Add this line -->
                                         </div>
                                     </div>
 
@@ -1378,6 +1450,8 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+
+    
     document.addEventListener("DOMContentLoaded", function() {
         console.log("✅ Script Loaded");
 
@@ -1419,41 +1493,57 @@
             form.reset(); // Reset form inputs
         });
 
+
+        function isAddPasswordValid() {
+    const password = document.getElementById('password').value;
+    return (
+        password.length >= 8 &&
+        /[a-z]/.test(password) &&
+        /[A-Z]/.test(password) &&
+        /\d/.test(password) &&
+        /[\W_]/.test(password)
+    );
+}
+
+
         // Submit the form for adding new user
-        form.addEventListener("submit", async function(event) {
-            event.preventDefault();
-            let isValid = true;
-            let formData = new FormData(form);
-            let errorMessages = [];
+// Update the form submit handler
+form.addEventListener("submit", async function(event) {
+    event.preventDefault();
+    let isValid = true;
+    let errorMessages = [];
+    
+    // Basic validation
+    const requiredFields = ["first_name", "last_name", "email", "user_role", "department", "password", "password_confirmation"];
+    requiredFields.forEach(field => {
+        const input = document.getElementById(field);
+        if (input.value.trim() === "") {
+            isValid = false;
+            input.classList.add("border-red-500");
+            errorMessages.push(`${field.replace("_", " ").toUpperCase()} is required.`);
+        }
+    });
 
-            // Validate required fields (removed contact_number)
-            const requiredFields = ["first_name", "last_name", "email", "user_role", "department", "password", "password_confirmation"];
-            requiredFields.forEach(field => {
-                const input = document.getElementById(field);
-                if (input.value.trim() === "") {
-                    isValid = false;
-                    input.classList.add("border-red-500");
-                    errorMessages.push(`${field.replace("_", " ").toUpperCase()} is required.`);
-                } else {
-                    input.classList.remove("border-red-500");
-                }
-            });
+    // Password validation
+    if (!isAddPasswordValid()) {
+        isValid = false;
+        errorMessages.push("Password does not meet complexity requirements");
+    }
 
-            if (document.getElementById("password").value !== document.getElementById("password_confirmation").value) {
-                isValid = false;
-                errorMessages.push("Passwords do not match!");
-            }
+    if (document.getElementById("password").value !== document.getElementById("password_confirmation").value) {
+        isValid = false;
+        errorMessages.push("Passwords do not match!");
+    }
 
-            if (!isValid) {
-                // Use SweetAlert to show error message
-                Swal.fire({
-                    title: "Validation Error",
-                    html: errorMessages.join("<br>"),
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-                return;
-            }
+    if (!isValid) {
+        Swal.fire({
+            title: "Validation Error",
+            html: errorMessages.join("<br>"),
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
 
             try {
                 let csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -1539,6 +1629,7 @@
         });
 
         // Live password checklist
+        // Update the password strength checker in add modal
         passwordInput.addEventListener("input", () => {
             const val = passwordInput.value;
 
@@ -1553,11 +1644,11 @@
                 text.classList.toggle("text-red-500", !isValid);
             };
 
-            updateRule("rule-length", val.length >= 8);
-            updateRule("rule-lower", /[a-z]/.test(val));
-            updateRule("rule-upper", /[A-Z]/.test(val));
-            updateRule("rule-number", /\d/.test(val));
-            updateRule("rule-symbol", /[\W_]/.test(val));
+            updateRule("add-rule-length", val.length >= 8);
+            updateRule("add-rule-lower", /[a-z]/.test(val));
+            updateRule("add-rule-upper", /[A-Z]/.test(val));
+            updateRule("add-rule-number", /\d/.test(val));
+            updateRule("add-rule-symbol", /[\W_]/.test(val));
         });
     });
 </script>
