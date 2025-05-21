@@ -17,6 +17,9 @@ class DashboardController extends Controller
     ->orderBy('quantity', 'desc')
     ->get();
     $mostAvailableItems = $allMostAvailableItems->take(1);
+
+
+
          
  
 
@@ -78,25 +81,44 @@ $itemsNeedingRepair = $allItemsNeedingRepair->take(1);
         // Retrieve all borrowed items with status 'pending' to show pending requests
         $borrowedItems = BorrowedItem::where('status', 'pending')->get();
         
+// In DashboardController's index method
 
+// Get total items needing repair (for the card)
+$totalNeedingRepair = DB::table('individual_item_returns')
+    ->whereIn('remarks', ['Needs Repair', 'Damaged'])
+    ->count();
+
+// Get item names and repair counts (for the modal)
+$allItemsNeedingRepair = DB::table('individual_item_returns')
+    ->join('individual_items', 'individual_item_returns.individual_item_id', '=', 'individual_items.id')
+    ->join('items', 'individual_items.item_id', '=', 'items.id')
+    ->select('items.name', DB::raw('COUNT(*) as repair_count'))
+    ->whereIn('individual_item_returns.remarks', ['Needs Repair', 'Damaged'])
+    ->groupBy('items.name')
+    ->orderBy('repair_count', 'desc')
+    ->get();
+
+// For the main card (first item only)
+$itemsNeedingRepair = $allItemsNeedingRepair->take(1);
      // Pass all variables to the view
-     return view('home', compact(
-    
-         'mostAvailableItems',
-         'allMostAvailableItems',
-         'criticalStockItems',
-         'allCriticalStockItems',
-         'recentDeploymentFirst',
-         'allRecentDeployments',
-         'lowStockItems',
-         'itemsNeedingRepair',
-        'allItemsNeedingRepair',
-         'recentDeploymentsNext',
-         'equipment', // Ensure equipment is passed to the view
-         'mostBorrowedItems',
-         'categoryCounts',
-         'borrowedItems'
-     ));
+// Update the compact() statement to include the variable
+return view('home', compact(
+    'mostAvailableItems',
+    'allMostAvailableItems',
+    'criticalStockItems',
+    'allCriticalStockItems',
+    'recentDeploymentFirst',
+    'allRecentDeployments',
+    'lowStockItems',
+    'itemsNeedingRepair',
+    'allItemsNeedingRepair',
+    'recentDeploymentsNext',
+    'equipment',
+    'mostBorrowedItems',
+    'categoryCounts',
+    'borrowedItems',
+    'totalNeedingRepair' // Add this line
+));
  }
 
      // Fetch usage rate data for a specific item

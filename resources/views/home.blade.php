@@ -178,60 +178,51 @@
 
 <!-- Equipment Needing Repair -->
  
+<!-- Equipment Needing Repair Card -->
 <div class="bg-[#f0b84c] p-2 shadow-lg rounded-lg border-l-4 border-[#f0b84c] relative font-inter">
     <h2 class="text-xs font-semibold text-gray-200 leading-none mb-4">Equipment Needing Repair</h2>
 
-@php
-    $totalNeedingRepair = $allItemsNeedingRepair->count();
-@endphp
-
-<p class="text-lg font-bold text-white mt-1 leading-tight">
-    {{ $totalNeedingRepair }} {{ Str::plural('Item', $totalNeedingRepair) }}
-</p>
-
+    <p class="text-lg font-bold text-white mt-1 leading-tight">
+        {{ $totalNeedingRepair ?? 0 }} {{ Str::plural('Item', $totalNeedingRepair ?? 0) }}
+    </p>
     <p class="text-sm font-semibold text-white -mt-1">
         Needs Repair
     </p>
 
-    @if($itemsNeedingRepair->count() > 0)
-    <div class="absolute top-0 right-0 pt-7 p-1">
-        <div class="icon bg-[#FAE7C3] text-white text-xl flex items-center justify-center w-8 h-8 rounded-full shadow-md">
-            🛠️
+    @if($totalNeedingRepair > 0)
+        <div class="absolute top-0 right-0 pt-7 p-1">
+            <div class="icon bg-[#FAE7C3] text-white text-xl flex items-center justify-center w-8 h-8 rounded-full shadow-md">
+                🛠️
+            </div>
         </div>
-    </div>
 
-    <div class="mt-3 space-y-1">
-        @foreach($itemsNeedingRepair as $item)
-        <div>
-            <p class="text-lg font-bold text-white leading-tight">{{ $item->name }}</p>
+        <div class="mt-3 space-y-1">
+            <!-- Removed individual item listing -->
+            <button onclick="openRepairModal()" class="text-white text-xs underline hover:text-gray-300 transition mt-2">
+                View Details
+            </button>
         </div>
-        @endforeach
-
-        <!-- More Button -->
-        <button onclick="openRepairModal()" class="text-white text-xs underline hover:text-gray-300 transition mt-2">
-            More
-        </button>
-    </div>
     @else
-    <p class="text-white mt-2 text-sm">No equipment needing repair.</p>
+        <p class="text-white mt-2 text-sm">No equipment needing repair.</p>
     @endif
 </div>
 
-
-
-
-<!-- Modal for More Equipment Needing Repair -->
+<!-- Repair Modal -->
 <div id="repairModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-white w-full max-w-md max-h-[80vh] p-6 rounded-lg shadow-lg relative overflow-y-auto">
         <h3 class="text-lg font-bold mb-4 text-[#f0b84c]">All Equipment Needing Repair</h3>
         <button onclick="closeRepairModal()" class="absolute top-2 right-2 text-gray-600 hover:text-red-500 text-lg">×</button>
         
-        @foreach($allItemsNeedingRepair as $item)
-        <div class="mb-3 border-b pb-2">
-            <p class="font-semibold text-gray-800">{{ $item->name }}</p>
-            <span class="text-sm text-red-600">🛠️ Needs Repair</span>
-        </div>
-        @endforeach
+        @if($allItemsNeedingRepair->isNotEmpty())
+            @foreach($allItemsNeedingRepair as $item)
+                <div class="mb-3 border-b pb-2">
+                    <p class="font-semibold text-gray-800">{{ $item->name }}</p>
+                    <span class="text-sm text-red-600">🛠️ {{ $item->repair_count }} {{ Str::plural('unit', $item->repair_count) }} need repair</span>
+                </div>
+            @endforeach
+        @else
+            <p class="text-gray-600 text-center py-4">All equipment is in good condition</p>
+        @endif
     </div>
 </div>
 
