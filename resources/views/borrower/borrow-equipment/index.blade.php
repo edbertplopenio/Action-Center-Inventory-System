@@ -252,9 +252,15 @@
                         <td>{{ $borrowed->item->unit }}</td>
                         <td>{{ \Carbon\Carbon::parse($borrowed->borrow_date)->format('Y-m-d') }}</td>
                         <td>{{ \Carbon\Carbon::parse($borrowed->due_date)->format('Y-m-d') }}</td>
-                        <td>
-                            {{ $borrowed->return_date ? \Carbon\Carbon::parse($borrowed->return_date)->format('Y-m-d') : 'Not Returned' }}
-                        </td>
+<td>
+    @if ($borrowed->individualItemReturns->count() > 0)
+        @foreach ($borrowed->individualItemReturns->groupBy('return_date') as $date => $returns)
+            {{ \Carbon\Carbon::parse($date)->format('Y-m-d') }}<br>
+        @endforeach
+    @else
+        Not Returned
+    @endif
+</td>
 
                         <td>
                             <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block

@@ -55,10 +55,10 @@ class BorrowedItem extends Model
     }
 
     // Add the relationship with IndividualItemReturn
-    public function individualItemReturns()
-    {
-        return $this->hasMany(IndividualItemReturn::class, 'borrowed_item_id');
-    }
+public function individualItemReturns()
+{
+    return $this->hasMany(\App\Models\IndividualItemReturn::class, 'borrowed_item_id');
+}
 }
 
 

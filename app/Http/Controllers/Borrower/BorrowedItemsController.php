@@ -10,14 +10,14 @@ use Illuminate\Support\Facades\Auth;
 
 class BorrowedItemsController extends Controller
 {
-    public function index()
-    {
-        $borrowed_items = BorrowedItem::with(['item', 'borrower'])
-            ->where('borrower_id', Auth::id()) // Only show the logged-in user's borrowed items
-            ->get();
+public function index()
+{
+    $borrowed_items = BorrowedItem::with(['item', 'borrower', 'individualItemReturns'])
+        ->where('borrower_id', Auth::id())
+        ->get();
 
-        return view('borrower.borrow-equipment.index', compact('borrowed_items'));
-    }
+    return view('borrower.borrow-equipment.index', compact('borrowed_items'));
+}
 
     public function create()
     {
