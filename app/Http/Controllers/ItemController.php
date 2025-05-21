@@ -339,42 +339,35 @@ public function getItemData($id)
  */
 public function getQrCodes($itemCode)
 {
-    // Log the incoming item_code for debugging
     \Log::info("Fetching QR codes for item_code: " . $itemCode);
 
-    // Find the item by its item_code (just the prefix part)
+    // Find the item by its item_code prefix
     $item = Item::where('item_code', 'like', $itemCode . '%')->first();
 
-    // If the item is not found, log and return an empty array
     if (!$item) {
         \Log::error("Item not found with item_code prefix: " . $itemCode);
         return response()->json([]);
     }
 
-    // Log the found item and its QR codes
     \Log::info("Item found. QR Codes: " . $item->codes);
 
-    // Check if the 'codes' field is not empty
-    if (!empty($item->codes)) {
-        // Split the codes field by commas to get individual QR codes
-        $qrCodes = explode(',', $item->codes);
+    // Fetch individual QR codes and their creation timestamps from individual_items table
+    $individualItems = IndividualItem::where('item_id', $item->id)->get();
 
-        // Build the response with timestamp
-        $qrCodesWithTimestamp = array_map(function($qrCode) {
-            return [
-                'qr_code' => $qrCode,
-                'timestamp' => now()->toIso8601String(), // Add the timestamp
-            ];
-        }, $qrCodes);
-
-        // Return the filtered QR codes with timestamp
-        return response()->json($qrCodesWithTimestamp);
-    } else {
-        \Log::warning("No QR codes found for item with item_code: " . $itemCode);
+    if ($individualItems->isEmpty()) {
+        \Log::warning("No individual items found for item with ID: " . $item->id);
         return response()->json([]);
     }
-}
 
+    $qrCodesWithTimestamp = $individualItems->map(function ($indItem) {
+        return [
+            'qr_code' => $indItem->qr_code,
+            'timestamp' => $indItem->created_at ? $indItem->created_at->toIso8601String() : now()->toIso8601String(),
+        ];
+    });
+
+    return response()->json($qrCodesWithTimestamp);
+}
 
 
     /**
