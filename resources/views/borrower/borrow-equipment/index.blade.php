@@ -339,14 +339,16 @@
                 </div>
 
                 <!-- Status Dropdown -->
-                <div>
-                    <label for="statusFilter" class="block text-sm font-medium text-gray-700">Filter by Status</label>
-                    <select id="statusFilter" name="statusFilter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-200">
-                        <option value="all">All</option>
-                        <option value="Borrowed">Borrowed</option>
-                        <option value="Pending">Pending</option>
-                    </select>
-                </div>
+<!-- In your modal body -->
+<div>
+    <label for="statusFilter" class="block text-sm font-medium text-gray-700">Filter by Status</label>
+    <select id="statusFilter" name="statusFilter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-200">
+        <option value="all">All</option>
+        <option value="Pending">Pending</option>
+        <option value="Borrowed">Borrowed</option>
+        <option value="Rejected">Rejected</option>
+    </select>
+</div>
 
                 <!-- Report Preview -->
                 <div id="reportContent" class="p-4 border rounded bg-gray-100 text-sm">
@@ -399,73 +401,86 @@
                 });
         }
 
-        function applyFilters() {
-            const selectedStatus = statusFilter.value;
-            const start = new Date(startDateInput.value);
-            const end = new Date(endDateInput.value);
+function applyFilters() {
+    const selectedStatus = statusFilter.value;
+    const start = new Date(startDateInput.value);
+    const end = new Date(endDateInput.value);
 
-            let filteredData = reportData;
+    let filteredData = reportData;
 
-            if (selectedStatus !== "all") {
-                filteredData = filteredData.filter(item => item.status === selectedStatus);
-            }
+    // Status filter
+    if (selectedStatus !== "all") {
+        filteredData = filteredData.filter(item => item.status === selectedStatus);
+    }
 
-            if (startDateInput.value && endDateInput.value) {
-                filteredData = filteredData.filter(item => {
-                    const borrowDate = new Date(item.borrow_date);
-                    return borrowDate >= start && borrowDate <= end;
-                });
-            }
+    // Date filter
+    if (startDateInput.value && endDateInput.value) {
+        filteredData = filteredData.filter(item => {
+            const borrowDate = new Date(item.borrow_date);
+            return borrowDate >= start && borrowDate <= end;
+        });
+    }
 
-            renderReport(filteredData);
-        }
+    renderReport(filteredData);
+}
 
-        function renderReport(data) {
-            if (!data || data.length === 0) {
-                reportDiv.innerHTML = '<p class="text-gray-700" style="font-size: 15px;">No data available.</p>';
-                return;
-            }
+ function renderReport(data) {
+    if (!data || data.length === 0) {
+        reportDiv.innerHTML = '<p class="text-gray-700" style="font-size: 15px;">No data available.</p>';
+        return;
+    }
 
-            let html = `<table class="table-auto w-full text-sm text-left text-gray-700 border" style="font-size: 10px;>
+    let html = `
+    <div class="report-table-container">
+        <table class="report-table">
             <thead>
                 <tr class="bg-gray-200">
                     <th class="p-2 border">Item Name</th>
                     <th class="p-2 border">Quantity</th>
                     <th class="p-2 border">Borrow Date</th>
-                    <th class="p-2 border">Return Date</th>
-<th class="p-2 border" style="min-width: 150px; text-align: center;">
-    <div style="text-align: center;">Responsible Person</div>
-    <span style="display: flex; justify-content: space-between; font-weight: normal;">
-        <span>Request</span>
-        <span>Return</span>
-    </span>
-</th>
-
+                    <th class="p-2 border">Return Date(s)</th>
+                    <th class="p-2 border" style="min-width: 150px;">
+                        <div style="text-align: center;">Responsible Person</div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Request</span>
+                            <span>Return</span>
+                        </div>
+                    </th>
                 </tr>
             </thead>
             <tbody>`;
 
-            data.forEach(item => {
-                if (!item.item || !item.item.name || item.quantity_borrowed <= 0) return;
+    data.forEach(item => {
+        if (!item.item || !item.item.name || item.quantity_borrowed <= 0) return;
 
-                html += `<tr>
-                <td class="p-2 border">${item.item.name}</td>
-                <td class="p-2 border">${item.quantity_borrowed}</td>
-<td class="p-2 border">${new Date(item.borrow_date).toISOString().split('T')[0]}</td>
-<td class="p-2 border">${item.return_date ? new Date(item.return_date).toISOString().split('T')[0] : 'Not Returned'}</td>
+        const returnDates = [...new Set(item.individual_item_returns
+            .filter(r => r.return_date)
+            .map(r => new Date(r.return_date).toISOString().split('T')[0])
+        )];
 
-                <td class="p-2 border">
-                    <div style="display: flex; justify-content: space-between;">
-                        <span>${item.request_responsible_person || ''}</span>
-                        <span>${item.return_responsible_person || ''}</span>
-                    </div>
-                </td>
-            </tr>`;
-            });
+        html += `<tr>
+            <td class="p-2 border">${item.item.name}</td>
+            <td class="p-2 border">${item.quantity_borrowed}</td>
+            <td class="p-2 border">${new Date(item.borrow_date).toISOString().split('T')[0]}</td>
+            <td class="p-2 border">
+                ${returnDates.length > 0 
+                    ? returnDates.join('<br>') 
+                    : 'Not Returned'}
+            </td>
+            <td class="p-2 border">
+                <div style="display: flex; justify-content: space-between;">
+                    <span>${item.request_responsible_person || ''}</span>
+                    <span>${item.return_responsible_person || ''}</span>
+                </div>
+            </td>
+        </tr>`;
+    });
 
-            html += '</tbody></table>';
-            reportDiv.innerHTML = html;
-        }
+    html += '</tbody></table></div>';
+    reportDiv.innerHTML = html;
+}
+
+
 
         // Modal and print controls
         openModalBtn.addEventListener("click", () => modal.style.display = "block");
@@ -488,7 +503,27 @@
         fetchAndRenderData();
     });
 </script>
+<style>
+    /* Add this to your existing styles */
+    .report-table-container {
+        max-height: 400px;
+        overflow-y: auto;
+        border: 1px solid #e2e8f0;
+        margin-top: 1rem;
+    }
 
+    .report-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .report-table th {
+        position: sticky;
+        top: 0;
+        background: #EBF8FD;
+        z-index: 1;
+    }
+</style>
 <script>
     $(document).ready(function() {
         let table = $('#borrowedTable');

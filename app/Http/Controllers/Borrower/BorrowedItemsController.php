@@ -87,32 +87,35 @@ public function index()
 
     //report preview
     
-    public function reportPreview(Request $request)
-    {
-        $query = BorrowedItem::with(['item', 'borrower'])
-            ->whereHas('item')
-            ->where('quantity_borrowed', '>', 0)
-            ->where('borrower_id', auth()->id()) // Only the logged-in user's data
-            ->orderBy('borrow_date', 'desc');
-    
-        // Filter by start and end date
-        if ($request->filled('startDate') && $request->filled('endDate')) {
-            $start = $request->startDate;
-            $end = $request->endDate;
-    
-            $query->where(function ($q) use ($start, $end) {
-                $q->whereBetween('borrow_date', [$start, $end])
-                  ->orWhereBetween('due_date', [$start, $end]);
-            });
-        }
-    
-        // Optional status filter
-        if ($request->filled('statusFilter') && $request->statusFilter !== 'all') {
+public function reportPreview(Request $request)
+{
+    $query = BorrowedItem::with(['item', 'borrower', 'individualItemReturns'])
+        ->whereHas('item')
+        ->where('quantity_borrowed', '>', 0)
+        ->where('borrower_id', auth()->id())
+        ->orderBy('borrow_date', 'desc');
+
+    // Date filtering
+    if ($request->filled('startDate') && $request->filled('endDate')) {
+        $start = $request->startDate;
+        $end = $request->endDate;
+
+        $query->where(function ($q) use ($start, $end) {
+            $q->whereBetween('borrow_date', [$start, $end])
+              ->orWhereBetween('due_date', [$start, $end]);
+        });
+    }
+
+    // Status filtering
+    if ($request->filled('statusFilter') && $request->statusFilter !== 'all') {
+        $validStatuses = ['Pending', 'Borrowed', 'Rejected'];
+        
+        if (in_array($request->statusFilter, $validStatuses)) {
             $query->where('status', $request->statusFilter);
         }
-    
-        return response()->json($query->get());
     }
-    
+
+    return response()->json($query->get());
+}
 
 }
