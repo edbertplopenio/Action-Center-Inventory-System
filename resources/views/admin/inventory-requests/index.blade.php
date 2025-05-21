@@ -992,6 +992,10 @@
     // Function to handle request approval
 // Update the approveRequest function
 function approveRequest(borrowedItemId) {
+    // Close both modals immediately
+    document.getElementById('qr-modal').classList.add('hidden');
+    document.getElementById('receipt-modal').classList.add('hidden');
+
     const individualItemQRCodes = scannedQRCodeList;
 
     $.ajax({
@@ -1000,7 +1004,7 @@ function approveRequest(borrowedItemId) {
         data: {
             _token: $('meta[name="csrf-token"]').attr('content'),
             status: 'Borrowed',
-            individual_item_qr_codes: individualItemQRCodes, // Send scanned QR codes
+            individual_item_qr_codes: individualItemQRCodes,
         },
         success: function(response) {
             if (response.success) {
