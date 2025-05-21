@@ -338,3 +338,6 @@ Route::post('/admin/return-items/reject-pending/{id}', [ReturnItemsController::c
 
     Route::get('/get-qr-codes/{itemCode}', [ItemController::class, 'getQrCodes']);
     Route::get('/items/search', [ItemController::class, 'searchItem'])->name('items.searchItem');
+
+    Route::post('/admin/inventory-requests/update-status/{id}', [InventoryRequestController::class, 'updateStatus'])
+    ->name('admin.inventory-requests.update-status');

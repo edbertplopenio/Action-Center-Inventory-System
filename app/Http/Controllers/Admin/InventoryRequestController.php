@@ -32,74 +32,59 @@ class InventoryRequestController extends Controller
 }
 
 
-    public function updateStatus(Request $request, $id)
-    {
-        // Validate the status input
-        $request->validate([
-            'status' => 'required|in:Pending,Borrowed,Approved,Rejected,Returned,Overdue,Lost,Damaged',
-        ]);
+public function updateStatus(Request $request, $id)
+{
+    $request->validate([
+        'status' => 'required|in:Pending,Borrowed,Approved,Rejected,Returned,Overdue,Lost,Damaged',
+    ]);
 
-        // Find the borrowing request by ID
-        $borrowedItem = BorrowedItem::findOrFail($id);
+    $borrowedItem = BorrowedItem::findOrFail($id);
+    $user = Auth::user();
+    $borrowedItem->request_responsible_person = $user->first_name . ' ' . $user->last_name;
 
-        // Set the request responsible person as the logged-in user's name (first_name + last_name)
-        $user = Auth::user();
-        $borrowedItem->request_responsible_person = $user->first_name . ' ' . $user->last_name;
+    if ($request->status == 'Borrowed') {
+        $qrCodes = $request->input('individual_item_qr_codes');
 
-        // If the status is "Borrowed", we need to attach individual items to the borrowed item
-        if ($request->status == 'Borrowed') {
-            // Ensure that individual items (QR codes) are provided
-            $qrCodes = $request->input('individual_item_ids'); // This should be an array of QR codes
+        if (empty($qrCodes)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No QR codes scanned.',
+            ]);
+        }
 
-            if (empty($qrCodes)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No individual items selected for borrowing.',
-                ]);
-            }
+        // Get individual items and update their status
+        $individualItems = IndividualItem::whereIn('qr_code', $qrCodes)->get();
 
-            // Find individual item IDs by qr_code
-            $individualItemIds = IndividualItem::whereIn('qr_code', $qrCodes)->pluck('id')->toArray();
+        if ($individualItems->count() < count($qrCodes)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Some QR codes are invalid.',
+            ]);
+        }
 
-            // Check if we got valid individual item ids
-            if (empty($individualItemIds)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No valid individual items found for the given QR codes.',
-                ]);
-            }
-
-            // Attach the individual items to the borrowed item (insert into pivot table)
-            $borrowedItem->individualItems()->attach($individualItemIds);
-
-            // Reduce the quantity in inventory
-            $item = $borrowedItem->item;  // Get the associated item for this borrowed item
-
-            // Check if enough quantity is available before reducing
-            if ($item->quantity < $borrowedItem->quantity_borrowed) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Not enough stock available to approve this request.',
-                ]);
-            }
-
-            // Deduct the quantity from the item in the inventory
-            $item->quantity -= $borrowedItem->quantity_borrowed;
+        // Update status of each individual item
+        foreach ($individualItems as $item) {
+            $item->status = 'Borrowed';
             $item->save();
         }
 
-        // Update the status of the borrowed item to the new status
-        $borrowedItem->status = $request->status;
+        // Attach to borrowed item
+        $borrowedItem->individualItems()->attach($individualItems->pluck('id'));
 
-        // Save the updated borrowed item
-        $borrowedItem->save();
-
-        // Return a response
-        return response()->json([
-            'success' => true,
-            'message' => 'Status updated successfully!',
-        ]);
+        // Update inventory quantity
+        $item = $borrowedItem->item;
+        $item->quantity -= $borrowedItem->quantity_borrowed;
+        $item->save();
     }
+
+    $borrowedItem->status = $request->status;
+    $borrowedItem->save();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Status updated successfully!',
+    ]);
+}
 
 
 
@@ -121,34 +106,34 @@ class InventoryRequestController extends Controller
         ]);
     }
 
-    public function updateItemStatus(Request $request)
-    {
-        // Validate the QR code and status
-        $request->validate([
-            'qr_code' => 'required|string',
-            'status' => 'required|in:Available,Borrowed,Damaged,Reserved,Retired',
-        ]);
+    // public function updateItemStatus(Request $request)
+    // {
+    //     // Validate the QR code and status
+    //     $request->validate([
+    //         'qr_code' => 'required|string',
+    //         'status' => 'required|in:Available,Borrowed,Damaged,Reserved,Retired',
+    //     ]);
 
-        // Find the individual item by QR code
-        $individualItem = IndividualItem::where('qr_code', $request->qr_code)->first();
+    //     // Find the individual item by QR code
+    //     $individualItem = IndividualItem::where('qr_code', $request->qr_code)->first();
 
-        // Check if the item was found
-        if ($individualItem) {
-            // Update the status of the item
-            $individualItem->status = $request->status;
-            $individualItem->save();
+    //     // Check if the item was found
+    //     if ($individualItem) {
+    //         // Update the status of the item
+    //         $individualItem->status = $request->status;
+    //         $individualItem->save();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Item status updated successfully!'
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Item not found!'
-            ]);
-        }
-    }
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Item status updated successfully!'
+    //         ]);
+    //     } else {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Item not found!'
+    //         ]);
+    //     }
+    // }
 
 
     // app/Http/Controllers/Admin/InventoryRequestController.php

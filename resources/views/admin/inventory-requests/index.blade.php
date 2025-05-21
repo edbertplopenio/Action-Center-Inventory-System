@@ -616,7 +616,7 @@
 
                                 scannedQRCodeList.push(qrCode.data); // Add scanned QR code to the list
                                 highlightAndMoveRow(qrCode.data);
-                                updateItemStatus(qrCode.data); // Update status when a valid QR code is scanned
+
 
                                 // Only update the scanned count if the QR code is valid (exists in the table)
                                 scannedCount++;
@@ -990,31 +990,32 @@
     });
 
     // Function to handle request approval
-    function approveRequest(borrowedItemId) {
-        const individualItemIds = scannedQRCodeList; // This is the array of QR codes/individual item IDs
+// Update the approveRequest function
+function approveRequest(borrowedItemId) {
+    const individualItemQRCodes = scannedQRCodeList;
 
-        $.ajax({
-            url: '/admin/inventory-requests/update-status/' + borrowedItemId,
-            method: 'POST',
-            data: {
-                _token: $('meta[name="csrf-token"]').attr('content'),
-                status: 'Borrowed', // The new status is 'Borrowed'
-                individual_item_ids: individualItemIds, // Pass the list of individual item IDs
-            },
-            success: function(response) {
-                if (response.success) {
-                    Swal.fire('Success', response.message, 'success').then(() => {
-                        location.reload(); // Reload the page to reflect the changes
-                    });
-                } else {
-                    Swal.fire('Error', response.message, 'error');
-                }
-            },
-            error: function() {
-                Swal.fire('Error', 'Something went wrong during approval', 'error');
+    $.ajax({
+        url: '/admin/inventory-requests/update-status/' + borrowedItemId,
+        method: 'POST',
+        data: {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            status: 'Borrowed',
+            individual_item_qr_codes: individualItemQRCodes, // Send scanned QR codes
+        },
+        success: function(response) {
+            if (response.success) {
+                Swal.fire('Success', response.message, 'success').then(() => {
+                    location.reload();
+                });
+            } else {
+                Swal.fire('Error', response.message, 'error');
             }
-        });
-    }
+        },
+        error: function() {
+            Swal.fire('Error', 'Something went wrong during approval', 'error');
+        }
+    });
+}
 
 
     // Close modal function
