@@ -204,7 +204,7 @@ Route::controller(ItemController::class)->group(function () {
 
 
     // Update item details
-    Route::put('/items/{id}', 'update')->name('items.update');  // Updated to use PUT
+ Route::put('/items/{id}', [ItemController::class, 'update'])->name('items.update');  // Updated to use PUT
 
     Route::get('/items/{id}', [ItemController::class, 'getItemData']); // Fe
 
