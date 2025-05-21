@@ -666,6 +666,7 @@ function approvePendingItems(borrowedItemId) {
         scannedCount = 0;
         document.getElementById('approveButton').disabled = true;
         document.getElementById('undoButton').disabled = true;
+                updateSelectAllButtonState(); // Add this line
 
         // Destroy existing DataTable instance if it exists
         if ($.fn.DataTable.isDataTable('#codeTable')) {
@@ -774,6 +775,16 @@ if (item.status === 'Available') {
 
     let alertedQRCodeList = []; // Store QR codes that have already triggered an alert
 
+        function updateSelectAllButtonState() {
+        const approveButton = document.getElementById('approveButton');
+        const undoButton = document.getElementById('undoButton');
+        const selectAllButton = document.getElementById('selectAllButton');
+        
+        // Disable Select All if both Approve and Undo are enabled
+        selectAllButton.disabled = !approveButton.disabled && !undoButton.disabled;
+    }
+
+
     function scanQRCode() {
         const video = document.getElementById('video');
         const resultText = document.getElementById('result');
@@ -840,6 +851,7 @@ if (item.status === 'Available') {
 
                             document.getElementById('undoButton').disabled = false;
                             highlightRow(code);
+                            updateSelectAllButtonState(); // Add this line
                         }
                     } else {
                         resultText.textContent = 'Invalid QR Code: Not in list.';
@@ -896,6 +908,7 @@ if (item.status === 'Available') {
             }
 
             document.getElementById('approveButton').disabled = scannedCount === 0;
+            updateSelectAllButtonState(); // Add this line
             if (scannedQRCodeList.length === 0) {
                 document.getElementById('undoButton').disabled = true;
                 // Reset Select All button if all items are undone
@@ -946,6 +959,8 @@ if (item.status === 'Available') {
         scannedCount = 0;
         document.getElementById('approveButton').disabled = true;
         document.getElementById('undoButton').disabled = true;
+
+        updateSelectAllButtonState(); // Add this line
 
         // Reset Select All button state
         const selectAllButton = document.getElementById('selectAllButton');
