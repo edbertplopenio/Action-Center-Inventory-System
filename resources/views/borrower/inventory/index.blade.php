@@ -538,10 +538,11 @@
             };
 
             preBorrowModal.style.display = "none";
-            borrowModal.style.display = "block";
-            document.getElementById("borrow-item-id").value = selectedItemId;
-            borrowDateInput.value = getCurrentDate();
-            currentQuantityInput.value = currentQuantity;
+    borrowModal.style.display = "block";
+    document.getElementById("borrow-item-id").value = selectedItemId;
+    borrowDateInput.value = getCurrentDate();
+    dueDateInput.value = getCurrentDate(); // Add this line
+    currentQuantityInput.value = currentQuantity;
         });
 
         // Close pre-borrow modal
@@ -564,18 +565,18 @@
             }
         });
 
-        function validateDueDate() {
-            const borrowDate = new Date(borrowDateInput.value);
-            const dueDate = new Date(dueDateInput.value);
+function validateDueDate() {
+    const borrowDate = new Date(borrowDateInput.value);
+    const dueDate = new Date(dueDateInput.value);
 
-            if (dueDate <= borrowDate) {
-                dueDateInput.setCustomValidity("Due Date must be later than Borrow Date.");
-                dueDateInput.reportValidity();
-            } else {
-                dueDateInput.setCustomValidity("");
-            }
-        }
-
+    // Changed from <= to < to allow same-day due dates
+    if (dueDate < borrowDate) {
+        dueDateInput.setCustomValidity("Due Date cannot be before Borrow Date.");
+        dueDateInput.reportValidity();
+    } else {
+        dueDateInput.setCustomValidity("");
+    }
+}
         dueDateInput.addEventListener("input", validateDueDate);
 
         closeBorrowModalBtn.addEventListener("click", function() {
