@@ -1078,7 +1078,7 @@
             showCancelButton: true,
             confirmButtonColor: '#dc3545', // Red color for Reject
             cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, reject it!'
+            confirmButtonText: 'Reject'
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
