@@ -106,4 +106,10 @@ class Item extends Model
         // Calculate if the item is new by comparing 'added_at' with the current date
         return Carbon::parse($this->added_at)->diffInDays(now()) <= 5;
     }
+
+    public function comments()
+{
+    return $this->hasMany(Comment::class);
+}
+
 }

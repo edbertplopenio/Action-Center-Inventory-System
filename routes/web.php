@@ -254,6 +254,8 @@ Route::controller(ItemController::class)->group(function () {
 
 
 
+// Route to store a comment
+Route::post('/items/{itemId}/comment', [ItemController::class, 'storeComment'])->name('items.comment');
 
 
 

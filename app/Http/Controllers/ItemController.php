@@ -333,7 +333,46 @@ public function getItemData($id)
         return redirect()->back()->with('success', 'Item added/updated successfully! New QR Codes: ' . implode(', ', $newCodes));
     }
         
-    
+
+
+public function storeComment(Request $request, $itemId)
+{
+    // Validate the comment input
+    $request->validate([
+        'comment' => 'required|string|max:255', // Ensure the comment is not empty and within the length limit
+    ]);
+
+    // Fetch the item by its ID
+    $item = Item::find($itemId);
+
+    // If item not found, return an error response
+    if (!$item) {
+        return response()->json(['error' => 'Item not found.'], 404);
+    }
+
+    // Check if the user is updating an existing comment or adding a new one
+    $comment = Comment::where('item_id', $itemId)->first();
+
+    // If comment exists, update it
+    if ($comment) {
+        $comment->comment = $request->input('comment'); // Update the comment text
+        $comment->save(); // Save the updated comment
+    } else {
+        // If no comment exists, create a new comment for the item
+        $comment = new Comment();
+        $comment->item_id = $item->id; // Associate the comment with the item
+        $comment->comment = $request->input('comment'); // Set the comment text
+        $comment->save(); // Save the comment to the database
+    }
+
+    // Return a success response with the comment text
+    return response()->json([
+        'success' => true,
+        'message' => 'Comment added/updated successfully!',
+        'comment' => $comment->comment, // Return the updated comment text
+    ]);
+}
+
 /**
  * get codes
  */

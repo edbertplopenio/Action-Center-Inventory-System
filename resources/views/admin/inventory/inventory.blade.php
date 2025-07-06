@@ -114,6 +114,13 @@
         /* Red */
     }
 
+    .comment-field {
+    width: 100%;
+    max-width: 200px;  /* Adjust this as needed */
+    resize: none;  /* Prevents resizing */
+}
+
+
     /* Table Styles */
     table {
         width: 100%;
@@ -121,7 +128,7 @@
     margin-top: 2rem;
     margin-bottom: -2rem;
     height: 100%;
-    table-layout: fixed; /* Changed to auto for dynamic sizing */
+    table-layout:  auto; /* Changed to auto for dynamic sizing */
     }
 
     table th, table td {
@@ -164,7 +171,7 @@
     }
 
     .table-container {
-        width: 100%;
+
 max-height: 850px; /* Set max height for the table container */
 overflow-x: auto; /* Allow horizontal scrolling if necessary */
 overflow-y: auto; /* Allow vertical scrolling if necessary */
@@ -180,6 +187,7 @@ margin-bottom: -2rem;
     position: relative; /* Ensures buttons are positioned relative to this container */
     height: 100%;
     gap: 5px;
+      overflow: hidden; 
 }
 
 
@@ -716,6 +724,7 @@ table.dataTable thead th {
                     <th>Date Tested/Inspected</th>
                     <th>Status</th>
                     <th>Consumable</th> <!-- New Consumable Column -->
+                    <th>Comments</th> <!-- New Column for Comments -->
                     <th>Image</th>
                     <th>Action</th>
                 </tr>
@@ -723,8 +732,8 @@ table.dataTable thead th {
             <tbody>
                 @foreach($allItems as $item)
                 <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                <td>{{ $item->name }}</td>
-                <td>{{ $item->item_code }}</td>
+                    <td>{{ $item->name }}</td>
+                    <td>{{ $item->item_code }}</td>
                     <td>{{ $item->brand }}</td>
                     <td>{{ $item->quantity }}</td>
                     <td>{{ $item->unit }}</td>
@@ -735,25 +744,31 @@ table.dataTable thead th {
                     <td>{{ $item->inventory_date ?? 'N/A' }}</td>
                     <td>{{ $item->expiration_date ?? 'N/A' }}</td>
                     <td>{{ $item->date_tested_inspected ?? 'N/A' }}</td>
-<td>
-    @php
-        $displayStatus = $item->quantity <= 0 ? 'Borrowed' : $item->status;
-    @endphp
-    <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-        {{ $displayStatus == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
-        {{ $displayStatus == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-        {{ $displayStatus == 'Reserved' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
-        {{ $displayStatus == 'Out of Stock' ? 'bg-gray-500/10 text-gray-500 border border-gray-500' : '' }}
-        {{ $displayStatus == 'Needs Repair' ? 'bg-pink-500/10 text-pink-500 border border-pink-500' : '' }}
-        {{ $displayStatus == 'Damaged' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
-        {{ $displayStatus == 'Lost' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
-        {{ $displayStatus == 'Retired' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
-        {{ $displayStatus }}
-    </span>
-</td>
-
+                    <td>
+                        @php
+                            $displayStatus = $item->quantity <= 0 ? 'Borrowed' : $item->status;
+                        @endphp
+                        <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                            {{ $displayStatus == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                            {{ $displayStatus == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                            {{ $displayStatus == 'Reserved' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                            {{ $displayStatus == 'Out of Stock' ? 'bg-gray-500/10 text-gray-500 border border-gray-500' : '' }}
+                            {{ $displayStatus == 'Needs Repair' ? 'bg-pink-500/10 text-pink-500 border border-pink-500' : '' }}
+                            {{ $displayStatus == 'Damaged' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                            {{ $displayStatus == 'Lost' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
+                            {{ $displayStatus == 'Retired' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                            {{ $displayStatus }}
+                        </span>
                     </td>
                     <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
+                    <!-- Comment Section (Editable) -->
+                    <td>
+                        <textarea id="comment-{{ $item->id }}" class="comment-field" rows="3" onblur="saveComment('{{ $item->id }}')">
+                            @foreach($item->comments as $comment)
+                                {{ $comment->comment }}
+                            @endforeach
+                        </textarea>
+                    </td>
                     <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                     <td class="action-buttons">
                         <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
@@ -772,7 +787,7 @@ table.dataTable thead th {
         <table id="equipmentTable" class="display">
             <thead>
                 <tr>
-                <th>Item Name</th>
+                    <th>Item Name</th>
                     <th>Item Code</th>
                     <th>Brand</th>
                     <th>Quantity</th>
@@ -786,6 +801,7 @@ table.dataTable thead th {
                     <th>Date Tested/Inspected</th>
                     <th>Status</th>
                     <th>Consumable</th> <!-- New Consumable Column -->
+                    <th>Comments</th> <!-- New Column for Comments -->
                     <th>Image</th>
                     <th>Action</th>
                 </tr>
@@ -793,8 +809,8 @@ table.dataTable thead th {
             <tbody>
                 @foreach($drrmItems as $item)
                 <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                <td>{{ $item->name }}</td>    
-                <td>{{ $item->item_code }}</td>
+                    <td>{{ $item->name }}</td>
+                    <td>{{ $item->item_code }}</td>
                     <td>{{ $item->brand }}</td>
                     <td>{{ $item->quantity }}</td>
                     <td>{{ $item->unit }}</td>
@@ -805,93 +821,31 @@ table.dataTable thead th {
                     <td>{{ $item->inventory_date ?? 'N/A' }}</td>
                     <td>{{ $item->expiration_date ?? 'N/A' }}</td>
                     <td>{{ $item->date_tested_inspected ?? 'N/A' }}</td>
-<td>
-    @php
-        $displayStatus = $item->quantity <= 0 ? 'Borrowed' : $item->status;
-    @endphp
-    <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-        {{ $displayStatus == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
-        {{ $displayStatus == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-        {{ $displayStatus == 'Reserved' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
-        {{ $displayStatus == 'Out of Stock' ? 'bg-gray-500/10 text-gray-500 border border-gray-500' : '' }}
-        {{ $displayStatus == 'Needs Repair' ? 'bg-pink-500/10 text-pink-500 border border-pink-500' : '' }}
-        {{ $displayStatus == 'Damaged' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
-        {{ $displayStatus == 'Lost' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
-        {{ $displayStatus == 'Retired' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
-        {{ $displayStatus }}
-    </span>
-</td>
-
-                    <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
-                    <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
-                    <td class="action-buttons">
-                        <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
-                        <button type="button" class="archive-btn" onclick="archiveItem('{{ $item->id }}')">Archive</button>
+                    <td>
+                        @php
+                            $displayStatus = $item->quantity <= 0 ? 'Borrowed' : $item->status;
+                        @endphp
+                        <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                            {{ $displayStatus == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                            {{ $displayStatus == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                            {{ $displayStatus == 'Reserved' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                            {{ $displayStatus == 'Out of Stock' ? 'bg-gray-500/10 text-gray-500 border border-gray-500' : '' }}
+                            {{ $displayStatus == 'Needs Repair' ? 'bg-pink-500/10 text-pink-500 border border-pink-500' : '' }}
+                            {{ $displayStatus == 'Damaged' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                            {{ $displayStatus == 'Lost' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
+                            {{ $displayStatus == 'Retired' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                            {{ $displayStatus }}
+                        </span>
                     </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!-- Office Supplies Table -->
-<div id="office-supplies-content" class="tab-content">
-    <div class="table-container">
-        <table id="officeSuppliesTable" class="display">
-            <thead>
-                <tr>
-                <th>Item Name</th>
-                    <th>Item Code</th>
-                    <th>Brand</th>
-                    <th>Quantity</th>
-                    <th>Unit</th>
-                    <th>Category</th>
-                    <th>Description</th>
-                    <th>Storage Location</th>
-                    <th>Arrival Date</th>
-                    <th>Inventory Date</th>
-                    <th>Expiration Date</th>
-                    <th>Date Tested/Inspected</th>
-                    <th>Status</th>
-                    <th>Consumable</th> <!-- New Consumable Column -->
-                    <th>Image</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($officeItems as $item)
-                <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                <td>{{ $item->name }}</td>    
-                <td>{{ $item->item_code }}</td>
-                    <td>{{ $item->brand }}</td>
-                    <td>{{ $item->quantity }}</td>
-                    <td>{{ $item->unit }}</td>
-                    <td>{{ $item->category }}</td>
-                    <td>{{ $item->description }}</td>
-                    <td>{{ $item->storage_location }}</td>
-                    <td>{{ $item->arrival_date }}</td>
-                    <td>{{ $item->inventory_date ?? 'N/A' }}</td>
-                    <td>{{ $item->expiration_date ?? 'N/A' }}</td>
-                    <td>{{ $item->date_tested_inspected ?? 'N/A' }}</td>
-<td>
-    @php
-        $displayStatus = $item->quantity <= 0 ? 'Borrowed' : $item->status;
-    @endphp
-    <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-        {{ $displayStatus == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
-        {{ $displayStatus == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-        {{ $displayStatus == 'Reserved' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
-        {{ $displayStatus == 'Out of Stock' ? 'bg-gray-500/10 text-gray-500 border border-gray-500' : '' }}
-        {{ $displayStatus == 'Needs Repair' ? 'bg-pink-500/10 text-pink-500 border border-pink-500' : '' }}
-        {{ $displayStatus == 'Damaged' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
-        {{ $displayStatus == 'Lost' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
-        {{ $displayStatus == 'Retired' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
-        {{ $displayStatus }}
-    </span>
-</td>
-
                     <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
+                    <!-- Comment Section (Editable) -->
+                    <td>
+                        <textarea id="comment-{{ $item->id }}" class="comment-field" rows="3" onblur="saveComment('{{ $item->id }}')">
+                            @foreach($item->comments as $comment)
+                                {{ $comment->comment }}
+                            @endforeach
+                        </textarea>
+                    </td>
                     <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                     <td class="action-buttons">
                         <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
@@ -910,7 +864,7 @@ table.dataTable thead th {
         <table id="emergencyKitsTable" class="display">
             <thead>
                 <tr>
-                <th>Item Name</th>
+                    <th>Item Name</th>
                     <th>Item Code</th>
                     <th>Brand</th>
                     <th>Quantity</th>
@@ -923,7 +877,8 @@ table.dataTable thead th {
                     <th>Expiration Date</th>
                     <th>Date Tested/Inspected</th>
                     <th>Status</th>
-                    <th>Consumable</th> <!-- New Consumable Column -->
+                    <th>Consumable</th>
+                    <th>Comments</th> <!-- New Column for Comments -->
                     <th>Image</th>
                     <th>Action</th>
                 </tr>
@@ -931,8 +886,8 @@ table.dataTable thead th {
             <tbody>
                 @foreach($emergencyItems as $item)
                 <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                <td>{{ $item->name }}</td>    
-                <td>{{ $item->item_code }}</td>
+                    <td>{{ $item->name }}</td>
+                    <td>{{ $item->item_code }}</td>
                     <td>{{ $item->brand }}</td>
                     <td>{{ $item->quantity }}</td>
                     <td>{{ $item->unit }}</td>
@@ -943,24 +898,31 @@ table.dataTable thead th {
                     <td>{{ $item->inventory_date ?? 'N/A' }}</td>
                     <td>{{ $item->expiration_date ?? 'N/A' }}</td>
                     <td>{{ $item->date_tested_inspected ?? 'N/A' }}</td>
-<td>
-    @php
-        $displayStatus = $item->quantity <= 0 ? 'Borrowed' : $item->status;
-    @endphp
-    <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-        {{ $displayStatus == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
-        {{ $displayStatus == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-        {{ $displayStatus == 'Reserved' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
-        {{ $displayStatus == 'Out of Stock' ? 'bg-gray-500/10 text-gray-500 border border-gray-500' : '' }}
-        {{ $displayStatus == 'Needs Repair' ? 'bg-pink-500/10 text-pink-500 border border-pink-500' : '' }}
-        {{ $displayStatus == 'Damaged' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
-        {{ $displayStatus == 'Lost' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
-        {{ $displayStatus == 'Retired' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
-        {{ $displayStatus }}
-    </span>
-</td>
-
-                    <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
+                    <td>
+                        @php
+                            $displayStatus = $item->quantity <= 0 ? 'Borrowed' : $item->status;
+                        @endphp
+                        <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                            {{ $displayStatus == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                            {{ $displayStatus == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                            {{ $displayStatus == 'Reserved' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                            {{ $displayStatus == 'Out of Stock' ? 'bg-gray-500/10 text-gray-500 border border-gray-500' : '' }}
+                            {{ $displayStatus == 'Needs Repair' ? 'bg-pink-500/10 text-pink-500 border border-pink-500' : '' }}
+                            {{ $displayStatus == 'Damaged' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                            {{ $displayStatus == 'Lost' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
+                            {{ $displayStatus == 'Retired' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                            {{ $displayStatus }}
+                        </span>
+                    </td>
+                    <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td>
+                    <!-- Comment Section (Editable) -->
+                    <td>
+                        <textarea id="comment-{{ $item->id }}" class="comment-field" rows="3" onblur="saveComment('{{ $item->id }}')">
+                            @foreach($item->comments as $comment)
+                                {{ $comment->comment }}
+                            @endforeach
+                        </textarea>
+                    </td>
                     <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                     <td class="action-buttons">
                         <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
@@ -979,7 +941,7 @@ table.dataTable thead th {
         <table id="otherItemsTable" class="display">
             <thead>
                 <tr>
-                <th>Item Name</th>
+                    <th>Item Name</th>
                     <th>Item Code</th>
                     <th>Brand</th>
                     <th>Quantity</th>
@@ -992,7 +954,8 @@ table.dataTable thead th {
                     <th>Expiration Date</th>
                     <th>Date Tested/Inspected</th>
                     <th>Status</th>
-                    <th>Consumable</th> <!-- New Consumable Column -->
+                    <th>Consumable</th>
+                    <th>Comments</th> <!-- New Column for Comments -->
                     <th>Image</th>
                     <th>Action</th>
                 </tr>
@@ -1000,8 +963,8 @@ table.dataTable thead th {
             <tbody>
                 @foreach($otherItems as $item)
                 <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                <td>{{ $item->name }}</td>
-                <td>{{ $item->item_code }}</td>
+                    <td>{{ $item->name }}</td>
+                    <td>{{ $item->item_code }}</td>
                     <td>{{ $item->brand }}</td>
                     <td>{{ $item->quantity }}</td>
                     <td>{{ $item->unit }}</td>
@@ -1012,24 +975,31 @@ table.dataTable thead th {
                     <td>{{ $item->inventory_date ?? 'N/A' }}</td>
                     <td>{{ $item->expiration_date ?? 'N/A' }}</td>
                     <td>{{ $item->date_tested_inspected ?? 'N/A' }}</td>
-<td>
-    @php
-        $displayStatus = $item->quantity <= 0 ? 'Borrowed' : $item->status;
-    @endphp
-    <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-        {{ $displayStatus == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
-        {{ $displayStatus == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-        {{ $displayStatus == 'Reserved' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
-        {{ $displayStatus == 'Out of Stock' ? 'bg-gray-500/10 text-gray-500 border border-gray-500' : '' }}
-        {{ $displayStatus == 'Needs Repair' ? 'bg-pink-500/10 text-pink-500 border border-pink-500' : '' }}
-        {{ $displayStatus == 'Damaged' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
-        {{ $displayStatus == 'Lost' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
-        {{ $displayStatus == 'Retired' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
-        {{ $displayStatus }}
-    </span>
-</td>
-
-                    <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
+                    <td>
+                        @php
+                            $displayStatus = $item->quantity <= 0 ? 'Borrowed' : $item->status;
+                        @endphp
+                        <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                            {{ $displayStatus == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                            {{ $displayStatus == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                            {{ $displayStatus == 'Reserved' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                            {{ $displayStatus == 'Out of Stock' ? 'bg-gray-500/10 text-gray-500 border border-gray-500' : '' }}
+                            {{ $displayStatus == 'Needs Repair' ? 'bg-pink-500/10 text-pink-500 border border-pink-500' : '' }}
+                            {{ $displayStatus == 'Damaged' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                            {{ $displayStatus == 'Lost' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
+                            {{ $displayStatus == 'Retired' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                            {{ $displayStatus }}
+                        </span>
+                    </td>
+                    <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td>
+                    <!-- Comment Section (Editable) -->
+                    <td>
+                        <textarea id="comment-{{ $item->id }}" class="comment-field" rows="3" onblur="saveComment('{{ $item->id }}')">
+                            @foreach($item->comments as $comment)
+                                {{ $comment->comment }}
+                            @endforeach
+                        </textarea>
+                    </td>
                     <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                     <td class="action-buttons">
                         <button onclick="openEditModal('{{ $item->id }}')" class="edit-btn">Edit</button>
@@ -1048,7 +1018,7 @@ table.dataTable thead th {
         <table id="archivesTable" class="display">
             <thead>
                 <tr>
-                <th>Item Name</th>
+                    <th>Item Name</th>
                     <th>Item Code</th>
                     <th>Brand</th>
                     <th>Quantity</th>
@@ -1061,7 +1031,8 @@ table.dataTable thead th {
                     <th>Expiration Date</th>
                     <th>Date Tested/Inspected</th>
                     <th>Status</th>
-                    <th>Consumable</th> <!-- New Consumable Column -->
+                    <th>Consumable</th>
+                    <th>Comments</th> <!-- New Column for Comments -->
                     <th>Image</th>
                     <th>Action</th>
                 </tr>
@@ -1069,8 +1040,8 @@ table.dataTable thead th {
             <tbody>
                 @foreach($archivedItems as $item)
                 <tr id="item-{{ $item->id }}" class="{{ \Carbon\Carbon::parse($item->added_at)->diffInDays(now()) <= 5 ? 'new-item' : '' }}" data-added-at="{{ $item->added_at }}">
-                <td>{{ $item->name }}</td>    
-                <td>{{ $item->item_code }}</td>
+                    <td>{{ $item->name }}</td>
+                    <td>{{ $item->item_code }}</td>
                     <td>{{ $item->brand }}</td>
                     <td>{{ $item->quantity }}</td>
                     <td>{{ $item->unit }}</td>
@@ -1081,27 +1052,33 @@ table.dataTable thead th {
                     <td>{{ $item->inventory_date ?? 'N/A' }}</td>
                     <td>{{ $item->expiration_date ?? 'N/A' }}</td>
                     <td>{{ $item->date_tested_inspected ?? 'N/A' }}</td>
-<td>
-    @php
-        $displayStatus = $item->quantity <= 0 ? 'Borrowed' : $item->status;
-    @endphp
-    <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
-        {{ $displayStatus == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
-        {{ $displayStatus == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
-        {{ $displayStatus == 'Reserved' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
-        {{ $displayStatus == 'Out of Stock' ? 'bg-gray-500/10 text-gray-500 border border-gray-500' : '' }}
-        {{ $displayStatus == 'Needs Repair' ? 'bg-pink-500/10 text-pink-500 border border-pink-500' : '' }}
-        {{ $displayStatus == 'Damaged' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
-        {{ $displayStatus == 'Lost' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
-        {{ $displayStatus == 'Retired' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
-        {{ $displayStatus }}
-    </span>
-</td>
-
-                    <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td> <!-- Display Consumable Status -->
+                    <td>
+                        @php
+                            $displayStatus = $item->quantity <= 0 ? 'Borrowed' : $item->status;
+                        @endphp
+                        <span class="px-3 py-1 text-xs font-semibold rounded w-24 text-center inline-block
+                            {{ $displayStatus == 'Available' ? 'bg-green-500/10 text-green-500 border border-green-500' : '' }}
+                            {{ $displayStatus == 'Borrowed' ? 'bg-blue-500/10 text-blue-500 border border-blue-500' : '' }}
+                            {{ $displayStatus == 'Reserved' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500' : '' }}
+                            {{ $displayStatus == 'Out of Stock' ? 'bg-gray-500/10 text-gray-500 border border-gray-500' : '' }}
+                            {{ $displayStatus == 'Needs Repair' ? 'bg-pink-500/10 text-pink-500 border border-pink-500' : '' }}
+                            {{ $displayStatus == 'Damaged' ? 'bg-red-500/10 text-red-500 border border-red-500' : '' }}
+                            {{ $displayStatus == 'Lost' ? 'bg-purple-500/10 text-purple-500 border border-purple-500' : '' }}
+                            {{ $displayStatus == 'Retired' ? 'bg-orange-500/10 text-orange-500 border border-orange-500' : '' }}">
+                            {{ $displayStatus }}
+                        </span>
+                    </td>
+                    <td>{{ $item->is_consumable === 1 ? 'Yes' : 'No' }}</td>
+                    <!-- Comment Section (Editable) -->
+                    <td>
+                        <textarea id="comment-{{ $item->id }}" class="comment-field" rows="3" onblur="saveComment('{{ $item->id }}')">
+                            @foreach($item->comments as $comment)
+                                {{ $comment->comment }}
+                            @endforeach
+                        </textarea>
+                    </td>
                     <td><img src="{{ asset($item->image_url) }}" alt="Item Image" style="max-width: 70px; max-height: 65px;"></td>
                     <td class="action-buttons">
-                        <!-- Restore Button: Form for restoring an archived item -->
                         <form action="{{ route('restore.item', $item->id) }}" method="POST" class="inline-block">
                             @csrf
                             <button type="submit" class="restore-btn">Restore</button>
@@ -1350,6 +1327,33 @@ table.dataTable thead th {
     });
     </script>
 
+<!--Add Comment-->
+<script>
+function saveComment(itemId) {
+    var comment = document.getElementById('comment-' + itemId).value;
+
+    // Send the AJAX request to the backend
+    fetch('/store-comment/' + itemId, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        },
+        body: JSON.stringify({ comment: comment })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message); // Display success message
+        } else {
+            alert('An error occurred. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    });
+}
 
 
 <!--Add item Modal-->
